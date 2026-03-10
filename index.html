@@ -1296,6 +1296,16 @@ function updateCharVisual(step) {
     imgEl.classList.remove('char-anim-pop');
     void imgEl.offsetWidth;
     imgEl.classList.add('char-anim-pop');
+  } else if (['의학 전문가', '수사 전문가', '법률 전문가', '심리학 전문가', '역사 전문가', '군사 전문가'].includes(selectedCharName)) {
+    textEl.style.display = 'none';
+    imgEl.style.display = 'block';
+    
+    // 전문가 고증 전용 GIF 이미지 적용
+    imgEl.style.backgroundImage = `url('images/전문가 페르소나f(움직임) - 복사본.gif')`;
+    
+    imgEl.classList.remove('char-anim-pop');
+    void imgEl.offsetWidth;
+    imgEl.classList.add('char-anim-pop');
   } else if (step.imageUrl) {
     // If you want to use real images:
     // consumerSteps array 에 { imageUrl: 'url.jpg' } 를 넣어주면 됩니다.
