@@ -1680,6 +1680,17 @@ ${storyContext ? `\n[지금까지 수집된 이야기 요소 전제조건]:\n${s
       })
     });
     
+    if (!response.ok) {
+      const errText = await response.text();
+      console.error("API Error HTTP status:", response.status, "Body:", errText);
+      try {
+        const errObj = JSON.parse(errText);
+        return `⚠️ API 오류 (${response.status}): ${errObj.error || errText}`;
+      } catch (e) {
+        return `⚠️ API 오류 (${response.status}): ${errText || response.statusText}`;
+      }
+    }
+    
     const data = await response.json();
     if (data.choices && data.choices.length > 0) {
       return data.choices[0].message.content.trim();
@@ -1886,12 +1897,12 @@ async function finishFlow() {
 
   let synopsis = '';
   try {
-    const endpoint = 'https://api.openai.com/v1/chat/completions';
+    const endpoint = '/api/chat';
     const res = await fetch(endpoint, {
       method: 'POST',
-      headers: { 'Authorization': `Bearer ${OPENAI_API_KEY}`, 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
+        model: 'gpt-4o',
         max_tokens: 800,
         temperature: 0.85,
         messages: [
@@ -1900,6 +1911,11 @@ async function finishFlow() {
         ]
       })
     });
+    
+    if (!res.ok) {
+      const errText = await res.text();
+      throw new Error(`API 오류 (${res.status}): ${errText}`);
+    }
     const data = await res.json();
     synopsis = data.choices?.[0]?.message?.content?.trim() || '시놉시스 생성에 실패했습니다.';
   } catch(e) {
