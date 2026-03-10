@@ -1362,12 +1362,9 @@ function runStep(idx) {
 const OPENAI_API_KEY = ""; // 💡 여기에 OpenAI API 키(sk-...)를 입력하세요.
 
 async function fetchAIFeedback(userInput, stepInfo) {
-  if (!OPENAI_API_KEY || OPENAI_API_KEY.includes('sk-') === false) {
-    return `💡 API 키가 완전하지 않습니다. (sk-... 전체 키를 코드에 붙여넣어주세요!)\n\n(입력하신 내용: "${userInput}")\n이대로 진행할까요?`;
-  }
 
-  // OpenAI API 직접 호출로 변경
-  const endpoint = `https://api.openai.com/v1/chat/completions`;
+  // OpenAI API 직접 호출 방식에서 Cloudflare Functions 프록시(/api/chat) 호출로 변경
+  const endpoint = `/api/chat`;
   
   let persona = "당신은 웹소설 기획을 돕는 유능한 AI 조수입니다.";
   
@@ -1670,7 +1667,6 @@ ${storyContext ? `\n[지금까지 수집된 이야기 요소 전제조건]:\n${s
     const response = await fetch(endpoint, {
       method: "POST",
       headers: {
-        "Authorization": `Bearer ${OPENAI_API_KEY}`,
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
