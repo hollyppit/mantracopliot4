@@ -115,7 +115,7 @@ body {
 .char-stage {
   flex:1; display:flex; align-items:flex-end;
   justify-content:center; padding-bottom:120px;
-  position:relative; overflow:hidden;
+  position:relative; z-index:20;
   pointer-events:none;
 }
 .char-figure {
@@ -167,6 +167,24 @@ body {
   border:1px solid rgba(255,255,255,0.12); padding:6px 20px; border-radius:100px;
   margin-top:20px; margin-bottom:16px; backdrop-filter:var(--blur);
   box-shadow: 0 10px 20px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.1);
+}
+
+.char-figure.is-sprite {
+  margin-bottom: -120px;
+}
+.char-figure.is-sprite .char-image-bg {
+  width: 380px; height: 450px;
+  border-radius: 0;
+  box-shadow: none;
+  background-size: contain;
+  background-position: bottom center;
+  background-repeat: no-repeat;
+  filter: drop-shadow(0 15px 30px rgba(0,0,0,0.5));
+}
+.char-figure.is-sprite .char-name-plate {
+  margin-top: -16px;
+  margin-bottom: 20px;
+  transform: translateY(-20px);
 }
 
 /* ── DIALOG BOX ── */
@@ -763,7 +781,7 @@ body {
     </div>
     <div class="char-panel">
       <div class="char-card" onclick="selectCharacter('조수 A')">
-        <div class="cc-avatar" style="background-image: url('images/조수a.gif'); background-size: cover; background-position: center; border-radius: 50%;"></div>
+        <div class="cc-avatar" style="background-image: url('images/조수a T형3(움직임gif).gif'); background-size: cover; background-position: center; border-radius: 50%;"></div>
         <div class="cc-name">조수 A (T형)</div>
         <div class="cc-desc">비판적이고 예리합니다.<br>논리적인 구조와 개연성을 깊게 파고듭니다.</div>
       </div>
@@ -1275,13 +1293,17 @@ function triggerCharAnim() {
 function updateCharVisual(step) {
   const textEl = $('charEmoji');
   const imgEl = $('charImage');
+  const figureEl = $('charFigure');
+  
+  figureEl.classList.remove('is-sprite');
   
   if (selectedCharName.includes('조수 A')) {
     textEl.style.display = 'none';
     imgEl.style.display = 'block';
+    figureEl.classList.add('is-sprite');
     
     // 조수 A 전용 GIF 이미지 적용
-    imgEl.style.backgroundImage = `url('images/조수a.gif')`;
+    imgEl.style.backgroundImage = `url('images/조수a T형3(움직임gif).gif')`;
     
     imgEl.classList.remove('char-anim-pop');
     void imgEl.offsetWidth;
