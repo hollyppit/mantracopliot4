@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>내 작품 — 만트라 코파일럿</title>
+<link rel="stylesheet" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+<style>
+:root {
+  --bg: #030305;
+  --purple: #8B5CF6;
+  --purple-light: #C4B5FD;
+  --gold: #D6B75A;
+  --gold-light: #FDE68A;
+  --text: #F8FAFC;
+  --text-dim: #94A3B8;
+  --text-faint: #475569;
+  --border: rgba(255,255,255,0.08);
+  --blur: blur(40px);
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family: 'Pretendard', -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  letter-spacing: -0.01em;
+}
+
+/* ── BACKGROUND ── */
+.bg-glow {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background:
+    radial-gradient(circle at 20% 30%, rgba(139,92,246,0.12) 0%, transparent 50%),
+    radial-gradient(circle at 80% 70%, rgba(214,183,90,0.07) 0%, transparent 50%);
+}
+
+/* ── HEADER ── */
+.header {
+  position: sticky; top: 0; z-index: 10;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 20px 40px;
+  background: rgba(3,3,5,0.8);
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: var(--blur);
+}
+.header-logo {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 18px; font-weight: 800; text-decoration: none; color: var(--text);
+}
+.header-logo span { color: var(--purple-light); font-weight: 600; }
+.header-logo img { width: 28px; height: 28px; }
+.header-actions { display: flex; align-items: center; gap: 12px; }
+.btn-new {
+  display: flex; align-items: center; gap: 8px;
+  background: linear-gradient(135deg, var(--purple), #6D28D9);
+  border: none; color: #fff;
+  padding: 10px 20px; border-radius: 100px;
+  font-size: 14px; font-weight: 700; font-family: inherit;
+  cursor: pointer; text-decoration: none;
+  box-shadow: 0 4px 20px rgba(139,92,246,0.4);
+  transition: all .3s;
+}
+.btn-new:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(139,92,246,0.5); }
+
+/* ── MAIN ── */
+.main {
+  position: relative; z-index: 1;
+  max-width: 1000px; margin: 0 auto;
+  padding: 48px 40px 80px;
+}
+
+/* ── PAGE TITLE ── */
+.page-title {
+  font-size: 28px; font-weight: 900; letter-spacing: -0.03em;
+  margin-bottom: 6px;
+}
+.page-sub {
+  font-size: 14px; color: var(--text-faint);
+  margin-bottom: 40px;
+}
+.page-sub span { color: var(--purple-light); font-weight: 600; }
+
+/* ── STATS ── */
+.stats-row {
+  display: flex; gap: 16px; margin-bottom: 40px;
+}
+.stat-card {
+  flex: 1; padding: 20px 24px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  backdrop-filter: var(--blur);
+}
+.stat-num {
+  font-size: 32px; font-weight: 900; color: var(--text);
+  letter-spacing: -0.04em; line-height: 1;
+}
+.stat-label { font-size: 12px; color: var(--text-faint); margin-top: 6px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; }
+
+/* ── SECTION ── */
+.section-title {
+  font-size: 12px; font-weight: 800; color: var(--text-faint);
+  letter-spacing: 0.1em; text-transform: uppercase;
+  margin-bottom: 16px;
+  display: flex; align-items: center; gap: 10px;
+}
+.section-title::after {
+  content: ''; flex: 1; height: 1px;
+  background: rgba(255,255,255,0.06);
+}
+
+/* ── PROJECT GRID ── */
+.project-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+/* ── PROJECT CARD ── */
+.project-card {
+  background: rgba(255,255,255,0.02);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  padding: 24px;
+  cursor: pointer;
+  transition: all .3s cubic-bezier(0.16,1,0.3,1);
+  position: relative; overflow: hidden;
+  display: flex; flex-direction: column; gap: 12px;
+}
+.project-card::before {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(139,92,246,0.06), transparent 60%);
+  opacity: 0; transition: opacity .3s;
+}
+.project-card:hover { border-color: rgba(139,92,246,0.3); transform: translateY(-4px); box-shadow: 0 20px 50px rgba(0,0,0,0.4); }
+.project-card:hover::before { opacity: 1; }
+
+.pc-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+.pc-emoji { font-size: 28px; line-height: 1; }
+.pc-menu { position: relative; }
+.pc-menu-btn {
+  width: 28px; height: 28px; border-radius: 8px;
+  background: transparent; border: 1px solid transparent;
+  color: var(--text-faint); font-size: 16px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: all .2s;
+}
+.pc-menu-btn:hover { background: rgba(255,255,255,0.08); border-color: var(--border); color: var(--text); }
+.pc-dropdown {
+  position: absolute; right: 0; top: 36px; z-index: 20;
+  background: rgba(15,15,20,0.95); border: 1px solid var(--border);
+  border-radius: 14px; padding: 6px; min-width: 160px;
+  backdrop-filter: var(--blur);
+  box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+  display: none;
+}
+.pc-dropdown.open { display: block; }
+.pc-dropdown-item {
+  padding: 10px 14px; border-radius: 8px;
+  font-size: 13px; font-weight: 600; color: var(--text-dim);
+  cursor: pointer; display: flex; align-items: center; gap: 8px;
+  transition: all .2s;
+}
+.pc-dropdown-item:hover { background: rgba(255,255,255,0.06); color: var(--text); }
+.pc-dropdown-item.danger { color: #F87171; }
+.pc-dropdown-item.danger:hover { background: rgba(239,68,68,0.1); }
+
+.pc-title {
+  font-size: 17px; font-weight: 800; color: var(--text);
+  letter-spacing: -0.02em; line-height: 1.3;
+  word-break: keep-all;
+}
+.pc-genre {
+  display: inline-block;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.06em;
+  color: var(--purple-light);
+  background: rgba(139,92,246,0.1); border: 1px solid rgba(139,92,246,0.2);
+  padding: 3px 10px; border-radius: 100px;
+}
+.pc-synopsis {
+  font-size: 13px; color: var(--text-faint); line-height: 1.7;
+  word-break: keep-all;
+  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.pc-footer {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-top: auto; padding-top: 12px;
+  border-top: 1px solid rgba(255,255,255,0.05);
+}
+.pc-date { font-size: 11px; color: var(--text-faint); }
+.pc-steps-badge {
+  font-size: 11px; font-weight: 700; color: var(--gold);
+  background: rgba(214,183,90,0.1); border: 1px solid rgba(214,183,90,0.2);
+  padding: 3px 10px; border-radius: 100px;
+}
+.pc-progress-bar {
+  height: 3px; background: rgba(255,255,255,0.06);
+  border-radius: 2px; overflow: hidden;
+}
+.pc-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--purple), var(--gold));
+  border-radius: 2px;
+}
+
+/* ── EMPTY STATE ── */
+.empty-state {
+  text-align: center; padding: 80px 20px;
+  grid-column: 1 / -1;
+}
+.empty-icon { font-size: 56px; margin-bottom: 20px; opacity: 0.4; }
+.empty-title { font-size: 20px; font-weight: 800; color: var(--text-dim); margin-bottom: 8px; }
+.empty-sub { font-size: 14px; color: var(--text-faint); margin-bottom: 28px; line-height: 1.7; }
+.btn-start {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(139,92,246,0.1); border: 1px solid rgba(139,92,246,0.3);
+  color: var(--purple-light); padding: 12px 24px; border-radius: 100px;
+  font-size: 14px; font-weight: 700; font-family: inherit;
+  cursor: pointer; text-decoration: none; transition: all .3s;
+}
+.btn-start:hover { background: rgba(139,92,246,0.2); border-color: rgba(139,92,246,0.5); }
+
+/* ── PROJECT DETAIL MODAL ── */
+.modal-overlay {
+  position: fixed; inset: 0; z-index: 50;
+  background: rgba(0,0,0,0.7); backdrop-filter: blur(20px);
+  opacity: 0; pointer-events: none; transition: opacity .3s;
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px;
+}
+.modal-overlay.open { opacity: 1; pointer-events: all; }
+.modal {
+  background: rgba(10,10,18,0.98);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 32px; padding: 40px;
+  width: 100%; max-width: 700px; max-height: 85vh;
+  overflow-y: auto;
+  transform: scale(0.95) translateY(20px);
+  transition: transform .35s cubic-bezier(0.16,1,0.3,1);
+  box-shadow: 0 40px 100px rgba(0,0,0,0.8);
+  scrollbar-width: thin; scrollbar-color: rgba(139,92,246,0.3) transparent;
+}
+.modal-overlay.open .modal { transform: scale(1) translateY(0); }
+.modal-header {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  margin-bottom: 28px; gap: 16px;
+}
+.modal-title { font-size: 22px; font-weight: 900; letter-spacing: -0.03em; line-height: 1.3; }
+.modal-close {
+  flex-shrink: 0; width: 36px; height: 36px; border-radius: 50%;
+  background: rgba(255,255,255,0.06); border: 1px solid var(--border);
+  color: var(--text-dim); font-size: 18px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: all .2s;
+}
+.modal-close:hover { background: rgba(255,255,255,0.12); color: var(--text); }
+.modal-section { margin-bottom: 28px; }
+.modal-section-label {
+  font-size: 11px; font-weight: 800; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--gold);
+  margin-bottom: 12px;
+}
+.modal-synopsis {
+  font-size: 15px; line-height: 1.9; color: var(--text-dim);
+  padding: 20px; background: rgba(214,183,90,0.04);
+  border: 1px solid rgba(214,183,90,0.15); border-radius: 16px;
+  word-break: keep-all;
+}
+.modal-answers { display: flex; flex-direction: column; gap: 10px; }
+.modal-answer-item {
+  padding: 14px 18px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+}
+.modal-answer-q {
+  font-size: 11px; font-weight: 700; color: var(--purple-light);
+  letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 6px;
+}
+.modal-answer-a { font-size: 14px; color: var(--text); line-height: 1.7; word-break: keep-all; }
+.modal-actions { display: flex; gap: 12px; margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--border); }
+.modal-btn {
+  flex: 1; padding: 14px; border-radius: 16px;
+  font-size: 14px; font-weight: 700; font-family: inherit;
+  cursor: pointer; transition: all .3s; border: 1px solid;
+  text-decoration: none; text-align: center; display: block;
+}
+.modal-btn.primary {
+  background: rgba(139,92,246,0.1); border-color: rgba(139,92,246,0.3);
+  color: var(--purple-light);
+}
+.modal-btn.primary:hover { background: rgba(139,92,246,0.2); border-color: rgba(139,92,246,0.5); }
+.modal-btn.secondary {
+  background: rgba(255,255,255,0.02); border-color: var(--border);
+  color: var(--text-dim);
+}
+.modal-btn.secondary:hover { background: rgba(255,255,255,0.06); color: var(--text); }
+.modal-btn.danger {
+  background: rgba(239,68,68,0.06); border-color: rgba(239,68,68,0.2);
+  color: #F87171;
+}
+.modal-btn.danger:hover { background: rgba(239,68,68,0.12); border-color: rgba(239,68,68,0.4); }
+
+/* ── MOBILE ── */
+@media (max-width: 768px) {
+  .header { padding: 16px 20px; }
+  .main { padding: 32px 20px 60px; }
+  .stats-row { gap: 10px; }
+  .stat-card { padding: 16px; }
+  .stat-num { font-size: 24px; }
+  .project-grid { grid-template-columns: 1fr; }
+  .modal { padding: 24px; border-radius: 24px; }
+  .modal-actions { flex-direction: column; }
+}
+</style>
+</head>
+<body>
+
+<div class="bg-glow"></div>
+
+<!-- HEADER -->
+<header class="header">
+  <a class="header-logo" href="index.html">
+    <img src="images/로고만(흰).png" alt="logo" onerror="this.style.display='none'">
+    Mantra <span>Copilot</span>
+  </a>
+  <div class="header-actions">
+    <a class="btn-new" href="index.html">
+      ✦ 새 작품 기획하기
+    </a>
+  </div>
+</header>
+
+<!-- MAIN -->
+<main class="main">
+  <div class="page-title">내 작품</div>
+  <div class="page-sub" id="pageSubText">저장된 기획을 불러오고 이어서 작업하세요.</div>
+
+  <!-- 통계 -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-num" id="statTotal">0</div>
+      <div class="stat-label">전체 작품</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" id="statCompleted">0</div>
+      <div class="stat-label">기획 완성</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" id="statSteps">0</div>
+      <div class="stat-label">총 작성 단계</div>
+    </div>
+  </div>
+
+  <div class="section-title">기획된 작품</div>
+
+  <!-- 프로젝트 그리드 -->
+  <div class="project-grid" id="projectGrid">
+    <div class="empty-state" id="emptyState">
+      <div class="empty-icon">📖</div>
+      <div class="empty-title">아직 기획된 작품이 없습니다</div>
+      <div class="empty-sub">만트라 코파일럿으로 첫 작품을 기획해 보세요.<br>완성된 기획은 여기에 자동 저장됩니다.</div>
+      <a class="btn-start" href="index.html">✦ 첫 작품 기획 시작하기</a>
+    </div>
+  </div>
+</main>
+
+<!-- DETAIL MODAL -->
+<div class="modal-overlay" id="modalOverlay" onclick="handleOverlayClick(event)">
+  <div class="modal" id="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modalTitle"></div>
+      <div class="modal-close" onclick="closeModal()">✕</div>
+    </div>
+    <div id="modalBody"></div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script>
+// ── 설정 ──
+const SUPABASE_URL = 'https://mvygorffhbshubqkerpo.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im12eWdvcmZmaGJzaHVicWtlcnBvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2MzU3ODQsImV4cCI6MjA4OTIxMTc4NH0.p7usz-l53gmibWpswzTFvhzmR3UX7QkWb3oPsy3A50c';
+const _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+function $(id) { return document.getElementById(id); }
+
+// ── 헬퍼 ──
+function formatDate(iso) {
+  if (!iso) return '';
+  const d = new Date(iso);
+  return `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')}`;
+}
+function getProjectEmoji(project) {
+  const map = {'판타지':'⚔️','로맨스':'💕','로판':'💜','현대':'🏙️','스릴러':'🔪','미스터리':'🔍','무협':'🥋','공포':'👻','SF':'🚀','역사':'📜','코미디':'😄'};
+  const g = project.genre || '';
+  for (const [k,v] of Object.entries(map)) if (g.includes(k)) return v;
+  return '📖';
+}
+
+// ── 프로젝트 로드 (Supabase 우선, localStorage 폴백) ──
+async function getAllProjects() {
+  const { data: { user } } = await _sb.auth.getUser();
+  if (user) {
+    const { data, error } = await _sb.from('projects').select('*').eq('user_id', user.id).order('completed_at', { ascending: false });
+    if (!error && data?.length) {
+      return data.map(row => ({
+        id: row.id, title: row.title, genre: row.genre,
+        synopsis: row.synopsis, routineType: row.routine_type,
+        copilotName: row.copilot_name,
+        answerHistory: row.answer_history || [],
+        completedAt: row.completed_at,
+      }));
+    }
+  }
+  const guestId = localStorage.getItem('mantra_guest_id') || '';
+  const uid = user ? user.id : `guest_${guestId}`;
+  const index = JSON.parse(localStorage.getItem(`mantra_index_${uid}`) || '[]');
+  return index.map(meta => {
+    const raw = localStorage.getItem(`mantra_project_${meta.id}`);
+    return raw ? JSON.parse(raw) : meta;
+  });
+}
+
+async function deleteProject(pid) {
+  const { data: { user } } = await _sb.auth.getUser();
+  if (user) await _sb.from('projects').delete().eq('id', pid).eq('user_id', user.id);
+  localStorage.removeItem(`mantra_project_${pid}`);
+  const uid = user ? user.id : `guest_${localStorage.getItem('mantra_guest_id')||''  }`;
+  const idx = JSON.parse(localStorage.getItem(`mantra_index_${uid}`) || '[]').filter(p => p.id !== pid);
+  localStorage.setItem(`mantra_index_${uid}`, JSON.stringify(idx));
+  closeModal();
+  renderDashboard();
+}
+
+// ── 렌더 ──
+async function renderDashboard() {
+  $('projectGrid').innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:40px 0;color:var(--text-faint);font-size:14px;">불러오는 중...</div>`;
+  const { data: { user } } = await _sb.auth.getUser();
+  const projects = await getAllProjects();
+
+  if (user) {
+    const nickname = user.user_metadata?.nickname || user.email?.split('@')[0] || '작가님';
+    $('pageSubText').innerHTML = `<span>${nickname}</span>님의 작품들이 저장돼 있습니다.`;
+  }
+
+  const totalSteps = projects.reduce((sum, p) => sum + (p.answerHistory?.length || 0), 0);
+  $('statTotal').textContent = projects.length;
+  $('statCompleted').textContent = projects.filter(p => p.synopsis).length;
+  $('statSteps').textContent = totalSteps;
+
+  const grid = $('projectGrid');
+  grid.innerHTML = '';
+
+  if (!projects.length) {
+    grid.innerHTML = `<div class="empty-state"><div class="empty-icon">📖</div><div class="empty-title">아직 기획된 작품이 없습니다</div><div class="empty-sub">만트라 코파일럿으로 첫 작품을 기획해 보세요.<br>완성된 기획은 여기에 자동 저장됩니다.</div><a class="btn-start" href="index.html">✦ 첫 작품 기획 시작하기</a></div>`;
+    return;
+  }
+
+  projects.forEach(project => {
+    const filled = project.answerHistory?.length || 0;
+    const pct = Math.min(100, Math.round((filled / (project.routineType==='short'?11:20)) * 100));
+    const emoji = getProjectEmoji(project);
+    const card = document.createElement('div');
+    card.className = 'project-card';
+    card.innerHTML = `
+      <div class="pc-header">
+        <div class="pc-emoji">${emoji}</div>
+        <div class="pc-menu">
+          <button class="pc-menu-btn" onclick="toggleMenu(event,'${project.id}')">⋯</button>
+          <div class="pc-dropdown" id="menu_${project.id}">
+            <div class="pc-dropdown-item" onclick="openProject('${project.id}')">📋 상세 보기</div>
+            <div class="pc-dropdown-item" onclick="continueProject('${project.id}')">✏️ 이어서 기획</div>
+            <div class="pc-dropdown-item danger" onclick="confirmDelete('${project.id}')">🗑️ 삭제</div>
+          </div>
+        </div>
+      </div>
+      <div class="pc-title">${project.title||'제목 없는 작품'}</div>
+      ${project.genre?`<div class="pc-genre">${project.genre}</div>`:''}
+      <div class="pc-synopsis">${project.synopsis||'시놉시스가 없습니다.'}</div>
+      <div class="pc-progress-bar"><div class="pc-progress-fill" style="width:${pct}%"></div></div>
+      <div class="pc-footer">
+        <span class="pc-date">${formatDate(project.completedAt)}</span>
+        <span class="pc-steps-badge">${filled}단계 작성</span>
+      </div>`;
+    card.addEventListener('click', e => { if (!e.target.closest('.pc-menu')) openProject(project.id); });
+    grid.appendChild(card);
+  });
+}
+
+function toggleMenu(e, pid) {
+  e.stopPropagation();
+  document.querySelectorAll('.pc-dropdown').forEach(d => { if (d.id!==`menu_${pid}`) d.classList.remove('open'); });
+  document.getElementById(`menu_${pid}`)?.classList.toggle('open');
+}
+document.addEventListener('click', () => document.querySelectorAll('.pc-dropdown').forEach(d => d.classList.remove('open')));
+
+// ── 모달 ──
+async function openProject(pid) {
+  const { data: { user } } = await _sb.auth.getUser();
+  let project = null;
+  if (user) {
+    const { data } = await _sb.from('projects').select('*').eq('id', pid).single();
+    if (data) project = { id: data.id, title: data.title, genre: data.genre, synopsis: data.synopsis, answerHistory: data.answer_history||[], completedAt: data.completed_at };
+  }
+  if (!project) {
+    const raw = localStorage.getItem(`mantra_project_${pid}`);
+    if (!raw) return;
+    project = JSON.parse(raw);
+  }
+  $('modalTitle').textContent = project.title||'제목 없는 작품';
+  const answers = project.answerHistory || [];
+  $('modalBody').innerHTML = `
+    ${project.genre?`<div style="margin-bottom:16px;"><span class="pc-genre">${project.genre}</span></div>`:''}
+    ${project.synopsis?`<div class="modal-section"><div class="modal-section-label">📝 완성 시놉시스</div><div class="modal-synopsis">${project.synopsis.replace(/\n/g,'<br>')}</div></div>`:''}
+    ${answers.length?`<div class="modal-section"><div class="modal-section-label">📋 기획 요소 (${answers.length}개)</div><div class="modal-answers">${answers.map(h=>`<div class="modal-answer-item"><div class="modal-answer-q">${h.stepId}</div><div class="modal-answer-a">${h.value}</div></div>`).join('')}</div></div>`:''}
+    <div class="modal-actions">
+      <a class="modal-btn primary" href="index.html" onclick="sessionStorage.setItem('mantra_load_pid','${pid}')">✏️ 이어서 기획하기</a>
+      <button class="modal-btn secondary" onclick="closeModal()">닫기</button>
+      <button class="modal-btn danger" onclick="confirmDelete('${pid}')">🗑️ 삭제</button>
+    </div>`;
+  $('modalOverlay').classList.add('open');
+}
+function closeModal() { $('modalOverlay').classList.remove('open'); }
+function handleOverlayClick(e) { if (e.target===$('modalOverlay')) closeModal(); }
+function continueProject(pid) { sessionStorage.setItem('mantra_load_pid', pid); window.location.href='index.html'; }
+function confirmDelete(pid) { if (confirm('이 작품을 삭제하시겠습니까?\n되돌릴 수 없습니다.')) deleteProject(pid); }
+
+// ── 헤더 ──
+async function initHeader() {
+  const { data: { user } } = await _sb.auth.getUser();
+  const actions = document.querySelector('.header-actions');
+  if (user) {
+    const nickname = user.user_metadata?.nickname || user.email?.split('@')[0] || '작가';
+    actions.innerHTML = `<span style="font-size:13px;color:var(--text-faint);">${nickname}님</span><button onclick="handleLogout()" style="background:rgba(255,255,255,0.05);border:1px solid var(--border);color:var(--text-dim);padding:8px 16px;border-radius:100px;font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;">로그아웃</button><a class="btn-new" href="index.html">✦ 새 작품</a>`;
+  } else {
+    actions.innerHTML = `<a href="login.html" style="background:rgba(255,255,255,0.05);border:1px solid var(--border);color:var(--text-dim);padding:8px 16px;border-radius:100px;font-size:13px;font-weight:600;text-decoration:none;">로그인</a><a class="btn-new" href="index.html">✦ 새 작품</a>`;
+  }
+}
+async function handleLogout() { await _sb.auth.signOut(); window.location.href='login.html'; }
+
+// ── INIT ──
+initHeader();
+renderDashboard();
+</script>
+</body>
+</html>
