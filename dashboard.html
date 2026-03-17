@@ -181,7 +181,7 @@ body {
 .pc-synopsis {
   font-size: 13px; color: var(--text-faint); line-height: 1.7;
   word-break: keep-all;
-  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;
+  display: -webkit-box; -webkit-line-clamp: 3; line-clamp: 3; -webkit-box-orient: vertical;
   overflow: hidden;
 }
 .pc-footer {
@@ -380,6 +380,8 @@ body {
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
+// ── REDIRECT TO INDEX (New structural layout) ──
+window.location.href = 'index.html';
 // ── 설정 ──
 const SUPABASE_URL = 'https://mvygorffhbshubqkerpo.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im12eWdvcmZmaGJzaHVicWtlcnBvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2MzU3ODQsImV4cCI6MjA4OTIxMTc4NH0.p7usz-l53gmibWpswzTFvhzmR3UX7QkWb3oPsy3A50c';
@@ -516,7 +518,7 @@ async function openProject(pid) {
     ${project.synopsis?`<div class="modal-section"><div class="modal-section-label">📝 완성 시놉시스</div><div class="modal-synopsis">${project.synopsis.replace(/\n/g,'<br>')}</div></div>`:''}
     ${answers.length?`<div class="modal-section"><div class="modal-section-label">📋 기획 요소 (${answers.length}개)</div><div class="modal-answers">${answers.map(h=>`<div class="modal-answer-item"><div class="modal-answer-q">${h.stepId}</div><div class="modal-answer-a">${h.value}</div></div>`).join('')}</div></div>`:''}
     <div class="modal-actions">
-      <a class="modal-btn primary" href="index.html" onclick="sessionStorage.setItem('mantra_load_pid','${pid}')">✏️ 이어서 기획하기</a>
+      <a class="modal-btn primary" href="index.html" onclick="sessionStorage.setItem('mantra_load_pid','${pid}'); sessionStorage.setItem('mantra_load_data', JSON.stringify(project.answerHistory || []))">✏️ 이어서 기획하기</a>
       <button class="modal-btn secondary" onclick="closeModal()">닫기</button>
       <button class="modal-btn danger" onclick="confirmDelete('${pid}')">🗑️ 삭제</button>
     </div>`;
@@ -524,7 +526,15 @@ async function openProject(pid) {
 }
 function closeModal() { $('modalOverlay').classList.remove('open'); }
 function handleOverlayClick(e) { if (e.target===$('modalOverlay')) closeModal(); }
-function continueProject(pid) { sessionStorage.setItem('mantra_load_pid', pid); window.location.href='index.html'; }
+function continueProject(pid) { 
+  const raw = localStorage.getItem(`mantra_project_${pid}`);
+  if (raw) {
+    const project = JSON.parse(raw);
+    sessionStorage.setItem('mantra_load_data', JSON.stringify(project.answerHistory || []));
+  }
+  sessionStorage.setItem('mantra_load_pid', pid); 
+  window.location.href='index.html'; 
+}
 function confirmDelete(pid) { if (confirm('이 작품을 삭제하시겠습니까?\n되돌릴 수 없습니다.')) deleteProject(pid); }
 
 // ── 헤더 ──

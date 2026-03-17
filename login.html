@@ -319,8 +319,10 @@ async function handleLogin() {
   if (error) {
     const msg = error.message.includes('Invalid') ? '이메일 또는 비밀번호가 올바르지 않습니다.' : error.message;
     showMsg(msg);
+  } else {
+    // Login success -> go to main assistant page
+    window.location.href = 'index.html';
   }
-  // 성공 시 onAuthStateChange가 리다이렉트 처리
 }
 
 // ── 회원가입 ──

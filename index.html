@@ -32,11 +32,10 @@ body {
   background: var(--bg);
   color: var(--text);
   min-height: 100vh;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
+  display: flex; /* Sidebar + Main */
   user-select: none;
   letter-spacing: -0.01em;
+  overflow: hidden; /* Main and sidebar will have their own scrolls */
 }
 
 /* ── SCENE BACKGROUND ── */
@@ -72,9 +71,103 @@ body {
 /* ── MAIN LAYOUT ── */
 .vn-wrapper {
   position:relative; z-index:10;
-  width:100%; min-height:100vh;
+  flex: 1; min-height:100vh;
   display:flex; flex-direction:column;
+  overflow-y: auto; 
 }
+
+/* ── SIDEBAR ── */
+.sidebar {
+  width: 240px; background: rgba(10,10,18,0.95); border-right: 1px solid rgba(255,255,255,0.08);
+  display: flex; flex-direction: column; z-index: 100; backdrop-filter: var(--blur);
+  transition: transform 0.3s ease;
+  flex-shrink: 0;
+}
+.sidebar-header {
+  padding: 32px 24px; border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.sidebar-logo {
+  font-size: 18px; font-weight: 900; color: var(--text); display: flex; align-items: center; gap: 8px; margin-bottom: 24px;
+}
+.sidebar-logo span { color: var(--purple); }
+
+.sidebar-user {
+  display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.03); 
+  padding: 10px 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);
+}
+.user-avatar { width: 28px; height: 28px; background: var(--purple); border-radius: 6px; font-weight: 800; display: flex; align-items: center; justify-content: center; font-size: 12px; }
+.user-info { flex: 1; overflow: hidden; }
+.user-name { font-size: 13px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.logout-btn { font-size: 10px; color: var(--text-dim); cursor: pointer; border: none; background: none; padding: 0; text-align: left; width: 100%; }
+.logout-btn:hover { color: #fca5a5; text-decoration: underline; }
+
+.sidebar-menu { flex: 1; padding: 24px 12px; display: flex; flex-direction: column; gap: 4px; overflow-y: auto; }
+.menu-item {
+  display: flex; align-items: center; gap: 12px; padding: 10px 16px; 
+  border-radius: 10px; cursor: pointer; color: var(--text-dim); font-size: 14px; font-weight: 600;
+  transition: all 0.3s;
+}
+.menu-item:hover { background: rgba(255,255,255,0.05); color: var(--text); }
+.menu-item.active { background: rgba(139, 92, 246, 0.1); color: var(--purple-light); border: 1px solid rgba(139, 92, 246, 0.2); }
+.menu-item .icon { font-size: 16px; }
+
+.sidebar-footer { padding: 20px 16px; }
+.new-project-btn {
+  width: 100%; padding: 16px; background: var(--purple); color: white; border: none; border-radius: 16px;
+  font-size: 14px; font-weight: 800; cursor: pointer; box-shadow: 0 10px 20px var(--purple-glow);
+  transition: all 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+.new-project-btn:hover { transform: translateY(-2px); filter: brightness(1.1); }
+
+/* ── VIEW SECTIONS ── */
+.view-section { display: none; padding-top: 20px; }
+.view-section.active { display: flex; flex-direction: column; }
+
+/* ── PROJECT GRID ── */
+.project-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px;
+  padding: 0 40px 40px;
+}
+.p-card {
+  background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 24px;
+  padding: 24px; cursor: pointer; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex; flex-direction: column; gap: 16px; backdrop-filter: var(--blur);
+}
+.p-card:hover { transform: translateY(-6px); border-color: rgba(255,255,255,0.2); box-shadow: 0 30px 60px rgba(0,0,0,0.4); background: rgba(255,255,255,0.06); }
+.p-header { display: flex; justify-content: space-between; align-items: flex-start; }
+.p-genre { font-size: 11px; font-weight: 800; color: var(--purple-light); text-transform: uppercase; letter-spacing: 0.05em; background: rgba(139, 92, 246, 0.15); padding: 4px 10px; border-radius: 20px; }
+.p-title { font-size: 18px; font-weight: 800; color: var(--text); line-height: 1.4; word-break: keep-all; }
+.p-synopsis { font-size: 13px; color: var(--text-dim); line-height: 1.6;  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical; overflow: hidden; min-height: 60px; }
+.p-footer { margin-top: auto; display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: var(--text-faint); font-weight: 600; }
+
+/* ── TASK CARDS ── */
+.task-grid { display: flex; gap: 20px; padding: 20px 40px 40px; flex-wrap: wrap; }
+.task-card {
+  flex: 1; min-width: 250px; background: rgba(255,255,255,0.03); border: 1px solid var(--border);
+  border-radius: 24px; padding: 32px; cursor: pointer; transition: all 0.3s; text-align: left;
+}
+.task-card:hover { transform: translateY(-4px); background: rgba(255,255,255,0.08); border-color: var(--purple); }
+.task-icon { font-size: 32px; margin-bottom: 20px; }
+.task-name { font-size: 18px; font-weight: 800; margin-bottom: 8px; }
+.task-desc { font-size: 13px; color: var(--text-dim); line-height: 1.5; }
+
+/* ── CHAT STATUS BAR ── */
+.chat-status {
+  background: rgba(139, 92, 246, 0.1); border-bottom: 1px solid rgba(139, 92, 246, 0.2);
+  padding: 10px 40px; font-size: 12px; font-weight: 700; color: var(--purple-light);
+  display: flex; align-items: center; gap: 8px; backdrop-filter: var(--blur);
+}
+.status-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--purple); animation: pulse 2s infinite; }
+@keyframes pulse { 0% { opacity: 0.4; transform: scale(0.8); } 50% { opacity: 1; transform: scale(1.1); } 100% { opacity: 0.4; transform: scale(0.8); } }
+
+/* ── MOBILE TABS ── */
+.mobile-tabs { display: none; position: fixed; bottom: 0; left: 0; right: 0; background: rgba(10,10,18,0.95); border-top: 1px solid rgba(255,255,255,0.08); z-index: 1000; height: 72px; padding: 0 12px; backdrop-filter: blur(20px); }
+.tab-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; color: var(--text-dim); font-size: 10px; font-weight: 700; transition: 0.3s; }
+.tab-item.active { color: var(--purple); }
+.tab-item .icon { font-size: 20px; }
 
 /* ── TOP HUD ── */
 .hud {
@@ -908,6 +1001,126 @@ body {
 .rb-save-btn { background:var(--seller-color); border:none; color:#000; border-radius:20px; padding:20px; font-size:16px; font-weight:800; cursor:pointer; flex:1; transition:all 0.3s; box-shadow:0 10px 30px rgba(16,185,129,0.3); }
 .rb-save-btn:hover { filter:brightness(1.1); transform:translateY(-2px); box-shadow:0 15px 40px rgba(16,185,129,0.4); }
 
+/* ── ROUTINE BOARD UI ── */
+.routine-board {
+  flex: 1; display: none; flex-direction: column; gap: 32px;
+  padding: 0 40px 60px; max-width: 1200px; margin: 0 auto; width: 100%;
+  animation: fadeIn 0.8s ease forwards;
+}
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+.board-header {
+  background: rgba(255,255,255,0.03); border: 1px solid var(--border);
+  border-radius: 24px; padding: 24px 32px; backdrop-filter: var(--blur);
+  display: flex; flex-direction: column; gap: 16px;
+}
+.board-progress-info { display: flex; justify-content: space-between; align-items: center; }
+.board-progress-label { font-size: 14px; font-weight: 700; color: var(--text-dim); }
+.board-progress-percent { font-size: 18px; font-weight: 800; color: var(--gold); }
+.board-progress-track {
+  height: 8px; background: rgba(255,255,255,0.05); border-radius: 4px; overflow: hidden;
+}
+.board-progress-fill {
+  height: 100%; width: 0%; background: linear-gradient(90deg, var(--purple), var(--gold));
+  transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 0 20px var(--purple-glow);
+}
+
+.board-sections {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+}
+.board-section {
+  display: flex; flex-direction: column; gap: 16px;
+}
+.board-section-title {
+  font-size: 13px; font-weight: 800; color: var(--text-faint);
+  text-transform: uppercase; letter-spacing: 0.1em;
+  padding-left: 8px; margin-bottom: 4px; display: flex; align-items: center; gap: 8px;
+}
+.board-section-title::before { content: ''; width: 4px; height: 12px; background: var(--purple); border-radius: 2px; }
+.board-section:nth-child(2) .board-section-title::before { background: var(--gold); }
+.board-section:nth-child(3) .board-section-title::before { background: var(--seller-color); }
+
+.board-card {
+  background: rgba(255,255,255,0.03); border: 1px solid var(--border);
+  border-radius: 20px; padding: 20px; cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative; overflow: hidden;
+  display: flex; flex-direction: column; gap: 10px;
+}
+.board-card:hover {
+  background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.2);
+  transform: translateY(-4px); box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+}
+.board-card.filled { border-color: rgba(214,183,90,0.3); background: rgba(214,183,90,0.03); }
+.board-card-header { display: flex; justify-content: space-between; align-items: center; }
+.board-card-num { font-size: 11px; font-weight: 800; color: var(--text-faint); opacity: 0.8; }
+.board-card-check {
+  width: 20px; height: 20px; border-radius: 50%; border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center; font-size: 10px; color: transparent;
+  transition: all 0.3s;
+}
+.board-card.filled .board-card-check { background: var(--gold); border-color: var(--gold); color: var(--bg); }
+.board-card-q { font-size: 15px; font-weight: 700; color: var(--text); line-height: 1.4; word-break: keep-all; }
+.board-card-a {
+  font-size: 13px; color: var(--text-dim); line-height: 1.5;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; 
+  line-clamp: 2; overflow: hidden;
+  min-height: 38px;
+}
+
+.board-footer {
+  text-align: center; margin-top: 20px;
+}
+.board-finish-btn {
+  background: var(--gold); color: var(--bg); border: none; border-radius: 100px;
+  padding: 20px 60px; font-size: 18px; font-weight: 800; cursor: pointer;
+  box-shadow: 0 20px 40px rgba(214,183,90,0.2); transition: all 0.4s;
+  display: none; opacity: 0; transform: translateY(10px);
+}
+.board-finish-btn.show { display: inline-block; animation: finishIn 0.6s ease forwards; }
+@keyframes finishIn { to { opacity: 1; transform: translateY(0); } }
+.board-finish-btn:hover { transform: translateY(-4px) scale(1.05); box-shadow: 0 30px 60px rgba(214,183,90,0.3); filter: brightness(1.1); }
+
+/* ── INPUT POPUP ── */
+.input-popup {
+  position: fixed; inset: 0; z-index: 1000;
+  display: none; align-items: flex-end; justify-content: center;
+  background: rgba(0,0,0,0.6); backdrop-filter: blur(10px);
+}
+.input-popup.open { display: flex; }
+.popup-content {
+  background: #0f172a; border: 1px solid var(--border);
+  border-radius: 32px 32px 0 0; width: 100%; max-width: 800px;
+  padding: 40px; transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 -20px 60px rgba(0,0,0,0.5);
+}
+.input-popup.open .popup-content { transform: translateY(0); }
+.popup-header { display: flex; justify-content: space-between; margin-bottom: 24px; align-items: flex-start; }
+.popup-title-wrap { display: flex; flex-direction: column; gap: 8px; }
+.popup-visual { font-size: 32px; margin-bottom: 8px; }
+.popup-q { font-size: 22px; font-weight: 800; color: var(--text); line-height: 1.4; }
+.popup-close { background: none; border: none; font-size: 24px; color: var(--text-dim); cursor: pointer; padding: 8px; }
+.popup-body { display: flex; flex-direction: column; gap: 24px; }
+.popup-textarea {
+  width: 100%; background: rgba(255,255,255,0.03); border: 1px solid var(--border);
+  border-radius: 20px; padding: 24px; font-size: 16px; color: var(--text); font-family: inherit;
+  min-height: 140px; outline: none; transition: all 0.3s; line-height: 1.6;
+}
+.popup-textarea:focus { border-color: var(--purple); background: rgba(255,255,255,0.06); }
+.popup-actions { display: flex; gap: 16px; align-items: center; }
+.popup-save-btn {
+  flex: 1; background: var(--purple); color: white; border: none; border-radius: 16px;
+  padding: 18px; font-size: 16px; font-weight: 700; cursor: pointer; transition: all 0.3s;
+}
+.popup-save-btn:hover { background: #7c3aed; transform: translateY(-2px); }
+.popup-insight-btn {
+  background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--gold-light);
+  border-radius: 16px; padding: 18px 24px; font-size: 15px; font-weight: 600; cursor: pointer;
+  transition: all 0.3s; display: flex; align-items: center; gap: 8px;
+}
+.popup-insight-btn:hover { background: rgba(255,255,255,0.1); border-color: var(--gold); }
+
 /* ── RESPONSIVE DESIGN (MOBILE) ── */
 @media (max-width: 768px) {
   .hud {
@@ -948,15 +1161,15 @@ body {
   .input-wrapper { border-radius: 24px; padding: 6px 6px 6px 16px; }
   .input-box { height:40px; }
   
-  .mode-cards {
-    flex-direction: column;
-    padding: 24px;
-    overflow-y: auto;
-    align-items: stretch;
+  .sidebar {
+    display: none;
   }
-  .mode-card {
-    flex: none;
-    padding: 40px 24px;
+  .vn-wrapper {
+    min-height: calc(100vh - 72px);
+    overflow-y: auto;
+  }
+  .mobile-tabs {
+    display: flex;
   }
   
   .routine-panel {
@@ -970,98 +1183,164 @@ body {
   .sheet-panel { width: 320px; right: -320px; padding: 24px; }
   .sheet-toggle { padding: 20px 10px; font-size: 11px; }
 }
+/* ── INTRO SEQUENCE ── */
+#intro-overlay {
+  position: fixed; inset: 0; z-index: 9999; background: #030305;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  transition: transform 1s cubic-bezier(0.16, 1, 0.3, 1), opacity 1s ease;
+  cursor: pointer; overflow: hidden;
+}
+.intro-container {
+  position: absolute; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  text-align: center; width: 100%; transition: all 1s ease;
+}
+.intro-line {
+  font-size: 18px; color: rgba(255,255,255,0); letter-spacing: 0.3em; margin: 12px 0;
+  transition: color 1s ease, transform 1.5s ease; transform: translateY(10px);
+}
+.intro-line.show { color: rgba(255,255,255,0.4); transform: translateY(0); }
+
+.intro-solve-main {
+  font-size: 28px; font-weight: 800; color: #fff; opacity: 0; transform: scale(0.95);
+  transition: all 1s ease; margin-bottom: 12px; filter: blur(10px);
+}
+.intro-solve-sub {
+  font-size: 14px; color: var(--purple-light); opacity: 0; transform: translateY(10px);
+  transition: all 1s ease 0.3s;
+}
+.intro-solve-main.show { opacity: 1; transform: scale(1); filter: blur(0); }
+.intro-solve-sub.show { opacity: 0.8; transform: translateY(0); }
+
+#intro-logo { opacity: 0; transform: translateY(20px); filter: blur(10px); transition: all 1s ease; }
+#intro-logo.show { opacity: 1; transform: translateY(0); filter: blur(0); }
+.intro-logo-img { width: 64px; height: 64px; margin-bottom: 16px; }
+.intro-logo-text { font-size: 24px; font-weight: 900; color: #fff; }
+.intro-logo-text span { color: var(--purple); }
+
+#intro-overlay.exit { transform: translateY(-100%); opacity: 0; pointer-events: none; }
+#intro-overlay.hide { display: none; }
+
+@media (max-width: 768px) {
+  .intro-solve-main { font-size: 20px; }
+  .intro-line { font-size: 15px; }
+}
 </style>
 </head>
 <body>
 
-<!-- SCENE -->
+<!-- INTRO OVERLAY -->
+<div id="intro-overlay">
+  <div id="intro-problems" class="intro-container">
+    <div class="intro-line" id="p1">작가의 설정 충돌</div>
+    <div class="intro-line" id="p2">복선 누락</div>
+    <div class="intro-line" id="p3">캐릭터 일관성 오류</div>
+  </div>
+  <div id="intro-solution" class="intro-container" style="display:none">
+    <div class="intro-solve-main" id="s1">이제 혼자 싸우지 않아도 됩니다.</div>
+    <div class="intro-solve-sub" id="s2">당신의 이야기를 기억하는 AI 창작 비서</div>
+  </div>
+  <div id="intro-logo" class="intro-container" style="display:none">
+    <img src="images/로고만(흰).png" alt="logo" class="intro-logo-img">
+    <div class="intro-logo-text">Mantra <span>Copilot</span></div>
+  </div>
+</div>
+
+<!-- SIDEBAR -->
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-logo">Mantra <span>Copilot</span></div>
+    <div class="sidebar-user">
+      <div class="user-avatar" id="userAvatar">M</div>
+      <div class="user-info">
+        <div class="user-name" id="userNameDisplay">작가님</div>
+        <button class="logout-btn" onclick="logout()">로그아웃</button>
+      </div>
+    </div>
+  </div>
+  
+  <div class="sidebar-menu">
+    <div class="menu-item active" id="menu-works" onclick="navTo('works')">
+      <span class="icon">📖</span> 내 작품
+    </div>
+    <div class="menu-item" id="menu-tasks" onclick="navTo('tasks')">
+      <span class="icon">✍️</span> 오늘의 작업
+    </div>
+    <div class="menu-item" id="menu-verify" onclick="navTo('verify')">
+      <span class="icon">🔍</span> 작품 검증
+    </div>
+    <div class="menu-item" id="menu-market" onclick="navTo('market')">
+      <span class="icon">🛍️</span> 루틴 마켓 <small style="font-size:10px; opacity:0.5; margin-left:4px;">(준비 중)</small>
+    </div>
+  </div>
+  
+  <div class="sidebar-footer">
+    <button class="new-project-btn" onclick="navTo('new-project')">
+      <span>+</span> 새 작품 기획하기
+    </button>
+  </div>
+</div>
+
+<!-- MOBILE TABS -->
+<div class="mobile-tabs">
+  <div class="tab-item active" onclick="navTo('works')"><span class="icon">📖</span>내 작품</div>
+  <div class="tab-item" onclick="navTo('tasks')"><span class="icon">✍️</span>오늘의 작업</div>
+  <div class="tab-item" onclick="navTo('new-project')"><span class="icon">✨</span>기획</div>
+  <div class="tab-item" onclick="navTo('verify')"><span class="icon">🔍</span>검증</div>
+</div>
+
+<!-- SCENE BACKGROUND -->
 <div id="scene">
   <div class="scene-bg scene-onboard" id="sceneBg"></div>
 </div>
 <div class="particles" id="particles"></div>
 <div id="sceneOverlay"></div>
 
-<!-- REPLY FLASH -->
-<div class="reply-flash" id="replyFlash"></div>
+<div class="vn-wrapper">
+  <!-- VIEW: MY WORKS -->
+  <section id="view-works" class="view-section active">
+    <div class="hud" style="justify-content: flex-start; gap:20px;">
+      <h1 style="font-size:24px; font-weight:800;">내 작품 목록</h1>
+    </div>
+    <div class="project-grid" id="projectGrid">
+      <!-- Loaded via script -->
+    </div>
+  </section>
 
-<!-- MODE CARDS -->
-<div class="mode-cards" id="modeCards">
-  <div class="mode-card consumer" onclick="selectMode('consumer')">
-    <div class="mc-icon">📖</div>
-    <div class="mc-title">스토리 빌드업</div>
-    <div class="mc-desc">선택된 루틴으로<br>AI와 함께 이야기를 기획합니다</div>
-    <div class="mc-badge">소비자 모드</div>
-  </div>
-  <div class="mode-card seller" onclick="selectMode('seller')">
-    <div class="mc-icon">🛍️</div>
-    <div class="mc-title">루틴 설계 & 판매</div>
-    <div class="mc-desc">나만의 창작 템플릿을 만들어<br>마켓에 등록하고 판매합니다</div>
-    <div class="mc-badge">판매자 모드</div>
-  </div>
-  <div class="mode-card verify" onclick="selectMode('verify')">
-    <div class="mc-icon">🔍</div>
-    <div class="mc-title">작품 검증하기</div>
-    <div class="mc-desc">전문가 페르소나와 대화하며<br>작품의 고증과 완성도를 검증합니다</div>
-    <div class="mc-badge">검증 모드</div>
-  </div>
-</div>
-
-<!-- ROUTINE SELECT -->
-<div class="routine-overlay" id="routineOverlay">
-  <div class="routine-panel">
-    <div class="rp-title">📚 어떤 루틴으로 시작할까요?</div>
-    <div class="rp-sub">루틴에 따라 질문 흐름이 크게 달라집니다</div>
-    <div class="routine-item" onclick="startRoutine('단편 기획 플랜')">
-      <div class="ri-icon">⚡</div>
-      <div class="ri-info"><div class="ri-name">단편 기획 플랜</div><div class="ri-desc">11단계 · 30분 만에 웹소설 뚝딱</div></div>
-      <div class="ri-badge">인기</div>
-    </div>
-    <div class="routine-item" onclick="startRoutine('장편 기획 플랜')">
-      <div class="ri-icon">⭐</div>
-      <div class="ri-info"><div class="ri-name">장편 기획 플랜</div><div class="ri-desc">20단계 · 심도 있는 스토리텔링</div></div>
-      <div class="ri-badge">추천</div>
-    </div>
-    <div class="routine-item" onclick="startRoutine('루틴 마켓 탐색')">
-      <div class="ri-icon">🛒</div>
-      <div class="ri-info"><div class="ri-name">루틴 마켓 탐색</div><div class="ri-desc">다른 인기 작가들의 루틴 구매</div></div>
-      <div class="ri-badge">마켓</div>
-    </div>
-  </div>
-</div>
-
-<!-- CHARACTER SELECT -->
-<div class="char-overlay" id="charOverlay">
-  <div>
-    <div style="text-align:center; margin-bottom: 32px;">
-      <h2 style="font-size:24px; font-weight:800; color:var(--text);">분석을 도와줄 코파일럿을 선택하세요</h2>
-      <p style="font-size:14px; color:var(--text-dim); margin-top:8px;">각 코파일럿마다 대화 스타일이 다릅니다</p>
-    </div>
-    <div class="char-panel">
-      <div class="char-card" onclick="selectCharacter('조수 A')">
-        <div class="cc-avatar" style="background-image: url('images/조수a.gif'); background-size: cover; background-position: center; border-radius: 50%;"></div>
-        <div class="cc-name">조수 A (T형)</div>
-        <div class="cc-desc">비판적이고 예리합니다.<br>논리적인 구조와 개연성을 깊게 파고듭니다.</div>
-      </div>
-      <div class="char-card" onclick="selectCharacter('조수 B')">
-        <div class="cc-avatar" style="background-image: url('images/조수b.gif'); background-size: cover; background-position: center; border-radius: 50%;"></div>
-        <div class="cc-name">조수 B (F형)</div>
-        <div class="cc-desc">공감 능력이 뛰어납니다.<br>캐릭터의 감정선과 따뜻한 서사를 이끌어냅니다.</div>
+  <!-- VIEW: TODAY'S TASKS -->
+  <section id="view-tasks" class="view-section">
+    <div class="hud" style="justify-content: space-between; align-items: center; padding: 20px 40px;">
+      <h1 style="font-size:24px; font-weight:800;">✍️ 오늘의 작업</h1>
+      <div id="currentProjectBadge" style="background:rgba(139,92,246,0.1); border:1px solid rgba(139,92,246,0.2); padding:6px 16px; border-radius:100px; font-size:12px; font-weight:700; color:var(--purple-light);">
+        선택됨: <span id="selectedProjectNameDisplay">없음</span>
       </div>
     </div>
-  </div>
-</div>
-
-<!-- VERIFY PERSONA SELECT -->
-<div class="char-overlay" id="verifyCharOverlay" style="align-items:flex-start; padding-top:10vh;">
-  <div style="max-width:900px; width:100%;">
-    <div style="text-align:center; margin-bottom: 40px;">
-      <h2 style="font-size:28px; font-weight:800; color:var(--verify-color);">작품 검증 페르소나 선택</h2>
-      <p style="font-size:15px; color:var(--text-dim); margin-top:12px;">원하시는 분야의 전문가나 편집자를 선택해 작품을 고증받아 보세요</p>
+    <div class="task-grid" id="taskGrid">
+      <div class="task-card" onclick="startWorkTask('outline')">
+        <div class="task-icon">🎬</div>
+        <div class="task-name">이번 화 개요 짜기</div>
+        <div class="task-desc">기획 설정을 바탕으로 다음 에피소드의 핵심 흐름을 구성합니다.</div>
+      </div>
+      <div class="task-card" onclick="startWorkTask('tone')">
+        <div class="task-icon">🗣️</div>
+        <div class="task-name">대사 톤 검토</div>
+        <div class="task-desc">캐릭터의 성격에 맞는 매력적인 대사인지 AI가 체크해 드립니다.</div>
+      </div>
+      <div class="task-card" onclick="startWorkTask('foreshadow')">
+        <div class="task-icon">🗝️</div>
+        <div class="task-name">복선 체크</div>
+        <div class="task-desc">현재 설정과 충돌하는 부분은 없는지, 복선이 잘 배치됐는지 확인합니다.</div>
+      </div>
     </div>
-    
-    <div style="display:flex; flex-direction:column; gap:40px;">
-      <!-- Section 1 -->
-      <div>
+  </section>
+
+  <!-- VIEW: VERIFICATION (Relocated existing overlay content) -->
+  <section id="view-verify" class="view-section">
+    <div class="hud" style="justify-content: flex-start; gap:20px;">
+      <h1 style="font-size:24px; font-weight:800;">작품 검증</h1>
+    </div>
+    <div id="verifyPersonaGrid" style="display:flex; flex-direction:column; gap:40px; padding: 20px 40px;">
+      <!-- Content from former verifyCharOverlay -->
+       <div>
         <h3 style="font-size:18px; color:var(--text); margin-bottom:20px; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:10px;">🛡️ 전문가 고증</h3>
         <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(200px, 1fr)); gap:16px;">
           <div class="char-card" onclick="selectVerifyCharacter('의학 전문가')" style="padding:20px; text-align:center;">
@@ -1090,37 +1369,115 @@ body {
           </div>
         </div>
       </div>
-      
-      <!-- Section 2 -->
       <div>
         <h3 style="font-size:18px; color:var(--text); margin-bottom:20px; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:10px;">📝 편집자 검토</h3>
         <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(200px, 1fr)); gap:16px;">
           <div class="char-card" onclick="selectVerifyCharacter('냉정한 편집자')" style="padding:20px; text-align:center;">
             <div style="font-size:32px; margin-bottom:12px;">🥶</div>
             <div style="font-weight:700; color:var(--text);">냉정한 편집자</div>
-            <div style="font-size:12px; color:var(--text-dim); margin-top:8px;">구조/개연성</div>
           </div>
           <div class="char-card" onclick="selectVerifyCharacter('공감형 편집자')" style="padding:20px; text-align:center;">
             <div style="font-size:32px; margin-bottom:12px;">🥰</div>
             <div style="font-weight:700; color:var(--text);">공감형 편집자</div>
-            <div style="font-size:12px; color:var(--text-dim); margin-top:8px;">감정선/독자반응</div>
           </div>
           <div class="char-card" onclick="selectVerifyCharacter('로판 편집자')" style="padding:20px; text-align:center;">
             <div style="font-size:32px; margin-bottom:12px;">✨</div>
             <div style="font-weight:700; color:var(--text);">장르별 편집자</div>
-            <div style="font-size:12px; color:var(--text-dim); margin-top:8px;">(로판 / 스릴러 / 판타지)</div>
           </div>
         </div>
       </div>
     </div>
-    
-  </div>
-</div>
+  </section>
 
-<!-- VN WRAPPER -->
-<div class="vn-wrapper">
-  <!-- HUD -->
-  <div class="hud">
+  <!-- VIEW: PLANNING (LEGACY BOARD) -->
+  <section id="view-planning" class="view-section">
+    <!-- MODE CARDS -->
+    <div class="mode-cards" id="modeCards" style="position:static; padding:40px; background:none; opacity:1; transform:none; display:flex;">
+      <div class="mode-card consumer" onclick="selectMode('consumer')">
+        <div class="mc-icon">📖</div>
+        <div class="mc-title">스토리 빌드업</div>
+        <div class="mc-desc">선택된 루틴으로<br>AI와 함께 이야기를 기획합니다</div>
+        <div class="mc-badge">소비자 모드</div>
+      </div>
+      <div class="mode-card seller" onclick="selectMode('seller')">
+        <div class="mc-icon">🛍️</div>
+        <div class="mc-title">루틴 설계 & 판매</div>
+        <div class="mc-desc">나만의 창작 템플릿을 만들어<br>마켓에 등록하고 판매합니다</div>
+        <div class="mc-badge">판매자 모드</div>
+      </div>
+    </div>
+
+    <!-- ROUTINE SELECT (integrated) -->
+    <div class="routine-overlay" id="routineOverlay" style="position:static; display:none; background:none;">
+      <div class="routine-panel" style="width:100%; max-width:800px; margin: 0 auto; background:rgba(255,255,255,0.03); border:1px solid var(--border);">
+        <div class="rp-title">📚 어떤 루틴으로 시작할까요?</div>
+        <!-- routine items ... -->
+        <div class="routine-item" onclick="startRoutine('단편 기획 플랜')">
+          <div class="ri-icon">⚡</div>
+          <div class="ri-info"><div class="ri-name">단편 기획 플랜</div><div class="ri-desc">11단계 · 30분 만에 웹소설 뚝딱</div></div>
+        </div>
+        <div class="routine-item" onclick="startRoutine('장편 기획 플랜')">
+          <div class="ri-icon">⭐</div>
+          <div class="ri-info"><div class="ri-name">장편 기획 플랜</div><div class="ri-desc">20단계 · 심도 있는 스토리텔링</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHAR SELECT (integrated) -->
+    <div class="char-overlay" id="charOverlay" style="position:static; display:none; background:none;">
+      <div style="width:100%; max-width:800px; margin: 0 auto; padding: 40px 0;">
+         <h2 style="font-size:24px; font-weight:800; color:var(--text); text-align:center; margin-bottom:32px;">분석을 도와줄 코파일럿을 선택하세요</h2>
+         <div class="char-panel">
+            <div class="char-card" onclick="selectCharacter('조수 A')">
+              <div class="cc-avatar" style="background-image: url('images/조수a.gif'); background-size: cover;"></div>
+              <div class="cc-name">조수 A (T형)</div>
+            </div>
+            <div class="char-card" onclick="selectCharacter('조수 B')">
+              <div class="cc-avatar" style="background-image: url('images/조수b.gif'); background-size: cover;"></div>
+              <div class="cc-name">조수 B (F형)</div>
+            </div>
+         </div>
+      </div>
+    </div>
+
+  <!-- VIEW: CHAT INTERFACE -->
+</section>
+
+  <!-- VIEW: AI CHAT (Project Context Mode) -->
+  <section id="view-chat-context" class="view-section">
+    <div class="chat-status">
+      <div class="status-dot"></div>
+      <span id="contextProjectName">작품 맥락으로 대화 중</span>
+    </div>
+    
+    <div class="char-stage" style="padding-bottom: 60px;">
+       <div class="char-figure show">
+         <div class="char-text" id="contextCharEmoji">🤖</div>
+         <div class="char-name-plate">창작 비서</div>
+       </div>
+    </div>
+
+    <div class="dialog-area" style="max-height: 40vh; overflow-y: auto; margin-bottom: 20px;" id="contextChatHistory">
+      <div class="dialog-box">
+        <div class="dialog-speaker">Mantra AI</div>
+        <div class="dialog-text" id="contextDialogText">어떤 작업을 도와드릴까요? 작품의 설정을 기억하고 있습니다.</div>
+      </div>
+    </div>
+
+    <div class="answer-area show">
+      <div class="input-wrapper">
+        <div class="input-bar-inner">
+          <textarea class="input-box" id="contextInputBox" placeholder="작품에 대해 궁금한 점이나 다음 이야기를 물어보세요..." onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();handleContextSend();}"></textarea>
+          <button class="send-btn" onclick="handleContextSend()">
+            <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- REPLACING OLD CHAT section with appropriate wrappers if needed, but let's keep it for legacy routines -->
+  <section id="view-chat" class="view-section">
     <div class="hud-left">
       <div style="display:flex; gap:8px;">
         <button class="home-btn" id="homeBtn" onclick="goHome()" title="처음으로">
@@ -1151,59 +1508,82 @@ body {
     </div>
   </div>
 
-  <!-- CHARACTER STAGE -->
-  <div class="char-stage">
-    <div class="char-figure" id="charFigure">
-      <!-- To use real images later, you can toggle char-text vs char-image-bg -->
-      <div class="char-text" id="charEmoji">Copilot</div>
-      <div class="char-image-bg" id="charImage"></div>
-      
-      <div class="char-name-plate" id="charName">조수 어시스턴트</div>
-    </div>
-  </div>
-
-  <!-- DIALOG -->
-  <div class="dialog-area">
-    <div class="dialog-box" id="dialogBox">
-      <div class="dialog-speaker" id="dialogSpeaker">조수 어시스턴트</div>
-      <div class="dialog-text" id="dialogText">
-        <span id="dialogTxt"></span><span class="dialog-cursor" id="dialogCursor"></span>
+    <!-- CHARACTER STAGE -->
+    <div class="char-stage" id="charStage">
+      <div class="char-figure" id="charFigure">
+        <div class="char-text" id="charEmoji">Copilot</div>
+        <div class="char-image-bg" id="charImage"></div>
+        <div class="char-name-plate" id="charName">조수 어시스턴트</div>
       </div>
-      <div class="dialog-example" id="dialogExample"></div>
     </div>
-    <div class="stage-banner" id="stageBanner">
-      <div class="stage-banner-label">시스템 메시지 ▶</div>
-      <div id="stageBannerText"></div>
-    </div>
-    <!-- ANSWER AREA (CHOICES + TEXT INPUT) -->
-    <div class="answer-area" id="answerArea">
-      <button class="insight-bar-btn" id="solutionBarBtn" onclick="openInsightPanel()">
-        ✦ 이 질문의 스토리텔링 인사이트 보기
-      </button>
-      <div class="input-wrapper" id="inputWrapper">
-        <div class="choices-box" id="choicesBox" style="display:none;"></div>
-        <div class="input-bar-inner">
-          <textarea class="input-box" id="inputBox" placeholder="직접 명령어를 타이핑하세요..." rows="1" onkeydown="if(event.key==='Enter' && !event.shiftKey) { event.preventDefault(); handleSend(); } else { this.style.height='44px'; this.style.height = this.scrollHeight + 'px'; }"></textarea>
-          <button class="send-btn" id="sendBtn" onclick="handleSend()">
-            <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
-          </button>
+
+    <!-- DIALOG AREA -->
+    <div class="dialog-area" style="position:relative; bottom:auto; left:auto; right:auto; padding:0 40px 20px;">
+      <div class="dialog-box" id="dialogBox">
+        <div class="dialog-speaker" id="dialogSpeaker">조수 어시스턴트</div>
+        <div class="dialog-text" id="dialogText">
+          <span id="dialogTxt"></span><span class="dialog-cursor" id="dialogCursor"></span>
+        </div>
+        <div class="dialog-example" id="dialogExample"></div>
+      </div>
+      <div class="stage-banner" id="stageBanner">
+        <div class="stage-banner-label">시스템 메시지 ▶</div>
+        <div id="stageBannerText"></div>
+      </div>
+      
+      <!-- ANSWER AREA -->
+      <div class="answer-area" id="answerArea" style="position:static; padding:20px 0;">
+        <button class="insight-bar-btn" id="solutionBarBtn" onclick="openInsightPanel()">
+          ✦ 이 질문의 스토리텔링 인사이트 보기
+        </button>
+        <div class="input-wrapper" id="inputWrapper">
+          <div class="choices-box" id="choicesBox" style="display:none;"></div>
+          <div class="input-bar-inner">
+            <textarea class="input-box" id="inputBox" placeholder="직접 명령어를 타이핑하세요..." rows="1" onkeydown="if(event.key==='Enter' && !event.shiftKey) { event.preventDefault(); handleSend(); } else { this.style.height='44px'; this.style.height = this.scrollHeight + 'px'; }"></textarea>
+            <button class="send-btn" id="sendBtn" onclick="handleSend()">
+              <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+            </button>
+          </div>
         </div>
       </div>
     </div>
-  </div>
+  </section>
 
-  <!-- ROUTINE BUILDER (SELLER MODE) -->
-  <div class="routine-builder" id="routineBuilder">
-    <div class="rb-header">
-      <h2>🛠️ 루틴 템플릿 빌더</h2>
-      <p>단계별 질문, 안내, 옵션을 자유롭게 설계하세요</p>
+  <!-- VIEW: PLANNING BOARD -->
+  <section id="view-planning-board" class="view-section">
+    <div id="planning-board-root"></div>
+    <!-- Routine Builder (Relocated) -->
+    <div class="routine-builder" id="routineBuilder" style="display:none; position:static; margin:40px; width:auto;">
+      <div class="rb-header">
+        <h2>🛠️ 루틴 템플릿 빌더</h2>
+        <p>단계별 질문, 안내, 옵션을 자유롭게 설계하세요</p>
+      </div>
+      <div class="rb-steps" id="rbSteps"></div>
+      <div class="rb-actions">
+        <button class="rb-add-btn" onclick="addBuilderStep()">+ 새로운 단계 추가하기</button>
+        <button class="rb-save-btn" onclick="saveBuilderRoutine()">저장 및 빌드업 테스트</button>
+      </div>
     </div>
-    <div class="rb-steps" id="rbSteps">
-      <!-- Steps will be rendered here -->
+  </section>
+
+</div> <!-- /vn-wrapper -->
+
+<!-- INPUT POPUP (Board Mode) -->
+<div class="input-popup" id="inputPopup">
+  <div class="popup-content">
+    <div class="popup-header">
+      <div class="popup-title-wrap">
+        <div class="popup-visual" id="popupVisual">🎯</div>
+        <div class="popup-q" id="popupQuestion">질문을 불러오는 중...</div>
+      </div>
+      <button class="popup-close" onclick="closeBoardInput()">✕</button>
     </div>
-    <div class="rb-actions">
-      <button class="rb-add-btn" onclick="addBuilderStep()">+ 새로운 단계 추가하기</button>
-      <button class="rb-save-btn" onclick="saveBuilderRoutine()">저장 및 빌드업 테스트</button>
+    <div class="popup-body">
+      <textarea class="popup-textarea" id="popupTextArea" placeholder="답변을 입력해주세요..."></textarea>
+      <div class="popup-actions">
+        <button class="popup-save-btn" onclick="saveBoardStep()">저장하기</button>
+        <button class="popup-insight-btn" onclick="openInsightPanel()">✦ 인사이트</button>
+      </div>
     </div>
   </div>
 </div>
@@ -1292,6 +1672,294 @@ body {
 <!-- Supabase SDK -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
+// API Keys are managed on the server side (Cloudflare Functions)
+
+// ── SUPABASE CONFIG ──
+const SUPABASE_URL = 'https://mvygorffhbshubqkerpo.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im12eWdvcmZmaGJzaHVicWtlcnBvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2MzU3ODQsImV4cCI6MjA4OTIxMTc4NH0.p7usz-l53gmibWpswzTFvhzmR3UX7QkWb3oPsy3A50c';
+const _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// ── APP STATE ──
+let currentUser = null;
+let myProjects = [];
+let selectedProject = null;
+let currentChatRoutine = null; // 'outline', 'tone', 'foreshadow'
+let isSeller = false;
+let currentStep = 0;
+let activeSteps = [];
+let answerHistory = [];
+let selectedCharName = '조수 어시스턴트';
+
+// ── SHORTHAND ──
+function $(id){ return document.getElementById(id); }
+
+// ── INTRO LOGIC ──
+let introResolve;
+let introTimeouts = [];
+
+function runIntro() {
+  return new Promise((resolve) => {
+    if (sessionStorage.getItem('mantra_intro_shown')) {
+      if ($('intro-overlay')) $('intro-overlay').style.display = 'none';
+      return resolve();
+    }
+    
+    introResolve = resolve;
+    const overlay = $('intro-overlay');
+    
+    // Add skip listeners
+    overlay.addEventListener('click', skipIntro);
+    window.addEventListener('keydown', (e) => {
+      if (e.code === 'Space' || e.key === ' ') {
+        e.preventDefault();
+        skipIntro();
+      }
+    });
+
+    // Stage 1: Problems (0-3s)
+    introTimeouts.push(setTimeout(() => $('p1').classList.add('show'), 300));
+    introTimeouts.push(setTimeout(() => $('p2').classList.add('show'), 900));
+    introTimeouts.push(setTimeout(() => $('p3').classList.add('show'), 1500));
+    
+    // Stage 2: Solution (3-4s)
+    introTimeouts.push(setTimeout(() => {
+      $('intro-problems').style.opacity = '0';
+      $('intro-problems').style.filter = 'blur(10px)';
+      introTimeouts.push(setTimeout(() => $('intro-problems').style.display = 'none', 1000));
+      
+      $('intro-solution').style.display = 'flex';
+      introTimeouts.push(setTimeout(() => {
+        $('s1').classList.add('show');
+        $('s2').classList.add('show');
+      }, 50));
+    }, 3000));
+    
+    // Stage 3: Logo (4-5s)
+    introTimeouts.push(setTimeout(() => {
+      $('intro-solution').style.opacity = '0';
+      $('intro-solution').style.filter = 'blur(10px)';
+      introTimeouts.push(setTimeout(() => $('intro-solution').style.display = 'none', 1000));
+      
+      $('intro-logo').style.display = 'flex';
+      introTimeouts.push(setTimeout(() => $('intro-logo').classList.add('show'), 50));
+    }, 4000));
+    
+    // Stage 4: Exit (5.5s)
+    introTimeouts.push(setTimeout(() => {
+      finishIntro();
+    }, 5500));
+  });
+}
+
+function finishIntro() {
+  if (!introResolve) return;
+  
+  introTimeouts.forEach(t => clearTimeout(t));
+  introTimeouts = [];
+  
+  const overlay = $('intro-overlay');
+  overlay.classList.add('exit');
+  sessionStorage.setItem('mantra_intro_shown', 'true');
+  
+  const resolve = introResolve;
+  introResolve = null;
+  
+  setTimeout(() => {
+    overlay.classList.add('hide');
+    resolve();
+  }, 1000);
+}
+
+function skipIntro() {
+  finishIntro();
+}
+
+
+// ── PROJECT LIST ──
+async function loadMyProjects() {
+  if (!currentUser) return;
+  const { data, error } = await _sb.from('projects')
+    .select('*')
+    .eq('user_id', currentUser.id)
+    .order('completed_at', { ascending: false });
+
+  if (error) {
+    console.error('Error loading projects:', error);
+    return;
+  }
+  myProjects = data;
+  renderProjectGrid();
+}
+
+function renderProjectGrid() {
+  const grid = $('projectGrid');
+  if (!grid) return;
+  grid.innerHTML = '';
+  if (!myProjects.length) {
+    grid.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:60px; color:var(--text-faint);">아직 기획된 작품이 없습니다.</div>';
+    return;
+  }
+
+  myProjects.forEach(p => {
+    const card = document.createElement('div');
+    card.className = 'p-card';
+    card.onclick = () => selectProjectForChat(p.id);
+    card.innerHTML = `
+      <div class="p-header">
+        <div class="p-genre">${p.genre || '장르 미정'}</div>
+      </div>
+      <div class="p-title">${p.title || '제목 없음'}</div>
+      <div class="p-synopsis">${p.synopsis || '시놉시스가 없습니다.'}</div>
+      <div class="p-footer">
+        <span>${p.routine_type === 'short' ? '단편' : '장편'} 루틴</span>
+        <span>${(p.answer_history || []).length}단계 완료</span>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+function selectProjectForChat(pid) {
+  selectedProject = myProjects.find(p => p.id === pid);
+  if (!selectedProject) return;
+  
+  showReplyFlash(`'${selectedProject.title}' 맥락 로드됨`);
+  
+  // Enter universal chat mode directly
+  currentChatRoutine = 'general';
+  const persona = "창작 비서";
+  const greeting = getGreetingForRoutine('general');
+  
+  $('contextProjectName').textContent = `${selectedProject.title} (${persona})`;
+  $('contextChatHistory').innerHTML = '';
+  
+  appendChatMessage('assistant', greeting);
+  navTo('chat-context');
+}
+
+// ── CONTEXT CHAT ──
+function startWorkTask(taskType) {
+  if (!selectedProject) {
+    alert('먼저 작품을 선택해주세요!');
+    navTo('works');
+    return;
+  }
+  
+  currentChatRoutine = taskType;
+  const persona = getPersonaForRoutine(taskType);
+  const greeting = getGreetingForRoutine(taskType);
+  
+  $('contextProjectName').textContent = `${selectedProject.title} (${persona})`;
+  $('contextChatHistory').innerHTML = ''; // Clear previous chat
+  
+  appendChatMessage('assistant', greeting);
+  navTo('chat-context');
+  
+  setTimeout(() => $('contextInputBox').focus(), 300);
+}
+
+function getPersonaForRoutine(type) {
+  if (type === 'outline') return "에피소드 설계자";
+  if (type === 'tone') return "대사 전문가";
+  if (type === 'foreshadow') return "플롯 검토가";
+  return "창작 비서";
+}
+
+function getGreetingForRoutine(type) {
+  if (type === 'outline') return `반갑습니다. **'${selectedProject.title}'** 이번 화의 개요를 함께 짜볼까요? 핵심 사건을 말씀해 주세요.`;
+  if (type === 'tone') return `캐릭터들의 대사를 검토해 봅시다. 특정 장면의 대사를 보여주시면 **'${selectedProject.title}'** 캐릭터 성격에 맞춰 다듬어 드릴게요.`;
+  if (type === 'foreshadow') return `복선 체크 시간입니다. **'${selectedProject.title}'** 현재 장면에서 심고 싶은 복선이나 나중에 해결할 설정을 공유해 주세요.`;
+  return `안녕하세요! **'${selectedProject.title}'** 작품에 대해 무엇을 도와드릴까요?`;
+}
+
+async function handleContextSend() {
+  const box = $('contextInputBox');
+  const userText = box.value.trim();
+  if (!userText) return;
+  
+  box.value = '';
+  appendChatMessage('user', userText);
+  
+  const loadingId = appendChatMessage('assistant', '(생각 중...)');
+  
+  try {
+    const systemPrompt = getSystemPromptForRoutine();
+    const stepLabelMap = {
+      'l-1':'콘셉트','l-2':'장르','l-3':'로그라인','l-3b':'배경','l-3c':'동기','l-4':'주인공','l-5':'적대자',
+      'l-6':'프롤로그','l-7':'문제직면','l-8':'미끼','l-9':'검증','l-10':'신념',
+      'l-11':'발전','l-12':'가짜승리','l-13':'방심','l-14':'혼란','l-15':'각성',
+      'l-16':'초긴박','l-17':'클라이막스','l-18':'반전','l-19':'이완','l-20':'에필로그'
+    };
+
+    const formattedHistory = (selectedProject.answer_history || []).map(h => {
+      const label = stepLabelMap[h.stepId] || h.stepId;
+      return { stepId: label, value: h.boardValue || h.value };
+    });
+
+    const response = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: userText }
+        ],
+        projectContext: {
+          title: selectedProject.title,
+          genre: selectedProject.genre,
+          synopsis: selectedProject.synopsis,
+          answerHistory: formattedHistory
+        }
+      })
+    });
+    
+    const data = await response.json();
+    const aiText = data.choices?.[0]?.message?.content || '죄송합니다. 오류가 발생했습니다.';
+    updateChatMessage(loadingId, aiText);
+  } catch (e) {
+    updateChatMessage(loadingId, '네트워크 오류가 발생했습니다.');
+  }
+}
+
+function getSystemPromptForRoutine() {
+  if (currentChatRoutine === 'outline') return "당신은 유능한 드라마/웹소설 작가입니다. 작품 설정을 완벽히 이해하고 있으며, 작가가 이번 화의 개요를 짤 때 흥미로운 전개와 갈등 요소를 제안하세요.";
+  if (currentChatRoutine === 'tone') return "당신은 대사 스페셜리스트입니다. 캐릭터의 성격과 말투가 설정에 부합하는지, 그리고 독자에게 매력적으로 다가가는지 날카롭게 분석하고 대안을 제시하세요.";
+  if (currentChatRoutine === 'foreshadow') return "당신은 치밀한 서사 검토자입니다. 작품 전체의 복선과 설정을 대조하여 모순되는 부분을 지적하고, 서사적 완결성을 높일 수 있는 디테일을 제안하세요.";
+  return "당신은 작가의 창작을 돕는 유능한 AI 비서입니다. 작품 설정을 바탕으로 작가의 질문에 성실히 답변하세요.";
+}
+
+function appendChatMessage(role, text) {
+  const history = $('contextChatHistory');
+  const id = 'msg-' + Date.now();
+  const div = document.createElement('div');
+  div.className = 'dialog-box';
+  div.style.marginBottom = '12px';
+  div.innerHTML = `
+    <div class="dialog-speaker" style="color:${role==='user'?'#fff':'var(--purple-light)'}">${role==='user'?'Writer':'Mantra AI'}</div>
+    <div class="dialog-text" id="${id}">${markdownToHtml(text)}</div>
+  `;
+  history.appendChild(div);
+  history.scrollTop = history.scrollHeight;
+  return id;
+}
+
+function updateChatMessage(id, text) {
+  const el = $(id);
+  if (el) el.innerHTML = markdownToHtml(text);
+  const history = $('contextChatHistory');
+  history.scrollTop = history.scrollHeight;
+}
+
+// ── LEGACY & CORE ──
+async function logout() {
+  await _sb.auth.signOut();
+  window.location.href = 'login.html';
+}
+
+// Initialize on load
+document.addEventListener('DOMContentLoaded', () => {
+  spawnParticles();
+});
 function spawnParticles() {
   const container = document.getElementById('particles');
   for (let i=0; i<20; i++) {
@@ -1310,18 +1978,54 @@ function spawnParticles() {
 }
 spawnParticles();
 
-// ── API KEYS (여기에 입력하세요) ──
-const ANTHROPIC_API_KEY = "";  // sk-ant-... 입력
-const OPENAI_API_KEY = "";     // sk-... 입력
+// ── NAVIGATION ──
+function navTo(viewId) {
+  document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
+  document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
 
-// ── STATE ──
-let isSeller = false;
-let currentStep = 0;
-let activeSteps = [];
-let sheetOpen = false;
-let typing = false;
-let answerHistory = [];
-let selectedCharName = '조수 어시스턴트';
+  const targetView = $(`view-${viewId}`);
+  if (targetView) targetView.classList.add('active');
+
+  const menu = $(`menu-${viewId}`);
+  if (menu) menu.classList.add('active');
+  
+  // Mobile tabs support
+  const tabIdxMap = { 'works': 0, 'tasks': 1, 'new-project': 2, 'verify': 3 };
+  const tabs = document.querySelectorAll('.tab-item');
+  const viewToTabMap = { 'works': 0, 'tasks': 1, 'new-project': 2, 'verify': 3 };
+  if (viewToTabMap[viewId] !== undefined) {
+    tabs.forEach(t => t.classList.remove('active'));
+    if (tabs[viewToTabMap[viewId]]) tabs[viewToTabMap[viewId]].classList.add('active');
+  }
+
+  if (viewId === 'works') {
+    loadMyProjects();
+  }
+  
+  if (viewId === 'tasks') {
+    if (!selectedProject) {
+      alert('작업을 시작할 작품을 먼저 선택해 주세요!');
+      navTo('works');
+      return;
+    }
+    $('selectedProjectNameDisplay').textContent = selectedProject.title;
+  }
+  
+  if (viewId === 'new-project') {
+    // Show mode selection for new projects
+    const board = $('planning-board-root');
+    if (board) board.style.display = 'none';
+    const rb = $('routineBuilder');
+    if (rb) rb.style.display = 'none';
+    const modeCards = $('modeCards');
+    if (modeCards) {
+      modeCards.style.display = 'flex';
+      modeCards.style.opacity = '1';
+    }
+  }
+}
+
 
 // ── SHEET TOGGLE ──
 function toggleSheet() {
@@ -1372,19 +2076,7 @@ const consumerSteps = [
   { id:'l-20', visual:'🏁', stageIntro:'처음부터 꽁꽁 숨겨왔던 비밀을 풀거나, 질문을 던지면서 끝날 수도 있습니다.', question:'[에필로그]\n이 여정 이후 어떻게 될까요?', fieldId:'f-l20' },
 ];
 
-const shortSteps = [
-  { id:'s-1', visual:'🎯', stageIntro:'[단편 기획 플랜]\n끌리게 된 키워드와 사람들의 반응 요소를 결합해 보길 제안합니다.', question:'어떤 단편 이야기를 만들고 싶으세요?', fieldId:'f-s1' },
-  { id:'s-2', visual:'📚', stageIntro:'장르 선택에 따라 사람들의 반응 패턴은 달라집니다.', question:'이야기의 장르는 무엇인가요?', fieldId:'f-s2' },
-  { id:'s-3', visual:'✍️', stageIntro:'전체 이야기를 관통하는 한 문장이자 질문일 수 있습니다.\n*이 이야기는 주인공이 목표를 위해 모험을 떠나지만 딜레마에 빠져 매우 어렵다, 라는 내용이 들어가야 합니다.', question:'로그라인을 만들어 봐요!', fieldId:'f-s3' },
-  { id:'s-4', visual:'👤', stageIntro:'같이 모험을 떠나게 될 아바타입니다.\n*사람들이 마음을 내줄 수 있는 호감형 캐릭터입니다.', question:'주인공을 먼저 간략하게 만들어 볼까요?', fieldId:'f-s4' },
-  { id:'s-5', visual:'⚔️', stageIntro:'주인공의 반대편에 선 인물들입니다.\n*희망이 아닌 두려움으로 인해 \'욕망\'에 굴복한 사람들이죠.', question:'이번엔 안타고니스트(적대자)를 만들어 볼까요?', fieldId:'f-s5' },
-  { id:'s-6', visual:'☕', stageIntro:'[이제부터 개연성 전개를 해보겠습니다.]\n독자와의 라포(친근감)를 형성하는 첫인상 구간입니다.\n*사람들끼리 친해질 때 스몰토킹하거나, 유머를 던지듯 이야기도 똑같습니다.', question:'[코믹 릴리프]\n주인공은 언제, 어디서 일상을 보내고 있나요?', fieldId:'f-s6' },
-  { id:'s-7', visual:'💥', stageIntro:null, question:'[트러블]\n그러던 어느 날, 어떤 문제가 터질까요?', fieldId:'f-s7' },
-  { id:'s-8', visual:'⚖️', stageIntro:null, question:'[딜레마]\n어떤 갈등으로 고통 받게 될까요?', fieldId:'f-s8' },
-  { id:'s-9', visual:'⏱️', stageIntro:'긴장감이 고조되는 순간입니다.\n*시간적, 공간적 제약으로 인해 아슬아슬합니다.', question:'[서스펜스]\n설상가상으로 악화되는 순간입니다. 그게 뭘까요?', fieldId:'f-s9' },
-  { id:'s-10', visual:'🔥', stageIntro:null, question:'[클라이막스]\n결국 걱정한 일이 터져 버렸습니다. 그게 뭘까요?', fieldId:'f-s10' },
-  { id:'s-11', visual:'💡', stageIntro:'반전으로 쾌감을 주는 가장 중요한 구간입니다.', question:'[획기적인 해결]\n전혀 생각치 못 했던 방법으로 해결합니다. 그게 뭘까요?', fieldId:'f-s11' },
-];
+
 
 const sellerSteps = [
   { id:'s-name',  visual:'🏷️', stageIntro:'이 단계에서는 루틴 이름과 기본 정보를 설정합니다.\n구매자가 한눈에 이해할 수 있는 매력적인 이름이 좋습니다.', question:'루틴의 이름을 정해주세요.', example:'예시: 10분 완성 로판 기획 루틴, 캐릭터 빌드업 마스터, 악역 서사 7단계', choices:['10분 기획 챌린지', '캐릭터 빌드업 루틴', '악역 서사 메이커'], fieldId:'s-name' },
@@ -1393,10 +2085,10 @@ const sellerSteps = [
   { id:'s-q1',    visual:'💬', stageIntro:'여기서는 루틴의 첫 번째 질문을 설계합니다.\n창작자들을 몰입시킬 매력적인 질문을 작성해주세요.', question:'작가님만의 첫 번째 기획 질문은 무엇인가요?', example:'예시: 주인공이 절대 들키고 싶지 않은 흑역사는 무엇인가요?', choices:['주인공이 절대 들키고 싶지 않은 흑역사는?', '주인공의 가장 큰 결핍은?', '이야기의 시작을 알리는 발단 사건은?'], fieldId:'s-q1' },
   { id:'s-q1c',   visual:'🔘', stageIntro:null, question:'이 질문에 제안용 선택지를 추가하시겠어요?', example:'예시: [신분 위조], [과거의 살인], [금지된 사랑] 같은 선택지를 주고 싶어', choices:['미리 세팅된 예시 선택지 제공','자유 입력 형태로만 진행'], fieldId:'s-q1c' },
   { id:'s-desc',  visual:'📝', stageIntro:'이 단계에서는 마켓을 위한 상품 소개를 작성합니다.', question:'루틴을 홍보할 한 줄 소개 문구를 작성해주세요.', example:'예시: 플롯이 막힌 작가님을 위한 가장 완벽한 10단계 솔루션!', choices:['막힌 플롯을 단숨에 뚫어주는 마법의 기획법', '누구나 쉽게 따라하는 베스트셀러의 비밀', '캐릭터가 스스로 움직이게 만드는 마법의 루틴'], fieldId:'s-desc' },
-  { id:'s-price', visual:'💰', stageIntro:null, question:'스토어 판매 가격을 설정해주세요.', example:'예시: 1500원 정도로 가볍게 책정, 4900원(프리미엄)', choices:['무료 배포','990원','2,900원','4,900원 (프리미엄)'], fieldId:'s-price' },
+  { id:'s-price', visual:'💰', stageIntro:null, question:'?ㅽ넗???먮ℓ 媛寃⑹쓣 ?ㅼ젙?댁＜?몄슂.', example:'?덉떆: 1500???뺣룄濡?媛蹂띻쾶 梨낆젙, 4900???꾨━誘몄뾼)', choices:['무료 배포','990원','2,900원','4,900원(프리미엄)'], fieldId:'s-price' }
 ];
 
-// ── HELPERS ──
+// ?? HELPERS ??
 function $(id){ return document.getElementById(id); }
 
 function sceneTransition(newBgClass, cb) {
@@ -1435,10 +2127,8 @@ function showDialogText(step, cb) {
   const text = typeof step === 'string' ? step : step.question;
   const example = typeof step === 'object' ? step.example : null;
 
-  // 마크다운을 HTML로 변환 후 즉시 렌더링 (타이핑 효과 제거)
   const htmlContent = markdownToHtml(text);
   
-  // 짧게 딜레이 후 올려주기 (부드럽게 나타나는 효과)
   txtField.style.opacity = '0';
   txtField.innerHTML = htmlContent;
   txtField.scrollTop = 0;
@@ -1448,7 +2138,7 @@ function showDialogText(step, cb) {
     txtField.style.opacity = '1';
     typing = false;
     if (example) {
-      exField.innerHTML = `<span>Tip!</span> ${example}`;
+      exField.innerHTML = '<span>Tip!</span> ' + example;
       exField.classList.add('show');
     }
     if (cb) cb();
@@ -1478,7 +2168,7 @@ function showChoices(choices, customHandler) {
   }
   choices.forEach(c => {
     const btn = document.createElement('button');
-    btn.className = `choice-btn${isSeller?' seller-btn':''}`;
+    btn.className = 'choice-btn' + (isSeller ? ' seller-btn' : '');
     btn.textContent = c;
     btn.onclick = () => {
       if (customHandler) customHandler(c);
@@ -1489,15 +2179,13 @@ function showChoices(choices, customHandler) {
   box.style.display = 'flex';
 }
 
-
 function showInput(hideInputBar = false) {
   const area = $('answerArea');
-  area.classList.add('show');
+  if (area) area.classList.add('show');
   
   const insightBtn = $('solutionBarBtn');
   if (insightBtn) {
-    insightBtn.className = `insight-bar-btn${isSeller ? ' seller-bar-btn' : ''}`;
-    // 검증 모드나 choices 표시 중엔 인사이트 버튼 숨김
+    insightBtn.className = 'insight-bar-btn' + (isSeller ? ' seller-bar-btn' : '');
     insightBtn.style.display = (currentStep === 999 || hideInputBar) ? 'none' : 'flex';
   }
 
@@ -1505,30 +2193,19 @@ function showInput(hideInputBar = false) {
   if (inputWrapper) inputWrapper.style.display = hideInputBar ? 'none' : 'flex';
 }
 
+const ACT_MAP = {
+  desire: { label: '① 욕망', steps: ['l-1','l-2','l-3','l-3b','l-3c', 's-1','s-2','s-3'] },
+  conflict: { label: '② 갈등', steps: ['l-4','l-5','l-6','l-7','l-8','l-9','l-10','l-11','l-12','l-13','l-14','l-15', 's-4','s-5','s-6','s-7','s-8','s-9'] },
+  overcome: { label: '③ 극복', steps: ['l-16','l-17','l-18','l-19','l-20', 's-10','s-11'] }
+};
+
 async function fetchAIFeedback(userInput, stepInfo) {
-  
-  // OpenAI API 직접 호출 방식에서 Cloudflare Functions 프록시(/api/chat) 호출로 변경
   const endpoint = `/api/chat`;
+  const projectContext = _currentLoadedProject || { title: "새 작품", answerHistory: answerHistory };
   
-  let persona = "당신은 웹소설 기획을 돕는 유능한 AI 조수입니다.";
+  let persona = "당신은 작품 기획을 돕는 유능한 AI 조수입니다.\n\n[행동 규칙]\n1. 유저의 답변에서 논리적 허점을 발견하면 반드시 지적하세요.\n2. 칭찬은 정말 잘 된 경우에만 1문장으로 간결하게.\n3. 제안은 구체적 근거와 함께 제시하세요.";
   
-  if (selectedCharName.includes('조수 A')) {
-    persona = `당신은 웹소설 기획 조수 'A(T형)'입니다.
-
-[성격 & 말투]
-- 비판적이고 예리합니다. 칭찬보다 문제점을 먼저 짚습니다.
-- 문장은 짧고 직설적입니다. 군더더기 없이 핵심만 말합니다.
-- 감탄사나 이모지를 쓰지 않습니다.
-
-[전문 영역]
-- 논리적 구조와 개연성: 플롯홀, 인과관계, 장르 문법 위반을 즉각 감지합니다.
-- 독자 이탈 포인트: 어느 지점에서 독자가 흥미를 잃을지 냉정하게 예측합니다.
-
-[행동 규칙]
-1. 유저의 답변에서 논리적 허점을 발견하면 반드시 지적하세요.
-2. 칭찬은 정말 잘 된 경우에만 1문장으로 간결하게.
-3. 제안은 구체적 근거와 함께 제시하세요.`;
-  } else if (selectedCharName.includes('조수 B')) {
+  if (selectedCharName && selectedCharName.includes('조수 B')) {
     persona = `당신은 웹소설 기획 조수 'B(F형)'입니다.
 
 [성격 & 말투]
@@ -1547,7 +2224,7 @@ async function fetchAIFeedback(userInput, stepInfo) {
   } else if (selectedCharName === '심리학 전문가') {
     persona = "당신은 임상심리학 전문가입니다. 작가가 원고나 캐릭터 설정을 보여주면 심리학적 관점에서 현실성을 검토하고 구체적인 피드백을 제공하세요. 틀린 부분은 명확히 지적하고 올바른 심리학적 근거를 설명해주세요.";
   } else if (selectedCharName === '냉정한 편집자') {
-    persona = "당신은 10년 경력의 웹툰 담당 편집자입니다. 작가의 원고를 받으면 독자 이탈 가능성, 개연성 오류, 구조적 문제점을 냉정하고 직접적으로 피드백하세요. 칭찬보다 문제점 파악에 집중하세요.";
+    persona = "당신은 10년 경력의 웹툰 담당 편집자입니다. 작가의 원고를 받으면 독자 이탈 가능성, 개연성 오류, 구조적 문제점, 트렌드 부합 여부 등을 냉정하고 직접적으로 피드백하세요. 칭찬보다 문제점 파악에 집중하세요.";
   } else if (selectedCharName === '의학 전문가') {
     persona = "당신은 의학 및 법의학 전문가입니다. 작가가 제시한 상처, 부검 결과, 질병, 약물 등의 설정이 의학적으로 타당한지 검토하고, 오류를 날카롭게 지적하며 정확한 의학적 지식을 제공해주세요.";
   } else if (selectedCharName === '수사 전문가') {
@@ -1562,11 +2239,12 @@ async function fetchAIFeedback(userInput, stepInfo) {
     persona = "당신은 독자와의 소통을 최우선으로 생각하는 공감형 편집자입니다. 원고를 읽고 독자들이 어느 포인트에서 감동하고 슬퍼할지 감정선을 짚어주며, 캐릭터의 매력을 극대화할 수 있도록 따뜻하게 피드백해주세요.";
   } else if (selectedCharName === '로판 편집자') {
     persona = "당신은 로맨스 판타지, 스릴러, 판타지 등 장르 문법에 정통한 편집자입니다. 해당 장르의 주요 클리셰와 독자들의 니즈(사이다 전개, 관계성 등)를 완벽히 이해하고 있으며, 트렌디한 장르물로 다듬기 위한 맞춤형 조언을 제공하세요.";
+  } else if (selectedCharName === '작품 편집자') {
+    persona = "당신은 작가의 작품 기획을 돕는 '작품 편집자'입니다. 작가가 여태까지 기획한 내용(projectContext)을 완벽히 숙지하고 있으며, 이를 바탕으로 일관성 있는 제안과 피드백을 제공합니다. 친절하면서도 전문적인 어조로 대화하세요.";
   }
 
   const isRequestingRecommendation = userInput.includes('추천') || userInput.includes('모르겠');
   
-  // 지금까지 수집된 스토리 맥락 구성 (모든 분기에서 활용)
   const storyContext = answerHistory.map(h => {
     const s = activeSteps.find(st => st.id === h.stepId);
     return s ? `- ${s.fieldId ? s.fieldId.replace(/^[fsl]-/,'') : s.id}: ${h.boardValue || h.value}` : '';
@@ -1795,82 +2473,159 @@ function updateStorySentence(summary, chipLabel) {
   }
 }
 
-function initProgressDots(total) {
-  const wrap = $('progressDots');
-  if (!wrap) return;
-  wrap.innerHTML = '';
-  for (let i = 0; i < total; i++) {
-    const d = document.createElement('div');
-    d.className = 'pdot';
-    d.id = 'pdot-' + i;
-    wrap.appendChild(d);
-  }
-  $('stepTotal').textContent = total;
-  $('hudProgress').style.opacity = '1';
+let currentBoardStepId = null;
+
+function renderBoard() {
+  const root = $('planning-board-root');
+  if (!root) return;
+  root.style.display = 'block';
+  
+  const total = activeSteps.length;
+  const completedCount = answerHistory.length;
+  const percent = total > 0 ? Math.round((completedCount / total) * 100) : 0;
+
+  root.innerHTML = `
+    <div class="routine-board" style="display:flex;">
+      <div class="board-header">
+        <div class="board-progress-info">
+          <div class="board-progress-label">
+            <span id="boardActLabel">설계 단계 진행 중</span>
+            <span style="margin-left:12px; opacity:0.6; font-weight:500;">(${completedCount}/${total} 단계 완료)</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:20px;">
+            <div class="board-progress-percent">${percent}%</div>
+            <button id="genSynopsisBtn" class="board-finish-btn" style="padding:10px 24px; font-size:14px; ${percent >= 60 ? 'display:block; opacity:1; transform:none;' : ''}" onclick="finalizeProject()">시놉시스 생성</button>
+          </div>
+        </div>
+        <div class="board-progress-track">
+          <div class="board-progress-fill" style="width:${percent}%"></div>
+        </div>
+      </div>
+      
+      <div class="board-sections">
+        <div class="board-section" id="board-desire">
+          <div class="board-section-title">① 욕망</div>
+          <div class="board-grid" id="grid-desire"></div>
+        </div>
+        <div class="board-section" id="board-conflict">
+          <div class="board-section-title">② 갈등</div>
+          <div class="board-grid" id="grid-conflict"></div>
+        </div>
+        <div class="board-section" id="board-overcome">
+          <div class="board-section-title">③ 극복</div>
+          <div class="board-grid" id="grid-overcome"></div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  // Render cards into grids
+  activeSteps.forEach((step, idx) => {
+    let actKey = 'desire';
+    if (ACT_MAP.conflict.steps.includes(step.id)) actKey = 'conflict';
+    else if (ACT_MAP.overcome.steps.includes(step.id)) actKey = 'overcome';
+    
+    const grid = $(`grid-${actKey}`);
+    if (!grid) return;
+
+    const history = answerHistory.find(h => h.stepId === step.id);
+    const card = document.createElement('div');
+    card.className = 'board-card' + (history ? ' filled' : '');
+    card.onclick = () => openBoardInput(idx);
+    card.innerHTML = `
+      <div class="board-card-header">
+        <div class="board-card-num">STEP ${idx + 1}</div>
+        <div class="board-card-check">${history ? '✓' : '?'}</div>
+      </div>
+      <div class="board-card-q">${step.question}</div>
+      <div class="board-card-a">${history ? (history.boardValue || history.value) : '내용을 입력해주세요...'}</div>
+    `;
+    grid.appendChild(card);
+  });
+
+  // Update current act label based on progress
+  let currentAct = '① 욕망';
+  if (percent > 30) currentAct = '② 갈등';
+  if (percent > 70) currentAct = '③ 극복';
+  $('boardActLabel').textContent = currentAct;
 }
 
-function updateProgressDots(idx, total) {
-  $('stepNum').textContent = idx + 1;
-  for (let i = 0; i < total; i++) {
-    const d = $('pdot-' + i);
-    if (!d) continue;
-    d.className = 'pdot' + (i < idx ? ' done' : i === idx ? ' active' : '');
-  }
+function openBoardInput(idx) {
+  const step = activeSteps[idx];
+  currentBoardStepId = step.id;
+  const history = answerHistory.find(h => h.stepId === step.id);
+  
+  $('popupVisual').textContent = step.visual || '📝';
+  $('popupQuestion').textContent = step.question;
+  const area = $('popupTextArea');
+  area.value = history ? history.value : '';
+  
+  $('inputPopup').classList.add('open');
+  area.focus();
 }
 
-function runStep(idx) {
-  closeInsightPanel();
+function closeBoardInput() {
+  $('inputPopup').classList.remove('open');
+}
 
-  if (idx >= activeSteps.length) {
-    finishFlow();
+async function saveBoardStep() {
+  const val = $('popupTextArea').value.trim();
+  if (!val) return;
+  
+  const stepIdx = activeSteps.findIndex(s => s.id === currentBoardStepId);
+  const stepInfo = activeSteps[stepIdx];
+  
+  // Show localized loading/saving state
+  const saveBtn = document.querySelector('.popup-save-btn');
+  const originalText = saveBtn.textContent;
+  saveBtn.textContent = '저장 중...';
+  saveBtn.disabled = true;
+
+  try {
+    const feedback = await fetchAIFeedback(val, stepInfo);
+    const boardMatch = feedback.match(/\[BOARD\]:\s*([\s\S]+?)(?:\n|$)/i);
+    const boardSummary = boardMatch ? boardMatch[1].trim() : val;
+    
+    // Update or Add to history
+    const existingIdx = answerHistory.findIndex(h => h.stepId === currentBoardStepId);
+    const entry = {
+      stepIdx: stepIdx,
+      stepId: currentBoardStepId,
+      value: val,
+      boardValue: boardSummary
+    };
+    
+    if (existingIdx >= 0) answerHistory[existingIdx] = entry;
+    else answerHistory.push(entry);
+
+    // Update SHEET
+    const stepLabelMap = {
+      'l-1':'콘셉트','l-2':'장르','l-3':'로그라인','l-3b':'배경','l-3c':'동기','l-4':'주인공','l-5':'적대자',
+      'l-6':'프롤로그','l-7':'문제직면','l-8':'미끼','l-9':'검증','l-10':'신념',
+      'l-11':'발전','l-12':'가짜승리','l-13':'방심','l-14':'혼란','l-15':'각성',
+      'l-16':'초긴박','l-17':'클라이막스','l-18':'반전','l-19':'이완','l-20':'에필로그',
+      's-1':'콘셉트','s-2':'장르','s-3':'로그라인','s-4':'주인공','s-5':'적대자',
+      's-6':'코믹릴리프','s-7':'트러블','s-8':'딜레마','s-9':'서스펜스','s-10':'클라이막스','s-11':'해결'
+    };
+    updateStorySentence(boardSummary, stepLabelMap[currentBoardStepId]);
+    
+    closeBoardInput();
+    renderBoard();
+    showReplyFlash('✓ 단계가 저장되었습니다');
+  } catch (e) {
+    alert('저장 중 오류가 발생했습니다.');
+  } finally {
+    saveBtn.textContent = originalText;
+    saveBtn.disabled = false;
+  }
+}
+function finalizeProject() {
+  const percent = Math.round((answerHistory.length / activeSteps.length) * 100);
+  if (percent < 60) {
+    alert('최소 60% 이상 기획을 채워주세요! (약 12단계 이상)');
     return;
   }
-
-  currentStep = idx;
-  const step = activeSteps[idx];
-
-  // 필드 업데이트 (스토리보드 패널)
-  activeSteps.forEach((s, i) => {
-    const el = $(s.fieldId);
-    if (el) {
-      const filled = answerHistory.find(h => h.stepId === s.id);
-      if (filled) {
-        el.textContent = filled.value.substring(0, 40);
-        el.classList.add(isSeller ? 'seller-filled' : 'filled');
-      }
-    }
-  });
-
-  updateProgressDots(idx, activeSteps.length);
-  updateActHud(step.id);
-
-  // 캐릭터 이모지 변경
-  const charEmoji = $('charEmoji');
-  if (charEmoji && step.visual) {
-    charEmoji.classList.add('char-anim-pop');
-    setTimeout(() => charEmoji.classList.remove('char-anim-pop'), 600);
-    charEmoji.textContent = step.visual;
-  }
-
-  // 배너 설정
-  if (step.stageIntro) {
-    setStageBanner(step.stageIntro);
-  } else {
-    setStageBanner('');
-  }
-
-  // 질문 표시 후 입력창 열기
-  showDialogText(step, () => {
-    showInput(false);
-    // 선택지가 있는 단계면 선택지도 표시
-    if (step.choices && step.choices.length) {
-      showChoices(step.choices);
-    }
-  });
-
-  $('backBtn').classList.toggle('show', idx > 0);
-  $('homeBtn').classList.add('show');
-  $('hudMode').classList.add('show');
+  finishFlow();
 }
 
 
@@ -1989,14 +2744,8 @@ ${storyContext ? `\n[지금까지 도출된 이야기 요소]:\n${storyContext}`
   }
 }
 
-// ── 3-ACT FRAMEWORK HUD ──
-// 단편: s-1~s-5 욕망 / s-6~s-8 갈등 / s-9~s-11 극복
-// 장편: l-1~l-7 욕망 / l-8~l-14 갈등 / l-15~l-20 극복
-const ACT_MAP = {
-  desire:  ['l-1','l-2','l-4','l-3b','l-3c','l-3','l-5','l-6','l-7','s-1','s-2','s-3','s-4','s-5'],
-  conflict:['l-8','l-9','l-10','l-11','l-12','l-13','l-14','s-6','s-7','s-8'],
-  overcome:['l-15','l-16','l-17','l-18','l-19','l-20','s-9','s-10','s-11']
-};
+// ── 3-ACT FRAMEWORK HUD ── 
+// (ACT_MAP moved to top)
 
 function updateActHud(stepId) {
   const hud = $('actHud');
@@ -2077,11 +2826,7 @@ ${collectedData}
         <div class="review-section-label strength">✦ 강점 ${parsed.strengths.length}가지</div>
         ${makeItems(parsed.strengths, 'strength')}
       </div>
-      <div class="review-section weakness">
-        <div class="review-section-label weakness">⚠ 논리적 약점 ${parsed.weaknesses.length}가지</div>
-        ${makeItems(parsed.weaknesses, 'weakness')}
-      </div>
-      <div class="review-section strategy">
+          <div class="review-section strategy">
         <div class="review-section-label strategy">◆ 전략적 제안 ${parsed.strategies.length}가지</div>
         ${makeItems(parsed.strategies, 'strategy')}
       </div>
@@ -2095,36 +2840,13 @@ ${collectedData}
   }
 }
 
-function goBack() {
-  if (currentStep <= 0) return;
-  
-  // 마지막 답변 이력 제거
-  const lastRes = answerHistory.pop();
-  
-  // 칩 마지막 제거
-  const chipsEl = $(isSeller ? 'seller-chips' : 'story-chips');
-  if (chipsEl && chipsEl.lastChild) chipsEl.removeChild(chipsEl.lastChild);
-
-  // 스토리보드 이전 단계 문장으로 복원
-  const prevHistory = answerHistory[answerHistory.length - 1];
-  if (prevHistory && prevHistory.boardValue) {
-    updateStorySentence(prevHistory.boardValue, null);
-  } else {
-    const box = $(isSeller ? 'seller-summary-box' : 'story-summary-box');
-    if (box) {
-      box.innerHTML = '<span class="sp-placeholder">대화를 진행하면 여기에 이야기가 한 문장으로 정리됩니다.</span>';
-      box.classList.remove('has-content', 'seller-content');
-    }
-  }
-
-  runStep(currentStep - 1);
-}
+// ── NAVIGATION HELPERS ──
+function goHome() { navTo('works'); }
 
 async function finishFlow() {
   hideInput();
   $('choicesBox').innerHTML = '';
 
-  // 시놉시스 섹션 미리 보이기 (로딩 상태)
   const synopsisWrapId = isSeller ? 'seller-synopsis-wrap' : 'consumer-synopsis-wrap';
   const synopsisBoxId  = isSeller ? 'seller-synopsis-box'  : 'story-synopsis-box';
   const synopsisWrap = $(synopsisWrapId);
@@ -2132,58 +2854,43 @@ async function finishFlow() {
   if (synopsisWrap) synopsisWrap.style.display = 'block';
   if (synopsisBox)  synopsisBox.innerHTML = '<span class="sp-synopsis-generating">시놉시스를 쓰고 있습니다...</span>';
 
-  // 스토리보드 패널 자동 열기
   if (!sheetOpen) toggleSheet();
 
-  // 수집된 모든 답변 정리
-  const steps = isSeller ? sellerSteps : consumerSteps;
   const collectedData = answerHistory.map(h => {
-    const s = steps.find(st => st.id === h.stepId);
+    const s = activeSteps.find(st => st.id === h.stepId);
     return s ? `- ${s.id}: ${h.boardValue || h.value}` : '';
   }).filter(Boolean).join('\n');
 
-  // AI 시놉시스 프롬프트
   const synopsisPrompt = isSeller
-    ? `다음은 템플릿 루틴 설계 정보입니다:\n${collectedData}\n\n이 정보를 바탕으로 앤가디장수가 보고 싶어할 매력적인 루틴 소개 문역본(3~5줄)을 작성해주세요. 느낏한 어조로 판매를 유도하는 커피 형식으로.`
-    : `다음은 웹소설 기획 정보입니다:\n${collectedData}\n\n이 정보를 바탕으로 웹소설 시놉시스를 200자 안팎으로 작성하세요.\n\n<시놉시스 형식>:\n[1줄 로그라인]\n\n[주인공 소개: 어떤 사람인지, 어떤 두려움과 결핍을 가진지]\n\n[핵심 갈등: 안타고니스트와의 대립, 묵일 결파]\n\n[이야기가 도달하는 감정적 진실]\n\n마냥: 쓰는 내내 읽지 모르게 임팅하는, 추심력이 낙래하는 한 문장으로 마무리.`;
+    ? `제품/루틴 설계 정보:\n${collectedData}\n\n이 정보를 바탕으로 매력적인 루틴 소개문(3~5줄)을 작성해주세요. 톤앤매너는 ${selectedCharName}스럽게.`
+    : `스토리 기획 정보:\n${collectedData}\n\n이 정보를 바탕으로 웹소설 시놉시스를 작성하세요.\n[로그라인], [주인공], [갈등], [주제]를 포함하여 200자 내외로 작성하세요.`;
 
   let synopsis = '';
   try {
-    const endpoint = '/api/chat';
-    const res = await fetch(endpoint, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+    const res = await fetch('/api/chat', {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        model: 'gpt-4o',
-        max_tokens: 800,
-        temperature: 0.85,
         messages: [
-          { role: 'system', content: `당신은 웹소설 시놉시스 전문 작가입니다. ${selectedCharName}의 어투와 스타일로, 감정적이고 흡인력 있게 작성하세요.` },
+          { role: 'system', content: `당신은 시놉시스 전문 작가입니다. ${selectedCharName}의 말투로 작성하세요.` },
           { role: 'user', content: synopsisPrompt }
-        ]
+        ],
+        projectContext: _currentLoadedProject || { title: "새 작품", answerHistory: answerHistory }
       })
     });
-    
-    if (!res.ok) {
-      const errText = await res.text();
-      throw new Error(`API 오류 (${res.status}): ${errText}`);
-    }
-    const data = await res.json();
-    synopsis = data.choices?.[0]?.message?.content?.trim() || '시놉시스 생성에 실패했습니다.';
+    const d = await res.json();
+    synopsis = d.choices?.[0]?.message?.content || '시놉시스 생성에 실패했습니다.';
   } catch(e) {
     synopsis = `⚠️ 시놉시스 생성 오류: ${e.message}`;
   }
 
-  // 스토리보드 시놉시스 박스 업데이트
   if (synopsisBox) {
     synopsisBox.innerHTML = synopsis.replace(/\n/g, '<br>');
     synopsisBox.classList.add('ready');
   }
 
-  // 작품 자동 저장
   saveProjectToStorage(synopsis);
 
-  // 대화창에도 표시 + 평론가 자동 등판
   sceneTransition(isSeller ? 'scene-seller' : 'scene-story', () => {
     setStageBanner('');
     const intro = isSeller
@@ -2192,23 +2899,13 @@ async function finishFlow() {
 
     showDialogText({ question: intro + '\n\n' + synopsis }, () => {
       const finChoices = isSeller
-        ? ['마켓에 바로 등록하기', '시트 수정하기', '추가 질문 설계']
-        : ['🔍 10년차 평론가 리뷰 받기', '📁 내 작품 대시보드', '새 기획 시작'];
+        ? ['마켓에 바로 등록하기', '시트 수정하기', '새 기획 시작']
+        : ['🔍 10년차 평론가 리뷰 받기', '새 기획 시작'];
       setTimeout(() => showChoices(finChoices, (c) => {
-        hideInput();
-        showReplyFlash(c);
-        if (c === '새 기획 시작') {
-          setTimeout(() => goHome(), 1000);
-        } else if (c === '🔍 10년차 평론가 리뷰 받기') {
-          setTimeout(() => openReviewer(), 600);
-        } else if (c === '📁 내 작품 대시보드') {
-          window.location.href = 'dashboard.html';
-        }
+        if (c === '새 기획 시작') goHome();
+        else if (c === '🔍 10년차 평론가 리뷰 받기') openReviewer();
+        else showReplyFlash(c);
       }), 700);
-
-      if (!isSeller) {
-        setTimeout(() => showReplyFlash('📋 10년차 평론가가 대기 중입니다...'), 3000);
-      }
     });
   });
 }
@@ -2218,21 +2915,12 @@ function selectMode(m) {
   isSeller = (m === 'seller');
   const isVerify = (m === 'verify');
 
-  // hide mode cards with fade
-  const cards = $('modeCards');
-  cards.style.opacity = '0';
-  setTimeout(() => cards.style.display='none', 800);
-
   // setup HUD
-  const badge = $('hudMode');
-  if (isSeller) {
-    badge.textContent = '🛍️ 루틴 스튜디오';
-  } else if (isVerify) {
-    badge.textContent = '🔍 작품 검증 모드';
-  } else {
-    badge.textContent = '📖 스토리 빌드업';
-  }
-  badge.className = `hud-mode show ${m}`;
+  const headTitle = $('mainHud').querySelector('h1');
+  if (headTitle) headTitle.style.display = 'none'; // Hide section title when in chat
+  
+  $('mainHud').style.display = 'flex';
+  $('chatStatusIndicator').style.display = (m === 'projectChat' || _currentLoadedProject) ? 'flex' : 'none';
 
   // setup char
   if (isSeller) {
@@ -2248,7 +2936,6 @@ function selectMode(m) {
     activeSteps = consumerSteps;
   }
   
-  // hide storyboard sheet for verify mode as it's conversational
   if (isVerify) {
     $('sheetToggle').style.display = 'none';
   } else {
@@ -2259,6 +2946,8 @@ function selectMode(m) {
   initProgressDots(activeSteps.length);
   currentStep = 0;
   answerHistory = [];
+
+  navTo('chat');
 
   if (isSeller) {
     sceneTransition('scene-seller', () => {
@@ -2275,14 +2964,26 @@ function selectMode(m) {
       $('charFigure').classList.add('show');
       showDialogText('작품 검증 모드에 오신 것을 환영합니다.\n원하시는 검증 분야의 페르소나를 선택해 주세요.', () => {
         setTimeout(() => {
-          const overlay = $('verifyCharOverlay');
-          overlay.classList.add('show');
+          navTo('verify');
         }, 500);
+      });
+    });
+  } else if (m === 'projectChat') {
+    selectedCharName = '작품 편집자';
+    $('charName').textContent = selectedCharName;
+    $('dialogSpeaker').textContent = selectedCharName;
+    currentStep = 999;
+    sceneTransition('scene-verify', () => {
+      $('charFigure').classList.add('show');
+      $('routineBoard').style.display = 'none';
+      showDialogText('반갑습니다. 작가님의 작품 편집자입니다.\n\n기획하신 내용을 바탕으로 함께 대화하며 설정을 다듬어 볼까요?\n궁금한 점이나 막히는 부분이 있다면 무엇이든 물어보세요.', () => {
+        showInput(false);
       });
     });
   } else {
     sceneTransition('scene-consumer', () => {
       $('charFigure').classList.add('show');
+      $('routineBoard').style.display = 'none';
       showDialogText('스토리 빌드업을 시작합니다.\n먼저 원하시는 기획 루틴을 골라주세요.', () => {
         setTimeout(() => {
           const overlay = $('routineOverlay');
@@ -2300,19 +3001,15 @@ function startRoutine(name) {
   showReplyFlash(name);
   
   if (!isSeller) {
-    if (name === '단편 기획 플랜') {
-      activeSteps = shortSteps;
-    } else {
-      activeSteps = consumerSteps;
-    }
-    
-    // Show character select for consumers
+    activeSteps = (name === '단편 기획 플랜') ? shortSteps : consumerSteps;
     setTimeout(() => {
       $('charOverlay').classList.add('show');
     }, 600);
   } else {
-    // Sellers run immediately
-    setTimeout(() => runStep(0), 1000);
+    setTimeout(() => {
+      navTo('planning-board');
+      renderBoard();
+    }, 1000);
   }
 }
 
@@ -2321,12 +3018,13 @@ function selectCharacter(name) {
   $('charName').textContent = name;
   $('dialogSpeaker').textContent = name;
   
-  const charOverlay = $('charOverlay');
-  charOverlay.style.opacity = '0';
-  setTimeout(() => charOverlay.classList.remove('show'), 500);
-  
+  $('charOverlay').classList.remove('show');
   showReplyFlash(`${name} 선택됨`);
-  setTimeout(() => runStep(0), 1000);
+  
+  setTimeout(() => {
+    navTo('planning-board'); 
+    renderBoard();
+  }, 800);
 }
 
 function selectVerifyCharacter(name) {
@@ -2349,55 +3047,7 @@ function selectVerifyCharacter(name) {
 }
 
 function goHome() {
-  // Revert all visual fields
-  activeSteps.forEach(step => {
-    const el = $(step.fieldId);
-    if (el) {
-      el.textContent = '—';
-      el.classList.remove('filled', 'seller-filled', 'flash', 'seller-flash');
-    }
-  });
-
-  hideInput();
-  $('choicesBox').innerHTML = '';
-  setStageBanner('');
-  $('backBtn').classList.remove('show');
-  $('homeBtn').classList.remove('show');
-  $('hudProgress').style.opacity = '0';
-  $('hudMode').classList.remove('show');
-  
-  // reset overlay styles just in case
-  const vo = $('verifyCharOverlay');
-  if (vo) { vo.classList.remove('show'); vo.style.opacity = ''; }
-  
-  if(sheetOpen) toggleSheet();
-  closeReviewer();
-  const actHud = $('actHud');
-  if (actHud) actHud.classList.remove('show');
-  
-  const rb = $('routineBuilder');
-  if (rb) rb.style.display = 'none';
-  const da = document.querySelector('.dialog-area');
-  if (da) da.style.display = 'flex';
-  
-  sceneTransition('scene-onboard', () => {
-    $('charFigure').className = 'char-figure show';
-    $('dialogBox').className = 'dialog-box';
-    $('dialogExample').innerHTML = ''; // reset example
-    $('dialogSpeaker').textContent = '조수 어시스턴트';
-    
-    // Use dummy step for the welcome message
-    const homeStep = { question: '환영합니다, 작가님.\nAI 어시스턴트 코파일럿입니다.\n어떤 작업을 원하시나요?' };
-    showDialogText(homeStep, () => {
-      setTimeout(() => {
-        $('modeCards').style.display = 'flex';
-        // forced reflow for fade in
-        void $('modeCards').offsetWidth;
-        $('modeCards').style.opacity = '1';
-        $('modeCards').classList.add('show');
-      }, 500);
-    });
-  });
+  navTo('works');
 }
 // ── ROUTINE BUILDER LOGIC ──
 let builderSteps = [
@@ -2495,25 +3145,12 @@ function saveBuilderRoutine() {
   runStep(0);
 }
 
-// ── SUPABASE + PROJECT STORAGE ──
-const SUPABASE_URL = 'https://mvygorffhbshubqkerpo.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im12eWdvcmZmaGJzaHVicWtlcnBvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2MzU3ODQsImV4cCI6MjA4OTIxMTc4NH0.p7usz-l53gmibWpswzTFvhzmR3UX7QkWb3oPsy3A50c';
-let _sb = null;
-let _currentUser = null;
-
-function getSb() {
-  if (!_sb && window.supabase) {
-    _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-  }
-  return _sb;
-}
-
+// ── HELPERS & UTILS ──
+function getSb() { return _sb; }
 async function getCurrentUser() {
-  if (_currentUser) return _currentUser;
-  const sb = getSb();
-  if (!sb) return null;
-  const { data: { user } } = await sb.auth.getUser();
-  _currentUser = user;
+  if (currentUser) return currentUser;
+  const { data: { user } } = await _sb.auth.getUser();
+  currentUser = user;
   return user;
 }
 
@@ -2582,17 +3219,33 @@ async function saveProjectToStorage(synopsis) {
 
 // ── INIT ──
 (async () => {
-  // Supabase 세션 확인
-  const sb = getSb();
-  if (sb) {
-    const { data: { session } } = await sb.auth.getSession();
-    if (session) _currentUser = session.user;
-  }
+  // 1. Run Intro First
+  await runIntro();
 
+  // 2. Check Session
+  const { data: { session } } = await getSb().auth.getSession();
+  if (!session) {
+    window.location.href = 'login.html';
+    return;
+  }
+  currentUser = session.user;
+
+  // Sidebar User Info
+  const nickname = currentUser.user_metadata?.nickname || currentUser.user_metadata?.full_name || currentUser.email.split('@')[0] || '작가님';
+  $('userNameDisplay').textContent = nickname;
+  $('userAvatar').textContent = nickname[0].toUpperCase();
+
+  // Initial View
+  navTo('works');
+  loadMyProjects();
+  
   $('charFigure').classList.add('show');
-  showDialogText('환영합니다, 작가님.\nAI 어시스턴트 코파일럿입니다.\n어떤 작업을 원하시나요?', () => {
-    setTimeout(() => { $('modeCards').classList.add('show'); }, 500);
-  });
+  
+  const loadData = sessionStorage.getItem('mantra_load_data');
+  if (loadData) {
+    const pid = sessionStorage.getItem('mantra_load_pid');
+    if (pid) selectProjectForChat(pid);
+  }
 })();
 
 // ── KEYBOARD ──
