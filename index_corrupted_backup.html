@@ -78,40 +78,39 @@ body {
 
 /* ── SIDEBAR ── */
 .sidebar {
-  width: 240px; background: rgba(10,10,18,0.95); border-right: 1px solid rgba(255,255,255,0.08);
+  width: 280px; background: rgba(10,10,18,0.95); border-right: 1px solid rgba(255,255,255,0.08);
   display: flex; flex-direction: column; z-index: 100; backdrop-filter: var(--blur);
   transition: transform 0.3s ease;
-  flex-shrink: 0;
 }
 .sidebar-header {
   padding: 32px 24px; border-bottom: 1px solid rgba(255,255,255,0.05);
 }
 .sidebar-logo {
-  font-size: 18px; font-weight: 900; color: var(--text); display: flex; align-items: center; gap: 8px; margin-bottom: 24px;
+  font-size: 20px; font-weight: 900; color: var(--text); display: flex; align-items: center; gap: 8px; margin-bottom: 24px;
 }
 .sidebar-logo span { color: var(--purple); }
 
 .sidebar-user {
-  display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.03); 
-  padding: 10px 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);
+  display: flex; align-items: center; gap: 12px; background: rgba(255,255,255,0.03); 
+  padding: 12px 16px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05);
 }
-.user-avatar { width: 28px; height: 28px; background: var(--purple); border-radius: 6px; font-weight: 800; display: flex; align-items: center; justify-content: center; font-size: 12px; }
+.user-avatar { width: 32px; height: 32px; background: var(--purple); border-radius: 8px; font-weight: 800; display: flex; align-items: center; justify-content: center; font-size: 13px; }
 .user-info { flex: 1; overflow: hidden; }
-.user-name { font-size: 13px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.logout-btn { font-size: 10px; color: var(--text-dim); cursor: pointer; border: none; background: none; padding: 0; text-align: left; width: 100%; }
+.user-name { font-size: 14px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.logout-btn { font-size: 11px; color: var(--text-dim); cursor: pointer; border: none; background: none; padding: 0; }
 .logout-btn:hover { color: #fca5a5; text-decoration: underline; }
 
-.sidebar-menu { flex: 1; padding: 24px 12px; display: flex; flex-direction: column; gap: 4px; overflow-y: auto; }
+.sidebar-menu { flex: 1; padding: 24px 12px; display: flex; flex-direction: column; gap: 8px; overflow-y: auto; }
 .menu-item {
-  display: flex; align-items: center; gap: 12px; padding: 10px 16px; 
-  border-radius: 10px; cursor: pointer; color: var(--text-dim); font-size: 14px; font-weight: 600;
+  display: flex; align-items: center; gap: 12px; padding: 12px 16px; 
+  border-radius: 12px; cursor: pointer; color: var(--text-dim); font-size: 15px; font-weight: 600;
   transition: all 0.3s;
 }
 .menu-item:hover { background: rgba(255,255,255,0.05); color: var(--text); }
 .menu-item.active { background: rgba(139, 92, 246, 0.1); color: var(--purple-light); border: 1px solid rgba(139, 92, 246, 0.2); }
-.menu-item .icon { font-size: 16px; }
+.menu-item .icon { font-size: 18px; }
 
-.sidebar-footer { padding: 20px 16px; }
+.sidebar-footer { padding: 24px; }
 .new-project-btn {
   width: 100%; padding: 16px; background: var(--purple); color: white; border: none; border-radius: 16px;
   font-size: 14px; font-weight: 800; cursor: pointer; box-shadow: 0 10px 20px var(--purple-glow);
@@ -1161,15 +1160,15 @@ body {
   .input-wrapper { border-radius: 24px; padding: 6px 6px 6px 16px; }
   .input-box { height:40px; }
   
-  .sidebar {
-    display: none;
-  }
-  .vn-wrapper {
-    min-height: calc(100vh - 72px);
+  .mode-cards {
+    flex-direction: column;
+    padding: 24px;
     overflow-y: auto;
+    align-items: stretch;
   }
-  .mobile-tabs {
-    display: flex;
+  .mode-card {
+    flex: none;
+    padding: 40px 24px;
   }
   
   .routine-panel {
@@ -1183,67 +1182,9 @@ body {
   .sheet-panel { width: 320px; right: -320px; padding: 24px; }
   .sheet-toggle { padding: 20px 10px; font-size: 11px; }
 }
-/* ── INTRO SEQUENCE ── */
-#intro-overlay {
-  position: fixed; inset: 0; z-index: 9999; background: #030305;
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  transition: transform 1s cubic-bezier(0.16, 1, 0.3, 1), opacity 1s ease;
-  cursor: pointer; overflow: hidden;
-}
-.intro-container {
-  position: absolute; display: flex; flex-direction: column; align-items: center; justify-content: center;
-  text-align: center; width: 100%; transition: all 1s ease;
-}
-.intro-line {
-  font-size: 18px; color: rgba(255,255,255,0); letter-spacing: 0.3em; margin: 12px 0;
-  transition: color 1s ease, transform 1.5s ease; transform: translateY(10px);
-}
-.intro-line.show { color: rgba(255,255,255,0.4); transform: translateY(0); }
-
-.intro-solve-main {
-  font-size: 28px; font-weight: 800; color: #fff; opacity: 0; transform: scale(0.95);
-  transition: all 1s ease; margin-bottom: 12px; filter: blur(10px);
-}
-.intro-solve-sub {
-  font-size: 14px; color: var(--purple-light); opacity: 0; transform: translateY(10px);
-  transition: all 1s ease 0.3s;
-}
-.intro-solve-main.show { opacity: 1; transform: scale(1); filter: blur(0); }
-.intro-solve-sub.show { opacity: 0.8; transform: translateY(0); }
-
-#intro-logo { opacity: 0; transform: translateY(20px); filter: blur(10px); transition: all 1s ease; }
-#intro-logo.show { opacity: 1; transform: translateY(0); filter: blur(0); }
-.intro-logo-img { width: 64px; height: 64px; margin-bottom: 16px; }
-.intro-logo-text { font-size: 24px; font-weight: 900; color: #fff; }
-.intro-logo-text span { color: var(--purple); }
-
-#intro-overlay.exit { transform: translateY(-100%); opacity: 0; pointer-events: none; }
-#intro-overlay.hide { display: none; }
-
-@media (max-width: 768px) {
-  .intro-solve-main { font-size: 20px; }
-  .intro-line { font-size: 15px; }
-}
 </style>
 </head>
 <body>
-
-<!-- INTRO OVERLAY -->
-<div id="intro-overlay">
-  <div id="intro-problems" class="intro-container">
-    <div class="intro-line" id="p1">작가의 설정 충돌</div>
-    <div class="intro-line" id="p2">복선 누락</div>
-    <div class="intro-line" id="p3">캐릭터 일관성 오류</div>
-  </div>
-  <div id="intro-solution" class="intro-container" style="display:none">
-    <div class="intro-solve-main" id="s1">이제 혼자 싸우지 않아도 됩니다.</div>
-    <div class="intro-solve-sub" id="s2">당신의 이야기를 기억하는 AI 창작 비서</div>
-  </div>
-  <div id="intro-logo" class="intro-container" style="display:none">
-    <img src="images/로고만(흰).png" alt="logo" class="intro-logo-img">
-    <div class="intro-logo-text">Mantra <span>Copilot</span></div>
-  </div>
-</div>
 
 <!-- SIDEBAR -->
 <div class="sidebar" id="sidebar">
@@ -1308,11 +1249,8 @@ body {
 
   <!-- VIEW: TODAY'S TASKS -->
   <section id="view-tasks" class="view-section">
-    <div class="hud" style="justify-content: space-between; align-items: center; padding: 20px 40px;">
-      <h1 style="font-size:24px; font-weight:800;">✍️ 오늘의 작업</h1>
-      <div id="currentProjectBadge" style="background:rgba(139,92,246,0.1); border:1px solid rgba(139,92,246,0.2); padding:6px 16px; border-radius:100px; font-size:12px; font-weight:700; color:var(--purple-light);">
-        선택됨: <span id="selectedProjectNameDisplay">없음</span>
-      </div>
+    <div class="hud" style="justify-content: flex-start; gap:20px;">
+      <h1 style="font-size:24px; font-weight:800;">오늘의 작업</h1>
     </div>
     <div class="task-grid" id="taskGrid">
       <div class="task-card" onclick="startWorkTask('outline')">
@@ -1390,7 +1328,7 @@ body {
   </section>
 
   <!-- VIEW: PLANNING (LEGACY BOARD) -->
-  <section id="view-new-project" class="view-section">
+  <section id="view-planning" class="view-section">
     <!-- MODE CARDS -->
     <div class="mode-cards" id="modeCards" style="position:static; padding:40px; background:none; opacity:1; transform:none; display:flex;">
       <div class="mode-card consumer" onclick="selectMode('consumer')">
@@ -1477,7 +1415,7 @@ body {
   </section>
 
   <!-- REPLACING OLD CHAT section with appropriate wrappers if needed, but let's keep it for legacy routines -->
-  <section id="view-chat-legacy" class="view-section">
+  <section id="view-chat" class="view-section">
     <div class="hud-left">
       <div style="display:flex; gap:8px;">
         <button class="home-btn" id="homeBtn" onclick="goHome()" title="처음으로">
@@ -1509,8 +1447,8 @@ body {
   </div>
 
     <!-- CHARACTER STAGE -->
-    <div class="char-stage" id="charStageLegacy">
-      <div class="char-figure" id="charFigureLegacy">
+    <div class="char-stage" id="charStage">
+      <div class="char-figure" id="charFigure">
         <div class="char-text" id="charEmoji">Copilot</div>
         <div class="char-image-bg" id="charImage"></div>
         <div class="char-name-plate" id="charName">조수 어시스턴트</div>
@@ -1549,8 +1487,8 @@ body {
     </div>
   </section>
 
-  <!-- VIEW: PLANNING BOARD -->
-  <section id="view-planning-board" class="view-section">
+  <!-- VIEW: PLANNING (Integrated content) -->
+  <section id="view-planning" class="view-section">
     <div id="planning-board-root"></div>
     <!-- Routine Builder (Relocated) -->
     <div class="routine-builder" id="routineBuilder" style="display:none; position:static; margin:40px; width:auto;">
@@ -1567,26 +1505,6 @@ body {
   </section>
 
 </div> <!-- /vn-wrapper -->
-
-<!-- INPUT POPUP (Board Mode) -->
-<div class="input-popup" id="inputPopup">
-  <div class="popup-content">
-    <div class="popup-header">
-      <div class="popup-title-wrap">
-        <div class="popup-visual" id="popupVisual">🎯</div>
-        <div class="popup-q" id="popupQuestion">질문을 불러오는 중...</div>
-      </div>
-      <button class="popup-close" onclick="closeBoardInput()">✕</button>
-    </div>
-    <div class="popup-body">
-      <textarea class="popup-textarea" id="popupTextArea" placeholder="답변을 입력해주세요..."></textarea>
-      <div class="popup-actions">
-        <button class="popup-save-btn" onclick="saveBoardStep()">저장하기</button>
-        <button class="popup-insight-btn" onclick="openInsightPanel()">✦ 인사이트</button>
-      </div>
-    </div>
-  </div>
-</div>
 <!-- REVIEWER OVERLAY -->
 <div class="reviewer-overlay" id="reviewerOverlay" onclick="closeReviewer()"></div>
 
@@ -1683,97 +1601,25 @@ const _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 let currentUser = null;
 let myProjects = [];
 let selectedProject = null;
-let currentChatRoutine = null; // 'outline', 'tone', 'foreshadow'
-let isSeller = false;
-let currentStep = 0;
-let activeSteps = [];
-let answerHistory = [];
-let selectedCharName = '조수 어시스턴트';
+let currentRoutine = null; // 'outline', 'tone', 'foreshadow'
 
 // ── SHORTHAND ──
 function $(id){ return document.getElementById(id); }
 
-// ── INTRO LOGIC ──
-let introResolve;
-let introTimeouts = [];
-
-function runIntro() {
-  return new Promise((resolve) => {
-    if (sessionStorage.getItem('mantra_intro_shown')) {
-      if ($('intro-overlay')) $('intro-overlay').style.display = 'none';
-      return resolve();
-    }
-    
-    introResolve = resolve;
-    const overlay = $('intro-overlay');
-    
-    // Add skip listeners
-    overlay.addEventListener('click', skipIntro);
-    window.addEventListener('keydown', (e) => {
-      if (e.code === 'Space' || e.key === ' ') {
-        e.preventDefault();
-        skipIntro();
-      }
-    });
-
-    // Stage 1: Problems (0-3s)
-    introTimeouts.push(setTimeout(() => $('p1').classList.add('show'), 300));
-    introTimeouts.push(setTimeout(() => $('p2').classList.add('show'), 900));
-    introTimeouts.push(setTimeout(() => $('p3').classList.add('show'), 1500));
-    
-    // Stage 2: Solution (3-4s)
-    introTimeouts.push(setTimeout(() => {
-      $('intro-problems').style.opacity = '0';
-      $('intro-problems').style.filter = 'blur(10px)';
-      introTimeouts.push(setTimeout(() => $('intro-problems').style.display = 'none', 1000));
-      
-      $('intro-solution').style.display = 'flex';
-      introTimeouts.push(setTimeout(() => {
-        $('s1').classList.add('show');
-        $('s2').classList.add('show');
-      }, 50));
-    }, 3000));
-    
-    // Stage 3: Logo (4-5s)
-    introTimeouts.push(setTimeout(() => {
-      $('intro-solution').style.opacity = '0';
-      $('intro-solution').style.filter = 'blur(10px)';
-      introTimeouts.push(setTimeout(() => $('intro-solution').style.display = 'none', 1000));
-      
-      $('intro-logo').style.display = 'flex';
-      introTimeouts.push(setTimeout(() => $('intro-logo').classList.add('show'), 50));
-    }, 4000));
-    
-    // Stage 4: Exit (5.5s)
-    introTimeouts.push(setTimeout(() => {
-      finishIntro();
-    }, 5500));
-  });
+// ── AUTH CHECK ──
+async function checkSession() {
+  const { data: { session } } = await _sb.auth.getSession();
+  if (!session) {
+    window.location.href = 'login.html';
+    return;
+  }
+  currentUser = session.user;
+  const nickname = currentUser.user_metadata?.nickname || currentUser.email?.split('@')[0] || '작가님';
+  $('userNameDisplay').textContent = nickname;
+  $('userAvatar').textContent = nickname.charAt(0).toUpperCase();
+  
+  loadMyProjects();
 }
-
-function finishIntro() {
-  if (!introResolve) return;
-  
-  introTimeouts.forEach(t => clearTimeout(t));
-  introTimeouts = [];
-  
-  const overlay = $('intro-overlay');
-  overlay.classList.add('exit');
-  sessionStorage.setItem('mantra_intro_shown', 'true');
-  
-  const resolve = introResolve;
-  introResolve = null;
-  
-  setTimeout(() => {
-    overlay.classList.add('hide');
-    resolve();
-  }, 1000);
-}
-
-function skipIntro() {
-  finishIntro();
-}
-
 
 // ── PROJECT LIST ──
 async function loadMyProjects() {
@@ -1823,55 +1669,12 @@ function selectProjectForChat(pid) {
   selectedProject = myProjects.find(p => p.id === pid);
   if (!selectedProject) return;
   
-  showReplyFlash(`'${selectedProject.title}' 맥락 로드됨`);
-  
-  // Enter universal chat mode directly
-  currentChatRoutine = 'general';
-  const persona = "창작 비서";
-  const greeting = getGreetingForRoutine('general');
-  
-  $('contextProjectName').textContent = `${selectedProject.title} (${persona})`;
-  $('contextChatHistory').innerHTML = '';
-  
-  appendChatMessage('assistant', greeting);
+  $('contextProjectName').textContent = `${selectedProject.title} 맥락으로 대화 중`;
+  $('contextDialogText').innerHTML = `<strong>${selectedProject.title}</strong> 작품의 설정을 모두 기억하고 있습니다. 어떤 작업을 도와드릴까요?`;
   navTo('chat-context');
 }
 
 // ── CONTEXT CHAT ──
-function startWorkTask(taskType) {
-  if (!selectedProject) {
-    alert('먼저 작품을 선택해주세요!');
-    navTo('works');
-    return;
-  }
-  
-  currentChatRoutine = taskType;
-  const persona = getPersonaForRoutine(taskType);
-  const greeting = getGreetingForRoutine(taskType);
-  
-  $('contextProjectName').textContent = `${selectedProject.title} (${persona})`;
-  $('contextChatHistory').innerHTML = ''; // Clear previous chat
-  
-  appendChatMessage('assistant', greeting);
-  navTo('chat-context');
-  
-  setTimeout(() => $('contextInputBox').focus(), 300);
-}
-
-function getPersonaForRoutine(type) {
-  if (type === 'outline') return "에피소드 설계자";
-  if (type === 'tone') return "대사 전문가";
-  if (type === 'foreshadow') return "플롯 검토가";
-  return "창작 비서";
-}
-
-function getGreetingForRoutine(type) {
-  if (type === 'outline') return `반갑습니다. **'${selectedProject.title}'** 이번 화의 개요를 함께 짜볼까요? 핵심 사건을 말씀해 주세요.`;
-  if (type === 'tone') return `캐릭터들의 대사를 검토해 봅시다. 특정 장면의 대사를 보여주시면 **'${selectedProject.title}'** 캐릭터 성격에 맞춰 다듬어 드릴게요.`;
-  if (type === 'foreshadow') return `복선 체크 시간입니다. **'${selectedProject.title}'** 현재 장면에서 심고 싶은 복선이나 나중에 해결할 설정을 공유해 주세요.`;
-  return `안녕하세요! **'${selectedProject.title}'** 작품에 대해 무엇을 도와드릴까요?`;
-}
-
 async function handleContextSend() {
   const box = $('contextInputBox');
   const userText = box.value.trim();
@@ -1884,18 +1687,6 @@ async function handleContextSend() {
   
   try {
     const systemPrompt = getSystemPromptForRoutine();
-    const stepLabelMap = {
-      'l-1':'콘셉트','l-2':'장르','l-3':'로그라인','l-3b':'배경','l-3c':'동기','l-4':'주인공','l-5':'적대자',
-      'l-6':'프롤로그','l-7':'문제직면','l-8':'미끼','l-9':'검증','l-10':'신념',
-      'l-11':'발전','l-12':'가짜승리','l-13':'방심','l-14':'혼란','l-15':'각성',
-      'l-16':'초긴박','l-17':'클라이막스','l-18':'반전','l-19':'이완','l-20':'에필로그'
-    };
-
-    const formattedHistory = (selectedProject.answer_history || []).map(h => {
-      const label = stepLabelMap[h.stepId] || h.stepId;
-      return { stepId: label, value: h.boardValue || h.value };
-    });
-
     const response = await fetch('/api/chat', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -1908,7 +1699,7 @@ async function handleContextSend() {
           title: selectedProject.title,
           genre: selectedProject.genre,
           synopsis: selectedProject.synopsis,
-          answerHistory: formattedHistory
+          answerHistory: selectedProject.answer_history
         }
       })
     });
@@ -1922,9 +1713,9 @@ async function handleContextSend() {
 }
 
 function getSystemPromptForRoutine() {
-  if (currentChatRoutine === 'outline') return "당신은 유능한 드라마/웹소설 작가입니다. 작품 설정을 완벽히 이해하고 있으며, 작가가 이번 화의 개요를 짤 때 흥미로운 전개와 갈등 요소를 제안하세요.";
-  if (currentChatRoutine === 'tone') return "당신은 대사 스페셜리스트입니다. 캐릭터의 성격과 말투가 설정에 부합하는지, 그리고 독자에게 매력적으로 다가가는지 날카롭게 분석하고 대안을 제시하세요.";
-  if (currentChatRoutine === 'foreshadow') return "당신은 치밀한 서사 검토자입니다. 작품 전체의 복선과 설정을 대조하여 모순되는 부분을 지적하고, 서사적 완결성을 높일 수 있는 디테일을 제안하세요.";
+  if (currentRoutine === 'outline') return "당신은 유능한 드라마/웹소설 작가입니다. 작품 설정을 완벽히 이해하고 있으며, 작가가 이번 화의 개요를 짤 때 흥미로운 전개와 갈등 요소를 제안하세요.";
+  if (currentRoutine === 'tone') return "당신은 대사 스페셜리스트입니다. 캐릭터의 성격과 말투가 설정에 부합하는지, 그리고 독자에게 매력적으로 다가가는지 날카롭게 분석하고 대안을 제시하세요.";
+  if (currentRoutine === 'foreshadow') return "당신은 치밀한 서사 검토자입니다. 작품 전체의 복선과 설정을 대조하여 모순되는 부분을 지적하고, 서사적 완결성을 높일 수 있는 디테일을 제안하세요.";
   return "당신은 작가의 창작을 돕는 유능한 AI 비서입니다. 작품 설정을 바탕으로 작가의 질문에 성실히 답변하세요.";
 }
 
@@ -1958,7 +1749,8 @@ async function logout() {
 
 // Initialize on load
 document.addEventListener('DOMContentLoaded', () => {
-  spawnParticles();
+  checkSession();
+  // ... rest of original init ...
 });
 function spawnParticles() {
   const container = document.getElementById('particles');
@@ -1993,24 +1785,9 @@ function navTo(viewId) {
   // Mobile tabs support
   const tabIdxMap = { 'works': 0, 'tasks': 1, 'new-project': 2, 'verify': 3 };
   const tabs = document.querySelectorAll('.tab-item');
-  const viewToTabMap = { 'works': 0, 'tasks': 1, 'new-project': 2, 'verify': 3 };
-  if (viewToTabMap[viewId] !== undefined) {
-    tabs.forEach(t => t.classList.remove('active'));
-    if (tabs[viewToTabMap[viewId]]) tabs[viewToTabMap[viewId]].classList.add('active');
-  }
+  if (tabs[tabIdxMap[viewId]]) tabs[tabIdxMap[viewId]].classList.add('active');
 
-  if (viewId === 'works') {
-    loadMyProjects();
-  }
-  
-  if (viewId === 'tasks') {
-    if (!selectedProject) {
-      alert('작업을 시작할 작품을 먼저 선택해 주세요!');
-      navTo('works');
-      return;
-    }
-    $('selectedProjectNameDisplay').textContent = selectedProject.title;
-  }
+  if (viewId === 'works') loadMyProjects();
   
   if (viewId === 'new-project') {
     // Show mode selection for new projects
@@ -2020,14 +1797,50 @@ function navTo(viewId) {
     if (rb) rb.style.display = 'none';
     const modeCards = $('modeCards');
     if (modeCards) {
-      modeCards.classList.add('show');
       modeCards.style.display = 'flex';
       modeCards.style.opacity = '1';
-      modeCards.style.pointerEvents = 'all';
     }
   }
 }
 
+// ── TASK START ──
+function startWorkTask(taskType) {
+  if (!_currentLoadedProject) return;
+  
+  let persona = "작품 편집자";
+  let greeting = "";
+  
+  if (taskType === 'outline') {
+    greeting = "반갑습니다. 이번 에피소드의 전체적인 흐름을 잡아볼까요? 작가님이 생각하시는 핵심 사건을 말씀해 주세요.";
+  } else if (taskType === 'tone') {
+    greeting = "캐릭터들의 생동감 넘치는 대사를 검토해 봅시다. 특정 장면의 대사를 보여주시면 캐릭터 성격에 맞춰 다듬어 드릴게요.";
+  } else if (taskType === 'foreshadow') {
+    greeting = "이야기의 정교함을 더할 복선 체크 시간입니다. 현재 장면에서 뿌려두고 싶은 복선이나, 나중에 회수할 설정을 말씀해 주세요.";
+  }
+  
+  selectedCharName = persona;
+  $('charName').textContent = persona;
+  $('dialogSpeaker').textContent = persona;
+  currentStep = 999; // Free chat mode
+  
+  navTo('chat');
+  $('chatStatusIndicator').style.display = 'flex';
+  $('mainHud').style.display = 'flex';
+  
+  showDialogText(greeting, () => {
+    showInput(false);
+  });
+}
+
+// ── STATE ──
+let isSeller = false;
+let currentStep = 0;
+let activeSteps = [];
+let sheetOpen = false;
+let typing = false;
+let answerHistory = [];
+let selectedCharName = '조수 어시스턴트';
+let _currentLoadedProject = null; // Currently selected project context
 
 // ── SHEET TOGGLE ──
 function toggleSheet() {
@@ -2087,119 +1900,73 @@ const sellerSteps = [
   { id:'s-q1',    visual:'💬', stageIntro:'여기서는 루틴의 첫 번째 질문을 설계합니다.\n창작자들을 몰입시킬 매력적인 질문을 작성해주세요.', question:'작가님만의 첫 번째 기획 질문은 무엇인가요?', example:'예시: 주인공이 절대 들키고 싶지 않은 흑역사는 무엇인가요?', choices:['주인공이 절대 들키고 싶지 않은 흑역사는?', '주인공의 가장 큰 결핍은?', '이야기의 시작을 알리는 발단 사건은?'], fieldId:'s-q1' },
   { id:'s-q1c',   visual:'🔘', stageIntro:null, question:'이 질문에 제안용 선택지를 추가하시겠어요?', example:'예시: [신분 위조], [과거의 살인], [금지된 사랑] 같은 선택지를 주고 싶어', choices:['미리 세팅된 예시 선택지 제공','자유 입력 형태로만 진행'], fieldId:'s-q1c' },
   { id:'s-desc',  visual:'📝', stageIntro:'이 단계에서는 마켓을 위한 상품 소개를 작성합니다.', question:'루틴을 홍보할 한 줄 소개 문구를 작성해주세요.', example:'예시: 플롯이 막힌 작가님을 위한 가장 완벽한 10단계 솔루션!', choices:['막힌 플롯을 단숨에 뚫어주는 마법의 기획법', '누구나 쉽게 따라하는 베스트셀러의 비밀', '캐릭터가 스스로 움직이게 만드는 마법의 루틴'], fieldId:'s-desc' },
-  { id:'s-price', visual:'💰', stageIntro:null, question:'?ㅽ넗???먮ℓ 媛寃⑹쓣 ?ㅼ젙?댁＜?몄슂.', example:'?덉떆: 1500???뺣룄濡?媛蹂띻쾶 梨낆젙, 4900???꾨━誘몄뾼)', choices:['무료 배포','990원','2,900원','4,900원(프리미엄)'], fieldId:'s-price' }
-];
-
-// ?? HELPERS ??
-function $(id){ return document.getElementById(id); }
-
-function sceneTransition(newBgClass, cb) {
-  const overlay = $('sceneOverlay');
-  overlay.classList.add('fade-in');
-  setTimeout(() => {
-    const bg = $('sceneBg');
-    bg.className = 'scene-bg ' + newBgClass;
-    overlay.classList.remove('fade-in');
-    overlay.classList.add('fade-out');
-    setTimeout(() => { overlay.className = ''; cb && cb(); }, 600);
-  }, 600);
-}
-
-function markdownToHtml(text) {
-  return text
-    .replace(/\*\*(.+?)\*\*/g, '<strong style="color:#c4b5fd;">$1</strong>')
-    .replace(/^#{1,3}\s(.+)$/gm, '<span style="font-weight:800;font-size:1.05em;">$1</span>')
-    .replace(/^\* (.+)$/gm, '• $1')
-    .replace(/\n/g, '<br>');
-}
-
-function showDialogText(step, cb) {
-  if (typing) return;
-  typing = true;
-  const txtField = $('dialogTxt');
-  const exField = $('dialogExample');
+  { id:'s-price', visual:'💰', stageIntro:null, question:'스토어 판매 가격을 설정해주세요.', example:'예시: 1500원 정도로 가볍게 책정, 4900원(프리미엄)', choices:['무료 배포','990원','2,900원','4,  const isRequestingRecommendation = userInput.includes('추천') || userInput.includes('모르겠');
   
-  txtField.innerHTML = '';
-  exField.innerHTML = '';
-  exField.classList.remove('show');
-  $('dialogCursor').style.display = 'none';
-  $('choicesBox').innerHTML = '';
-  $('choicesBox').classList.remove('show');
-
-  const text = typeof step === 'string' ? step : step.question;
-  const example = typeof step === 'object' ? step.example : null;
-
-  const htmlContent = markdownToHtml(text);
+  const storyContext = answerHistory.map(h => {
+    const s = activeSteps.find(st => st.id === h.stepId);
+    return s ? `- ${s.fieldId ? s.fieldId.replace(/^[fsl]-/,'') : s.id}: ${h.boardValue || h.value}` : '';
+  }).filter(Boolean).join('\n');
   
-  txtField.style.opacity = '0';
-  txtField.innerHTML = htmlContent;
-  txtField.scrollTop = 0;
+  let promptText = "";
+  if (isRequestingRecommendation) {
+    promptText = `[현재 기획 단계]: ${stepInfo.stageIntro ? stepInfo.stageIntro + ' ' : ''}${stepInfo.question}
+[유저의 답변]: ${userInput}
+${storyContext ? `\n[지금까지 수집된 이야기 요소]:\n${storyContext}\n` : ''}
+지시사항:
+1. 유저의 답변을 한 줄로 요약하세요.
+4. 응답 맨 마지막 줄에 반드시 아래 형식으로 전체 스토리를 통합한 문장을 추가하세요 (절대 본문에 노출 금지):
+[BOARD]: 지금까지 수집된 모든 이야기 요소를 통합하여 "[장르] [분위기] 작품으로, [주인공 설명]이/가 [핵심 갈등/두려움]에 맞서는 이야기" 형식의 완전한 한 문장으로 작성하세요. (50자 내외)`;
+  } else if (currentStep === 999) {
+    promptText = `
+[유저의 질문/원고]: ${userInput}
 
-  setTimeout(() => {
-    txtField.style.transition = 'opacity 0.4s ease';
-    txtField.style.opacity = '1';
-    typing = false;
-    if (example) {
-      exField.innerHTML = '<span>Tip!</span> ' + example;
-      exField.classList.add('show');
-    }
-    if (cb) cb();
-  }, 200);
-}
-
-function setStageBanner(text) {
-  const banner = $('stageBanner');
-  if (text) {
-    let htmlText = text.replace(/\n/g, '<br>');
-    $('stageBannerText').innerHTML = htmlText;
-    banner.classList.toggle('seller-banner', isSeller);
-    banner.style.display = 'block';
-    setTimeout(() => banner.classList.add('show'), 50);
+지시사항:
+1. 설정된 페르소나 관점에서 유저의 질문이나 원고 내용에 대해 전문적이고 구체적인 피드백을 제공하세요.
+2. 잘된 점과 수정이 필요한 점(또는 논리적 모순, 고증 오류 등)을 구조적으로 짚어주세요.
+3. 답변 길이는 500자 내외로 유지하며 가독성 좋게 작성하세요.
+4. 마지막 줄에는 반드시 "추가로 더 검증하고 싶은 부분이나 다른 궁금한 점이 있으신가요?" 라는 뉘앙스의 질문을 덧붙여 대화가 이어질 수 있게 유도하세요.`;
   } else {
-    banner.classList.remove('show');
-    setTimeout(() => banner.style.display = 'none', 500);
+    promptText = `
+[현재 기획 단계]: ${stepInfo.stageIntro ? stepInfo.stageIntro + ' ' : ''}${stepInfo.question}
+[유저의 답변]: ${userInput}
+${storyContext ? `\n[지금까지 수집된 이야기 요소]:\n${storyContext}` : ''}
+
+지시사항:
+유저의 답변을 한 줄로 요약하세요 (한 문장, 간결하게).
+응답 맨 마지막 줄에 반드시 아래 형식으로 전체 스토리를 통합한 문장을 추가하세요 (절대 본문에 노출 금지):
+[BOARD]: 지금까지 수집된 모든 이야기 요소를 통합하여 "[장르] [분위기] 작품으로, [주인공 설명]이/가 [핵심 갈등/두려움]에 맞서는 이야기" 형식의 완전한 한 문장으로 작성하세요. (50자 내외)`;
+  }
+
+  try {
+    const response = await fetch('/api/chat', {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        messages: [
+          { role: 'system', content: persona },
+          { role: 'user', content: promptText }
+        ],
+        projectContext: _currentLoadedProject || { title: "새 작품", answerHistory: answerHistory }
+      })
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      return data.choices?.[0]?.message?.content?.trim() || '응답을 받지 못했습니다.';
+    }
+    const errText = await response.text();
+    return `⚠️ 서버 오류 (${response.status}): ${errText}`;
+  } catch (err) {
+    return `⚠️ 네트워크 오류: ${err.message}`;
   }
 }
-
-function showChoices(choices, customHandler) {
-  const box = $('choicesBox');
-  box.innerHTML = '';
-  if (!choices || !choices.length) {
-    box.style.display = 'none';
-    return;
-  }
-  choices.forEach(c => {
-    const btn = document.createElement('button');
-    btn.className = 'choice-btn' + (isSeller ? ' seller-btn' : '');
-    btn.textContent = c;
-    btn.onclick = () => {
-      if (customHandler) customHandler(c);
-      else handleChoice(c);
-    };
-    box.appendChild(btn);
-  });
-  box.style.display = 'flex';
-}
-
-function showInput(hideInputBar = false) {
-  const area = $('answerArea');
-  if (area) area.classList.add('show');
-  
-  const insightBtn = $('solutionBarBtn');
-  if (insightBtn) {
-    insightBtn.className = 'insight-bar-btn' + (isSeller ? ' seller-bar-btn' : '');
+�김
     insightBtn.style.display = (currentStep === 999 || hideInputBar) ? 'none' : 'flex';
   }
 
   const inputWrapper = $('inputWrapper');
   if (inputWrapper) inputWrapper.style.display = hideInputBar ? 'none' : 'flex';
 }
-
-const ACT_MAP = {
-  desire: { label: '① 욕망', steps: ['l-1','l-2','l-3','l-3b','l-3c', 's-1','s-2','s-3'] },
-  conflict: { label: '② 갈등', steps: ['l-4','l-5','l-6','l-7','l-8','l-9','l-10','l-11','l-12','l-13','l-14','l-15', 's-4','s-5','s-6','s-7','s-8','s-9'] },
-  overcome: { label: '③ 극복', steps: ['l-16','l-17','l-18','l-19','l-20', 's-10','s-11'] }
-};
 
 async function fetchAIFeedback(userInput, stepInfo) {
   const endpoint = `/api/chat`;
@@ -2479,128 +2246,161 @@ let currentBoardStepId = null;
 
 function renderBoard() {
   const root = $('planning-board-root');
-  if (!root) return;
   root.style.display = 'block';
   
-  const total = activeSteps.length;
-  const completedCount = answerHistory.length;
-  const percent = total > 0 ? Math.round((completedCount / total) * 100) : 0;
-
   root.innerHTML = `
-    <div class="routine-board" style="display:flex;">
-      <div class="board-header">
-        <div class="board-progress-info">
-          <div class="board-progress-label">
-            <span id="boardActLabel">설계 단계 진행 중</span>
-            <span style="margin-left:12px; opacity:0.6; font-weight:500;">(${completedCount}/${total} 단계 완료)</span>
-          </div>
-          <div style="display:flex; align-items:center; gap:20px;">
-            <div class="board-progress-percent">${percent}%</div>
-            <button id="genSynopsisBtn" class="board-finish-btn" style="padding:10px 24px; font-size:14px; ${percent >= 60 ? 'display:block; opacity:1; transform:none;' : ''}" onclick="finalizeProject()">시놉시스 생성</button>
-          </div>
-        </div>
-        <div class="board-progress-track">
-          <div class="board-progress-fill" style="width:${percent}%"></div>
+    <div style="padding:40px;">
+      <div class="board-header" style="margin-bottom:30px;">
+        <div class="board-progress-container">
+          <div class="board-progress-label">기획 완성도: <span id="boardProgressPercent">0%</span></div>
+          <div class="board-progress-bar"><div class="board-progress-fill" id="boardProgressFill"></div></div>
         </div>
       </div>
-      
-      <div class="board-sections">
-        <div class="board-section" id="board-desire">
-          <div class="board-section-title">① 욕망</div>
-          <div class="board-grid" id="grid-desire"></div>
+      <div class="board-acts" style="display:flex; flex-direction:column; gap:40px;">
+        <div class="board-act">
+          <div class="act-label">욕망 (Desire)</div>
+          <div class="board-grid" id="actBoard-desire"></div>
         </div>
-        <div class="board-section" id="board-conflict">
-          <div class="board-section-title">② 갈등</div>
-          <div class="board-grid" id="grid-conflict"></div>
+        <div class="board-act">
+          <div class="act-label">갈등 (Conflict)</div>
+          <div class="board-grid" id="actBoard-conflict"></div>
         </div>
-        <div class="board-section" id="board-overcome">
-          <div class="board-section-title">③ 극복</div>
-          <div class="board-grid" id="grid-overcome"></div>
+        <div class="board-act">
+          <div class="act-label">극복 (Overcome)</div>
+          <div class="board-grid" id="actBoard-overcome"></div>
         </div>
+      </div>
+      <div class="board-footer" style="margin-top:40px;">
+        <button class="board-finish-btn" id="boardFinishBtn" onclick="generateFinalSynopsis()">🪄 최종 시놉시스 생성하기</button>
       </div>
     </div>
   `;
 
-  // Render cards into grids
+  const acts = {
+    desire: $('actBoard-desire'),
+    conflict: $('actBoard-conflict'),
+    overcome: $('actBoard-overcome')
+  };
+  
   activeSteps.forEach((step, idx) => {
     let actKey = 'desire';
-    if (ACT_MAP.conflict.steps.includes(step.id)) actKey = 'conflict';
-    else if (ACT_MAP.overcome.steps.includes(step.id)) actKey = 'overcome';
+    if (ACT_MAP.conflict.includes(step.id)) actKey = 'conflict';
+    else if (ACT_MAP.overcome.includes(step.id)) actKey = 'overcome';
     
-    const grid = $(`grid-${actKey}`);
-    if (!grid) return;
-
+    const container = acts[actKey];
+    if (!container) return;
+    
     const history = answerHistory.find(h => h.stepId === step.id);
     const card = document.createElement('div');
     card.className = 'board-card' + (history ? ' filled' : '');
-    card.onclick = () => openBoardInput(idx);
+    card.onclick = () => openBoardStep(step.id);
+    
     card.innerHTML = `
       <div class="board-card-header">
         <div class="board-card-num">STEP ${idx + 1}</div>
-        <div class="board-card-check">${history ? '✓' : '?'}</div>
+        <div class="board-card-check">✓</div>
       </div>
       <div class="board-card-q">${step.question}</div>
-      <div class="board-card-a">${history ? (history.boardValue || history.value) : '내용을 입력해주세요...'}</div>
+      <div class="board-card-a">${history ? (history.boardValue || history.value) : '—'}</div>
     `;
-    grid.appendChild(card);
+    container.appendChild(card);
   });
-
-  // Update current act label based on progress
-  let currentAct = '① 욕망';
-  if (percent > 30) currentAct = '② 갈등';
-  if (percent > 70) currentAct = '③ 극복';
-  $('boardActLabel').textContent = currentAct;
+  
+  updateBoardProgress();
 }
 
-function openBoardInput(idx) {
-  const step = activeSteps[idx];
-  currentBoardStepId = step.id;
-  const history = answerHistory.find(h => h.stepId === step.id);
+function openBoardStep(stepId) {
+  const step = activeSteps.find(s => s.id === stepId);
+  if (!step) return;
   
-  $('popupVisual').textContent = step.visual || '📝';
+  currentBoardStepId = stepId;
+  const history = answerHistory.find(h => h.stepId === stepId);
+  
+  $('popupVisual').textContent = step.visual || '🎯';
   $('popupQuestion').textContent = step.question;
-  const area = $('popupTextArea');
-  area.value = history ? history.value : '';
+  $('popupInput').value = history ? history.value : '';
+  
+  // Insight button logic
+  const insightBtn = $('popupInsightBtn');
+  insightBtn.onclick = () => {
+    // Reuse existing insight logic
+    openInsightPanel(); 
+  };
+  
+  // Save button logic
+  const saveBtn = $('popupSaveBtn');
+  saveBtn.onclick = () => saveBoardStep();
   
   $('inputPopup').classList.add('open');
-  area.focus();
+  setTimeout(() => $('popupInput').focus(), 100);
 }
 
-function closeBoardInput() {
+function closeBoardPopup() {
   $('inputPopup').classList.remove('open');
 }
 
 async function saveBoardStep() {
-  const val = $('popupTextArea').value.trim();
-  if (!val) return;
+  const val = $('popupInput').value.trim();
+  if (!val) { closeBoardPopup(); return; }
   
-  const stepIdx = activeSteps.findIndex(s => s.id === currentBoardStepId);
-  const stepInfo = activeSteps[stepIdx];
+  const stepInfo = activeSteps.find(s => s.id === currentBoardStepId);
+  if (!stepInfo) return;
   
-  // Show localized loading/saving state
-  const saveBtn = document.querySelector('.popup-save-btn');
+  // Show minimal loading on the button
+  const saveBtn = $('popupSaveBtn');
   const originalText = saveBtn.textContent;
-  saveBtn.textContent = '저장 중...';
+  saveBtn.textContent = '정리 중...';
   saveBtn.disabled = true;
-
+  
   try {
     const feedback = await fetchAIFeedback(val, stepInfo);
     const boardMatch = feedback.match(/\[BOARD\]:\s*([\s\S]+?)(?:\n|$)/i);
     const boardSummary = boardMatch ? boardMatch[1].trim() : val;
     
-    // Update or Add to history
+    // Update or Push history
     const existingIdx = answerHistory.findIndex(h => h.stepId === currentBoardStepId);
     const entry = {
-      stepIdx: stepIdx,
-      stepId: currentBoardStepId,
+      stepIdx: activeSteps.indexOf(stepInfo),
+      stepId: stepInfo.id,
       value: val,
       boardValue: boardSummary
     };
     
     if (existingIdx >= 0) answerHistory[existingIdx] = entry;
     else answerHistory.push(entry);
+    
+    showReplyFlash('✓ 저장되었습니다');
+    renderBoard();
+    closeBoardPopup();
+  } catch (e) {
+    showReplyFlash('⚠️ 저장 실패');
+  } finally {
+    saveBtn.textContent = originalText;
+    saveBtn.disabled = false;
+  }
+}
 
-    // Update SHEET
+function updateBoardProgress() {
+  const total = activeSteps.length;
+  if (!total) return;
+  const filled = answerHistory.filter(h => activeSteps.some(s => s.id === h.stepId)).length;
+  const percent = Math.round((filled / total) * 100);
+  
+  $('boardProgressPercent').textContent = percent + '%';
+  $('boardProgressFill').style.width = percent + '%';
+  
+  const finishBtn = $('boardFinishBtn');
+  if (percent >= 60) {
+    finishBtn.classList.add('show');
+  } else {
+    finishBtn.classList.remove('show');
+  }
+
+  // Also update Sheet panel
+  const chipsId = isSeller ? 'seller-chips' : 'story-chips';
+  const chipsEl = $(chipsId);
+  if (chipsEl) {
+    chipsEl.innerHTML = '';
     const stepLabelMap = {
       'l-1':'콘셉트','l-2':'장르','l-3':'로그라인','l-3b':'배경','l-3c':'동기','l-4':'주인공','l-5':'적대자',
       'l-6':'프롤로그','l-7':'문제직면','l-8':'미끼','l-9':'검증','l-10':'신념',
@@ -2609,25 +2409,93 @@ async function saveBoardStep() {
       's-1':'콘셉트','s-2':'장르','s-3':'로그라인','s-4':'주인공','s-5':'적대자',
       's-6':'코믹릴리프','s-7':'트러블','s-8':'딜레마','s-9':'서스펜스','s-10':'클라이막스','s-11':'해결'
     };
-    updateStorySentence(boardSummary, stepLabelMap[currentBoardStepId]);
-    
-    closeBoardInput();
-    renderBoard();
-    showReplyFlash('✓ 단계가 저장되었습니다');
-  } catch (e) {
-    alert('저장 중 오류가 발생했습니다.');
-  } finally {
-    saveBtn.textContent = originalText;
-    saveBtn.disabled = false;
+    answerHistory.forEach(h => {
+      if (activeSteps.some(s => s.id === h.stepId)) {
+        const chip = document.createElement('span');
+        chip.className = 'sp-chip';
+        chip.textContent = stepLabelMap[h.stepId] || h.stepId;
+        chipsEl.appendChild(chip);
+      }
+    });
   }
 }
-function finalizeProject() {
-  const percent = Math.round((answerHistory.length / activeSteps.length) * 100);
-  if (percent < 60) {
-    alert('최소 60% 이상 기획을 채워주세요! (약 12단계 이상)');
+
+function initProgressDots(total) {
+  const wrap = $('progressDots');
+  if (!wrap) return;
+  wrap.innerHTML = '';
+  for (let i = 0; i < total; i++) {
+    const d = document.createElement('div');
+    d.className = 'pdot';
+    d.id = 'pdot-' + i;
+    wrap.appendChild(d);
+  }
+  $('stepTotal').textContent = total;
+  $('hudProgress').style.opacity = '1';
+}
+
+function updateProgressDots(idx, total) {
+  $('stepNum').textContent = idx + 1;
+  for (let i = 0; i < total; i++) {
+    const d = $('pdot-' + i);
+    if (!d) continue;
+    d.className = 'pdot' + (i < idx ? ' done' : i === idx ? ' active' : '');
+  }
+}
+
+function runStep(idx) {
+  closeInsightPanel();
+
+  if (idx >= activeSteps.length) {
+    finishFlow();
     return;
   }
-  finishFlow();
+
+  currentStep = idx;
+  const step = activeSteps[idx];
+
+  // 필드 업데이트 (스토리보드 패널)
+  activeSteps.forEach((s, i) => {
+    const el = $(s.fieldId);
+    if (el) {
+      const filled = answerHistory.find(h => h.stepId === s.id);
+      if (filled) {
+        el.textContent = filled.value.substring(0, 40);
+        el.classList.add(isSeller ? 'seller-filled' : 'filled');
+      }
+    }
+  });
+
+  updateProgressDots(idx, activeSteps.length);
+  updateActHud(step.id);
+
+  // 캐릭터 이모지 변경
+  const charEmoji = $('charEmoji');
+  if (charEmoji && step.visual) {
+    charEmoji.classList.add('char-anim-pop');
+    setTimeout(() => charEmoji.classList.remove('char-anim-pop'), 600);
+    charEmoji.textContent = step.visual;
+  }
+
+  // 배너 설정
+  if (step.stageIntro) {
+    setStageBanner(step.stageIntro);
+  } else {
+    setStageBanner('');
+  }
+
+  // 질문 표시 후 입력창 열기
+  showDialogText(step, () => {
+    showInput(false);
+    // 선택지가 있는 단계면 선택지도 표시
+    if (step.choices && step.choices.length) {
+      showChoices(step.choices);
+    }
+  });
+
+  $('backBtn').classList.toggle('show', idx > 0);
+  $('homeBtn').classList.add('show');
+  $('hudMode').classList.add('show');
 }
 
 
@@ -2843,6 +2711,7 @@ ${collectedData}
 }
 
 // ── NAVIGATION HELPERS ──
+function goHome() { navTo('works'); }
 
 async function finishFlow() {
   hideInput();
@@ -2925,7 +2794,7 @@ function selectMode(m) {
 
   // setup char
   if (isSeller) {
-    $('charFigureLegacy').classList.add('seller-mode');
+    $('charFigure').classList.add('seller-mode');
     $('dialogBox').classList.add('seller-box');
     $('spConsumer').style.display = 'none';
     $('spSeller').style.display = 'block';
@@ -2948,11 +2817,11 @@ function selectMode(m) {
   currentStep = 0;
   answerHistory = [];
 
-  navTo('chat-legacy');
+  navTo('chat');
 
   if (isSeller) {
     sceneTransition('scene-seller', () => {
-      $('charFigureLegacy').classList.add('show');
+      $('charFigure').classList.add('show');
       document.querySelector('.dialog-area').style.display = 'none';
       const rb = $('routineBuilder');
       if (rb) {
@@ -2962,7 +2831,7 @@ function selectMode(m) {
     });
   } else if (isVerify) {
     sceneTransition('scene-verify', () => {
-      $('charFigureLegacy').classList.add('show');
+      $('charFigure').classList.add('show');
       showDialogText('작품 검증 모드에 오신 것을 환영합니다.\n원하시는 검증 분야의 페르소나를 선택해 주세요.', () => {
         setTimeout(() => {
           navTo('verify');
@@ -2975,7 +2844,7 @@ function selectMode(m) {
     $('dialogSpeaker').textContent = selectedCharName;
     currentStep = 999;
     sceneTransition('scene-verify', () => {
-      $('charFigureLegacy').classList.add('show');
+      $('charFigure').classList.add('show');
       $('routineBoard').style.display = 'none';
       showDialogText('반갑습니다. 작가님의 작품 편집자입니다.\n\n기획하신 내용을 바탕으로 함께 대화하며 설정을 다듬어 볼까요?\n궁금한 점이나 막히는 부분이 있다면 무엇이든 물어보세요.', () => {
         showInput(false);
@@ -2983,7 +2852,7 @@ function selectMode(m) {
     });
   } else {
     sceneTransition('scene-consumer', () => {
-      $('charFigureLegacy').classList.add('show');
+      $('charFigure').classList.add('show');
       $('routineBoard').style.display = 'none';
       showDialogText('스토리 빌드업을 시작합니다.\n먼저 원하시는 기획 루틴을 골라주세요.', () => {
         setTimeout(() => {
@@ -3007,10 +2876,7 @@ function startRoutine(name) {
       $('charOverlay').classList.add('show');
     }, 600);
   } else {
-    setTimeout(() => {
-      navTo('planning-board');
-      renderBoard();
-    }, 1000);
+    setTimeout(() => runStep(0), 1000);
   }
 }
 
@@ -3022,10 +2888,14 @@ function selectCharacter(name) {
   $('charOverlay').classList.remove('show');
   showReplyFlash(`${name} 선택됨`);
   
-  setTimeout(() => {
-    navTo('planning-board'); 
-    renderBoard();
-  }, 800);
+  if (isSeller) {
+    setTimeout(() => runStep(0), 1000);
+  } else {
+    setTimeout(() => {
+      navTo('planning-board'); // Special view for board
+      renderBoard();
+    }, 800);
+  }
 }
 
 function selectVerifyCharacter(name) {
@@ -3220,32 +3090,27 @@ async function saveProjectToStorage(synopsis) {
 
 // ── INIT ──
 (async () => {
-  // 1. Run Intro First
-  await runIntro();
-
-  // 2. Check Session
   const { data: { session } } = await getSb().auth.getSession();
   if (!session) {
     window.location.href = 'login.html';
     return;
   }
-  currentUser = session.user;
+  _currentUser = session.user;
 
   // Sidebar User Info
-  const nickname = currentUser.user_metadata?.nickname || currentUser.user_metadata?.full_name || currentUser.email.split('@')[0] || '작가님';
-  $('userNameDisplay').textContent = nickname;
-  $('userAvatar').textContent = nickname[0].toUpperCase();
+  const nick = _currentUser.user_metadata?.full_name || _currentUser.email.split('@')[0];
+  $('userNameDisplay').textContent = nick + ' 작가님';
+  $('userAvatar').textContent = nick[0].toUpperCase();
 
   // Initial View
   navTo('works');
-  loadMyProjects();
   
-  // $('charFigureLegacy').classList.add('show');
+  $('charFigure').classList.add('show');
   
   const loadData = sessionStorage.getItem('mantra_load_data');
   if (loadData) {
     const pid = sessionStorage.getItem('mantra_load_pid');
-    if (pid) selectProjectForChat(pid);
+    if (pid) loadProjectContext(pid);
   }
 })();
 

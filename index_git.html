@@ -1,0 +1,2603 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>留뚰듃??肄뷀뙆?쇰읉 - Premium Edition</title>
+<link rel="stylesheet" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+<style>
+:root {
+  --bg: #030305;
+  --purple: #8B5CF6;
+  --purple-light: #C4B5FD;
+  --purple-glow: rgba(139, 92, 246, 0.4);
+  --gold: #D6B75A;
+  --gold-light: #FDE68A;
+  --text: #F8FAFC;
+  --text-dim: #94A3B8;
+  --text-faint: #475569;
+  --border: rgba(255, 255, 255, 0.08); /* softer, more premium border */
+  --seller-color: #10B981;
+  --seller-glow: rgba(16, 185, 129, 0.3);
+  --verify-color: #3B82F6;
+  --verify-glow: rgba(59, 130, 246, 0.3);
+  --panel-dark: rgba(15, 23, 42, 0.4);
+  --blur: blur(40px);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  user-select: none;
+  letter-spacing: -0.01em;
+}
+
+/* ?? SCENE BACKGROUND ?? */
+#scene {
+  position:fixed; inset:0; z-index:0;
+  transition:opacity 0.8s ease;
+}
+.scene-bg {
+  position:absolute; inset:0;
+  transition:opacity 1s ease;
+}
+.scene-onboard  { background: radial-gradient(circle at 50% 50%, #16103A 0%, #05050A 70%); }
+.scene-consumer { background: radial-gradient(circle at 20% 80%, rgba(139,92,246,0.15) 0%, #05050A 60%); }
+.scene-seller   { background: radial-gradient(circle at 80% 20%, rgba(16,185,129,0.15) 0%, #05050A 60%); }
+.scene-verify   { background: radial-gradient(circle at 50% 20%, rgba(59,130,246,0.15) 0%, #05050A 70%); }
+.scene-story    { background: radial-gradient(circle at 50% 80%, rgba(214,183,90,0.1) 0%, #05050A 70%); }
+
+/* ?? FLOATING PARTICLES (BOKEH) ?? */
+.particles { position:fixed; inset:0; pointer-events:none; z-index:1; overflow:hidden; }
+.particle {
+  position:absolute; border-radius:50%;
+  animation:float linear infinite;
+  opacity:0;
+  filter: blur(8px);
+}
+@keyframes float {
+  0%   { transform:translateY(100vh) scale(0) rotate(0deg); opacity:0; }
+  20%  { opacity:0.6; }
+  80%  { opacity:0.3; }
+  100% { transform:translateY(-10vh) scale(1) rotate(360deg); opacity:0; }
+}
+
+/* ?? MAIN LAYOUT ?? */
+.vn-wrapper {
+  position:relative; z-index:10;
+  width:100%; min-height:100vh;
+  display:flex; flex-direction:column;
+}
+
+/* ?? TOP HUD ?? */
+.hud {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:16px 40px;
+  background: transparent;
+  flex-shrink:0;
+}
+.hud-left { display:flex; align-items:center; gap:24px; }
+.back-btn, .home-btn {
+  background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1);
+  color:var(--text-dim); width:36px; height:36px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center; cursor:pointer;
+  transition:all .3s ease; backdrop-filter:var(--blur);
+  opacity: 0; pointer-events: none;
+}
+.back-btn.show, .home-btn.show { opacity: 1; pointer-events: all; }
+.back-btn:hover, .home-btn:hover { background:rgba(255,255,255,0.1); color:var(--text); transform:scale(1.05); }
+.hud-logo-container { display:flex; flex-direction:column; gap:2px; }
+.hud-logo { font-size:18px; font-weight:800; color:var(--text); letter-spacing:0; display:flex; align-items:center; gap:8px;}
+.hud-logo span { color:var(--purple-light); font-weight:600; }
+.hud-logo .sparkle { color:var(--gold); font-size: 14px; }
+.hud-subtitle { font-size:11px; font-weight:500; color:var(--text-dim); letter-spacing:0.02em; padding-left: 22px; }
+.hud-mode { font-size:12px; font-weight:600; padding:6px 16px; border-radius:100px; opacity:0; transition:opacity .4s; backdrop-filter: var(--blur); }
+.hud-mode.show { opacity:1; }
+.hud-mode.consumer { color:var(--purple-light); background:rgba(139,92,246,0.1); border:1px solid rgba(139,92,246,0.2); }
+.hud-mode.seller   { color:var(--seller-color); background:rgba(16,185,129,0.1); border:1px solid rgba(16,185,129,0.2); }
+.hud-mode.verify   { color:var(--verify-color); background:rgba(59,130,246,0.1); border:1px solid rgba(59,130,246,0.2); }
+.hud-progress { display:flex; align-items:center; gap:16px; background: rgba(255,255,255,0.03); border:1px solid var(--border); padding:8px 20px; border-radius:100px; backdrop-filter:var(--blur); }
+.hud-step { font-size:12px; font-weight:500; color:var(--text-dim); }
+.hud-step strong { color:var(--text); font-weight:700; }
+.progress-dots { display:flex; gap:6px; }
+.pdot { width:24px; height:4px; border-radius:3px; background:rgba(255,255,255,0.15); transition:all .4s; box-shadow: inset 0 1px 1px rgba(0,0,0,0.2); }
+.pdot.done   { background:var(--purple); box-shadow: 0 0 12px var(--purple-glow); }
+.pdot.active { background:var(--gold); box-shadow:0 0 12px rgba(214,183,90,0.6); }
+
+/* ?? CHARACTER STAGE ?? */
+.char-stage {
+  flex:1; display:flex; align-items:flex-end;
+  justify-content:center; padding-bottom:120px;
+  position:relative; overflow:hidden;
+  pointer-events:none;
+}
+.char-figure {
+  display:flex; flex-direction:column; align-items:center;
+  transition:all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  transform:translateY(40px) scale(0.95); opacity:0;
+}
+.char-figure.show { transform:translateY(0) scale(1); opacity:1; }
+
+/* step-change animation classes */
+.char-anim-pop { animation: char-pop 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+@keyframes char-pop {
+  0% { transform: scale(0.8) translateY(20px); opacity: 0; filter: blur(10px); }
+  100% { transform: scale(1) translateY(0); opacity: 1; filter: blur(0); }
+}
+
+.char-text {
+  font-size:76px; font-weight:900; line-height:1;
+  color:var(--text);
+  text-shadow:0 15px 50px var(--purple-glow);
+  animation:char-breathe 4s ease-in-out infinite;
+  background: linear-gradient(135deg, #fff 20%, #C4B5FD 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  transition: all 0.5s ease;
+}
+/* If they want to use a real image instead of text */
+.char-image-bg {
+  width: 120px; height: 120px; border-radius: 50%;
+  background-size: cover; background-position: center;
+  box-shadow: 0 15px 50px var(--purple-glow);
+  animation:char-breathe 4s ease-in-out infinite;
+  display: none; /* hidden by default, shown if image is used */
+}
+.char-figure.seller-mode .char-text {
+  background: linear-gradient(135deg, #fff 20%, #6EE7B7 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  text-shadow:0 15px 50px var(--seller-glow);
+}
+@keyframes char-breathe {
+  0%,100% { transform:translateY(0) scale(1); }
+  50%      { transform:translateY(-12px) scale(1.02); filter: drop-shadow(0 10px 30px rgba(255,255,255,0.1)); }
+}
+.char-name-plate {
+  font-size:13px; font-weight:700; letter-spacing:.12em;
+  color:var(--text); background:rgba(255,255,255,0.06);
+  border:1px solid rgba(255,255,255,0.12); padding:6px 20px; border-radius:100px;
+  margin-top:20px; margin-bottom:16px; backdrop-filter:var(--blur);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.1);
+}
+
+/* ?? DIALOG BOX ?? */
+.dialog-area {
+  flex-shrink:0;
+  padding:0 40px 40px;
+  display:flex; flex-direction:column; gap:16px;
+  max-width: 900px; margin: 0 auto; width: 100%;
+}
+
+/* stage intro banner */
+.stage-banner {
+  background:rgba(255,255,255,0.03);
+  border:1px solid rgba(255,255,255,0.1);
+  border-radius:16px; padding:16px 20px;
+  font-size:15px; font-weight:500; color:var(--text-dim); line-height:1.6;
+  opacity:0; transform:translateY(10px); text-align:center;
+  transition:all .5s cubic-bezier(0.16, 1, 0.3, 1);
+  backdrop-filter:blur(30px) saturate(120%); word-break: keep-all;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+.stage-banner.show { opacity:1; transform:translateY(0); }
+.stage-banner.seller-banner { border-color:rgba(16,185,129,0.3); background:rgba(16,185,129,0.02); }
+.stage-banner-label { font-size:13px; color:var(--purple-light); font-weight:800; margin-bottom:8px; letter-spacing:0.05em; display:inline-block; }
+.stage-banner.seller-banner .stage-banner-label { color:var(--seller-color); }
+
+/* main dialog box */
+.dialog-box {
+  background:rgba(10,12,18,0.5);
+  border:1px solid rgba(255,255,255,0.12);
+  border-radius:32px; padding:36px;
+  position:relative;
+  box-shadow:0 30px 60px rgba(0,0,0,0.6), inset 0 2px 0 rgba(255,255,255,0.1);
+  backdrop-filter:blur(60px) saturate(200%);
+  min-height:140px; text-align:center;
+  max-height: 55vh;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(139,92,246,0.4) transparent;
+}
+.dialog-speaker {
+  font-size:15px; font-weight:800; letter-spacing:.05em; text-transform:uppercase;
+  color:var(--purple-light); margin-bottom:16px;
+  display:inline-flex; align-items:center; gap:6px;
+  justify-content:center;
+}
+.dialog-speaker::before {
+  content:''; display:inline-block; width:6px; height:6px; border-radius:50%; background:currentColor; box-shadow:0 0 12px currentColor;
+}
+.dialog-box.seller-box { background: rgba(10,18,15,0.5); }
+.dialog-box.seller-box .dialog-speaker { color:var(--seller-color); }
+.dialog-text {
+  font-size:19px; font-weight:500; line-height:1.7; color:var(--text);
+  min-height:36px; word-break: keep-all; letter-spacing: -0.01em;
+}
+.dialog-cursor {
+  display:inline-block; width:4px; height:24px; border-radius:2px;
+  background:var(--text); vertical-align:middle;
+  margin-left:8px; animation:blink-cursor .9s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  box-shadow: 0 0 10px rgba(255,255,255,0.5);
+}
+.dialog-example {
+  margin-top: 20px; font-size: 15px; color: var(--text-dim);
+  font-weight: 500; opacity: 0; transition: opacity 0.4s;
+}
+.dialog-example.show { opacity: 1; }
+.dialog-example span { color: var(--purple-light); opacity:0.9; margin-right:6px; font-size: 13px; font-weight: 700; padding: 4px 10px; border-radius: 8px; background: rgba(139,92,246,0.15); border:1px solid rgba(139,92,246,0.2); }
+.seller-box .dialog-example span { color: var(--seller-color); background: rgba(16,185,129,0.15); border:1px solid rgba(16,185,129,0.2); }
+@keyframes blink-cursor { 0%,100%{opacity:1;} 50%{opacity:0; box-shadow:none;} }
+
+/* ?? ANSWER AREA (CHOICES + INPUT) ?? */
+.insight-bar-btn {
+  width: 100%;
+  max-width: 820px;
+  background: rgba(214, 183, 90, 0.06);
+  border: 1px solid rgba(214, 183, 90, 0.3);
+  color: var(--gold-light);
+  padding: 13px 24px;
+  border-radius: 16px;
+  font-size: 15px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: all .3s ease;
+  margin-bottom: 4px;
+  font-family: inherit;
+  backdrop-filter: var(--blur);
+  letter-spacing: 0.01em;
+}
+.insight-bar-btn:hover {
+  background: rgba(214, 183, 90, 0.14);
+  border-color: rgba(214, 183, 90, 0.7);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(214, 183, 90, 0.2);
+  color: #fff;
+}
+.insight-bar-btn.seller-bar-btn {
+  background: rgba(16,185,129,0.06);
+  border-color: rgba(16,185,129,0.3);
+  color: #6EE7B7;
+}
+.insight-bar-btn.seller-bar-btn:hover {
+  background: rgba(16,185,129,0.14);
+  border-color: rgba(16,185,129,0.6);
+  box-shadow: 0 10px 30px var(--seller-glow);
+  color: #fff;
+}
+
+/* ?? INSIGHT PANEL ?? */
+.insight-panel {
+  position: fixed;
+  top: 0; right: 0; bottom: 0;
+  width: 420px;
+  background: rgba(10, 10, 18, 0.92);
+  border-left: 1px solid rgba(214, 183, 90, 0.2);
+  backdrop-filter: blur(60px) saturate(180%);
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  transform: translateX(100%);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: -20px 0 60px rgba(0,0,0,0.5);
+}
+.insight-panel.open {
+  transform: translateX(0);
+}
+.insight-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px 28px 20px;
+  border-bottom: 1px solid rgba(214, 183, 90, 0.15);
+  flex-shrink: 0;
+}
+.insight-panel-title {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--gold-light);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  letter-spacing: 0.02em;
+}
+.insight-panel-close {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
+  color: var(--text-dim);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  font-size: 16px;
+  transition: all .2s;
+}
+.insight-panel-close:hover {
+  background: rgba(255,255,255,0.1);
+  color: var(--text);
+}
+.insight-panel-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px 28px 32px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(214,183,90,0.3) transparent;
+}
+.insight-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+  gap: 16px;
+  color: var(--text-dim);
+  font-size: 14px;
+}
+.insight-spinner {
+  width: 32px; height: 32px;
+  border: 3px solid rgba(214,183,90,0.2);
+  border-top-color: var(--gold);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.insight-section {
+  margin-bottom: 24px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.insight-section:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+.insight-section-label {
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--gold);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.insight-section-text {
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--text-dim);
+  line-height: 1.75;
+  word-break: keep-all;
+}
+.insight-section-text strong {
+  color: var(--text);
+  font-weight: 600;
+}
+.insight-section-text em {
+  color: var(--purple-light);
+  font-style: normal;
+  font-weight: 600;
+}
+.insight-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 49;
+  background: rgba(0,0,0,0.3);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+}
+.insight-overlay.open {
+  opacity: 1;
+  pointer-events: all;
+}
+@media (max-width: 768px) {
+  .insight-panel { width: 100%; }
+}
+
+.answer-area {
+  display: flex; flex-direction: column; gap: 20px;
+  align-items: center; width: 100%; max-width: 820px; margin: 0 auto;
+  opacity: 0; transform: translateY(20px);
+  transition: all .6s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+}
+.answer-area.show { opacity: 1; transform: translateY(0); pointer-events: all; }
+.input-wrapper {
+  display:flex; flex-direction: column; gap:12px;
+  background:rgba(20,20,30,0.5);
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:32px; padding:12px 12px 12px 20px;
+  width:100%; max-width:820px;
+  backdrop-filter:blur(40px) saturate(150%);
+  transition:border-color .4s, box-shadow .4s;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.4), inset 0 2px 0 rgba(255,255,255,0.05);
+}
+.input-wrapper:focus-within {
+  border-color:var(--purple-light);
+  background:rgba(30,25,50,0.6);
+  box-shadow: 0 20px 50px rgba(139,92,246,0.15), inset 0 2px 0 rgba(255,255,255,0.1);
+}
+.input-wrapper.seller-wrapper:focus-within {
+  border-color:var(--seller-color);
+  background:rgba(20,40,30,0.6);
+  box-shadow: 0 20px 50px rgba(16,185,129,0.15), inset 0 2px 0 rgba(255,255,255,0.1);
+}
+
+.choices-box {
+  display:flex; flex-wrap:wrap; gap:8px; justify-content:flex-start;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.choices-box.show { opacity:1; transform:translateY(0); }
+.choice-btn {
+  background:rgba(255,255,255,0.03);
+  border:1px solid rgba(255,255,255,0.08);
+  color:var(--text); padding:10px 20px; border-radius:100px;
+  font-size:15px; font-weight:600; font-family:inherit;
+  cursor:pointer; transition:all .4s cubic-bezier(0.16, 1, 0.3, 1);
+  backdrop-filter:var(--blur);
+}
+.choice-btn:hover {
+  background:rgba(139,92,246,0.15);
+  border-color:var(--purple-light);
+  transform:translateY(-3px);
+  box-shadow:0 10px 25px var(--purple-glow);
+}
+.choice-btn.seller-btn:hover {
+  background:rgba(16,185,129,0.15);
+  border-color:var(--seller-color);
+  box-shadow:0 10px 25px var(--seller-glow);
+}
+
+/* ?? ONBOARDING MODE SELECT ?? */
+.mode-cards {
+  position:fixed; inset:0; z-index:20;
+  display:flex; align-items:center; justify-content:center;
+  background:rgba(3,3,5,0.7); backdrop-filter:blur(24px);
+  gap:40px; padding:40px;
+  opacity:0; transition:opacity .8s ease;
+  pointer-events:none;
+}
+.mode-cards.show { opacity:1; pointer-events:all; }
+.mode-card {
+  flex:0 1 380px; padding:60px 40px; border-radius:40px;
+  border:1px solid rgba(255,255,255,0.08);
+  background:linear-gradient(180deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%);
+  backdrop-filter:blur(50px) saturate(150%);
+  cursor:pointer; text-align:center;
+  display:flex; flex-direction:column; align-items:center; gap:24px;
+  transition:all .5s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow:0 30px 80px rgba(0,0,0,0.6), inset 0 2px 0 rgba(255,255,255,0.1);
+}
+.mode-card:hover { transform:translateY(-16px) scale(1.02); border-color:rgba(255,255,255,0.3); }
+.mode-card.consumer:hover { box-shadow:0 40px 120px var(--purple-glow), inset 0 0 80px rgba(139,92,246,0.1); }
+.mode-card.seller:hover   { box-shadow:0 40px 120px var(--seller-glow), inset 0 0 80px rgba(16,185,129,0.1); }
+.mc-icon { font-size:72px; margin-bottom: 12px; filter: drop-shadow(0 15px 30px rgba(0,0,0,0.5)); }
+.mc-title { font-size:32px; font-weight:800; color:var(--text); letter-spacing:-0.03em; }
+.mc-desc { font-size:16px; font-weight:500; color:var(--text-dim); line-height:1.7; }
+.mc-badge { font-size:14px; font-weight:800; padding:8px 24px; border-radius:100px; margin-top:20px; display:inline-block; }
+.mode-card.consumer .mc-badge { background:linear-gradient(90deg, #8B5CF6, #6D28D9); box-shadow: 0 10px 25px rgba(139,92,246,0.4); }
+.mode-card.seller   .mc-badge { background:linear-gradient(90deg, #10B981, #047857); box-shadow: 0 10px 25px rgba(16,185,129,0.4); }
+
+/* ?? ROUTINE SELECT (AND CHAR SELECT) ?? */
+.routine-overlay, .char-overlay {
+  position:fixed; inset:0; z-index:20;
+  display:flex; align-items:center; justify-content:center;
+  background:rgba(3,3,5,0.8); backdrop-filter:blur(24px);
+  opacity:0; transition:opacity .5s ease; pointer-events:none;
+}
+.routine-overlay.show, .char-overlay.show { opacity:1; pointer-events:all; }
+.routine-panel {
+  background:rgba(15,15,20,0.6); border:1px solid rgba(255,255,255,0.08);
+  border-radius:32px; padding:40px; width:480px;
+  box-shadow:0 40px 100px rgba(0,0,0,0.8), inset 0 2px 0 rgba(255,255,255,0.1);
+  backdrop-filter:blur(50px) saturate(150%);
+}
+.rp-title { font-size:24px; font-weight:800; color:var(--text); margin-bottom:8px; letter-spacing:-0.02em; }
+.rp-sub { font-size:15px; color:var(--text-dim); margin-bottom:32px; }
+.routine-item {
+  display:flex; align-items:center; gap:16px;
+  padding:20px 24px; border-radius:20px;
+  border:1px solid rgba(255,255,255,0.05);
+  background:rgba(255,255,255,0.02);
+  cursor:pointer; transition:all .4s cubic-bezier(0.16, 1, 0.3, 1);
+  margin-bottom:16px;
+}
+.routine-item:hover { border-color:var(--purple-light); background:rgba(139,92,246,0.1); transform:translateX(8px); box-shadow:0 10px 30px var(--purple-glow); }
+.ri-icon { font-size:32px; background:rgba(255,255,255,0.05); width:56px; height:56px; border-radius:16px; display:flex; align-items:center; justify-content:center; box-shadow:inset 0 2px 0 rgba(255,255,255,0.1); }
+.ri-info { flex:1; }
+.ri-name { font-size:17px; font-weight:700; color:var(--text); }
+.ri-desc { font-size:14px; color:var(--text-dim); margin-top:6px; }
+.ri-badge { font-size:13px; font-weight:700; color:var(--bg); background:var(--gold); border:none; padding:6px 16px; border-radius:100px; white-space:nowrap; box-shadow:0 4px 15px rgba(214,183,90,0.4); }
+
+.char-panel {
+  display:flex; gap:24px; max-width: 800px; width: 90%;
+  justify-content: center; flex-wrap: wrap;
+}
+.char-card {
+  flex: 1; min-width: 240px; background:rgba(255,255,255,0.02); 
+  border:1px solid rgba(255,255,255,0.06); border-radius:32px; 
+  padding:40px 32px; text-align:center; cursor:pointer;
+  transition:all .4s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 20px 50px rgba(0,0,0,0.5), inset 0 2px 0 rgba(255,255,255,0.05);
+  backdrop-filter:blur(40px);
+}
+.char-card:hover { transform:translateY(-12px); border-color:var(--purple-light); background:rgba(139,92,246,0.1); box-shadow:0 30px 80px var(--purple-glow); }
+.cc-avatar { width: 96px; height: 96px; background: rgba(255,255,255,0.05); border-radius: 50%; margin: 0 auto 20px; display:flex; align-items:center; justify-content:center; font-size:48px; box-shadow: 0 10px 30px rgba(0,0,0,0.4); }
+.cc-name { font-size:22px; font-weight:800; color:var(--text); margin-bottom: 12px; }
+.cc-desc { font-size:15px; font-weight:500; color:var(--text-dim); line-height:1.7; }
+
+.input-bar-inner {
+  display:flex; align-items:flex-end; gap:16px; width:100%;
+}
+.input-box {
+  flex:1; background:transparent; border:none;
+  color:var(--text); font-family:inherit; font-size:16px; font-weight:500;
+  resize:none; outline:none; height:48px; max-height:160px;
+  line-height:1.6; padding:10px 0; margin: 4px 0;
+}
+.input-box::placeholder { color:rgba(255,255,255,0.3); }
+.send-btn {
+  width:48px; height:48px; border-radius:50%;
+  background:var(--text); color:var(--bg); border:none; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  transition:all .3s cubic-bezier(0.16, 1, 0.3, 1); flex-shrink:0; margin-bottom:4px;
+}
+.send-btn:hover { transform:scale(1.1); box-shadow:0 10px 25px rgba(255,255,255,0.4); }
+.send-btn.seller-send { background:var(--seller-color); color:#fff; }
+.send-btn.seller-send:hover { box-shadow:0 10px 25px var(--seller-glow); }
+.send-btn svg { width:22px; height:22px; fill:currentColor; margin-left: 2px; }
+
+/* ?? SHEET SIDE PANEL ?? */
+.sheet-toggle {
+  position:fixed; right:0; top:50%; transform:translateY(-50%);
+  z-index:30; cursor:pointer;
+  background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08);
+  border-right:none; border-radius:24px 0 0 24px;
+  padding:24px 14px; writing-mode:vertical-rl; text-orientation: upright;
+  font-size:13px; font-weight:800; color:var(--text-dim); letter-spacing:3px;
+  transition:all .4s cubic-bezier(0.16, 1, 0.3, 1); backdrop-filter:blur(30px) saturate(150%);
+  box-shadow: -10px 0 30px rgba(0,0,0,0.3);
+}
+.sheet-toggle:hover { background:rgba(255,255,255,0.1); color:var(--text); padding-right:20px; box-shadow: -15px 0 40px var(--purple-glow); }
+
+.sheet-panel {
+  position:fixed; right:-420px; top:0; bottom:0; width:420px; z-index:29;
+  background:rgba(5,5,10,0.75); border-left:1px solid rgba(255,255,255,0.08);
+  backdrop-filter:blur(60px) saturate(200%);
+  transition:right .6s cubic-bezier(0.16, 1, 0.3, 1);
+  display:flex; flex-direction:column; padding:40px;
+  overflow-y:auto; box-shadow: -30px 0 80px rgba(0,0,0,0.6);
+}
+.sheet-panel.open { right:0; }
+.sheet-panel::-webkit-scrollbar { width:6px; }
+.sheet-panel::-webkit-scrollbar-thumb { background:rgba(255,255,255,0.15); border-radius:3px; }
+.sp-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:40px; }
+.sp-title { font-size:22px; font-weight:900; color:var(--gold); letter-spacing:-0.02em; }
+.sp-title.seller-title { color:var(--seller-color); }
+.sp-close { cursor:pointer; color:var(--text-dim); font-size:24px; transition:all .3s cubic-bezier(0.16, 1, 0.3, 1); width:40px; height:40px; display:flex; align-items:center; justify-content:center; border-radius:50%; background:rgba(255,255,255,0.05); }
+.sp-close:hover { color:var(--text); background:rgba(255,255,255,0.15); transform:rotate(90deg); }
+.sp-field { margin-bottom:24px; }
+.sp-label { font-size:12px; font-weight:700; color:var(--text-faint); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:10px; }
+.sp-value {
+  font-size:15px; font-weight:500; color:var(--text-dim); padding:16px 20px;
+  background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.06);
+  border-radius:20px; line-height:1.7; transition:all .5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.sp-value.filled { color:var(--text); border-color:rgba(214,183,90,0.4); background:rgba(214,183,90,0.05); }
+.sp-value.seller-filled { color:var(--text); border-color:rgba(16,185,129,0.4); background:rgba(16,185,129,0.05); }
+.sp-value.flash { animation:spflash .6s ease; }
+.sp-value.seller-flash { animation:spflash-g .6s ease; }
+@keyframes spflash { 0%{border-color:var(--gold); box-shadow:0 0 20px rgba(214,183,90,0.4);} 100%{} }
+@keyframes spflash-g { 0%{border-color:var(--seller-color); box-shadow:0 0 20px rgba(16,185,129,0.4);} 100%{} }
+
+/* ?? SYNOPSIS SECTION ?? */
+.sp-synopsis-wrap {
+  margin-top: 28px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(255,255,255,0.07);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.sp-synopsis-label {
+  font-size: 16px; color: var(--gold);
+  display: flex; align-items: center; gap: 6px;
+}
+.sp-synopsis-label::before {
+  content: '??; display: inline-block; font-size: 12px;
+}
+.sp-synopsis-box {
+  font-size: 16px; line-height: 1.9;
+  color: var(--text-dim);
+  padding: 16px 18px;
+  background: #111;
+  border: 4px solid #555;
+  border-radius: 0;
+  word-break: keep-all;
+  transition: all .1s step-end;
+  min-height: 60px;
+}
+.sp-synopsis-box.ready {
+  color: var(--text);
+  border-color: rgba(214,183,90,0.5);
+  background: rgba(214,183,90,0.07);
+  box-shadow: 0 0 30px rgba(214,183,90,0.08);
+}
+.sp-synopsis-box.seller-synopsis {
+  border-color: rgba(16,185,129,0.4);
+  background: rgba(16,185,129,0.06);
+}
+.sp-synopsis-box.seller-synopsis.ready {
+  border-color: rgba(16,185,129,0.6);
+  background: rgba(16,185,129,0.1);
+  box-shadow: 0 0 30px rgba(16,185,129,0.1);
+}
+.sp-synopsis-generating {
+  font-size: 13px; color: var(--text-faint);
+  font-style: italic; animation: pulse-dim 1.5s ease-in-out infinite;
+}
+@keyframes pulse-dim {
+  0%,100% { opacity: 0.5; }
+  50%      { opacity: 1; }
+}
+
+/* ?? STORYBOARD SENTENCE SUMMARY ?? */
+.sp-sentence-wrap { display:flex; flex-direction:column; gap:12px; }
+.sp-sentence-label { font-size:16px; color:var(--text-faint); margin-bottom:4px; }
+.sp-sentence-box {
+  font-size:18px; line-height:1.8; color:var(--text-dim);
+  padding:16px 18px;
+  background:#111; border:2px solid #555;
+  border-radius:0; min-height:80px;
+  transition: all .1s step-end;
+  word-break: keep-all;
+}
+.sp-sentence-box.has-content {
+  color:var(--text);
+  border-color:rgba(214,183,90,0.35);
+  background:rgba(214,183,90,0.04);
+}
+.sp-sentence-box.seller-content {
+  border-color:rgba(16,185,129,0.35);
+  background:rgba(16,185,129,0.04);
+}
+.sp-sentence-box .sp-placeholder {
+  font-size:13px; color:var(--text-faint); font-weight:400; font-style:italic;
+}
+.sp-sentence-flash { animation: sentence-flash .7s ease; }
+@keyframes sentence-flash {
+  0%   { border-color:var(--gold); box-shadow:0 0 24px rgba(214,183,90,0.5); }
+  100% { }
+}
+.sp-sentence-flash.seller-sentence-flash { animation: sentence-flash-g .7s ease; }
+@keyframes sentence-flash-g {
+  0%   { border-color:var(--seller-color); box-shadow:0 0 24px rgba(16,185,129,0.5); }
+  100% { }
+}
+.sp-chips { display:flex; flex-wrap:wrap; gap:6px; margin-top:4px; }
+.sp-chip {
+  font-size:12px; font-weight:600; padding:4px 12px; border-radius:100px;
+  background:rgba(214,183,90,0.12); color:var(--gold-light);
+  border:1px solid rgba(214,183,90,0.25);
+}
+.sp-chip.seller-chip {
+  background:rgba(16,185,129,0.12); color:#6EE7B7;
+  border:1px solid rgba(16,185,129,0.25);
+}
+
+/* ?? REVIEWER PANEL ?? */
+.reviewer-overlay {
+  position: fixed; inset: 0; z-index: 60;
+  background: rgba(0,0,0,0.6); backdrop-filter: blur(20px);
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.4s ease;
+}
+.reviewer-overlay.open { opacity: 1; pointer-events: all; }
+.reviewer-panel {
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 61;
+  background: rgba(8, 8, 14, 0.97);
+  border-top: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 32px 32px 0 0;
+  padding: 0 0 40px;
+  max-height: 80vh; overflow-y: auto;
+  transform: translateY(100%);
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  scrollbar-width: thin;
+  scrollbar-color: rgba(239,68,68,0.3) transparent;
+  box-shadow: 0 -20px 60px rgba(0,0,0,0.8);
+}
+.reviewer-panel.open { transform: translateY(0); }
+.reviewer-panel-header {
+  position: sticky; top: 0; z-index: 1;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 24px 36px 20px;
+  background: rgba(8,8,14,0.98);
+  border-bottom: 1px solid rgba(239,68,68,0.15);
+  backdrop-filter: blur(40px);
+}
+.reviewer-panel-title {
+  display: flex; align-items: center; gap: 12px;
+}
+.reviewer-badge {
+  font-size: 11px; font-weight: 800; letter-spacing: 0.1em;
+  color: #FCA5A5; background: rgba(239,68,68,0.15);
+  border: 1px solid rgba(239,68,68,0.3);
+  padding: 4px 12px; border-radius: 100px;
+}
+.reviewer-name {
+  font-size: 18px; font-weight: 800; color: var(--text);
+  letter-spacing: -0.02em;
+}
+.reviewer-close {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+  color: var(--text-dim); font-size: 18px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: all .2s;
+}
+.reviewer-close:hover { background: rgba(239,68,68,0.2); border-color: rgba(239,68,68,0.4); color: #FCA5A5; }
+.reviewer-body { padding: 32px 36px; }
+.reviewer-loading {
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; padding: 60px 0; gap: 16px;
+  color: var(--text-dim); font-size: 14px;
+}
+.reviewer-spinner {
+  width: 36px; height: 36px;
+  border: 3px solid rgba(239,68,68,0.2);
+  border-top-color: #EF4444;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+.review-section {
+  margin-bottom: 28px; padding-bottom: 28px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.review-section:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+.review-section-label {
+  font-size: 11px; font-weight: 800; letter-spacing: 0.1em;
+  text-transform: uppercase; margin-bottom: 12px;
+  display: flex; align-items: center; gap: 6px;
+}
+.review-section-label.strength { color: #4ADE80; }
+.review-section-label.weakness { color: #F87171; }
+.review-section-label.strategy { color: var(--gold); }
+.review-item {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 14px 16px; border-radius: 12px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+  margin-bottom: 10px; font-size: 14px; line-height: 1.7;
+  color: var(--text-dim); word-break: keep-all;
+}
+.review-item:last-child { margin-bottom: 0; }
+.review-item-num {
+  flex-shrink: 0; width: 22px; height: 22px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 800; margin-top: 1px;
+}
+.strength .review-item-num { background: rgba(74,222,128,0.15); color: #4ADE80; }
+.weakness .review-item-num { background: rgba(248,113,113,0.15); color: #F87171; }
+.strategy .review-item-num { background: rgba(214,183,90,0.15); color: var(--gold); }
+.reviewer-verdict {
+  margin-top: 28px; padding: 20px 24px;
+  background: linear-gradient(135deg, rgba(239,68,68,0.06), rgba(214,183,90,0.04));
+  border: 1px solid rgba(239,68,68,0.2); border-radius: 16px;
+  font-size: 15px; line-height: 1.8; color: var(--text);
+  font-style: italic; word-break: keep-all;
+}
+.reviewer-actions {
+  display: flex; gap: 12px; margin-top: 28px; padding-top: 28px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+}
+.reviewer-action-btn {
+  flex: 1; padding: 14px 20px; border-radius: 14px;
+  font-size: 14px; font-weight: 700; cursor: pointer;
+  font-family: inherit; transition: all .3s; border: 1px solid;
+}
+.reviewer-action-btn.primary {
+  background: rgba(239,68,68,0.1); border-color: rgba(239,68,68,0.3);
+  color: #FCA5A5;
+}
+.reviewer-action-btn.primary:hover { background: rgba(239,68,68,0.2); border-color: rgba(239,68,68,0.5); }
+.reviewer-action-btn.secondary {
+  background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.1);
+  color: var(--text-dim);
+}
+.reviewer-action-btn.secondary:hover { background: rgba(255,255,255,0.08); color: var(--text); }
+
+/* ?? 3-ACT FRAMEWORK HUD ?? */
+.act-hud {
+  display: none; align-items: center; gap: 0;
+  background: rgba(255,255,255,0.03); border: 1px solid var(--border);
+  border-radius: 100px; overflow: hidden;
+  backdrop-filter: var(--blur);
+}
+.act-hud.show { display: flex; }
+.act-segment {
+  padding: 6px 16px; font-size: 11px; font-weight: 700;
+  letter-spacing: 0.05em; color: var(--text-faint);
+  transition: all .4s; white-space: nowrap;
+  border-right: 1px solid rgba(255,255,255,0.06);
+  cursor: default;
+}
+.act-segment:last-child { border-right: none; }
+.act-segment.active {
+  color: var(--gold-light);
+  background: rgba(214,183,90,0.12);
+}
+.act-segment.done { color: var(--text-dim); }
+
+/* ?? SCENE TRANSITION ?? */
+#sceneOverlay {
+  position:fixed; inset:0; z-index:100;
+  background:var(--bg); opacity:0; pointer-events:none;
+  transition:opacity .6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+#sceneOverlay.fade-in  { opacity:1; pointer-events:all; }
+#sceneOverlay.fade-out { opacity:0; pointer-events:none; }
+
+/* user reply flash */
+.reply-flash {
+  position:fixed; top:40%; left:50%; transform:translate(-50%,-50%);
+  z-index:50; background:rgba(255,255,255,0.05);
+  border:1px solid rgba(255,255,255,0.1); border-radius:24px;
+  padding:20px 40px; font-size:18px; font-weight:700; color:var(--text); letter-spacing:-0.02em;
+  opacity:0; transition:all .5s cubic-bezier(0.16, 1, 0.3, 1); pointer-events:none;
+  backdrop-filter:blur(30px) saturate(150%);
+  box-shadow: 0 30px 60px rgba(0,0,0,0.6);
+}
+.reply-flash.show { opacity:1; transform:translate(-50%, -60%); }
+
+/* ?? ROUTINE BUILDER ?? */
+.routine-builder {
+  flex-shrink:0; padding:0 40px 40px; display:none; flex-direction:column; gap:20px;
+  max-width: 900px; margin: 0 auto; width: 100%;
+}
+.rb-header { text-align:center; margin-bottom: 20px; }
+.rb-header h2 { font-size:26px; font-weight:900; color:var(--seller-color); margin-bottom:12px; letter-spacing:-0.03em; }
+.rb-header p { font-size:15px; color:var(--text-dim); }
+.rb-steps { display:flex; flex-direction:column; gap:24px; }
+.rb-step-card {
+  background:rgba(10,25,18,0.5); border:1px solid rgba(16,185,129,0.15);
+  border-radius:24px; padding:32px; text-align:left;
+  backdrop-filter:blur(40px) saturate(150%);
+  position:relative; transition:all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 20px 50px rgba(0,0,0,0.4), inset 0 2px 0 rgba(255,255,255,0.05);
+}
+.rb-step-card:hover { border-color:rgba(16,185,129,0.4); box-shadow: 0 30px 60px rgba(16,185,129,0.1); transform:translateY(-2px); }
+.rb-step-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:24px; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:16px;}
+.rb-step-title { font-size:20px; font-weight:800; color:var(--text); letter-spacing:-0.02em; }
+.rb-step-controls { display:flex; gap:8px; }
+.rb-btn { background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); color:var(--text); width:36px; height:36px; border-radius:10px; cursor:pointer; font-family:inherit; transition:all 0.3s; display:flex; align-items:center; justify-content:center; }
+.rb-btn:hover:not([disabled]) { background:rgba(255,255,255,0.15); border-color:rgba(255,255,255,0.25); }
+.rb-btn.delete { color:#FCA5A5; }
+.rb-btn.delete:hover { background:rgba(239,68,68,0.2); border-color:rgba(239,68,68,0.4); }
+.rb-field-group { display:flex; flex-direction:column; gap:20px; }
+.rb-field { display:flex; flex-direction:column; gap:8px; }
+.rb-field label { font-size:13px; color:var(--text-faint); font-weight:700; text-transform:uppercase; letter-spacing:0.05em; }
+.rb-input, .rb-textarea {
+  background:rgba(0,0,0,0.4); border:1px solid rgba(255,255,255,0.08);
+  border-radius:16px; padding:14px 18px; font-size:15px; font-weight:500; color:var(--text);
+  font-family:inherit; outline:none; transition:all 0.3s;
+  box-shadow:inset 0 2px 4px rgba(0,0,0,0.5);
+}
+.rb-input:focus, .rb-textarea:focus { border-color:var(--seller-color); background:rgba(16,185,129,0.05); box-shadow:0 0 0 3px rgba(16,185,129,0.15); }
+.rb-textarea { resize:vertical; min-height:80px; }
+.rb-toggles { display:flex; gap:24px; margin-top:24px; padding-top:24px; border-top:1px solid rgba(255,255,255,0.08); }
+.rb-toggle-lbl { display:flex; align-items:center; gap:10px; font-size:14px; font-weight:500; color:var(--text-dim); cursor:pointer; }
+.rb-toggle-lbl input { accent-color:var(--seller-color); width:18px; height:18px; cursor:pointer; }
+.rb-actions { display:flex; gap:16px; margin-top:32px; justify-content:center; }
+.rb-add-btn { background:rgba(16,185,129,0.05); border:2px dashed rgba(16,185,129,0.4); color:var(--seller-color); border-radius:20px; padding:20px; font-size:16px; font-weight:700; cursor:pointer; flex:1; transition:all 0.3s; }
+.rb-add-btn:hover { background:rgba(16,185,129,0.1); border-color:var(--seller-color); transform:translateY(-2px); box-shadow:0 10px 20px rgba(16,185,129,0.1); }
+.rb-save-btn { background:var(--seller-color); border:none; color:#000; border-radius:20px; padding:20px; font-size:16px; font-weight:800; cursor:pointer; flex:1; transition:all 0.3s; box-shadow:0 10px 30px rgba(16,185,129,0.3); }
+.rb-save-btn:hover { filter:brightness(1.1); transform:translateY(-2px); box-shadow:0 15px 40px rgba(16,185,129,0.4); }
+
+/* ?? RESPONSIVE DESIGN (MOBILE) ?? */
+@media (max-width: 768px) {
+  .hud {
+    padding: 12px 20px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .hud-left { gap: 12px; flex: 1; min-width: 200px; }
+  .hud-logo { font-size: 16px; }
+  .hud-subtitle { font-size: 10px; padding-left: 20px; }
+  .back-btn, .home-btn { width: 32px; height: 32px; }
+  
+  .hud-progress {
+    order: 3;
+    width: 100%;
+    justify-content: center;
+    padding: 6px 12px;
+  }
+  
+  .char-stage { padding-bottom: 240px; }
+  .char-text { font-size: 56px; }
+  
+  .dialog-area {
+    padding: 0 16px 16px;
+    position: absolute;
+    bottom: 80px;
+    left: 0; right: 0;
+  }
+  .dialog-box {
+    padding: 24px;
+    min-height: 100px;
+  }
+  .dialog-text { font-size: 16px; }
+  .choices-box { justify-content: center; }
+  .choice-btn { padding: 10px 16px; font-size: 14px; }
+  
+  .input-overlay { padding: 12px 16px 16px; }
+  .input-wrapper { border-radius: 24px; padding: 6px 6px 6px 16px; }
+  .input-box { height:40px; }
+  
+  .mode-cards {
+    flex-direction: column;
+    padding: 24px;
+    overflow-y: auto;
+    align-items: stretch;
+  }
+  .mode-card {
+    flex: none;
+    padding: 40px 24px;
+  }
+  
+  .routine-panel {
+    width: 90%;
+    max-width: 400px;
+    padding: 24px;
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+  
+  .sheet-panel { width: 320px; right: -320px; padding: 24px; }
+  .sheet-toggle { padding: 20px 10px; font-size: 11px; }
+}
+</style>
+</head>
+<body>
+
+<!-- SCENE -->
+<div id="scene">
+  <div class="scene-bg scene-onboard" id="sceneBg"></div>
+</div>
+<div class="particles" id="particles"></div>
+<div id="sceneOverlay"></div>
+
+<!-- REPLY FLASH -->
+<div class="reply-flash" id="replyFlash"></div>
+
+<!-- MODE CARDS -->
+<div class="mode-cards" id="modeCards">
+  <div class="mode-card consumer" onclick="selectMode('consumer')">
+    <div class="mc-icon">?뱰</div>
+    <div class="mc-title">?ㅽ넗由?鍮뚮뱶??/div>
+    <div class="mc-desc">?좏깮??猷⑦떞?쇰줈<br>AI? ?④퍡 ?댁빞湲곕? 湲고쉷?⑸땲??/div>
+    <div class="mc-badge">?뚮퉬??紐⑤뱶</div>
+  </div>
+  <div class="mode-card seller" onclick="selectMode('seller')">
+    <div class="mc-icon">?썚截?/div>
+    <div class="mc-title">猷⑦떞 ?ㅺ퀎 & ?먮ℓ</div>
+    <div class="mc-desc">?섎쭔??李쎌옉 ?쒗뵆由우쓣 留뚮뱾??br>留덉폆???깅줉?섍퀬 ?먮ℓ?⑸땲??/div>
+    <div class="mc-badge">?먮ℓ??紐⑤뱶</div>
+  </div>
+  <div class="mode-card verify" onclick="selectMode('verify')">
+    <div class="mc-icon">?뵇</div>
+    <div class="mc-title">?묓뭹 寃利앺븯湲?/div>
+    <div class="mc-desc">?꾨Ц媛 ?섎Ⅴ?뚮굹? ??뷀븯硫?br>?묓뭹??怨좎쬆怨??꾩꽦?꾨? 寃利앺빀?덈떎</div>
+    <div class="mc-badge">寃利?紐⑤뱶</div>
+  </div>
+</div>
+
+<!-- ROUTINE SELECT -->
+<div class="routine-overlay" id="routineOverlay">
+  <div class="routine-panel">
+    <div class="rp-title">?뱴 ?대뼡 猷⑦떞?쇰줈 ?쒖옉?좉퉴??</div>
+    <div class="rp-sub">猷⑦떞???곕씪 吏덈Ц ?먮쫫???ш쾶 ?щ씪吏묐땲??/div>
+    <div class="routine-item" onclick="startRoutine('?⑦렪 湲고쉷 ?뚮옖')">
+      <div class="ri-icon">??/div>
+      <div class="ri-info"><div class="ri-name">?⑦렪 湲고쉷 ?뚮옖</div><div class="ri-desc">11?④퀎 쨌 30遺?留뚯뿉 ?뱀냼???앸뵳</div></div>
+      <div class="ri-badge">?멸린</div>
+    </div>
+    <div class="routine-item" onclick="startRoutine('?ν렪 湲고쉷 ?뚮옖')">
+      <div class="ri-icon">狩?/div>
+      <div class="ri-info"><div class="ri-name">?ν렪 湲고쉷 ?뚮옖</div><div class="ri-desc">20?④퀎 쨌 ?щ룄 ?덈뒗 ?ㅽ넗由ы뀛留?/div></div>
+      <div class="ri-badge">異붿쿇</div>
+    </div>
+    <div class="routine-item" onclick="startRoutine('猷⑦떞 留덉폆 ?먯깋')">
+      <div class="ri-icon">?썟</div>
+      <div class="ri-info"><div class="ri-name">猷⑦떞 留덉폆 ?먯깋</div><div class="ri-desc">?ㅻⅨ ?멸린 ?묎??ㅼ쓽 猷⑦떞 援щℓ</div></div>
+      <div class="ri-badge">留덉폆</div>
+    </div>
+  </div>
+</div>
+
+<!-- CHARACTER SELECT -->
+<div class="char-overlay" id="charOverlay">
+  <div>
+    <div style="text-align:center; margin-bottom: 32px;">
+      <h2 style="font-size:24px; font-weight:800; color:var(--text);">遺꾩꽍???꾩?以?肄뷀뙆?쇰읉???좏깮?섏꽭??/h2>
+      <p style="font-size:14px; color:var(--text-dim); margin-top:8px;">媛?肄뷀뙆?쇰읉留덈떎 ????ㅽ??쇱씠 ?ㅻ쫭?덈떎</p>
+    </div>
+    <div class="char-panel">
+      <div class="char-card" onclick="selectCharacter('議곗닔 A')">
+        <div class="cc-avatar" style="background-image: url('images/議곗닔a.gif'); background-size: cover; background-position: center; border-radius: 50%;"></div>
+        <div class="cc-name">議곗닔 A (T??</div>
+        <div class="cc-desc">鍮꾪뙋?곸씠怨??덈━?⑸땲??<br>?쇰━?곸씤 援ъ“? 媛쒖뿰?깆쓣 源딄쾶 ?뚭퀬??땲??</div>
+      </div>
+      <div class="char-card" onclick="selectCharacter('議곗닔 B')">
+        <div class="cc-avatar" style="background-image: url('images/議곗닔b.gif'); background-size: cover; background-position: center; border-radius: 50%;"></div>
+        <div class="cc-name">議곗닔 B (F??</div>
+        <div class="cc-desc">怨듦컧 ?λ젰???곗뼱?⑸땲??<br>罹먮┃?곗쓽 媛먯젙?좉낵 ?곕쑜???쒖궗瑜??대걣?대깄?덈떎.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- VERIFY PERSONA SELECT -->
+<div class="char-overlay" id="verifyCharOverlay" style="align-items:flex-start; padding-top:10vh;">
+  <div style="max-width:900px; width:100%;">
+    <div style="text-align:center; margin-bottom: 40px;">
+      <h2 style="font-size:28px; font-weight:800; color:var(--verify-color);">?묓뭹 寃利??섎Ⅴ?뚮굹 ?좏깮</h2>
+      <p style="font-size:15px; color:var(--text-dim); margin-top:12px;">?먰븯?쒕뒗 遺꾩빞???꾨Ц媛???몄쭛?먮? ?좏깮???묓뭹??怨좎쬆諛쏆븘 蹂댁꽭??/p>
+    </div>
+    
+    <div style="display:flex; flex-direction:column; gap:40px;">
+      <!-- Section 1 -->
+      <div>
+        <h3 style="font-size:18px; color:var(--text); margin-bottom:20px; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:10px;">?썳截??꾨Ц媛 怨좎쬆</h3>
+        <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(200px, 1fr)); gap:16px;">
+          <div class="char-card" onclick="selectVerifyCharacter('?섑븰 ?꾨Ц媛')" style="padding:20px; text-align:center;">
+            <div style="font-size:32px; margin-bottom:12px;">?㈉</div>
+            <div style="font-weight:700; color:var(--text);">?섑븰/踰뺤쓽??/div>
+          </div>
+          <div class="char-card" onclick="selectVerifyCharacter('?섏궗 ?꾨Ц媛')" style="padding:20px; text-align:center;">
+            <div style="font-size:32px; margin-bottom:12px;">?슀</div>
+            <div style="font-weight:700; color:var(--text);">?뺤궗/?섏궗</div>
+          </div>
+          <div class="char-card" onclick="selectVerifyCharacter('踰뺣쪧 ?꾨Ц媛')" style="padding:20px; text-align:center;">
+            <div style="font-size:32px; margin-bottom:12px;">?뽳툘</div>
+            <div style="font-weight:700; color:var(--text);">踰뺣쪧/?ы뙋</div>
+          </div>
+          <div class="char-card" onclick="selectVerifyCharacter('?щ━???꾨Ц媛')" style="padding:20px; text-align:center;">
+            <div style="font-size:32px; margin-bottom:12px;">?쭬</div>
+            <div style="font-weight:700; color:var(--text);">?щ━??/div>
+          </div>
+          <div class="char-card" onclick="selectVerifyCharacter('??궗 ?꾨Ц媛')" style="padding:20px; text-align:center;">
+            <div style="font-size:32px; margin-bottom:12px;">?뱶</div>
+            <div style="font-weight:700; color:var(--text);">??궗/?쒕?</div>
+          </div>
+          <div class="char-card" onclick="selectVerifyCharacter('援곗궗 ?꾨Ц媛')" style="padding:20px; text-align:center;">
+            <div style="font-size:32px; margin-bottom:12px;">?뷂툘</div>
+            <div style="font-weight:700; color:var(--text);">援곗궗/臾닿린</div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Section 2 -->
+      <div>
+        <h3 style="font-size:18px; color:var(--text); margin-bottom:20px; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:10px;">?뱷 ?몄쭛??寃??/h3>
+        <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(200px, 1fr)); gap:16px;">
+          <div class="char-card" onclick="selectVerifyCharacter('?됱젙???몄쭛??)" style="padding:20px; text-align:center;">
+            <div style="font-size:32px; margin-bottom:12px;">?Ⅶ</div>
+            <div style="font-weight:700; color:var(--text);">?됱젙???몄쭛??/div>
+            <div style="font-size:12px; color:var(--text-dim); margin-top:8px;">援ъ“/媛쒖뿰??/div>
+          </div>
+          <div class="char-card" onclick="selectVerifyCharacter('怨듦컧???몄쭛??)" style="padding:20px; text-align:center;">
+            <div style="font-size:32px; margin-bottom:12px;">?Ⅰ</div>
+            <div style="font-weight:700; color:var(--text);">怨듦컧???몄쭛??/div>
+            <div style="font-size:12px; color:var(--text-dim); margin-top:8px;">媛먯젙???낆옄諛섏쓳</div>
+          </div>
+          <div class="char-card" onclick="selectVerifyCharacter('濡쒗뙋 ?몄쭛??)" style="padding:20px; text-align:center;">
+            <div style="font-size:32px; margin-bottom:12px;">??/div>
+            <div style="font-weight:700; color:var(--text);">?λⅤ蹂??몄쭛??/div>
+            <div style="font-size:12px; color:var(--text-dim); margin-top:8px;">(濡쒗뙋 / ?ㅻ┫??/ ?먰?吏)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+  </div>
+</div>
+
+<!-- VN WRAPPER -->
+<div class="vn-wrapper">
+  <!-- HUD -->
+  <div class="hud">
+    <div class="hud-left">
+      <div style="display:flex; gap:8px;">
+        <button class="home-btn" id="homeBtn" onclick="goHome()" title="泥섏쓬?쇰줈">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        </button>
+        <button class="back-btn" id="backBtn" onclick="goBack()" title="?댁쟾 ?④퀎濡?>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        </button>
+      </div>
+      <div class="hud-logo-container">
+        <div class="hud-logo">
+          <img src="images/濡쒓퀬留???.png" alt="logo" style="width:24px; height:24px; vertical-align:middle; margin-right:4px;">
+          Mantra <span>Copilot</span>
+        </div>
+        <div class="hud-subtitle">Storytelling Build-up Platform</div>
+      </div>
+    </div>
+    <!-- ACT HUD -->
+  <div class="act-hud" id="actHud">
+    <div class="act-segment" id="act1Seg">???뺣쭩</div>
+    <div class="act-segment" id="act2Seg">??媛덈벑</div>
+    <div class="act-segment" id="act3Seg">??洹밸났</div>
+  </div>
+  <div class="hud-mode" id="hudMode"></div>
+    <div class="hud-progress" id="hudProgress" style="opacity:0">
+      <div class="hud-step">Step <strong id="stepNum">1</strong> / <span id="stepTotal">9</span></div>
+      <div class="progress-dots" id="progressDots"></div>
+    </div>
+  </div>
+
+  <!-- CHARACTER STAGE -->
+  <div class="char-stage">
+    <div class="char-figure" id="charFigure">
+      <!-- To use real images later, you can toggle char-text vs char-image-bg -->
+      <div class="char-text" id="charEmoji">Copilot</div>
+      <div class="char-image-bg" id="charImage"></div>
+      
+      <div class="char-name-plate" id="charName">議곗닔 ?댁떆?ㅽ꽩??/div>
+    </div>
+  </div>
+
+  <!-- DIALOG -->
+  <div class="dialog-area">
+    <div class="dialog-box" id="dialogBox">
+      <div class="dialog-speaker" id="dialogSpeaker">議곗닔 ?댁떆?ㅽ꽩??/div>
+      <div class="dialog-text" id="dialogText">
+        <span id="dialogTxt"></span><span class="dialog-cursor" id="dialogCursor"></span>
+      </div>
+      <div class="dialog-example" id="dialogExample"></div>
+    </div>
+    <div class="stage-banner" id="stageBanner">
+      <div class="stage-banner-label">?쒖뒪??硫붿떆吏 ??/div>
+      <div id="stageBannerText"></div>
+    </div>
+    <!-- ANSWER AREA (CHOICES + TEXT INPUT) -->
+    <div class="answer-area" id="answerArea">
+      <button class="insight-bar-btn" id="solutionBarBtn" onclick="openInsightPanel()">
+        ????吏덈Ц???ㅽ넗由ы뀛留??몄궗?댄듃 蹂닿린
+      </button>
+      <div class="input-wrapper" id="inputWrapper">
+        <div class="choices-box" id="choicesBox" style="display:none;"></div>
+        <div class="input-bar-inner">
+          <textarea class="input-box" id="inputBox" placeholder="吏곸젒 紐낅졊?대? ??댄븨?섏꽭??.." rows="1" onkeydown="if(event.key==='Enter' && !event.shiftKey) { event.preventDefault(); handleSend(); } else { this.style.height='44px'; this.style.height = this.scrollHeight + 'px'; }"></textarea>
+          <button class="send-btn" id="sendBtn" onclick="handleSend()">
+            <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ROUTINE BUILDER (SELLER MODE) -->
+  <div class="routine-builder" id="routineBuilder">
+    <div class="rb-header">
+      <h2>?썱截?猷⑦떞 ?쒗뵆由?鍮뚮뜑</h2>
+      <p>?④퀎蹂?吏덈Ц, ?덈궡, ?듭뀡???먯쑀濡?쾶 ?ㅺ퀎?섏꽭??/p>
+    </div>
+    <div class="rb-steps" id="rbSteps">
+      <!-- Steps will be rendered here -->
+    </div>
+    <div class="rb-actions">
+      <button class="rb-add-btn" onclick="addBuilderStep()">+ ?덈줈???④퀎 異붽??섍린</button>
+      <button class="rb-save-btn" onclick="saveBuilderRoutine()">???諛?鍮뚮뱶???뚯뒪??/button>
+    </div>
+  </div>
+</div>
+<!-- REVIEWER OVERLAY -->
+<div class="reviewer-overlay" id="reviewerOverlay" onclick="closeReviewer()"></div>
+
+<!-- REVIEWER PANEL -->
+<div class="reviewer-panel" id="reviewerPanel">
+  <div class="reviewer-panel-header">
+    <div class="reviewer-panel-title">
+      <span class="reviewer-badge">10?꾩감 ?됰줎媛</span>
+      <span class="reviewer-name">?뵇 ?뚮’ 由щ럭??/span>
+    </div>
+    <div class="reviewer-close" onclick="closeReviewer()">??/div>
+  </div>
+  <div class="reviewer-body" id="reviewerBody">
+    <div class="reviewer-loading" id="reviewerLoading">
+      <div class="reviewer-spinner"></div>
+      <span>?먭퀬瑜?遺꾩꽍?섍퀬 ?덉뒿?덈떎...</span>
+    </div>
+    <div id="reviewerContent" style="display:none;"></div>
+  </div>
+</div>
+
+<!-- INSIGHT OVERLAY -->
+<div class="insight-overlay" id="insightOverlay" onclick="closeInsightPanel()"></div>
+
+<!-- INSIGHT PANEL -->
+<div class="insight-panel" id="insightPanel">
+  <div class="insight-panel-header">
+    <div class="insight-panel-title">???ㅽ넗由ы뀛留??몄궗?댄듃</div>
+    <div class="insight-panel-close" onclick="closeInsightPanel()">??/div>
+  </div>
+  <div class="insight-panel-body" id="insightPanelBody">
+    <div class="insight-loading" id="insightLoading">
+      <div class="insight-spinner"></div>
+      <span>遺꾩꽍 以묒엯?덈떎...</span>
+    </div>
+    <div id="insightContent" style="display:none;"></div>
+  </div>
+</div>
+
+<!-- SHEET TOGGLE -->
+<div class="sheet-toggle" id="sheetToggle" style="display:none" onclick="toggleSheet()">
+  SHEET
+</div>
+
+<!-- SHEET PANEL -->
+<div class="sheet-panel" id="sheetPanel">
+  <div class="sp-header">
+    <div class="sp-title" id="spTitle">?뱥 ?ㅽ넗由?蹂대뱶</div>
+    <div class="sp-close" onclick="toggleSheet()">??/div>
+  </div>
+  <div id="spConsumer">
+    <div class="sp-sentence-wrap">
+      <div class="sp-sentence-label">?댁빞湲??붿빟</div>
+      <div class="sp-sentence-box" id="story-summary-box">
+        <span class="sp-placeholder">??붾? 吏꾪뻾?섎㈃ ?ш린???댁빞湲곌? ??臾몄옣?쇰줈 ?뺣━?⑸땲??</span>
+      </div>
+      <div class="sp-chips" id="story-chips"></div>
+    </div>
+    <div class="sp-synopsis-wrap" id="consumer-synopsis-wrap" style="display:none">
+      <div class="sp-synopsis-label">?꾩꽦 ?쒕냸?쇱뒪</div>
+      <div class="sp-synopsis-box" id="story-synopsis-box">
+        <span class="sp-synopsis-generating">?쒕냸?쇱뒪 ?앹꽦 以?..</span>
+      </div>
+    </div>
+  </div>
+  <div id="spSeller" style="display:none">
+    <div class="sp-sentence-wrap">
+      <div class="sp-sentence-label">猷⑦떞 ?붿빟</div>
+      <div class="sp-sentence-box" id="seller-summary-box">
+        <span class="sp-placeholder">??붾? 吏꾪뻾?섎㈃ ?ш린??猷⑦떞????臾몄옣?쇰줈 ?뺣━?⑸땲??</span>
+      </div>
+      <div class="sp-chips" id="seller-chips"></div>
+    </div>
+    <div class="sp-synopsis-wrap" id="seller-synopsis-wrap" style="display:none">
+      <div class="sp-synopsis-label">猷⑦떞 ?뚭컻臾?/div>
+      <div class="sp-synopsis-box seller-synopsis" id="seller-synopsis-box">
+        <span class="sp-synopsis-generating">猷⑦떞 ?뚭컻臾??앹꽦 以?..</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Supabase SDK -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script>
+function spawnParticles() {
+  const container = document.getElementById('particles');
+  for (let i=0; i<20; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    const size = Math.random()*8+4;
+    p.style.cssText = `
+      width:${size}px; height:${size}px;
+      left:${Math.random()*100}%;
+      background:${Math.random()>.5?'rgba(139,92,246,':'rgba(214,183,90,'}${(Math.random()*.5+.2)});
+      animation-duration:${Math.random()*20+15}s;
+      animation-delay:${Math.random()*10}s;
+    `;
+    container.appendChild(p);
+  }
+}
+spawnParticles();
+
+// ?? API KEYS (?ш린???낅젰?섏꽭?? ??
+const ANTHROPIC_API_KEY = "";  // sk-ant-... ?낅젰
+const OPENAI_API_KEY = "";     // sk-... ?낅젰
+
+// ?? STATE ??
+let isSeller = false;
+let currentStep = 0;
+let activeSteps = [];
+let sheetOpen = false;
+let typing = false;
+let answerHistory = [];
+let selectedCharName = '議곗닔 ?댁떆?ㅽ꽩??;
+
+// ?? SHEET TOGGLE ??
+function toggleSheet() {
+  sheetOpen = !sheetOpen;
+  const panel = $('sheetPanel');
+  if (panel) panel.classList.toggle('open', sheetOpen);
+  const toggle = $('sheetToggle');
+  if (toggle) toggle.classList.toggle('open', sheetOpen);
+}
+
+// ?? STEPS ??
+/* 
+  To change images per step, you can add an `imageUrl` property. 
+  For text/emoji changes, use the `visual` property.
+*/
+const consumerSteps = [
+  { id:'l-1', visual:'?렞', stageIntro:'[?ν렪 湲고쉷 ?뚮옖]\n?뚮━寃????ㅼ썙?쒖? ?щ엺?ㅼ쓽 諛섏쓳 ?붿냼瑜?寃고빀??蹂닿만 ?쒖븞?⑸땲??', question:'?대뼡 ?댁빞湲곕? 留뚮뱾怨??띠쑝?몄슂?', fieldId:'f-l1' },
+  { id:'l-2', visual:'?뱴', stageIntro:'?λⅤ ?좏깮???곕씪 ?щ엺?ㅼ쓽 諛섏쓳 ?⑦꽩? ?щ씪吏묐땲??', question:'?댁빞湲곗쓽 ?λⅤ??臾댁뾿?멸???', fieldId:'f-l2' },
+  { id:'l-4', visual:'?뫀', stageIntro:'媛숈씠 紐⑦뿕???좊굹寃????꾨컮??낅땲??\n*?щ엺?ㅼ씠 留덉쓬???댁쨪 ???덈뒗 ?멸컧??罹먮┃?곗엯?덈떎.', question:'二쇱씤怨듭쓣 癒쇱? 媛꾨왂?섍쾶 留뚮뱾??蹂쇨퉴??', fieldId:'f-l4' },
+  {
+    id:'l-3b', visual:'?뙇', 
+    stageIntro:'二쇱씤怨듭씠 ?吏곸씪 怨듦컙?낅땲??',
+    question:'[諛곌꼍] ???묓뭹???멸퀎愿? ?대븣??', 
+    fieldId:'f-l3b'
+  },
+  {
+    id:'l-3c', visual:'?뮞', 
+    stageIntro:'?깆옣?몃Ъ? 洹?以묒뿉??諛섎뱶???吏곸뿬???⑸땲??\n?吏곸씠寃?留뚮뱶??嫄?媛뺣젰???숆린援ъ슂.',
+    question:'[?됰룞] 二쇱씤怨듭? 萸??섍퀬 ?띠뼱 ?섎굹??', 
+    fieldId:'f-l3c'
+  },
+  { id:'l-3', visual:'?랃툘', stageIntro:'?꾩껜 ?댁빞湲곕? 愿?듯븯????臾몄옣?댁옄 吏덈Ц?????덉뒿?덈떎.\n*???댁빞湲곕뒗 二쇱씤怨듭씠 紐⑺몴瑜??꾪빐 紐⑦뿕???좊굹吏留??쒕젅留덉뿉 鍮좎졇 留ㅼ슦 ?대졄?? ?쇰뒗 ?댁슜???ㅼ뼱媛???⑸땲??', question:'濡쒓렇?쇱씤??留뚮뱾??遊먯슂!', fieldId:'f-l3' },
+  { id:'l-5', visual:'?뷂툘', stageIntro:'二쇱씤怨듭쓽 諛섎??몄뿉 ???몃Ъ?ㅼ엯?덈떎.\n*?щ쭩???꾨땶 ?먮젮??쇰줈 ?명빐 \'?뺣쭩\'??援대났???щ엺?ㅼ씠二?', question:'?대쾲???덊?怨좊땲?ㅽ듃(?곷???瑜?留뚮뱾??蹂쇨퉴??', fieldId:'f-l5' },
+  { id:'l-6', visual:'?렗', stageIntro:'[?댁젣遺??媛쒖뿰???꾧컻瑜??대낫寃좎뒿?덈떎.]\n?대뼡 而⑥뀎?대ŉ ?대뼡 ?댁빞湲곗씤吏 蹂댁뿬二쇰뒗 ?숈떆??珥덉옣遺??\'諛섏쟾\'??蹂댁뿬二쇰ŉ ?대ぉ????吏묒쨷?쒖폒???⑸땲??', question:'[?꾨·濡쒓렇]\n泥レ씤?곸엯?덈떎. 泥섏쓬???대뼡 ?λ㈃?쇰줈 ?대ぉ???뚯뼱 蹂쇨퉴??', fieldId:'f-l6' },
+  { id:'l-7', visual:'?뙢截?, stageIntro:'吏湲?二쇱씤怨듭? ?대㈃??寃고븤?쇰줈 ?섎뱺 ?곹깭?낅땲??', question:'[臾몄젣 吏곷㈃???쒓컙]\n二쇱씤怨듭씠 ?댁찓 ???놁씠 留덉＜?댁빞 ???쒕젴? 臾댁뾿???덉쓣源뚯슂?', fieldId:'f-l7' },
+  { id:'l-8', visual:'?렍', stageIntro:'媛뺣젰???숆린瑜?留뚮뱾 留뚰븳 ?ш굔?낅땲??\n*?낆닚?섏쓣 諛⑹튂??寃껋씤媛, 誘몃겮??嫄몃젮??寃껋씤媛? ?좏깮?섎뒗 ?쒓컙?낅땲??', question:'[誘몃겮???쒓컙]\n萸붽? ?낆닚?섏씠 諛섎났?섍퀬 ?덉뼱??. 二쇱씤怨듭쓽 ?댁쟻 蹂?붾? ?쇱쑝?ㅻ젮硫??대뼸寃??댁빞 ?좉퉴??', fieldId:'f-l8' },
+  { id:'l-9', visual:'?뵎', stageIntro:'紐⑦뿕 ?쒖옉???댁뇿瑜?李얠? ?쒓컙?낅땲??', question:'[寃利앹쓽 ?쒓컙]\n二쇱씤怨듭? ?대뼡 ?좎옱?μ쓣 媛議뚭퀬 ???ъ젙???좊굹湲??꾪븳 議곌굔? 萸섍퉴??', fieldId:'f-l9' },
+  { id:'l-10', visual:'?뿺截?, stageIntro:'?댁젣 ?ㅼ떊 ?쇱긽?쇰줈 ?뚯븘媛????놁뒿?덈떎.', question:'[?좊뀗???쒓컙]\n二쇱씤怨듭씠 洹몃━??泥?궗吏꾩? 臾댁뾿?쇨퉴?', fieldId:'f-l10' },
+  { id:'l-11', visual:'?뱢', stageIntro:null, question:'[諛쒖쟾???쒓컙]\n媛덈벑, 蹂?붾? 寃れ? 二쇱씤怨듭? ?욎쑝濡??대뼡 ?λ?吏꾩쭊???쇱쓣 踰뚯씪源뚯슂?', fieldId:'f-l11' },
+  { id:'l-12', visual:'?룇', stageIntro:'?욎쑝濡?移섍퀬 ?섍? 怨듬왂?????덈뒗 萸붽?瑜?諛쒓껄???쒓컙?낅땲??', question:'[媛吏??밸━]\n二쇱씤怨듦낵 ?숇즺?ㅼ? ?대뼡 ?쒖빟???쇱튌源뚯슂?', fieldId:'f-l12' },
+  { id:'l-13', visual:'?좑툘', stageIntro:'嫄대뱾吏 留먯븘????嫄?嫄대뱶?ㅻ쾭?멸굅??媛吏 留먯븘????怨녹쓣 媛踰꾨졇?댁슂.', question:'[諛⑹떖???쒓컙]\n?됰슧???곗꽌 ?ш굔???곗졇 怨꾪쉷???꾩쟾 ??댁졇 踰꾨졇?댁슂! 洹멸쾶 萸섍퉴??', fieldId:'f-l13' },
+  { id:'l-14', visual:'?뙦截?, stageIntro:'洹몃깷 留먯씠 ?꾨땶, ?덉븵???쒕젴??蹂댁뿬二쇰ŉ 二쇱씤怨듭쓣 ?붾뱾由ш쾶 留뚮뱶?몄슂. ?ш린?쒕뒗 ?대? 遺꾩뿴???쇱뼱?섍린???⑸땲??', question:'[?쇰????쒓컙]\n?ㅽ뙣?섎㈃ ?대뼡 李멸레??珥덈옒?좉퉴??', fieldId:'f-l14' },
+  { id:'l-15', visual:'?뮕', stageIntro:'寃뚯엫??????ㅻ쭏由щ? 議곌툑? ??寃?媛숈? ?쒓컙?낅땲??\n*?대씪?대쭑?ㅻ? ?꾪븳 異붿쭊?μ쓣 ?삳뒗 援ш컙?낅땲??', question:'[媛곸꽦???쒓컙]\n"鍮꾨?? 諛붾줈 ?닿굅???!"', fieldId:'f-l15' },
+  { id:'l-16', visual:'?깍툘', stageIntro:'?쒓컙?? 怨듦컙???쒖빟?쇰줈 ?명빐 ?꾩뒳?꾩뒳??湲댁옣媛먯씠 怨좎“?⑸땲??', question:'[珥덇릿諛뺥븳 ?쒓컙]\n?뚯떖???꾨줈?앺듃, 怨쇱뿰 ?깃났?????덉쓣源뚯슂?', fieldId:'f-l16' },
+  { id:'l-17', visual:'?뵦', stageIntro:'吏?낇븯寃?愿대∼? ?붾뜕 ?대㈃??寃고븤怨?洹뱁븳?쇰줈 留덉＜?섎뒗 ?쒓컙?낅땲??\n*媛곸꽦?댁꽌 諛쒓껄?덈뜕 ?щ쭩???듯븯吏 ?딆븘?? 二쎌쓬???꾩쟻?섎뒗 怨좏넻???먭뺨吏묐땲??\n*媛먯젙-?됰룞-媛덈벑??洹뱁븳?쇰줈 ??컻?섎뒗 ?쒓컙?낅땲??', question:'[?대씪?대쭑????컻???쒓컙]\n留덉?留??앺뙋??媛덈벑. 理쒖븙???쒓컙?먯꽌 二쇱씤怨듭? ?대뼡 ?좏깮???좉퉴??', fieldId:'f-l17' },
+  { id:'l-18', visual:'?봽', stageIntro:'?꾩쟾??媛곸꽦???대（???쒓컙?낅땲??\n*珥덈컲遺??臾댁떖肄?吏?섏낀?붾뜲 ?닿쾶 ?대젃寃?以묒슂?덈떎??臾대쫷????移섎뒗 ?쒓컙?낅땲??\n*?ш굔 ?닿껐? 諛섎뱶??二쇱씤怨듭씠 愿?ы빐???⑸땲??', question:'[諛섏쟾???쒓컙]\n"?닿굔 誘몄쿂 紐곕옄吏?! 異⑷꺽, 媛덈벑 ?닿껐???댁뇿媛 ?닿굅??ㅻ땲!"', fieldId:'f-l18' },
+  { id:'l-19', visual:'?똿', stageIntro:'湲댁옣 ?댁냼, 二쇱씤怨듬뱾???쇱긽 蹂듦?? ?꾩씠?щ땳??蹂?붽? 蹂댁엯?덈떎.', question:'[?댁셿???쒓컙]\n二쇱씤怨듦낵 ?숇즺?ㅼ? ?대젃寃??댁쟻 蹂?뷀븯嫄곕굹 ?깆옣?덉뼱??', fieldId:'f-l19' },
+  { id:'l-20', visual:'?뢾', stageIntro:'泥섏쓬遺??苑곴퐗 ?④꺼?붾뜕 鍮꾨????嫄곕굹, 吏덈Ц???섏?硫댁꽌 ?앸궇 ?섎룄 ?덉뒿?덈떎.', question:'[?먰븘濡쒓렇]\n???ъ젙 ?댄썑 ?대뼸寃??좉퉴??', fieldId:'f-l20' },
+];
+
+const shortSteps = [
+  { id:'s-1', visual:'?렞', stageIntro:'[?⑦렪 湲고쉷 ?뚮옖]\n?뚮━寃????ㅼ썙?쒖? ?щ엺?ㅼ쓽 諛섏쓳 ?붿냼瑜?寃고빀??蹂닿만 ?쒖븞?⑸땲??', question:'?대뼡 ?⑦렪 ?댁빞湲곕? 留뚮뱾怨??띠쑝?몄슂?', fieldId:'f-s1' },
+  { id:'s-2', visual:'?뱴', stageIntro:'?λⅤ ?좏깮???곕씪 ?щ엺?ㅼ쓽 諛섏쓳 ?⑦꽩? ?щ씪吏묐땲??', question:'?댁빞湲곗쓽 ?λⅤ??臾댁뾿?멸???', fieldId:'f-s2' },
+  { id:'s-3', visual:'?랃툘', stageIntro:'?꾩껜 ?댁빞湲곕? 愿?듯븯????臾몄옣?댁옄 吏덈Ц?????덉뒿?덈떎.\n*???댁빞湲곕뒗 二쇱씤怨듭씠 紐⑺몴瑜??꾪빐 紐⑦뿕???좊굹吏留??쒕젅留덉뿉 鍮좎졇 留ㅼ슦 ?대졄?? ?쇰뒗 ?댁슜???ㅼ뼱媛???⑸땲??', question:'濡쒓렇?쇱씤??留뚮뱾??遊먯슂!', fieldId:'f-s3' },
+  { id:'s-4', visual:'?뫀', stageIntro:'媛숈씠 紐⑦뿕???좊굹寃????꾨컮??낅땲??\n*?щ엺?ㅼ씠 留덉쓬???댁쨪 ???덈뒗 ?멸컧??罹먮┃?곗엯?덈떎.', question:'二쇱씤怨듭쓣 癒쇱? 媛꾨왂?섍쾶 留뚮뱾??蹂쇨퉴??', fieldId:'f-s4' },
+  { id:'s-5', visual:'?뷂툘', stageIntro:'二쇱씤怨듭쓽 諛섎??몄뿉 ???몃Ъ?ㅼ엯?덈떎.\n*?щ쭩???꾨땶 ?먮젮??쇰줈 ?명빐 \'?뺣쭩\'??援대났???щ엺?ㅼ씠二?', question:'?대쾲???덊?怨좊땲?ㅽ듃(?곷???瑜?留뚮뱾??蹂쇨퉴??', fieldId:'f-s5' },
+  { id:'s-6', visual:'??, stageIntro:'[?댁젣遺??媛쒖뿰???꾧컻瑜??대낫寃좎뒿?덈떎.]\n?낆옄????쇳룷(移쒓렐媛?瑜??뺤꽦?섎뒗 泥レ씤??援ш컙?낅땲??\n*?щ엺?ㅻ겮由?移쒗빐吏????ㅻぐ?좏궧?섍굅?? ?좊㉧瑜??섏????댁빞湲곕룄 ?묎컳?듬땲??', question:'[肄붾? 由대━??\n二쇱씤怨듭? ?몄젣, ?대뵒???쇱긽??蹂대궡怨??덈굹??', fieldId:'f-s6' },
+  { id:'s-7', visual:'?뮙', stageIntro:null, question:'[?몃윭釉?\n洹몃윭???대뒓 ?? ?대뼡 臾몄젣媛 ?곗쭏源뚯슂?', fieldId:'f-s7' },
+  { id:'s-8', visual:'?뽳툘', stageIntro:null, question:'[?쒕젅留?\n?대뼡 媛덈벑?쇰줈 怨좏넻 諛쏄쾶 ?좉퉴??', fieldId:'f-s8' },
+  { id:'s-9', visual:'?깍툘', stageIntro:'湲댁옣媛먯씠 怨좎“?섎뒗 ?쒓컙?낅땲??\n*?쒓컙?? 怨듦컙???쒖빟?쇰줈 ?명빐 ?꾩뒳?꾩뒳?⑸땲??', question:'[?쒖뒪?쒖뒪]\n?ㅼ긽媛?곸쑝濡??낇솕?섎뒗 ?쒓컙?낅땲?? 洹멸쾶 萸섍퉴??', fieldId:'f-s9' },
+  { id:'s-10', visual:'?뵦', stageIntro:null, question:'[?대씪?대쭑??\n寃곌뎅 嫄깆젙???쇱씠 ?곗졇 踰꾨졇?듬땲?? 洹멸쾶 萸섍퉴??', fieldId:'f-s10' },
+  { id:'s-11', visual:'?뮕', stageIntro:'諛섏쟾?쇰줈 苡뚭컧??二쇰뒗 媛??以묒슂??援ш컙?낅땲??', question:'[?띻린?곸씤 ?닿껐]\n?꾪? ?앷컖移?紐??덈뜕 諛⑸쾿?쇰줈 ?닿껐?⑸땲?? 洹멸쾶 萸섍퉴??', fieldId:'f-s11' },
+];
+
+const sellerSteps = [
+  { id:'s-name',  visual:'?뤇截?, stageIntro:'???④퀎?먯꽌??猷⑦떞 ?대쫫怨?湲곕낯 ?뺣낫瑜??ㅼ젙?⑸땲??\n援щℓ?먭? ?쒕늿???댄빐?????덈뒗 留ㅻ젰?곸씤 ?대쫫??醫뗭뒿?덈떎.', question:'猷⑦떞???대쫫???뺥빐二쇱꽭??', example:'?덉떆: 10遺??꾩꽦 濡쒗뙋 湲고쉷 猷⑦떞, 罹먮┃??鍮뚮뱶??留덉뒪?? ?낆뿭 ?쒖궗 7?④퀎', choices:['10遺?湲고쉷 梨뚮┛吏', '罹먮┃??鍮뚮뱶??猷⑦떞', '?낆뿭 ?쒖궗 硫붿씠而?], fieldId:'s-name' },
+  { id:'s-genre', visual:'?렚', stageIntro:null, question:'??猷⑦떞? ?대뼡 ?λⅤ???곹빀??湲고쉷???꾩?二쇰굹??', example:'?덉떆: 濡쒕㎤??肄붾??? 鍮숈쓽臾? 紐⑤뱺 ?λⅤ 踰붿슜', choices:['濡쒕㎤?ㅽ뙋?吏','?뺥넻 ?먰?吏','?꾨?臾?,'?λⅤ 臾닿? 踰붿슜'], fieldId:'s-genre' },
+  { id:'s-steps', visual:'?첏', stageIntro:null, question:'猷⑦떞??珥?紐??④퀎濡?援ъ꽦?섏떆寃좎뼱??', example:'?덉떆: 5?④퀎(?⑦렪), 10?④퀎(?ν렪), ?좊룞??, choices:['5?④퀎 (鍮좊Ⅸ ?⑦렪 湲고쉷)','10?④퀎 (?쒖? 吏꾪뻾??','15?④퀎 ?댁긽 (?ы솕 湲고쉷)'], fieldId:'s-steps' },
+  { id:'s-q1',    visual:'?뮠', stageIntro:'?ш린?쒕뒗 猷⑦떞??泥?踰덉㎏ 吏덈Ц???ㅺ퀎?⑸땲??\n李쎌옉?먮뱾??紐곗엯?쒗궗 留ㅻ젰?곸씤 吏덈Ц???묒꽦?댁＜?몄슂.', question:'?묎??섎쭔??泥?踰덉㎏ 湲고쉷 吏덈Ц? 臾댁뾿?멸???', example:'?덉떆: 二쇱씤怨듭씠 ?덈? ?ㅽ궎怨??띠? ?딆? ?묒뿭?щ뒗 臾댁뾿?멸???', choices:['二쇱씤怨듭씠 ?덈? ?ㅽ궎怨??띠? ?딆? ?묒뿭?щ뒗?', '二쇱씤怨듭쓽 媛????寃고븤??', '?댁빞湲곗쓽 ?쒖옉???뚮━??諛쒕떒 ?ш굔??'], fieldId:'s-q1' },
+  { id:'s-q1c',   visual:'?뵖', stageIntro:null, question:'??吏덈Ц???쒖븞???좏깮吏瑜?異붽??섏떆寃좎뼱??', example:'?덉떆: [?좊텇 ?꾩“], [怨쇨굅???댁씤], [湲덉????щ옉] 媛숈? ?좏깮吏瑜?二쇨퀬 ?띠뼱', choices:['誘몃━ ?명똿???덉떆 ?좏깮吏 ?쒓났','?먯쑀 ?낅젰 ?뺥깭濡쒕쭔 吏꾪뻾'], fieldId:'s-q1c' },
+  { id:'s-desc',  visual:'?뱷', stageIntro:'???④퀎?먯꽌??留덉폆???꾪븳 ?곹뭹 ?뚭컻瑜??묒꽦?⑸땲??', question:'猷⑦떞???띾낫????以??뚭컻 臾멸뎄瑜??묒꽦?댁＜?몄슂.', example:'?덉떆: ?뚮’??留됲엺 ?묎??섏쓣 ?꾪븳 媛???꾨꼍??10?④퀎 ?붾（??', choices:['留됲엺 ?뚮’???⑥닲???レ뼱二쇰뒗 留덈쾿??湲고쉷踰?, '?꾧뎄???쎄쾶 ?곕씪?섎뒗 踰좎뒪?몄??ъ쓽 鍮꾨?', '罹먮┃?곌? ?ㅼ뒪濡??吏곸씠寃?留뚮뱶??留덈쾿??猷⑦떞'], fieldId:'s-desc' },
+  { id:'s-price', visual:'?뮥', stageIntro:null, question:'?ㅽ넗???먮ℓ 媛寃⑹쓣 ?ㅼ젙?댁＜?몄슂.', example:'?덉떆: 1500???뺣룄濡?媛蹂띻쾶 梨낆젙, 4900???꾨━誘몄뾼)', choices:['臾대즺 諛고룷','990??,'2,900??,'4,900??(?꾨━誘몄뾼)'], fieldId:'s-price' },
+];
+
+// ?? HELPERS ??
+function $(id){ return document.getElementById(id); }
+
+function sceneTransition(newBgClass, cb) {
+  const overlay = $('sceneOverlay');
+  overlay.classList.add('fade-in');
+  setTimeout(() => {
+    const bg = $('sceneBg');
+    bg.className = 'scene-bg ' + newBgClass;
+    overlay.classList.remove('fade-in');
+    overlay.classList.add('fade-out');
+    setTimeout(() => { overlay.className = ''; cb && cb(); }, 600);
+  }, 600);
+}
+
+function markdownToHtml(text) {
+  return text
+    .replace(/\*\*(.+?)\*\*/g, '<strong style="color:#c4b5fd;">$1</strong>')
+    .replace(/^#{1,3}\s(.+)$/gm, '<span style="font-weight:800;font-size:1.05em;">$1</span>')
+    .replace(/^\* (.+)$/gm, '??$1')
+    .replace(/\n/g, '<br>');
+}
+
+function showDialogText(step, cb) {
+  if (typing) return;
+  typing = true;
+  const txtField = $('dialogTxt');
+  const exField = $('dialogExample');
+  
+  txtField.innerHTML = '';
+  exField.innerHTML = '';
+  exField.classList.remove('show');
+  $('dialogCursor').style.display = 'none';
+  $('choicesBox').innerHTML = '';
+  $('choicesBox').classList.remove('show');
+
+  const text = typeof step === 'string' ? step : step.question;
+  const example = typeof step === 'object' ? step.example : null;
+
+  // 留덊겕?ㅼ슫??HTML濡?蹂????利됱떆 ?뚮뜑留?(??댄븨 ?④낵 ?쒓굅)
+  const htmlContent = markdownToHtml(text);
+  
+  // 吏㏐쾶 ?쒕젅?????щ젮二쇨린 (遺?쒕읇寃??섑??섎뒗 ?④낵)
+  txtField.style.opacity = '0';
+  txtField.innerHTML = htmlContent;
+  txtField.scrollTop = 0;
+
+  setTimeout(() => {
+    txtField.style.transition = 'opacity 0.4s ease';
+    txtField.style.opacity = '1';
+    typing = false;
+    if (example) {
+      exField.innerHTML = `<span>Tip!</span> ${example}`;
+      exField.classList.add('show');
+    }
+    if (cb) cb();
+  }, 200);
+}
+
+function setStageBanner(text) {
+  const banner = $('stageBanner');
+  if (text) {
+    let htmlText = text.replace(/\n/g, '<br>');
+    $('stageBannerText').innerHTML = htmlText;
+    banner.classList.toggle('seller-banner', isSeller);
+    banner.style.display = 'block';
+    setTimeout(() => banner.classList.add('show'), 50);
+  } else {
+    banner.classList.remove('show');
+    setTimeout(() => banner.style.display = 'none', 500);
+  }
+}
+
+function showChoices(choices, customHandler) {
+  const box = $('choicesBox');
+  box.innerHTML = '';
+  if (!choices || !choices.length) {
+    box.style.display = 'none';
+    return;
+  }
+  choices.forEach(c => {
+    const btn = document.createElement('button');
+    btn.className = `choice-btn${isSeller?' seller-btn':''}`;
+    btn.textContent = c;
+    btn.onclick = () => {
+      if (customHandler) customHandler(c);
+      else handleChoice(c);
+    };
+    box.appendChild(btn);
+  });
+  box.style.display = 'flex';
+}
+
+
+function showInput(hideInputBar = false) {
+  const area = $('answerArea');
+  area.classList.add('show');
+  
+  const insightBtn = $('solutionBarBtn');
+  if (insightBtn) {
+    insightBtn.className = `insight-bar-btn${isSeller ? ' seller-bar-btn' : ''}`;
+    // 寃利?紐⑤뱶??choices ?쒖떆 以묒뿏 ?몄궗?댄듃 踰꾪듉 ?④?
+    insightBtn.style.display = (currentStep === 999 || hideInputBar) ? 'none' : 'flex';
+  }
+
+  const inputWrapper = $('inputWrapper');
+  if (inputWrapper) inputWrapper.style.display = hideInputBar ? 'none' : 'flex';
+}
+
+async function fetchAIFeedback(userInput, stepInfo) {
+  
+  // OpenAI API 吏곸젒 ?몄텧 諛⑹떇?먯꽌 Cloudflare Functions ?꾨줉??/api/chat) ?몄텧濡?蹂寃?  const endpoint = `/api/chat`;
+  
+  let persona = "?뱀떊? ?뱀냼??湲고쉷???뺣뒗 ?좊뒫??AI 議곗닔?낅땲??";
+  
+  if (selectedCharName.includes('議곗닔 A')) {
+    persona = `?뱀떊? ?뱀냼??湲고쉷 議곗닔 'A(T??'?낅땲??
+
+[?깃꺽 & 留먰닾]
+- 鍮꾪뙋?곸씠怨??덈━?⑸땲?? 移?갔蹂대떎 臾몄젣?먯쓣 癒쇱? 吏싳뒿?덈떎.
+- 臾몄옣? 吏㏐퀬 吏곸꽕?곸엯?덈떎. 援곕뜑?붽린 ?놁씠 ?듭떖留?留먰빀?덈떎.
+- 媛먰깂?щ굹 ?대え吏瑜??곗? ?딆뒿?덈떎.
+
+[?꾨Ц ?곸뿭]
+- ?쇰━??援ъ“? 媛쒖뿰?? ?뚮’?, ?멸낵愿怨? ?λⅤ 臾몃쾿 ?꾨컲??利됯컖 媛먯??⑸땲??
+- ?낆옄 ?댄깉 ?ъ씤?? ?대뒓 吏?먯뿉???낆옄媛 ?λ?瑜??껋쓣吏 ?됱젙?섍쾶 ?덉륫?⑸땲??
+
+[?됰룞 洹쒖튃]
+1. ?좎????듬??먯꽌 ?쇰━???덉젏??諛쒓껄?섎㈃ 諛섎뱶??吏?곹븯?몄슂.
+2. 移?갔? ?뺣쭚 ????寃쎌슦?먮쭔 1臾몄옣?쇰줈 媛꾧껐?섍쾶.
+3. ?쒖븞? 援ъ껜??洹쇨굅? ?④퍡 ?쒖떆?섏꽭??`;
+  } else if (selectedCharName.includes('議곗닔 B')) {
+    persona = `?뱀떊? ?뱀냼??湲고쉷 議곗닔 'B(F??'?낅땲??
+
+[?깃꺽 & 留먰닾]
+- 怨듦컧 ?λ젰???곗뼱?섍퀬 ?곕쑜?⑸땲?? ?묎????섎룄瑜?癒쇱? ?쎌쑝???⑸땲??
+- 臾몄옣??媛먯젙???닿꺼 ?덉뒿?덈떎. 寃⑸젮? 移?갔???꾨겮吏 ?딆뒿?덈떎.
+- 遺?쒕읇寃??쒖옉?댁꽌 議곗떖?ㅻ읇寃??쒖븞?⑸땲??
+
+[?꾨Ц ?곸뿭]
+- 罹먮┃??媛먯젙?? 二쇱씤怨듭씠 ?대뼡 媛먯젙???먮겮?붿?, ?낆옄媛 怨듦컧?????덈뒗吏 遺꾩꽍?⑸땲??
+- ?쒖궗???④린: ?댁빞湲곌? ?낆옄??留덉쓬???우쓣 ???덈뒗吏 媛먯젙??愿?먯뿉???됯??⑸땲??
+
+[?됰룞 洹쒖튃]
+1. ?좎????듬??먯꽌 媛먯젙?곸쑝濡?媛뺥븳 ?붿냼瑜?諛쒓껄?섎㈃ 癒쇱? 怨듦컧???쒗쁽?섏꽭??
+2. 媛쒖꽑?먯? "~?섎㈃ ??醫뗭쓣 寃?媛숈븘??泥섎읆 ?쒖븞?뺤쑝濡?留먰븯?몄슂.
+3. 留덉?留됱? ??긽 寃⑸젮濡?留덈Т由ы븯?몄슂.`;
+  } else if (selectedCharName === '?щ━???꾨Ц媛') {
+    persona = "?뱀떊? ?꾩긽?щ━???꾨Ц媛?낅땲?? ?묎?媛 ?먭퀬??罹먮┃???ㅼ젙??蹂댁뿬二쇰㈃ ?щ━?숈쟻 愿?먯뿉???꾩떎?깆쓣 寃?좏븯怨?援ъ껜?곸씤 ?쇰뱶諛깆쓣 ?쒓났?섏꽭?? ?由?遺遺꾩? 紐낇솗??吏?곹븯怨??щ컮瑜??щ━?숈쟻 洹쇨굅瑜??ㅻ챸?댁＜?몄슂.";
+  } else if (selectedCharName === '?됱젙???몄쭛??) {
+    persona = "?뱀떊? 10??寃쎈젰???뱁댆 ?대떦 ?몄쭛?먯엯?덈떎. ?묎????먭퀬瑜?諛쏆쑝硫??낆옄 ?댄깉 媛?μ꽦, 媛쒖뿰???ㅻ쪟, 援ъ“??臾몄젣?먯쓣 ?됱젙?섍퀬 吏곸젒?곸쑝濡??쇰뱶諛깊븯?몄슂. 移?갔蹂대떎 臾몄젣???뚯븙??吏묒쨷?섏꽭??";
+  } else if (selectedCharName === '?섑븰 ?꾨Ц媛') {
+    persona = "?뱀떊? ?섑븰 諛?踰뺤쓽???꾨Ц媛?낅땲?? ?묎?媛 ?쒖떆???곸쿂, 遺寃 寃곌낵, 吏덈퀝, ?쎈Ъ ?깆쓽 ?ㅼ젙???섑븰?곸쑝濡???뱁븳吏 寃?좏븯怨? ?ㅻ쪟瑜??좎뭅濡?쾶 吏?곹븯硫??뺥솗???섑븰??吏?앹쓣 ?쒓났?댁＜?몄슂.";
+  } else if (selectedCharName === '?섏궗 ?꾨Ц媛') {
+    persona = "?뱀떊? ?꾩옣 寃쏀뿕???띾???媛뺣젰怨??뺤궗 諛?踰붿즲?섏궗 ?꾨Ц媛?낅땲?? 寃쎌같 議곗쭅???앸━, 泥댄룷 ?덉감, 利앷굅 ?섏쭛 怨쇱젙???꾩떎?깆쓣 寃?좏븯怨? ?섏궗臾쇰줈?쒖쓽 ?뷀뀒?쇱쓣 ?대┫ ???덈룄濡?議곗뼵?댁＜?몄슂.";
+  } else if (selectedCharName === '踰뺣쪧 ?꾨Ц媛') {
+    persona = "?뱀떊? ?꾩쭅 蹂?몄궗?낅땲?? ?묎????쒕굹由ъ삤???깆옣?섎뒗 ?ы뙋 怨쇱젙, ?뺣웾, 踰뺤쟻 ?덉감, 怨꾩빟???댁슜 ?깆쓽 留뱀젏??吏?곹븯怨? ?ㅼ젣 踰뺣쪧??湲곕컲???뺥솗???먮Ц???쒕땲而ы븳 ?댄닾濡??쒓났?섏꽭??";
+  } else if (selectedCharName === '??궗 ?꾨Ц媛') {
+    persona = "?뱀떊? 源뚮떎濡쒖슫 ??궗?숈옄?낅땲?? ?쒕?臾쇱씠???泥댁뿭?щЪ?먯꽌 蹂듭떇, 臾명솕, ?쒕룄, ?몄뼱 ?ъ슜 ?깆쓽 怨좎쬆 ?ㅻ쪟瑜?泥좎???寃利앺븯怨? ?뱀떆 ?쒕??곸뿉 留욌뒗 ?щ컮瑜??뷀뀒?쇱쓣 ?쒖떆?섏꽭??";
+  } else if (selectedCharName === '援곗궗 ?꾨Ц媛') {
+    persona = "?뱀떊? 臾닿린? ?꾩닠???뺥넻??援곗궗 ?꾨Ц媛?낅땲?? 珥앷린, ?됰퀝湲? 援곗궗 ?꾩닠, 遺? ?⑥쐞 ?대룞 ?깆쓽 臾섏궗媛 諛由ы꽣由?怨좎쬆??留욌뒗吏 遺꾩꽍?섍퀬, ?꾪닾?ъ쓽 ?꾩떎?깆쓣 ?믪씪 議곗뼵???쒓났?섏꽭??";
+  } else if (selectedCharName === '怨듦컧???몄쭛??) {
+    persona = "?뱀떊? ?낆옄????뚰넻??理쒖슦?좎쑝濡??앷컖?섎뒗 怨듦컧???몄쭛?먯엯?덈떎. ?먭퀬瑜??쎄퀬 ?낆옄?ㅼ씠 ?대뒓 ?ъ씤?몄뿉??媛먮룞?섍퀬 ?ы띁?좎? 媛먯젙?좎쓣 吏싳뼱二쇰ŉ, 罹먮┃?곗쓽 留ㅻ젰??洹밸??뷀븷 ???덈룄濡??곕쑜?섍쾶 ?쇰뱶諛깊빐二쇱꽭??";
+  } else if (selectedCharName === '濡쒗뙋 ?몄쭛??) {
+    persona = "?뱀떊? 濡쒕㎤???먰?吏, ?ㅻ┫?? ?먰?吏 ???λⅤ 臾몃쾿???뺥넻???몄쭛?먯엯?덈떎. ?대떦 ?λⅤ??二쇱슂 ?대━?곗? ?낆옄?ㅼ쓽 ?덉쫰(?ъ씠???꾧컻, 愿怨꾩꽦 ??瑜??꾨꼍???댄빐?섍퀬 ?덉쑝硫? ?몃젋?뷀븳 ?λⅤ臾쇰줈 ?ㅻ벉湲??꾪븳 留욎땄??議곗뼵???쒓났?섏꽭??";
+  }
+
+  const isRequestingRecommendation = userInput.includes('異붿쿇') || userInput.includes('紐⑤Ⅴ寃?);
+  
+  // 吏湲덇퉴吏 ?섏쭛???ㅽ넗由?留λ씫 援ъ꽦 (紐⑤뱺 遺꾧린?먯꽌 ?쒖슜)
+  const storyContext = answerHistory.map(h => {
+    const s = activeSteps.find(st => st.id === h.stepId);
+    return s ? `- ${s.fieldId ? s.fieldId.replace(/^[fsl]-/,'') : s.id}: ${h.boardValue || h.value}` : '';
+  }).filter(Boolean).join('\n');
+  
+  let promptText = "";
+  if (isRequestingRecommendation) {
+    // ?몄궗?댄듃 ?⑤꼸?먯꽌 吏곸젒 ?몄텧?섎뒗 寃쎌슦 - ?꾨옒 fetchInsight ?⑥닔 ?ъ슜
+    // ?ш린?쒕뒗 湲곕낯 ?붿빟 ?꾨＼?꾪듃濡?泥섎━
+    promptText = `[?꾩옱 湲고쉷 ?④퀎]: ${stepInfo.stageIntro ? stepInfo.stageIntro + ' ' : ''}${stepInfo.question}
+[?좎????듬?]: ${userInput}
+${storyContext ? `\n[吏湲덇퉴吏 ?섏쭛???댁빞湲??붿냼]:\n${storyContext}\n` : ''}
+吏?쒖궗??
+1. ?좎????듬?????以꾨줈 ?붿빟?섏꽭??
+4. ?묐떟 留?留덉?留?以꾩뿉 諛섎뱶???꾨옒 ?뺤떇?쇰줈 ?꾩껜 ?ㅽ넗由щ? ?듯빀??臾몄옣??異붽??섏꽭??(?덈? 蹂몃Ц???몄텧 湲덉?):
+[BOARD]: 吏湲덇퉴吏 ?섏쭛??紐⑤뱺 ?댁빞湲??붿냼瑜??듯빀?섏뿬 "[?λⅤ] [遺꾩쐞湲? ?묓뭹?쇰줈, [二쇱씤怨??ㅻ챸]??媛 [?듭떖 媛덈벑/?먮젮?]??留욎꽌???댁빞湲? ?뺤떇???꾩쟾????臾몄옣?쇰줈 ?묒꽦?섏꽭?? (50???댁쇅)`;
+  } else if (currentStep === 999) {
+    // 寃利?紐⑤뱶 (Q&A Loop)
+    promptText = `
+[?좎???吏덈Ц/?먭퀬]: ${userInput}
+
+吏?쒖궗??
+1. ?ㅼ젙???섎Ⅴ?뚮굹 愿?먯뿉???좎???吏덈Ц?대굹 ?먭퀬 ?댁슜??????꾨Ц?곸씠怨?援ъ껜?곸씤 ?쇰뱶諛깆쓣 ?쒓났?섏꽭??
+2. ?섎맂 ?먭낵 ?섏젙???꾩슂?????먮뒗 ?쇰━??紐⑥닚, 怨좎쬆 ?ㅻ쪟 ????援ъ“?곸쑝濡?吏싳뼱二쇱꽭??
+3. ?듬? 湲몄씠??500???댁쇅濡??좎??섎ŉ 媛?낆꽦 醫뗪쾶 ?묒꽦?섏꽭??
+4. 留덉?留?以꾩뿉??諛섎뱶??"異붽?濡???寃利앺븯怨??띠? 遺遺꾩씠???ㅻⅨ 沅곴툑???먯씠 ?덉쑝?좉???" ?쇰뒗 ?섏븰?ㅼ쓽 吏덈Ц???㏓텤????붽? ?댁뼱吏????덇쾶 ?좊룄?섏꽭??`;
+  } else {
+    promptText = `
+[?꾩옱 湲고쉷 ?④퀎]: ${stepInfo.stageIntro ? stepInfo.stageIntro + ' ' : ''}${stepInfo.question}
+[?좎????듬?]: ${userInput}
+${storyContext ? `\n[吏湲덇퉴吏 ?섏쭛???댁빞湲??붿냼]:\n${storyContext}` : ''}
+
+吏?쒖궗??
+?좎????듬?????以꾨줈 ?붿빟?섏꽭??(??臾몄옣, 媛꾧껐?섍쾶).
+?묐떟 留?留덉?留?以꾩뿉 諛섎뱶???꾨옒 ?뺤떇?쇰줈 ?꾩껜 ?ㅽ넗由щ? ?듯빀??臾몄옣??異붽??섏꽭??(?덈? 蹂몃Ц???몄텧 湲덉?):
+[BOARD]: 吏湲덇퉴吏 ?섏쭛??紐⑤뱺 ?댁빞湲??붿냼瑜??듯빀?섏뿬 "[?λⅤ] [遺꾩쐞湲? ?묓뭹?쇰줈, [二쇱씤怨??ㅻ챸]??媛 [?듭떖 媛덈벑/?먮젮?]??留욎꽌???댁빞湲? ?뺤떇???꾩쟾????臾몄옣?쇰줈 ?묒꽦?섏꽭?? (50???댁쇅)`;
+  }
+
+  // ?? 1?쒖쐞: Anthropic Claude ??
+  // ?? 1?쒖쐞: Anthropic Claude ??
+  if (ANTHROPIC_API_KEY && ANTHROPIC_API_KEY.startsWith("sk-ant-")) {
+    try {
+      const response = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": ANTHROPIC_API_KEY,
+          "anthropic-version": "2023-06-01",
+          "anthropic-dangerous-direct-browser-access": "true"
+        },
+        body: JSON.stringify({
+          model: "claude-sonnet-4-5",
+          max_tokens: 1024,
+          system: persona,
+          messages: [{ role: "user", content: promptText }]
+        })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.content && data.content.length > 0) {
+          return data.content[0].text.trim();
+        }
+      }
+      // ?묐떟 ?ㅽ뙣 ??OpenAI fallback?쇰줈 吏꾪뻾
+      console.warn("Anthropic ?몄텧 ?ㅽ뙣, OpenAI濡??꾪솚?⑸땲??");
+    } catch (err) {
+      console.warn("Anthropic ?곌껐 ?ㅻ쪟, OpenAI濡??꾪솚?⑸땲??", err);
+    }
+  }
+
+  // ?? 2?쒖쐞: OpenAI GPT-4o (fallback) ??
+  if (OPENAI_API_KEY && OPENAI_API_KEY.startsWith("sk-")) {
+    try {
+      const response = await fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${OPENAI_API_KEY}`
+        },
+        body: JSON.stringify({
+          model: "gpt-4o",
+          messages: [
+            { role: "system", content: persona },
+            { role: "user", content: promptText }
+          ],
+          temperature: 0.85,
+          max_tokens: 1024
+        })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.choices && data.choices.length > 0) {
+          return data.choices[0].message.content.trim();
+        }
+      }
+      const errText = await response.text().catch(() => response.statusText);
+      console.error("OpenAI ?몄텧 ?ㅽ뙣:", response.status, errText);
+      return `?좑툘 OpenAI ?ㅻ쪟 (${response.status}): ${errText}`;
+    } catch (err) {
+      console.error("OpenAI ?곌껐 ?ㅻ쪟:", err);
+      return `?좑툘 ?ㅽ듃?뚰겕 ?ㅻ쪟: ${err.message}`;
+    }
+  }
+
+  // ?? ????紐⑤몢 ?놁쓬 ??
+  return `?좑툘 API ?ㅺ? ?ㅼ젙?섏? ?딆븯?듬땲??\n\n?뮕 index.html??硫붾え???먮뒗 VSCode)?쇰줈 ?닿퀬,\nconst ANTHROPIC_API_KEY = ""; ??sk-ant-... ?ㅻ?,\n?먮뒗 const OPENAI_API_KEY = ""; ??sk-... ?ㅻ? ?낅젰?섏꽭??`;
+}
+
+async function processUserAnswer(val) {
+  hideInput();
+  showReplyFlash(val);
+  
+  const stepInfo = currentStep === 999 
+    ? { id: 'verify-mode', question: '?묓뭹 寃利?Q&A' } 
+    : activeSteps[currentStep];
+
+  // 濡쒕뵫 ?띿뒪??  const txtField = $('dialogTxt');
+  const exField = $('dialogExample');
+  exField.classList.remove('show');
+  txtField.innerHTML = '<span style="color:var(--text-dim);font-weight:normal;font-size:16px;">(?뺣━?섍퀬 ?덉뒿?덈떎...)</span>';
+  $('dialogCursor').style.display = 'none';
+
+  // BOARD ?쒓렇 異붿텧???꾪빐 媛꾨떒 AI ?몄텧 (而⑦럩 ?놁씠)
+  const feedback = await fetchAIFeedback(val, stepInfo);
+
+  const boardMatch = feedback.match(/\[BOARD\]:\s*([\s\S]+?)(?:\n|$)/i);
+  const boardSummary = boardMatch ? boardMatch[1].trim() : val;
+  const visibleFeedback = feedback.replace(/\[BOARD\]:[\s\S]*/i, '').trim();
+
+  if (currentStep !== 999) {
+    const stepLabelMap = {
+      'l-1':'肄섏뀎??,'l-2':'?λⅤ','l-3':'濡쒓렇?쇱씤','l-3b':'諛곌꼍','l-3c':'?숆린','l-4':'二쇱씤怨?,'l-5':'?곷???,
+      'l-6':'?꾨·濡쒓렇','l-7':'臾몄젣吏곷㈃','l-8':'誘몃겮','l-9':'寃利?,'l-10':'?좊뀗',
+      'l-11':'諛쒖쟾','l-12':'媛吏쒖듅由?,'l-13':'諛⑹떖','l-14':'?쇰?','l-15':'媛곸꽦',
+      'l-16':'珥덇릿諛?,'l-17':'?대씪?대쭑??,'l-18':'諛섏쟾','l-19':'?댁셿','l-20':'?먰븘濡쒓렇',
+      's-1':'肄섏뀎??,'s-2':'?λⅤ','s-3':'濡쒓렇?쇱씤','s-4':'二쇱씤怨?,'s-5':'?곷???,
+      's-6':'肄붾?由대━??,'s-7':'?몃윭釉?,'s-8':'?쒕젅留?,'s-9':'?쒖뒪?쒖뒪','s-10':'?대씪?대쭑??,'s-11':'?닿껐',
+      's-name':'猷⑦떞紐?,'s-genre':'??곸옣瑜?,'s-steps':'?④퀎??,
+      's-q1':'泥レ쭏臾?,'s-q1c':'?좏깮吏','s-desc':'?뚭컻','s-price':'媛寃?
+    };
+    const chipLabel = stepLabelMap[stepInfo.id] || stepInfo.id;
+    updateStorySentence(boardSummary, chipLabel);
+  }
+
+  // ?듬? ?대젰 ?????諛붾줈 ?ㅼ쓬 ?④퀎 吏꾪뻾
+  if (currentStep === 999) {
+    // 寃利?紐⑤뱶: 吏㏃? AI 肄붾찘??蹂댁뿬二쇨퀬 ?ㅼ떆 ?낅젰 ?닿린
+    typing = false;
+    showDialogText({ question: visibleFeedback }, () => {
+      showChoices(['怨꾩냽 吏덈Ц?섍린', '寃利?醫낅즺?섍퀬 泥섏쓬?쇰줈'], (c) => {
+        hideInput();
+        showReplyFlash(c);
+        if (c === '寃利?醫낅즺?섍퀬 泥섏쓬?쇰줈') {
+          setTimeout(() => goHome(), 1000);
+        } else {
+          setTimeout(() => {
+            showDialogText({ question: `醫뗭뒿?덈떎. ??沅곴툑???먯씠???ㅼ쓬 ?먭퀬 ?댁슜???명븯寃??곸뼱二쇱꽭??` }, () => {
+              showInput(false);
+            });
+          }, 600);
+        }
+      });
+      showInput(false);
+    });
+  } else {
+    // ?ㅽ넗由?鍮뚮뱶?? ?뺤씤 ?놁씠 利됱떆 ?ㅼ쓬 ?④퀎
+    answerHistory.push({
+      stepIdx: currentStep,
+      stepId: stepInfo.id,
+      value: val,
+      boardValue: boardSummary
+    });
+    // AI 肄붾찘?몃? 媛꾨떒??flash濡쒕쭔 蹂댁뿬二쇨퀬 諛붾줈 ?ㅼ쓬 ?④퀎
+    const shortFeedback = visibleFeedback.split('\n')[0].substring(0, 80);
+    showReplyFlash(shortFeedback || '????λ맖');
+    setTimeout(() => runStep(currentStep + 1), 800);
+  }
+}
+
+function handleChoice(val) {
+  processUserAnswer(val);
+}
+
+function handleSend() {
+  const box = $('inputBox');
+  const val = box.value.trim();
+  if (!val) return;
+  box.value = ''; box.style.height = '40px';
+  processUserAnswer(val);
+}
+
+// ?? INSIGHT PANEL ??
+function hideInput() {
+  const area = $('answerArea');
+  if (area) area.classList.remove('show');
+  const box = $('choicesBox');
+  if (box) { box.innerHTML = ''; box.style.display = 'none'; }
+}
+
+function showReplyFlash(text) {
+  const el = $('replyFlash');
+  if (!el) return;
+  el.textContent = text.length > 40 ? text.substring(0, 40) + '...' : text;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 1800);
+}
+
+function updateStorySentence(summary, chipLabel) {
+  const boxId = isSeller ? 'seller-summary-box' : 'story-summary-box';
+  const chipsId = isSeller ? 'seller-chips' : 'story-chips';
+  const box = $(boxId);
+  const chips = $(chipsId);
+  if (box) {
+    box.innerHTML = summary;
+    box.classList.add('has-content');
+    if (isSeller) box.classList.add('seller-content');
+  }
+  if (chips && chipLabel) {
+    const chip = document.createElement('span');
+    chip.className = 'sp-chip' + (isSeller ? ' seller-chip' : '');
+    chip.textContent = chipLabel;
+    chips.appendChild(chip);
+  }
+}
+
+function initProgressDots(total) {
+  const wrap = $('progressDots');
+  if (!wrap) return;
+  wrap.innerHTML = '';
+  for (let i = 0; i < total; i++) {
+    const d = document.createElement('div');
+    d.className = 'pdot';
+    d.id = 'pdot-' + i;
+    wrap.appendChild(d);
+  }
+  $('stepTotal').textContent = total;
+  $('hudProgress').style.opacity = '1';
+}
+
+function updateProgressDots(idx, total) {
+  $('stepNum').textContent = idx + 1;
+  for (let i = 0; i < total; i++) {
+    const d = $('pdot-' + i);
+    if (!d) continue;
+    d.className = 'pdot' + (i < idx ? ' done' : i === idx ? ' active' : '');
+  }
+}
+
+function runStep(idx) {
+  closeInsightPanel();
+
+  if (idx >= activeSteps.length) {
+    finishFlow();
+    return;
+  }
+
+  currentStep = idx;
+  const step = activeSteps[idx];
+
+  // ?꾨뱶 ?낅뜲?댄듃 (?ㅽ넗由щ낫???⑤꼸)
+  activeSteps.forEach((s, i) => {
+    const el = $(s.fieldId);
+    if (el) {
+      const filled = answerHistory.find(h => h.stepId === s.id);
+      if (filled) {
+        el.textContent = filled.value.substring(0, 40);
+        el.classList.add(isSeller ? 'seller-filled' : 'filled');
+      }
+    }
+  });
+
+  updateProgressDots(idx, activeSteps.length);
+  updateActHud(step.id);
+
+  // 罹먮┃???대え吏 蹂寃?  const charEmoji = $('charEmoji');
+  if (charEmoji && step.visual) {
+    charEmoji.classList.add('char-anim-pop');
+    setTimeout(() => charEmoji.classList.remove('char-anim-pop'), 600);
+    charEmoji.textContent = step.visual;
+  }
+
+  // 諛곕꼫 ?ㅼ젙
+  if (step.stageIntro) {
+    setStageBanner(step.stageIntro);
+  } else {
+    setStageBanner('');
+  }
+
+  // 吏덈Ц ?쒖떆 ???낅젰李??닿린
+  showDialogText(step, () => {
+    showInput(false);
+    // ?좏깮吏媛 ?덈뒗 ?④퀎硫??좏깮吏???쒖떆
+    if (step.choices && step.choices.length) {
+      showChoices(step.choices);
+    }
+  });
+
+  $('backBtn').classList.toggle('show', idx > 0);
+  $('homeBtn').classList.add('show');
+  $('hudMode').classList.add('show');
+}
+
+
+function openInsightPanel() {
+  const panel = $('insightPanel');
+  const overlay = $('insightOverlay');
+  const loading = $('insightLoading');
+  const content = $('insightContent');
+
+  // ?꾩옱 ?④퀎 ?뺣낫
+  const stepInfo = currentStep >= 0 && currentStep < activeSteps.length 
+    ? activeSteps[currentStep] 
+    : null;
+
+  if (!stepInfo) return;
+
+  // ?⑤꼸 ?닿린
+  panel.classList.add('open');
+  overlay.classList.add('open');
+  loading.style.display = 'flex';
+  content.style.display = 'none';
+
+  // ?몄궗?댄듃 濡쒕뱶
+  loadInsight(stepInfo).then(html => {
+    loading.style.display = 'none';
+    content.innerHTML = html;
+    content.style.display = 'block';
+  });
+}
+
+function closeInsightPanel() {
+  $('insightPanel').classList.remove('open');
+  $('insightOverlay').classList.remove('open');
+}
+
+async function loadInsight(stepInfo) {
+  const storyContext = answerHistory.map(h => {
+    const s = activeSteps.find(st => st.id === h.stepId);
+    return s ? `- ${s.id}: ${h.boardValue || h.value}` : '';
+  }).filter(Boolean).join('\n');
+
+  const insightPrompt = `?뱀떊? ?ㅽ넗由ы뀛留?援ъ“ ?꾨Ц媛?댁옄 李쎌옉 肄붿튂?낅땲??
+?꾨옒 湲고쉷 ?④퀎??????묎??먭쾶 源딆? ?몄궗?댄듃瑜??쒓났?섏꽭??
+
+[?꾩옱 湲고쉷 ?④퀎 ID]: ${stepInfo.id}
+[吏덈Ц]: ${stepInfo.question}
+[?④퀎 ?덈궡]: ${stepInfo.stageIntro || ''}
+${storyContext ? `\n[吏湲덇퉴吏 ?꾩텧???댁빞湲??붿냼]:\n${storyContext}` : ''}
+
+?ㅼ쓬 JSON ?뺤떇?쇰줈留??묐떟?섏꽭??(肄붾뱶釉붾줉 ?놁씠, ?쒖닔 JSON):
+{
+  "role": "???④퀎媛 ?쒖궗 援ъ“?먯꽌 ?섎뒗 ??븷 (2~3臾몄옣)",
+  "principle": "???④퀎?먯꽌 ?곸슜?댁빞 ???ㅽ넗由ы뀛留??먯튃 (2~3臾몄옣)",
+  "examples": "?ㅼ젣 ?멸린 ?뱁댆/?뱀냼???쒕씪留덉뿉?????④퀎媛 ?대뼸寃?援ы쁽?먮뒗吏 援ъ껜???덉떆 2媛?(媛??묓뭹紐??ы븿)",
+  "context_tip": "${storyContext ? '吏湲덇퉴吏 ?볦씤 ?댁빞湲?留λ씫??怨좊젮???????④퀎?먯꽌 ?뱁엳 二쇱쓽???? : '???④퀎?먯꽌 ?묎??ㅼ씠 媛??留롮씠 ?ㅼ닔?섎뒗 寃껉낵 洹??닿껐梨?}",
+  "question_hint": "??吏덈Ц???듯븯湲??꾩뿉 ?ㅼ뒪濡쒖뿉寃??섏졇蹂??듭떖 吏덈Ц 1媛?
+}`;
+
+  let resultText = '';
+
+  try {
+    const res = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-5',
+        max_tokens: 1024,
+        system: '?뱀떊? ?ㅽ넗由ы뀛留??꾨Ц媛?낅땲?? 諛섎뱶???쒖닔??JSON留??묐떟?섏꽭?? 肄붾뱶釉붾줉(```)? ?덈? ?ъ슜?섏? 留덉꽭??',
+        messages: [{ role: 'user', content: insightPrompt }]
+      })
+    });
+
+    if (!res.ok) throw new Error(`?쒕쾭 ?ㅻ쪟 (${res.status})`);
+    const d = await res.json();
+    // Anthropic ?묐떟 ?뺤떇
+    if (d.content && d.content[0]) {
+      resultText = d.content[0].text.trim();
+    }
+    // OpenAI ?묐떟 ?뺤떇 (fallback)
+    else if (d.choices && d.choices[0]) {
+      resultText = d.choices[0].message.content.trim();
+    }
+
+    if (!resultText) throw new Error('鍮??묐떟');
+
+    const clean = resultText.replace(/```json|```/g, '').trim();
+    const parsed = JSON.parse(clean);
+
+    return `
+      <div class="insight-section">
+        <div class="insight-section-label">?뱧 ???④퀎???쒖궗????븷</div>
+        <div class="insight-section-text">${parsed.role.replace(/\n/g, '<br>')}</div>
+      </div>
+      <div class="insight-section">
+        <div class="insight-section-label">?뱪 ?듭떖 ?ㅽ넗由ы뀛留??먯튃</div>
+        <div class="insight-section-text">${parsed.principle.replace(/\n/g, '<br>')}</div>
+      </div>
+      <div class="insight-section">
+        <div class="insight-section-label">?렗 ?ㅼ젣 ?묓뭹 ?덊띁?곗뒪</div>
+        <div class="insight-section-text">${parsed.examples.replace(/\n/g, '<br>')}</div>
+      </div>
+      <div class="insight-section">
+        <div class="insight-section-label">?뮕 留λ씫 ??/div>
+        <div class="insight-section-text">${parsed.context_tip.replace(/\n/g, '<br>')}</div>
+      </div>
+      <div class="insight-section" style="background:rgba(214,183,90,0.05);border-radius:12px;padding:16px;border:1px solid rgba(214,183,90,0.15);border-bottom:none;margin-top:8px;">
+        <div class="insight-section-label" style="margin-bottom:8px;">???듯븯湲??꾩뿉 ?ㅼ뒪濡?臾쇱뼱蹂댁꽭??/div>
+        <div class="insight-section-text" style="color:var(--gold-light);font-style:italic;font-size:15px;">"${parsed.question_hint}"</div>
+      </div>
+    `;
+  } catch (e) {
+    return `<div class="insight-section">
+      <div class="insight-section-label">?좑툘 ?ㅻ쪟</div>
+      <div class="insight-section-text">?몄궗?댄듃瑜?遺덈윭?ㅻ뒗 ???ㅽ뙣?덉뒿?덈떎.<br>${e.message}</div>
+    </div>`;
+  }
+}
+
+// ?? 3-ACT FRAMEWORK HUD ??
+// ?⑦렪: s-1~s-5 ?뺣쭩 / s-6~s-8 媛덈벑 / s-9~s-11 洹밸났
+// ?ν렪: l-1~l-7 ?뺣쭩 / l-8~l-14 媛덈벑 / l-15~l-20 洹밸났
+const ACT_MAP = {
+  desire:  ['l-1','l-2','l-4','l-3b','l-3c','l-3','l-5','l-6','l-7','s-1','s-2','s-3','s-4','s-5'],
+  conflict:['l-8','l-9','l-10','l-11','l-12','l-13','l-14','s-6','s-7','s-8'],
+  overcome:['l-15','l-16','l-17','l-18','l-19','l-20','s-9','s-10','s-11']
+};
+
+function updateActHud(stepId) {
+  const hud = $('actHud');
+  if (!hud || isSeller) return;
+  hud.classList.add('show');
+  const isDesire  = ACT_MAP.desire.includes(stepId);
+  const isConfl   = ACT_MAP.conflict.includes(stepId);
+  const isOverc   = ACT_MAP.overcome.includes(stepId);
+  $('act1Seg').className = 'act-segment' + (isDesire ? ' active' : isConfl||isOverc ? ' done' : '');
+  $('act2Seg').className = 'act-segment' + (isConfl  ? ' active' : isOverc ? ' done' : '');
+  $('act3Seg').className = 'act-segment' + (isOverc  ? ' active' : '');
+}
+
+// ?? 10?꾩감 ?됰줎媛 ??
+function openReviewer() {
+  $('reviewerOverlay').classList.add('open');
+  $('reviewerPanel').classList.add('open');
+  $('reviewerLoading').style.display = 'flex';
+  $('reviewerContent').style.display = 'none';
+  runReview().then(html => {
+    $('reviewerLoading').style.display = 'none';
+    $('reviewerContent').innerHTML = html;
+    $('reviewerContent').style.display = 'block';
+  });
+}
+
+function closeReviewer() {
+  $('reviewerOverlay').classList.remove('open');
+  $('reviewerPanel').classList.remove('open');
+}
+
+async function runReview() {
+  const steps = isSeller ? sellerSteps : activeSteps;
+  const collectedData = answerHistory.map(h => {
+    const s = steps.find(st => st.id === h.stepId);
+    return s ? `[${h.stepId}] ${s.question.replace(/\n/g,' ')}: ${h.boardValue || h.value}` : '';
+  }).filter(Boolean).join('\n');
+
+  const reviewPrompt = `?뱀떊? 10??寃쎈젰???λⅤ ?뚯꽕 ?됰줎媛?댁옄 ?뱁댆 ?몄쭛?먯엯?덈떎.
+?됱젙?섍퀬 吏곸젒?곸씠硫? 移?갔蹂대떎 臾몄젣???뚯븙??吏묒쨷?⑸땲?? ?섏?留?嫄댁꽕?곸엯?덈떎.
+
+?꾨옒???묎?媛 湲고쉷???ㅽ넗由??붿냼?ㅼ엯?덈떎:
+${collectedData}
+
+?ㅼ쓬 JSON ?뺤떇?쇰줈留??묐떟?섏꽭??(肄붾뱶釉붾줉 ?놁씠, ?쒖닔 JSON):
+{
+  "strengths": ["媛뺤젏 1", "媛뺤젏 2"],
+  "weaknesses": ["?쇰━???쎌젏 1", "?쇰━???쎌젏 2"],
+  "strategies": ["媛쒖꽑 ?꾨왂 1", "媛쒖꽑 ?꾨왂 2", "媛쒖꽑 ?꾨왂 3"],
+  "verdict": "?꾩껜 湲고쉷??????좎뭅濡쒖슫 珥앺룊 (2~3臾몄옣, 吏곸꽕?곸쑝濡?"
+}`;
+
+  try {
+    const res = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-5',
+        max_tokens: 1024,
+        system: '?뱀떊? 10?꾩감 ?λⅤ ?뚯꽕 ?됰줎媛?낅땲?? 諛섎뱶???쒖닔??JSON留??묐떟?섏꽭?? 肄붾뱶釉붾줉? ?ъ슜?섏? 留덉꽭??',
+        messages: [{ role: 'user', content: reviewPrompt }]
+      })
+    });
+
+    if (!res.ok) throw new Error(`?쒕쾭 ?ㅻ쪟 (${res.status})`);
+    const d = await res.json();
+    let text = d.content?.[0]?.text?.trim() || d.choices?.[0]?.message?.content?.trim() || '';
+    const parsed = JSON.parse(text.replace(/```json|```/g, '').trim());
+
+    const makeItems = (arr, cls) => arr.map((t, i) => `
+      <div class="review-item">
+        <div class="review-item-num ${cls}">${i+1}</div>
+        <div>${t}</div>
+      </div>`).join('');
+
+    return `
+      <div class="review-section strength">
+        <div class="review-section-label strength">??媛뺤젏 ${parsed.strengths.length}媛吏</div>
+        ${makeItems(parsed.strengths, 'strength')}
+      </div>
+      <div class="review-section weakness">
+        <div class="review-section-label weakness">???쇰━???쎌젏 ${parsed.weaknesses.length}媛吏</div>
+        ${makeItems(parsed.weaknesses, 'weakness')}
+      </div>
+      <div class="review-section strategy">
+        <div class="review-section-label strategy">???꾨왂???쒖븞 ${parsed.strategies.length}媛吏</div>
+        ${makeItems(parsed.strategies, 'strategy')}
+      </div>
+      <div class="reviewer-verdict">"${parsed.verdict}"</div>
+      <div class="reviewer-actions">
+        <button class="reviewer-action-btn primary" onclick="closeReviewer(); goHome();">??湲고쉷 ?쒖옉</button>
+        <button class="reviewer-action-btn secondary" onclick="closeReviewer();">湲고쉷??蹂닿린</button>
+      </div>`;
+  } catch(e) {
+    return `<div style="color:var(--text-dim);font-size:14px;padding:20px 0;">由щ럭 ?앹꽦 ?ㅽ뙣: ${e.message}</div>`;
+  }
+}
+
+function goBack() {
+  if (currentStep <= 0) return;
+  
+  // 留덉?留??듬? ?대젰 ?쒓굅
+  const lastRes = answerHistory.pop();
+  
+  // 移?留덉?留??쒓굅
+  const chipsEl = $(isSeller ? 'seller-chips' : 'story-chips');
+  if (chipsEl && chipsEl.lastChild) chipsEl.removeChild(chipsEl.lastChild);
+
+  // ?ㅽ넗由щ낫???댁쟾 ?④퀎 臾몄옣?쇰줈 蹂듭썝
+  const prevHistory = answerHistory[answerHistory.length - 1];
+  if (prevHistory && prevHistory.boardValue) {
+    updateStorySentence(prevHistory.boardValue, null);
+  } else {
+    const box = $(isSeller ? 'seller-summary-box' : 'story-summary-box');
+    if (box) {
+      box.innerHTML = '<span class="sp-placeholder">??붾? 吏꾪뻾?섎㈃ ?ш린???댁빞湲곌? ??臾몄옣?쇰줈 ?뺣━?⑸땲??</span>';
+      box.classList.remove('has-content', 'seller-content');
+    }
+  }
+
+  runStep(currentStep - 1);
+}
+
+async function finishFlow() {
+  hideInput();
+  $('choicesBox').innerHTML = '';
+
+  // ?쒕냹?쒖뒪 ?뱀뀡 誘몃━ 蹂댁씠湲?(濡쒕뵫 ?곹깭)
+  const synopsisWrapId = isSeller ? 'seller-synopsis-wrap' : 'consumer-synopsis-wrap';
+  const synopsisBoxId  = isSeller ? 'seller-synopsis-box'  : 'story-synopsis-box';
+  const synopsisWrap = $(synopsisWrapId);
+  const synopsisBox  = $(synopsisBoxId);
+  if (synopsisWrap) synopsisWrap.style.display = 'block';
+  if (synopsisBox)  synopsisBox.innerHTML = '<span class="sp-synopsis-generating">?쒕냹?쒖뒪瑜??곌퀬 ?덉뒿?덈떎...</span>';
+
+  // ?ㅽ넗由щ낫???⑤꼸 ?먮룞 ?닿린
+  if (!sheetOpen) toggleSheet();
+
+  // ?섏쭛??紐⑤뱺 ?듬? ?뺣━
+  const steps = isSeller ? sellerSteps : consumerSteps;
+  const collectedData = answerHistory.map(h => {
+    const s = steps.find(st => st.id === h.stepId);
+    return s ? `- ${s.id}: ${h.boardValue || h.value}` : '';
+  }).filter(Boolean).join('\n');
+
+  // AI ?쒕냹?쒖뒪 ?꾨＼?꾪듃
+  const synopsisPrompt = isSeller
+    ? `?ㅼ쓬? ?쒗뵆由?猷⑦떞 ?ㅺ퀎 ?뺣낫?낅땲??\n${collectedData}\n\n???뺣낫瑜?諛뷀깢?쇰줈 ?ㅺ??붿옣?섍? 蹂닿퀬 ?띠뼱??留ㅻ젰?곸씤 猷⑦떞 ?뚭컻 臾몄뿭蹂?3~5以????묒꽦?댁＜?몄슂. ?먮굩???댁“濡??먮ℓ瑜??좊룄?섎뒗 而ㅽ뵾 ?뺤떇?쇰줈.`
+    : `?ㅼ쓬? ?뱀냼??湲고쉷 ?뺣낫?낅땲??\n${collectedData}\n\n???뺣낫瑜?諛뷀깢?쇰줈 ?뱀냼???쒕냹?쒖뒪瑜?200???덊뙉?쇰줈 ?묒꽦?섏꽭??\n\n<?쒕냹?쒖뒪 ?뺤떇>:\n[1以?濡쒓렇?쇱씤]\n\n[二쇱씤怨??뚭컻: ?대뼡 ?щ엺?몄?, ?대뼡 ?먮젮?怨?寃고븤??媛吏꾩?]\n\n[?듭떖 媛덈벑: ?덊?怨좊땲?ㅽ듃????由? 臾듭씪 寃고뙆]\n\n[?댁빞湲곌? ?꾨떖?섎뒗 媛먯젙??吏꾩떎]\n\n留덈깷: ?곕뒗 ?대궡 ?쎌? 紐⑤Ⅴ寃??꾪똿?섎뒗, 異붿떖?μ씠 ?숇옒?섎뒗 ??臾몄옣?쇰줈 留덈Т由?`;
+
+  let synopsis = '';
+  try {
+    const endpoint = '/api/chat';
+    const res = await fetch(endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'gpt-4o',
+        max_tokens: 800,
+        temperature: 0.85,
+        messages: [
+          { role: 'system', content: `?뱀떊? ?뱀냼???쒕냹?쒖뒪 ?꾨Ц ?묎??낅땲?? ${selectedCharName}???댄닾? ?ㅽ??쇰줈, 媛먯젙?곸씠怨??≪씤???덇쾶 ?묒꽦?섏꽭??` },
+          { role: 'user', content: synopsisPrompt }
+        ]
+      })
+    });
+    
+    if (!res.ok) {
+      const errText = await res.text();
+      throw new Error(`API ?ㅻ쪟 (${res.status}): ${errText}`);
+    }
+    const data = await res.json();
+    synopsis = data.choices?.[0]?.message?.content?.trim() || '?쒕냹?쒖뒪 ?앹꽦???ㅽ뙣?덉뒿?덈떎.';
+  } catch(e) {
+    synopsis = `?좑툘 ?쒕냹?쒖뒪 ?앹꽦 ?ㅻ쪟: ${e.message}`;
+  }
+
+  // ?ㅽ넗由щ낫???쒕냹?쒖뒪 諛뺤뒪 ?낅뜲?댄듃
+  if (synopsisBox) {
+    synopsisBox.innerHTML = synopsis.replace(/\n/g, '<br>');
+    synopsisBox.classList.add('ready');
+  }
+
+  // ?묓뭹 ?먮룞 ???  saveProjectToStorage(synopsis);
+
+  // ??붿갹?먮룄 ?쒖떆 + ?됰줎媛 ?먮룞 ?깊뙋
+  sceneTransition(isSeller ? 'scene-seller' : 'scene-story', () => {
+    setStageBanner('');
+    const intro = isSeller
+      ? '猷⑦떞 ?ㅺ퀎媛 ?꾩꽦?섏뿀?듬땲??\n?곗륫 蹂대뱶?먯꽌 猷⑦떞 ?뚭컻臾몄쓣 ?뺤씤?대낫?몄슂. ??
+      : '湲고쉷???꾩꽦?섏뿀?듬땲?? ?묓뭹 ??쒕낫?쒖뿉 ?먮룞 ??λ맗?덈떎. ??;
+
+    showDialogText({ question: intro + '\n\n' + synopsis }, () => {
+      const finChoices = isSeller
+        ? ['留덉폆??諛붾줈 ?깅줉?섍린', '?쒗듃 ?섏젙?섍린', '異붽? 吏덈Ц ?ㅺ퀎']
+        : ['?뵇 10?꾩감 ?됰줎媛 由щ럭 諛쏄린', '?뱚 ???묓뭹 ??쒕낫??, '??湲고쉷 ?쒖옉'];
+      setTimeout(() => showChoices(finChoices, (c) => {
+        hideInput();
+        showReplyFlash(c);
+        if (c === '??湲고쉷 ?쒖옉') {
+          setTimeout(() => goHome(), 1000);
+        } else if (c === '?뵇 10?꾩감 ?됰줎媛 由щ럭 諛쏄린') {
+          setTimeout(() => openReviewer(), 600);
+        } else if (c === '?뱚 ???묓뭹 ??쒕낫??) {
+          window.location.href = 'dashboard.html';
+        }
+      }), 700);
+
+      if (!isSeller) {
+        setTimeout(() => showReplyFlash('?뱥 10?꾩감 ?됰줎媛媛 ?湲?以묒엯?덈떎...'), 3000);
+      }
+    });
+  });
+}
+
+// ?? MODE SELECT ??
+function selectMode(m) {
+  isSeller = (m === 'seller');
+  const isVerify = (m === 'verify');
+
+  // hide mode cards with fade
+  const cards = $('modeCards');
+  cards.style.opacity = '0';
+  setTimeout(() => cards.style.display='none', 800);
+
+  // setup HUD
+  const badge = $('hudMode');
+  if (isSeller) {
+    badge.textContent = '?썚截?猷⑦떞 ?ㅽ뒠?붿삤';
+  } else if (isVerify) {
+    badge.textContent = '?뵇 ?묓뭹 寃利?紐⑤뱶';
+  } else {
+    badge.textContent = '?뱰 ?ㅽ넗由?鍮뚮뱶??;
+  }
+  badge.className = `hud-mode show ${m}`;
+
+  // setup char
+  if (isSeller) {
+    $('charFigure').classList.add('seller-mode');
+    $('dialogBox').classList.add('seller-box');
+    $('spConsumer').style.display = 'none';
+    $('spSeller').style.display = 'block';
+    $('spTitle').textContent = '?썚截??쒗뵆由?蹂대뱶';
+    $('spTitle').className = 'sp-title seller-title';
+    $('sheetToggle').textContent = 'BOARD';
+    activeSteps = sellerSteps;
+  } else {
+    activeSteps = consumerSteps;
+  }
+  
+  // hide storyboard sheet for verify mode as it's conversational
+  if (isVerify) {
+    $('sheetToggle').style.display = 'none';
+  } else {
+    $('sheetToggle').style.display = 'block';
+  }
+
+  $('homeBtn').classList.add('show');
+  initProgressDots(activeSteps.length);
+  currentStep = 0;
+  answerHistory = [];
+
+  if (isSeller) {
+    sceneTransition('scene-seller', () => {
+      $('charFigure').classList.add('show');
+      document.querySelector('.dialog-area').style.display = 'none';
+      const rb = $('routineBuilder');
+      if (rb) {
+        rb.style.display = 'flex';
+        renderBuilder();
+      }
+    });
+  } else if (isVerify) {
+    sceneTransition('scene-verify', () => {
+      $('charFigure').classList.add('show');
+      showDialogText('?묓뭹 寃利?紐⑤뱶???ㅼ떊 寃껋쓣 ?섏쁺?⑸땲??\n?먰븯?쒕뒗 寃利?遺꾩빞???섎Ⅴ?뚮굹瑜??좏깮??二쇱꽭??', () => {
+        setTimeout(() => {
+          const overlay = $('verifyCharOverlay');
+          overlay.classList.add('show');
+        }, 500);
+      });
+    });
+  } else {
+    sceneTransition('scene-consumer', () => {
+      $('charFigure').classList.add('show');
+      showDialogText('?ㅽ넗由?鍮뚮뱶?낆쓣 ?쒖옉?⑸땲??\n癒쇱? ?먰븯?쒕뒗 湲고쉷 猷⑦떞??怨⑤씪二쇱꽭??', () => {
+        setTimeout(() => {
+          const overlay = $('routineOverlay');
+          overlay.classList.add('show');
+        }, 500);
+      });
+    });
+  }
+}
+
+function startRoutine(name) {
+  const overlay = $('routineOverlay');
+  overlay.style.opacity = '0';
+  setTimeout(() => overlay.classList.remove('show'), 600);
+  showReplyFlash(name);
+  
+  if (!isSeller) {
+    if (name === '?⑦렪 湲고쉷 ?뚮옖') {
+      activeSteps = shortSteps;
+    } else {
+      activeSteps = consumerSteps;
+    }
+    
+    // Show character select for consumers
+    setTimeout(() => {
+      $('charOverlay').classList.add('show');
+    }, 600);
+  } else {
+    // Sellers run immediately
+    setTimeout(() => runStep(0), 1000);
+  }
+}
+
+function selectCharacter(name) {
+  selectedCharName = name;
+  $('charName').textContent = name;
+  $('dialogSpeaker').textContent = name;
+  
+  const charOverlay = $('charOverlay');
+  charOverlay.style.opacity = '0';
+  setTimeout(() => charOverlay.classList.remove('show'), 500);
+  
+  showReplyFlash(`${name} ?좏깮??);
+  setTimeout(() => runStep(0), 1000);
+}
+
+function selectVerifyCharacter(name) {
+  selectedCharName = name;
+  $('charName').textContent = name;
+  $('dialogSpeaker').textContent = name;
+  
+  const overlay = $('verifyCharOverlay');
+  overlay.style.opacity = '0';
+  setTimeout(() => overlay.classList.remove('show'), 500);
+  
+  showReplyFlash(`${name} ?좏깮??);
+  currentStep = 999; // Verify Mode open-chat flag
+  
+  setTimeout(() => {
+    showDialogText(`???${name}?낅땲??\n吏湲??묒뾽 以묒씤 ?먭퀬 ?쇰?瑜?蹂대궡二쇱떆嫄곕굹, ?됯?諛쏄퀬 ?띠? ?ㅼ젙(濡쒓렇?쇱씤, 罹먮┃???????뚮젮二쇱꽭??\n\n?좎뭅濡?퀬 ?뺥솗???쇰뱶諛깆쓣 ?쒕━寃좎뒿?덈떎.`, () => {
+      showInput(false);
+    });
+  }, 1000);
+}
+
+function goHome() {
+  // Revert all visual fields
+  activeSteps.forEach(step => {
+    const el = $(step.fieldId);
+    if (el) {
+      el.textContent = '??;
+      el.classList.remove('filled', 'seller-filled', 'flash', 'seller-flash');
+    }
+  });
+
+  hideInput();
+  $('choicesBox').innerHTML = '';
+  setStageBanner('');
+  $('backBtn').classList.remove('show');
+  $('homeBtn').classList.remove('show');
+  $('hudProgress').style.opacity = '0';
+  $('hudMode').classList.remove('show');
+  
+  // reset overlay styles just in case
+  const vo = $('verifyCharOverlay');
+  if (vo) { vo.classList.remove('show'); vo.style.opacity = ''; }
+  
+  if(sheetOpen) toggleSheet();
+  closeReviewer();
+  const actHud = $('actHud');
+  if (actHud) actHud.classList.remove('show');
+  
+  const rb = $('routineBuilder');
+  if (rb) rb.style.display = 'none';
+  const da = document.querySelector('.dialog-area');
+  if (da) da.style.display = 'flex';
+  
+  sceneTransition('scene-onboard', () => {
+    $('charFigure').className = 'char-figure show';
+    $('dialogBox').className = 'dialog-box';
+    $('dialogExample').innerHTML = ''; // reset example
+    $('dialogSpeaker').textContent = '議곗닔 ?댁떆?ㅽ꽩??;
+    
+    // Use dummy step for the welcome message
+    const homeStep = { question: '?섏쁺?⑸땲?? ?묎???\nAI ?댁떆?ㅽ꽩??肄뷀뙆?쇰읉?낅땲??\n?대뼡 ?묒뾽???먰븯?쒕굹??' };
+    showDialogText(homeStep, () => {
+      setTimeout(() => {
+        $('modeCards').style.display = 'flex';
+        // forced reflow for fade in
+        void $('modeCards').offsetWidth;
+        $('modeCards').style.opacity = '1';
+        $('modeCards').classList.add('show');
+      }, 500);
+    });
+  });
+}
+// ?? ROUTINE BUILDER LOGIC ??
+let builderSteps = [
+  { id: 'step-1', visual: '?뱷', stageIntro: '???④퀎?먯꽌??湲곕낯 ?뺣낫? 肄섏뀎?몃? 臾쇱뼱遊낅땲??', question: '媛??癒쇱? ?낆옄?먭쾶 臾산퀬 ?띠? 寃껋? 臾댁뾿?멸???', useSolutionBar: true, useDirectInput: true },
+  { id: 'step-2', visual: '??, stageIntro: '?듭떖 ?쒕젅留덈? ?꾩텧?섎뒗 ?④퀎?낅땲??', question: '二쇱씤怨듭씠 寃れ쓣 ?쒕젅留덈? ?낅젰?댁＜?몄슂.', useSolutionBar: true, useDirectInput: true }
+];
+
+function renderBuilder() {
+  const container = $('rbSteps');
+  container.innerHTML = '';
+  builderSteps.forEach((step, idx) => {
+    const card = document.createElement('div');
+    card.className = 'rb-step-card';
+    card.innerHTML = `
+      <div class="rb-step-header">
+        <div class="rb-step-title">Step ${idx + 1}</div>
+        <div class="rb-step-controls">
+          <button class="rb-btn" onclick="moveBuilderStep(${idx}, -1)" ${idx === 0 ? 'disabled style="opacity:0.3"' : ''}>燧놅툘</button>
+          <button class="rb-btn" onclick="moveBuilderStep(${idx}, 1)" ${idx === builderSteps.length - 1 ? 'disabled style="opacity:0.3"' : ''}>燧뉛툘</button>
+          <button class="rb-btn delete" onclick="deleteBuilderStep(${idx})">?뿊截?/button>
+        </div>
+      </div>
+      <div class="rb-field-group">
+        <div style="display:flex; gap:12px;">
+          <div class="rb-field" style="flex:1;">
+            <label>?④퀎 ID (?쇰꺼??</label>
+            <input type="text" class="rb-input" value="${step.id || ''}" onchange="updateBuilderStep(${idx}, 'id', this.value)" placeholder="?? 泥レ씤??>
+          </div>
+          <div class="rb-field" style="width:100px;">
+            <label>?대え吏/?쒓컖</label>
+            <input type="text" class="rb-input" value="${step.visual || ''}" onchange="updateBuilderStep(${idx}, 'visual', this.value)" placeholder="?? ??">
+          </div>
+        </div>
+        <div class="rb-field">
+          <label>諛곌꼍 媛?대뱶 (?덈궡 留먰뭾??</label>
+          <textarea class="rb-textarea" onchange="updateBuilderStep(${idx}, 'stageIntro', this.value)" placeholder="???④퀎??紐⑹쟻?대굹 ?곸쓣 ?묒꽦?섏꽭??>${step.stageIntro || ''}</textarea>
+        </div>
+        <div class="rb-field">
+          <label>?듭떖 吏덈Ц</label>
+          <textarea class="rb-textarea" style="min-height:50px; font-weight:700;" onchange="updateBuilderStep(${idx}, 'question', this.value)" placeholder="?ъ슜?먯뿉寃??섏쭏 寃곗젙??吏덈Ц???묒꽦?섏꽭??>${step.question || ''}</textarea>
+        </div>
+        <div class="rb-toggles">
+          <label class="rb-toggle-lbl">
+            <input type="checkbox" ${step.useSolutionBar !== false ? 'checked' : ''} onchange="updateBuilderStep(${idx}, 'useSolutionBar', this.checked)">
+            AI ?붾（???쒖븞 諛??쒖떆
+          </label>
+          <label class="rb-toggle-lbl">
+            <input type="checkbox" ${step.useDirectInput !== false ? 'checked' : ''} onchange="updateBuilderStep(${idx}, 'useDirectInput', this.checked)">
+            吏곸젒 ?낅젰 諛??쒖떆
+          </label>
+        </div>
+      </div>
+    `;
+    container.appendChild(card);
+  });
+}
+
+function updateBuilderStep(idx, field, val) {
+  builderSteps[idx][field] = val;
+}
+
+function addBuilderStep() {
+  builderSteps.push({
+    id: 'step-' + (builderSteps.length + 1),
+    visual: '?렞',
+    stageIntro: '',
+    question: '',
+    useSolutionBar: true,
+    useDirectInput: true
+  });
+  renderBuilder();
+}
+
+function deleteBuilderStep(idx) {
+  if (confirm('???④퀎瑜???젣?섏떆寃좎뒿?덇퉴?')) {
+    builderSteps.splice(idx, 1);
+    renderBuilder();
+  }
+}
+
+function moveBuilderStep(idx, dir) {
+  if (idx + dir < 0 || idx + dir >= builderSteps.length) return;
+  const temp = builderSteps[idx];
+  builderSteps[idx] = builderSteps[idx + dir];
+  builderSteps[idx + dir] = temp;
+  renderBuilder();
+}
+
+function saveBuilderRoutine() {
+  activeSteps = builderSteps;
+  sellerSteps = builderSteps; // Override sellerSteps so it saves
+  initProgressDots(activeSteps.length);
+  $('routineBuilder').style.display = 'none';
+  document.querySelector('.dialog-area').style.display = 'flex';
+  runStep(0);
+}
+
+// ?? SUPABASE + PROJECT STORAGE ??
+const SUPABASE_URL = 'https://mvygorffhbshubqkerpo.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im12eWdvcmZmaGJzaHVicWtlcnBvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2MzU3ODQsImV4cCI6MjA4OTIxMTc4NH0.p7usz-l53gmibWpswzTFvhzmR3UX7QkWb3oPsy3A50c';
+let _sb = null;
+let _currentUser = null;
+
+function getSb() {
+  if (!_sb && window.supabase) {
+    _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  }
+  return _sb;
+}
+
+async function getCurrentUser() {
+  if (_currentUser) return _currentUser;
+  const sb = getSb();
+  if (!sb) return null;
+  const { data: { user } } = await sb.auth.getUser();
+  _currentUser = user;
+  return user;
+}
+
+function getCurrentProjectId() {
+  let pid = sessionStorage.getItem('mantra_current_pid');
+  if (!pid) {
+    pid = 'p_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
+    sessionStorage.setItem('mantra_current_pid', pid);
+  }
+  return pid;
+}
+
+async function saveProjectToStorage(synopsis) {
+  const user = await getCurrentUser();
+  const guestId = localStorage.getItem('mantra_guest_id') || (() => {
+    const id = Date.now().toString(36);
+    localStorage.setItem('mantra_guest_id', id);
+    return id;
+  })();
+  const uid = user ? user.id : `guest_${guestId}`;
+  const pid = getCurrentProjectId();
+
+  const titleAnswer = answerHistory.find(h => ['l-3','s-3','l-1','s-1'].includes(h.stepId));
+  const title = titleAnswer
+    ? (titleAnswer.value.length > 30 ? titleAnswer.value.slice(0, 30) + '...' : titleAnswer.value)
+    : '?쒕ぉ ?녿뒗 ?묓뭹';
+  const genreAnswer = answerHistory.find(h => h.stepId === 'l-2' || h.stepId === 's-2');
+  const genre = genreAnswer ? genreAnswer.value.slice(0, 20) : '';
+
+  const project = {
+    id: pid, uid, title, genre,
+    synopsis: synopsis || '',
+    routineType: activeSteps === shortSteps ? 'short' : 'long',
+    copilotName: selectedCharName,
+    answerHistory,
+    completedAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
+
+  // localStorage 利됱떆 ???  localStorage.setItem(`mantra_project_${pid}`, JSON.stringify(project));
+  const idx = JSON.parse(localStorage.getItem(`mantra_index_${uid}`) || '[]');
+  const ei = idx.findIndex(p => p.id === pid);
+  const meta = { id: pid, title, genre, completedAt: project.completedAt };
+  if (ei >= 0) idx[ei] = meta; else idx.unshift(meta);
+  localStorage.setItem(`mantra_index_${uid}`, JSON.stringify(idx));
+
+  // Supabase ???(濡쒓렇????
+  if (user) {
+    try {
+      const sb = getSb();
+      await sb.from('projects').upsert({
+        id: pid, user_id: uid, title, genre,
+        synopsis: synopsis || '',
+        routine_type: project.routineType,
+        copilot_name: selectedCharName,
+        answer_history: answerHistory,
+        completed_at: project.completedAt,
+        updated_at: project.updatedAt,
+      });
+    } catch (e) { console.warn('Supabase ????ㅽ뙣:', e); }
+  }
+
+  showReplyFlash('?뮶 ?묓뭹????λ릱?듬땲??);
+}
+
+// ?? INIT ??
+(async () => {
+  // Supabase ?몄뀡 ?뺤씤
+  const sb = getSb();
+  if (sb) {
+    const { data: { session } } = await sb.auth.getSession();
+    if (session) _currentUser = session.user;
+  }
+
+  $('charFigure').classList.add('show');
+  showDialogText('?섏쁺?⑸땲?? ?묎???\nAI ?댁떆?ㅽ꽩??肄뷀뙆?쇰읉?낅땲??\n?대뼡 ?묒뾽???먰븯?쒕굹??', () => {
+    setTimeout(() => { $('modeCards').classList.add('show'); }, 500);
+  });
+})();
+
+// ?? KEYBOARD ??
+$('inputBox').addEventListener('keydown', function(e) {
+  if (e.key==='Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); }
+});
+$('inputBox').addEventListener('input', function() {
+  this.style.height='40px';
+  this.style.height=Math.min(this.scrollHeight,140)+'px';
+});
+</script>
+</body>
+</ht
