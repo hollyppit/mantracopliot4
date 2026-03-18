@@ -304,6 +304,14 @@ function setLoading(prefix, loading) {
   text.style.opacity = loading ? '0.5' : '1';
 }
 
+// ── 로그인/회원가입 임시 비활성화 (출시 전 테스트용) ──
+// 복구하려면 이 블록 지우고 아래 주석 풀기
+
+function handleLogin() { window.location.href = 'index.html'; }
+function handleSignup() { window.location.href = 'index.html'; }
+function handleKakaoLogin() { window.location.href = 'index.html'; }
+
+/*
 // ── 로그인 ──
 async function handleLogin() {
   const email = document.getElementById('loginEmail').value.trim();
@@ -320,7 +328,6 @@ async function handleLogin() {
     const msg = error.message.includes('Invalid') ? '이메일 또는 비밀번호가 올바르지 않습니다.' : error.message;
     showMsg(msg);
   } else {
-    // Login success -> go to main assistant page
     window.location.href = 'index.html';
   }
 }
@@ -362,6 +369,7 @@ async function handleKakaoLogin() {
   });
   if (error) showMsg('카카오 로그인 오류: ' + error.message);
 }
+*/
 
 // ── 엔터키 처리 ──
 document.addEventListener('keydown', e => {
