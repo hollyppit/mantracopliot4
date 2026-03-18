@@ -559,13 +559,13 @@ body {
 /* ── ONBOARDING MODE SELECT ── */
 .mode-cards {
   position:fixed; inset:0; z-index:300;
-  display:flex; align-items:center; justify-content:center;
+  display:none; align-items:center; justify-content:center;
   background:rgba(3,3,5,0.7); backdrop-filter:blur(24px);
   gap:40px; padding:40px;
   opacity:0; transition:opacity .8s ease;
   pointer-events:none;
 }
-.mode-cards.show { opacity:1; pointer-events:all; }
+.mode-cards.show { display:flex; opacity:1; pointer-events:all; }
 .mode-card {
   flex:0 1 380px; padding:60px 40px; border-radius:40px;
   border:1px solid rgba(255,255,255,0.08);
@@ -589,11 +589,11 @@ body {
 /* ── ROUTINE SELECT (AND CHAR SELECT) ── */
 .routine-overlay, .char-overlay {
   position:fixed; inset:0; z-index:300;
-  display:flex; align-items:center; justify-content:center;
+  display:none; align-items:center; justify-content:center;
   background:rgba(3,3,5,0.8); backdrop-filter:blur(24px);
   opacity:0; transition:opacity .5s ease; pointer-events:none;
 }
-.routine-overlay.show, .char-overlay.show { opacity:1; pointer-events:all; }
+.routine-overlay.show, .char-overlay.show { display:flex; opacity:1; pointer-events:all; }
 .routine-panel {
   background:rgba(15,15,20,0.6); border:1px solid rgba(255,255,255,0.08);
   border-radius:32px; padding:40px; width:480px;
@@ -1621,7 +1621,7 @@ body {
 </div>
 
 <!-- MODE CARDS OVERLAY -->
-<div class="mode-cards" id="modeCards" style="display:none;">
+<div class="mode-cards" id="modeCards">
   <div class="mode-card consumer" onclick="selectMode('consumer')">
     <div class="mc-icon">📖</div>
     <div class="mc-title">스토리 빌드업</div>
@@ -1637,7 +1637,7 @@ body {
 </div>
 
 <!-- ROUTINE OVERLAY -->
-<div class="routine-overlay" id="routineOverlay" style="display:none; position:fixed; inset:0; z-index:200;">
+<div class="routine-overlay" id="routineOverlay">
   <div class="routine-panel">
     <div class="rp-title">어떤 루틴으로 시작할까요?</div>
     <div class="rp-sub">기획하려는 작품 형태를 선택해주세요.</div>
@@ -1660,7 +1660,7 @@ body {
 </div>
 
 <!-- CHAR OVERLAY -->
-<div class="char-overlay" id="charOverlay" style="display:none; position:fixed; inset:0; z-index:200;">
+<div class="char-overlay" id="charOverlay">
   <div class="char-panel">
     <div class="char-card" onclick="selectCharacter('조수 어시스턴트')">
       <div class="cc-avatar">🤖</div>
@@ -2067,9 +2067,6 @@ function navTo(viewId) {
     const modeCards = $('modeCards');
     if (modeCards) {
       modeCards.classList.add('show');
-      modeCards.style.display = 'flex';
-      modeCards.style.opacity = '1';
-      modeCards.style.pointerEvents = 'all';
     }
   }
 }
@@ -3003,11 +3000,7 @@ function runStep(idx) {
 function selectMode(m) {
   // modeCards 닫기
   const modeCards = $('modeCards');
-  if (modeCards) {
-    modeCards.classList.remove('show');
-    modeCards.style.display = 'none';
-    modeCards.style.pointerEvents = 'none';
-  }
+  if (modeCards) modeCards.classList.remove('show');
 
   isSeller = (m === 'seller');
   // setup HUD
