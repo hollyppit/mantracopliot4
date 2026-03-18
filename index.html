@@ -2091,107 +2091,7 @@ const sellerSteps = [
 ];
 
 // ── MORE HELPERS ──
-function sceneTransition(newBgClass, cb) {
-  const overlay = $('sceneOverlay');
-  overlay.classList.add('fade-in');
-  setTimeout(() => {
-    const bg = $('sceneBg');
-    bg.className = 'scene-bg ' + newBgClass;
-    overlay.classList.remove('fade-in');
-    overlay.classList.add('fade-out');
-    setTimeout(() => { overlay.className = ''; cb && cb(); }, 600);
-  }, 600);
-}
-
-function markdownToHtml(text) {
-  return text
-    .replace(/\*\*(.+?)\*\*/g, '<strong style="color:#c4b5fd;">$1</strong>')
-    .replace(/^#{1,3}\s(.+)$/gm, '<span style="font-weight:800;font-size:1.05em;">$1</span>')
-    .replace(/^\* (.+)$/gm, '• $1')
-    .replace(/\n/g, '<br>');
-}
-
-function showDialogText(step, cb) {
-  if (typing) return;
-  typing = true;
-  const txtField = $('dialogTxt');
-  const exField = $('dialogExample');
-  
-  txtField.innerHTML = '';
-  exField.innerHTML = '';
-  exField.classList.remove('show');
-  $('dialogCursor').style.display = 'none';
-  $('choicesBox').innerHTML = '';
-  $('choicesBox').classList.remove('show');
-
-  const text = typeof step === 'string' ? step : step.question;
-  const example = typeof step === 'object' ? step.example : null;
-
-  const htmlContent = markdownToHtml(text);
-  
-  txtField.style.opacity = '0';
-  txtField.innerHTML = htmlContent;
-  txtField.scrollTop = 0;
-
-  setTimeout(() => {
-    txtField.style.transition = 'opacity 0.4s ease';
-    txtField.style.opacity = '1';
-    typing = false;
-    if (example) {
-      exField.innerHTML = '<span>Tip!</span> ' + example;
-      exField.classList.add('show');
-    }
-    if (cb) cb();
-  }, 200);
-}
-
-function setStageBanner(text) {
-  const banner = $('stageBanner');
-  if (text) {
-    let htmlText = text.replace(/\n/g, '<br>');
-    $('stageBannerText').innerHTML = htmlText;
-    banner.classList.toggle('seller-banner', isSeller);
-    banner.style.display = 'block';
-    setTimeout(() => banner.classList.add('show'), 50);
-  } else {
-    banner.classList.remove('show');
-    setTimeout(() => banner.style.display = 'none', 500);
-  }
-}
-
-function showChoices(choices, customHandler) {
-  const box = $('choicesBox');
-  box.innerHTML = '';
-  if (!choices || !choices.length) {
-    box.style.display = 'none';
-    return;
-  }
-  choices.forEach(c => {
-    const btn = document.createElement('button');
-    btn.className = 'choice-btn' + (isSeller ? ' seller-btn' : '');
-    btn.textContent = c;
-    btn.onclick = () => {
-      if (customHandler) customHandler(c);
-      else handleChoice(c);
-    };
-    box.appendChild(btn);
-  });
-  box.style.display = 'flex';
-}
-
-function showInput(hideInputBar = false) {
-  const area = $('answerArea');
-  if (area) area.classList.add('show');
-  
-  const insightBtn = $('solutionBarBtn');
-  if (insightBtn) {
-    insightBtn.className = 'insight-bar-btn' + (isSeller ? ' seller-bar-btn' : '');
-    insightBtn.style.display = (currentStep === 999 || hideInputBar) ? 'none' : 'flex';
-  }
-
-  const inputWrapper = $('inputWrapper');
-  if (inputWrapper) inputWrapper.style.display = hideInputBar ? 'none' : 'flex';
-}
+// ── END OF FIRST SET OF HELPERS ──
 
 
 async function fetchAIFeedback(userInput, stepInfo) {
@@ -2689,17 +2589,7 @@ ${storyContext ? `\n[지금까지 도출된 이야기 요소]:\n${storyContext}`
 // ── 3-ACT FRAMEWORK HUD ── 
 // (ACT_MAP moved to top)
 
-function updateActHud(stepId) {
-  const hud = $('actHud');
-  if (!hud || isSeller) return;
-  hud.classList.add('show');
-  const isDesire  = ACT_MAP.desire.includes(stepId);
-  const isConfl   = ACT_MAP.conflict.includes(stepId);
-  const isOverc   = ACT_MAP.overcome.includes(stepId);
-  $('act1Seg').className = 'act-segment' + (isDesire ? ' active' : isConfl||isOverc ? ' done' : '');
-  $('act2Seg').className = 'act-segment' + (isConfl  ? ' active' : isOverc ? ' done' : '');
-  $('act3Seg').className = 'act-segment' + (isOverc  ? ' active' : '');
-}
+// Duplicate updateActHud removed
 
 // ── 10년차 평론가 ──
 function openReviewer() {
@@ -3070,25 +2960,33 @@ function selectMode(m) {
 
   // setup char
   if (isSeller) {
-    $('charFigureLegacy').classList.add('seller-mode');
-    $('dialogBox').classList.add('seller-box');
-    $('spConsumer').style.display = 'none';
-    $('spSeller').style.display = 'block';
-    $('spTitle').textContent = '🛍️ 템플릿 보드';
-    $('spTitle').className = 'sp-title seller-title';
-    $('sheetToggle').textContent = 'BOARD';
+    const charFigLeg = $('charFigureLegacy');
+    if (charFigLeg) charFigLeg.classList.add('seller-mode');
+    const dialogBox = $('dialogBox');
+    if (dialogBox) dialogBox.classList.add('seller-box');
+    const spConsumer = $('spConsumer');
+    if (spConsumer) spConsumer.style.display = 'none';
+    const spSeller = $('spSeller');
+    if (spSeller) spSeller.style.display = 'block';
+    const spTitle = $('spTitle');
+    if (spTitle) { spTitle.textContent = '🛍️ 템플릿 보드'; spTitle.className = 'sp-title seller-title'; }
+    const sheetToggle = $('sheetToggle');
+    if (sheetToggle) sheetToggle.textContent = 'BOARD';
     activeSteps = sellerSteps;
   } else {
     activeSteps = consumerSteps;
   }
   
   if (isVerify) {
-    $('sheetToggle').style.display = 'none';
+    const sheetToggle = $('sheetToggle');
+    if (sheetToggle) sheetToggle.style.display = 'none';
   } else {
-    $('sheetToggle').style.display = 'block';
+    const sheetToggle = $('sheetToggle');
+    if (sheetToggle) sheetToggle.style.display = 'block';
   }
 
-  $('homeBtn').classList.add('show');
+  const homeBtnEl = $('homeBtn');
+  if (homeBtnEl) homeBtnEl.classList.add('show');
   initProgressDots(activeSteps.length);
   currentStep = 0;
   answerHistory = [];
@@ -3097,8 +2995,10 @@ function selectMode(m) {
 
   if (isSeller) {
     sceneTransition('scene-seller', () => {
-      $('charFigureLegacy').classList.add('show');
-      document.querySelector('.dialog-area').style.display = 'none';
+      const charFig = $('charFigureLegacy');
+      if (charFig) charFig.classList.add('show');
+      const dialogArea = document.querySelector('.dialog-area');
+      if (dialogArea) dialogArea.style.display = 'none';
       const rb = $('routineBuilder');
       if (rb) {
         rb.style.display = 'flex';
@@ -3107,7 +3007,8 @@ function selectMode(m) {
     });
   } else if (isVerify) {
     sceneTransition('scene-verify', () => {
-      $('charFigureLegacy').classList.add('show');
+      const charFig = $('charFigureLegacy');
+      if (charFig) charFig.classList.add('show');
       showDialogText('작품 검증 모드에 오신 것을 환영합니다.\n원하시는 검증 분야의 페르소나를 선택해 주세요.', () => {
         setTimeout(() => {
           navTo('verify');
@@ -3116,25 +3017,35 @@ function selectMode(m) {
     });
   } else if (m === 'projectChat') {
     selectedCharName = '작품 편집자';
-    $('charName').textContent = selectedCharName;
-    $('dialogSpeaker').textContent = selectedCharName;
+    const charNameEl = $('charName');
+    if (charNameEl) charNameEl.textContent = selectedCharName;
+    const dialogSpeaker = $('dialogSpeaker');
+    if (dialogSpeaker) dialogSpeaker.textContent = selectedCharName;
     currentStep = 999;
     sceneTransition('scene-verify', () => {
-      $('charFigureLegacy').classList.add('show');
-      $('routineBoard').style.display = 'none';
+      const charFig = $('charFigureLegacy');
+      if (charFig) charFig.classList.add('show');
+      const routineBoard = $('routineBoard');
+      if (routineBoard) routineBoard.style.display = 'none';
       showDialogText('반갑습니다. 작가님의 작품 편집자입니다.\n\n기획하신 내용을 바탕으로 함께 대화하며 설정을 다듬어 볼까요?\n궁금한 점이나 막히는 부분이 있다면 무엇이든 물어보세요.', () => {
         showInput(false);
       });
     });
   } else {
     sceneTransition('scene-consumer', () => {
-      $('charFigureLegacy').classList.add('show');
-      $('routineBoard').style.display = 'none';
+      const charFig = $('charFigureLegacy');
+      if (charFig) charFig.classList.add('show');
+      const routineBoard = $('routineBoard');
+      if (routineBoard) routineBoard.style.display = 'none';
+      const dialogArea = document.querySelector('.dialog-area');
+      if (dialogArea) dialogArea.style.display = 'flex';
       showDialogText('스토리 빌드업을 시작합니다.\n먼저 원하시는 기획 루틴을 골라주세요.', () => {
         setTimeout(() => {
           const overlay = $('routineOverlay');
-          overlay.style.display = 'block';
-          overlay.classList.add('show');
+          if (overlay) {
+            overlay.style.display = 'block';
+            overlay.classList.add('show');
+          }
         }, 500);
       });
     });
