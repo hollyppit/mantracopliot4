@@ -1636,6 +1636,45 @@ body {
   </div>
 </div>
 
+<!-- ROUTINE OVERLAY -->
+<div class="routine-overlay" id="routineOverlay" style="display:none;">
+  <div class="routine-panel">
+    <div class="rp-title">어떤 루틴으로 시작할까요?</div>
+    <div class="rp-sub">기획하려는 작품 형태를 선택해주세요.</div>
+    <div class="routine-item" onclick="startRoutine('장편 루틴')">
+      <div class="ri-icon">📖</div>
+      <div class="ri-info">
+        <div class="ri-name">장편 루틴</div>
+        <div class="ri-desc">22단계로 탄탄한 장편 스토리를 기획합니다</div>
+      </div>
+      <button class="ri-badge">추천</button>
+    </div>
+    <div class="routine-item" onclick="startRoutine('단편 루틴')">
+      <div class="ri-icon">✍️</div>
+      <div class="ri-info">
+        <div class="ri-name">단편 루틴</div>
+        <div class="ri-desc">11단계로 빠르게 단편 아이디어를 정리합니다</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CHAR OVERLAY -->
+<div class="char-overlay" id="charOverlay" style="display:none;">
+  <div class="char-panel">
+    <div class="char-card" onclick="selectCharacter('조수 어시스턴트')">
+      <div class="cc-avatar">🤖</div>
+      <div class="cc-name">조수 어시스턴트</div>
+      <div class="cc-desc">논리적이고 직관적인 기획 파트너.<br>허점을 날카롭게 짚어줍니다.</div>
+    </div>
+    <div class="char-card" onclick="selectCharacter('조수 B')">
+      <div class="cc-avatar">💜</div>
+      <div class="cc-name">조수 B</div>
+      <div class="cc-desc">공감 능력이 뛰어난 감성형 파트너.<br>캐릭터 감정선을 깊이 분석합니다.</div>
+    </div>
+  </div>
+</div>
+
 <!-- Supabase SDK -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
@@ -1754,23 +1793,40 @@ function skipIntro() {
 // ── PROJECT LIST ──
 async function loadMyProjects() {
   if (!currentUser) return;
-  const { data, error } = await _sb.from('projects')
-    .select('*')
-    .eq('user_id', currentUser.id)
-    .order('completed_at', { ascending: false });
-
-  if (error) {
-    console.error('Error loading projects:', error);
-  }
-  myProjects = data || [];
   
-  // 데이터가 없을 때 테스트용 더미 작품 자동 추가
+  // 테스트 더미 유저면 Supabase 호출 스킵
+  if (currentUser.id === 'test-user-001') {
+    myProjects = [{
+      id: 'test-001',
+      title: '귀신들린 그래플러',
+      genre: '액션/스릴러',
+      synopsis: '격투기 선수 주인공이 귀신에 씐 채로 링 위에서 싸우는 이야기.',
+      answer_history: [],
+      routine_type: 'long'
+    }];
+    renderProjectGrid();
+    return;
+  }
+
+  try {
+    const { data, error } = await _sb.from('projects')
+      .select('*')
+      .eq('user_id', currentUser.id)
+      .order('completed_at', { ascending: false });
+
+    if (error) throw error;
+    myProjects = data || [];
+  } catch(e) {
+    console.warn('프로젝트 로드 실패 (로컬 데이터 사용):', e.message);
+    myProjects = [];
+  }
+
   if (myProjects.length === 0) {
     myProjects.push({
       id: 'test-001',
       title: '귀신들린 그래플러',
       genre: '액션/스릴러',
-      synopsis: '격투기 선수 주인공이 귀신에 씐 채로 링 위에서 싸우는 이야기. 귀신의 힘과 자신의 의지 사이에서 갈등하며 성장한다.',
+      synopsis: '격투기 선수 주인공이 귀신에 씐 채로 링 위에서 싸우는 이야기.',
       answer_history: [],
       routine_type: 'long'
     });
