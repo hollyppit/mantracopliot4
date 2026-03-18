@@ -3001,6 +3001,14 @@ function runStep(idx) {
 
 // ── MODE SELECT ──
 function selectMode(m) {
+  // modeCards 닫기
+  const modeCards = $('modeCards');
+  if (modeCards) {
+    modeCards.classList.remove('show');
+    modeCards.style.display = 'none';
+    modeCards.style.pointerEvents = 'none';
+  }
+
   isSeller = (m === 'seller');
   // setup HUD
   const isVerify = (m === 'verify');
@@ -3341,13 +3349,16 @@ async function saveProjectToStorage(synopsis) {
 })();
 
 // ── KEYBOARD ──
-$('inputBox').addEventListener('keydown', function(e) {
-  if (e.key==='Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); }
-});
-$('inputBox').addEventListener('input', function() {
-  this.style.height='40px';
-  this.style.height=Math.min(this.scrollHeight,140)+'px';
-});
+const _inputBox = $('inputBox');
+if (_inputBox) {
+  _inputBox.addEventListener('keydown', function(e) {
+    if (e.key==='Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); }
+  });
+  _inputBox.addEventListener('input', function() {
+    this.style.height='40px';
+    this.style.height=Math.min(this.scrollHeight,140)+'px';
+  });
+}
 </script>
 </body>
 </html>
