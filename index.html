@@ -3208,7 +3208,7 @@ async function saveProjectToStorage(synopsis) {
   currentUser = session.user;
   */
   // 임시 더미 유저
-  currentUser = { id: 'test-user-id', email: 'test@test.com', user_metadata: { nickname: '릴매' } };
+  currentUser = { id: 'test-user-id', email: 'test@test.com', user_metadata: { nickname: '테스터' } };
 
   // Sidebar User Info
   const nickname = currentUser.user_metadata?.nickname || currentUser.user_metadata?.full_name || currentUser.email.split('@')[0] || '작가님';
