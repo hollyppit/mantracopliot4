@@ -2090,10 +2090,6 @@ const sellerSteps = [
   { id:'s-price', visual:'💰', stageIntro:null, question:'?ㅽ넗???먮ℓ 媛寃⑹쓣 ?ㅼ젙?댁＜?몄슂.', example:'?덉떆: 1500???뺣룄濡?媛蹂띻쾶 梨낆젙, 4900???꾨━誘몄뾼)', choices:['무료 배포','990원','2,900원','4,900원(프리미엄)'], fieldId:'s-price' }
 ];
 
-// ── MORE HELPERS ──
-// ── END OF FIRST SET OF HELPERS ──
-
-
 async function fetchAIFeedback(userInput, stepInfo) {
   const endpoint = `/api/chat`;
   const projectContext = _currentLoadedProject || { title: "새 작품", answerHistory: answerHistory };
@@ -2589,9 +2585,6 @@ ${storyContext ? `\n[지금까지 도출된 이야기 요소]:\n${storyContext}`
 // ── 3-ACT FRAMEWORK HUD ── 
 // (ACT_MAP moved to top)
 
-// Duplicate updateActHud removed
-
-// ── 10년차 평론가 ──
 function openReviewer() {
   $('reviewerOverlay').classList.add('open');
   $('reviewerPanel').classList.add('open');
@@ -2676,7 +2669,7 @@ ${collectedData}
 
 async function finishFlow() {
   hideInput();
-  $('choicesBox').innerHTML = '';
+  const cb = $('choicesBox'); if (cb) cb.innerHTML = '';
 
   const synopsisWrapId = isSeller ? 'seller-synopsis-wrap' : 'consumer-synopsis-wrap';
   const synopsisBoxId  = isSeller ? 'seller-synopsis-box'  : 'story-synopsis-box';
@@ -2956,7 +2949,8 @@ function selectMode(m) {
   // setup HUD
   const isVerify = (m === 'verify');
 
-  $('chatStatusIndicator') && ($('chatStatusIndicator').style.display = (m === 'projectChat' || _currentLoadedProject) ? 'flex' : 'none');
+  const chatStatus = $('chatStatusIndicator');
+  if (chatStatus) chatStatus.style.display = (m === 'projectChat' || _currentLoadedProject) ? 'flex' : 'none';
 
   // setup char
   if (isSeller) {
@@ -2977,13 +2971,8 @@ function selectMode(m) {
     activeSteps = consumerSteps;
   }
   
-  if (isVerify) {
-    const sheetToggle = $('sheetToggle');
-    if (sheetToggle) sheetToggle.style.display = 'none';
-  } else {
-    const sheetToggle = $('sheetToggle');
-    if (sheetToggle) sheetToggle.style.display = 'block';
-  }
+  const sheetToggleEl = $('sheetToggle');
+  if (sheetToggleEl) sheetToggleEl.style.display = isVerify ? 'none' : 'block';
 
   const homeBtnEl = $('homeBtn');
   if (homeBtnEl) homeBtnEl.classList.add('show');
@@ -2995,57 +2984,39 @@ function selectMode(m) {
 
   if (isSeller) {
     sceneTransition('scene-seller', () => {
-      const charFig = $('charFigureLegacy');
-      if (charFig) charFig.classList.add('show');
-      const dialogArea = document.querySelector('.dialog-area');
-      if (dialogArea) dialogArea.style.display = 'none';
+      const cf = $('charFigureLegacy'); if (cf) cf.classList.add('show');
+      const da = document.querySelector('.dialog-area'); if (da) da.style.display = 'none';
       const rb = $('routineBuilder');
-      if (rb) {
-        rb.style.display = 'flex';
-        renderBuilder();
-      }
+      if (rb) { rb.style.display = 'flex'; renderBuilder(); }
     });
   } else if (isVerify) {
     sceneTransition('scene-verify', () => {
-      const charFig = $('charFigureLegacy');
-      if (charFig) charFig.classList.add('show');
+      const cf = $('charFigureLegacy'); if (cf) cf.classList.add('show');
       showDialogText('작품 검증 모드에 오신 것을 환영합니다.\n원하시는 검증 분야의 페르소나를 선택해 주세요.', () => {
-        setTimeout(() => {
-          navTo('verify');
-        }, 500);
+        setTimeout(() => navTo('verify'), 500);
       });
     });
   } else if (m === 'projectChat') {
     selectedCharName = '작품 편집자';
-    const charNameEl = $('charName');
-    if (charNameEl) charNameEl.textContent = selectedCharName;
-    const dialogSpeaker = $('dialogSpeaker');
-    if (dialogSpeaker) dialogSpeaker.textContent = selectedCharName;
+    const cn = $('charName'); if (cn) cn.textContent = selectedCharName;
+    const ds = $('dialogSpeaker'); if (ds) ds.textContent = selectedCharName;
     currentStep = 999;
     sceneTransition('scene-verify', () => {
-      const charFig = $('charFigureLegacy');
-      if (charFig) charFig.classList.add('show');
-      const routineBoard = $('routineBoard');
-      if (routineBoard) routineBoard.style.display = 'none';
+      const cf = $('charFigureLegacy'); if (cf) cf.classList.add('show');
+      const rb2 = $('routineBoard'); if (rb2) rb2.style.display = 'none';
       showDialogText('반갑습니다. 작가님의 작품 편집자입니다.\n\n기획하신 내용을 바탕으로 함께 대화하며 설정을 다듬어 볼까요?\n궁금한 점이나 막히는 부분이 있다면 무엇이든 물어보세요.', () => {
         showInput(false);
       });
     });
   } else {
     sceneTransition('scene-consumer', () => {
-      const charFig = $('charFigureLegacy');
-      if (charFig) charFig.classList.add('show');
-      const routineBoard = $('routineBoard');
-      if (routineBoard) routineBoard.style.display = 'none';
-      const dialogArea = document.querySelector('.dialog-area');
-      if (dialogArea) dialogArea.style.display = 'flex';
+      const cf = $('charFigureLegacy'); if (cf) cf.classList.add('show');
+      const rb3 = $('routineBoard'); if (rb3) rb3.style.display = 'none';
+      const da2 = document.querySelector('.dialog-area'); if (da2) da2.style.display = 'flex';
       showDialogText('스토리 빌드업을 시작합니다.\n먼저 원하시는 기획 루틴을 골라주세요.', () => {
         setTimeout(() => {
           const overlay = $('routineOverlay');
-          if (overlay) {
-            overlay.style.display = 'block';
-            overlay.classList.add('show');
-          }
+          if (overlay) { overlay.style.display = 'block'; overlay.classList.add('show'); }
         }, 500);
       });
     });
@@ -3061,8 +3032,8 @@ function startRoutine(name) {
     setTimeout(() => {
       overlay.style.display = 'none';
       overlay.classList.remove('show');
-      $('charOverlay').style.display = 'block';
-      $('charOverlay').classList.add('show');
+      const co = $('charOverlay');
+      if (co) { co.style.display = 'block'; co.classList.add('show'); }
     }, 600);
   } else {
     setTimeout(() => {
@@ -3074,11 +3045,11 @@ function startRoutine(name) {
 
 function selectCharacter(name) {
   selectedCharName = name;
-  $('charName').textContent = name;
-  $('dialogSpeaker').textContent = name;
+  const cn = $('charName'); if (cn) cn.textContent = name;
+  const ds = $('dialogSpeaker'); if (ds) ds.textContent = name;
   
-  $('charOverlay').style.display = 'none';
-  $('charOverlay').classList.remove('show');
+  const co = $('charOverlay');
+  if (co) { co.style.display = 'none'; co.classList.remove('show'); }
   showReplyFlash(`${name} 선택됨`);
   
   setTimeout(() => {
