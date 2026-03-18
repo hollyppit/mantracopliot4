@@ -1748,9 +1748,21 @@ async function loadMyProjects() {
 
   if (error) {
     console.error('Error loading projects:', error);
-    return;
   }
-  myProjects = data;
+  myProjects = data || [];
+  
+  // 데이터가 없을 때 테스트용 더미 작품 자동 추가
+  if (myProjects.length === 0) {
+    myProjects.push({
+      id: 'test-001',
+      title: '귀신들린 그래플러',
+      genre: '액션/스릴러',
+      synopsis: '테스트용 작품입니다.',
+      answer_history: [],
+      routine_type: 'short'
+    });
+  }
+  
   renderProjectGrid();
 }
 
@@ -3196,7 +3208,7 @@ async function saveProjectToStorage(synopsis) {
   currentUser = session.user;
   */
   // 임시 더미 유저
-  currentUser = { email: 'test@test.com', user_metadata: { nickname: '릴매' } };
+  currentUser = { id: 'test-user-id', email: 'test@test.com', user_metadata: { nickname: '릴매' } };
 
   // Sidebar User Info
   const nickname = currentUser.user_metadata?.nickname || currentUser.user_metadata?.full_name || currentUser.email.split('@')[0] || '작가님';
