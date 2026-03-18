@@ -152,6 +152,59 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
 .ec:hover{border-color:var(--purple-light);background:rgba(139,92,246,0.1);transform:translateY(-3px)}
 .eci{font-size:28px;margin-bottom:10px}
 .ecn{font-size:13px;font-weight:700;color:var(--text)}
+/* 기획 목차 화면 */
+.plan-header{padding:28px 36px 0;flex-shrink:0;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.plan-title-wrap{display:flex;flex-direction:column;gap:4px}
+.plan-proj-name{font-size:22px;font-weight:900}
+.plan-sub{font-size:13px;color:var(--text-dim)}
+.plan-actions{display:flex;gap:8px}
+.plan-btn{padding:8px 16px;border-radius:var(--rs);font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;border:1px solid var(--border);background:var(--surface);color:var(--text-dim);transition:all 0.2s}
+.plan-btn:hover{color:var(--text);border-color:var(--border2)}
+.plan-btn.primary{background:var(--purple);border-color:var(--purple);color:#fff;box-shadow:0 4px 16px var(--purple-glow)}
+.plan-btn.primary:hover{filter:brightness(1.1)}
+/* 목차 리스트 */
+.plan-body{flex:1;overflow-y:auto;padding:20px 36px 36px}
+.plan-list{display:flex;flex-direction:column;gap:8px;max-width:760px}
+.plan-item{display:flex;align-items:center;gap:14px;padding:16px 18px;background:var(--surface);border:1px solid var(--border);border-radius:var(--rs);cursor:pointer;transition:all 0.2s;user-select:none;position:relative}
+.plan-item:hover{border-color:var(--border2);background:var(--surface2)}
+.plan-item.filled{border-color:rgba(139,92,246,0.25);background:rgba(139,92,246,0.04)}
+.plan-item.filled:hover{border-color:rgba(139,92,246,0.45)}
+.plan-item.dragging{opacity:0.4;border-style:dashed}
+.plan-item.drag-over{border-color:var(--purple);background:rgba(139,92,246,0.08)}
+.pi-drag{color:var(--text-faint);font-size:14px;cursor:grab;padding:0 4px;flex-shrink:0}
+.pi-drag:active{cursor:grabbing}
+.pi-icon{font-size:20px;flex-shrink:0;width:28px;text-align:center}
+.pi-info{flex:1;min-width:0}
+.pi-name{font-size:14px;font-weight:700;color:var(--text)}
+.pi-val{font-size:12px;color:var(--text-dim);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.pi-status{width:8px;height:8px;border-radius:50%;background:var(--border2);flex-shrink:0;transition:background 0.2s}
+.plan-item.filled .pi-status{background:var(--purple)}
+.pi-del{width:28px;height:28px;border-radius:50%;background:none;border:none;color:var(--text-faint);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;opacity:0;transition:all 0.2s;flex-shrink:0}
+.plan-item:hover .pi-del{opacity:1}
+.pi-del:hover{background:rgba(252,165,165,0.12);color:#fca5a5}
+/* 항목 입력 모달 */
+.item-modal{position:fixed;inset:0;z-index:500;background:rgba(4,4,12,0.85);backdrop-filter:blur(20px);display:none;align-items:center;justify-content:center;padding:20px}
+.item-modal.on{display:flex}
+.im-box{background:rgba(12,12,24,0.98);border:1px solid var(--border2);border-radius:24px;padding:36px;width:100%;max-width:560px;box-shadow:0 30px 80px rgba(0,0,0,0.7);display:flex;flex-direction:column;gap:20px}
+.im-label{font-size:11px;font-weight:800;letter-spacing:0.1em;color:var(--purple-light);text-transform:uppercase}
+.im-q{font-size:18px;font-weight:600;line-height:1.6;color:var(--text);word-break:keep-all}
+.im-hint{font-size:13px;color:var(--text-dim);line-height:1.6;background:rgba(139,92,246,0.06);border:1px solid rgba(139,92,246,0.12);border-radius:var(--rs);padding:12px 16px}
+.im-ta{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:var(--rs);color:var(--text);font-family:inherit;font-size:15px;line-height:1.6;padding:14px 16px;resize:none;outline:none;min-height:120px;transition:border-color 0.2s}
+.im-ta:focus{border-color:var(--purple-light)}
+.im-row{display:flex;gap:10px;justify-content:flex-end}
+.im-cancel{padding:10px 20px;border-radius:var(--rs);font-size:14px;font-weight:600;font-family:inherit;cursor:pointer;background:none;border:1px solid var(--border);color:var(--text-dim);transition:all 0.2s}
+.im-cancel:hover{border-color:var(--border2);color:var(--text)}
+.im-save{padding:10px 24px;border-radius:var(--rs);font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;background:var(--purple);border:none;color:#fff;box-shadow:0 4px 16px var(--purple-glow);transition:all 0.2s}
+.im-save:hover{filter:brightness(1.1)}
+/* 프로젝트 이름 오버레이 */
+.pn-box{background:rgba(12,12,24,0.98);border:1px solid var(--border2);border-radius:24px;padding:44px 40px;width:100%;max-width:480px;box-shadow:0 30px 80px rgba(0,0,0,0.7);display:flex;flex-direction:column;gap:24px}
+.pn-title{font-size:22px;font-weight:900}
+.pn-sub{font-size:14px;color:var(--text-dim);margin-top:-14px;line-height:1.6}
+.pn-input{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:var(--rs);color:var(--text);font-family:inherit;font-size:17px;font-weight:600;padding:16px 18px;outline:none;transition:border-color 0.2s}
+.pn-input:focus{border-color:var(--purple-light)}
+.pn-input::placeholder{color:rgba(255,255,255,0.2)}
+.pn-next{width:100%;padding:16px;background:var(--purple);border:none;border-radius:var(--rs);color:#fff;font-size:15px;font-weight:800;font-family:inherit;cursor:pointer;box-shadow:0 8px 24px var(--purple-glow);transition:all 0.2s}
+.pn-next:hover{filter:brightness(1.1);transform:translateY(-1px)}
 /* 인사이트 패널 */
 .ip{position:fixed;right:0;top:0;bottom:0;width:380px;z-index:300;background:rgba(10,10,20,0.97);border-left:1px solid rgba(214,183,90,0.2);display:flex;flex-direction:column;transform:translateX(100%);transition:transform 0.4s cubic-bezier(0.16,1,0.3,1);backdrop-filter:blur(60px);box-shadow:-20px 0 60px rgba(0,0,0,0.5)}
 .ip.on{transform:translateX(0)}
@@ -194,10 +247,57 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
 @keyframes blk{0%,80%,100%{opacity:0}40%{opacity:1}}
 ::-webkit-scrollbar{width:4px}
 ::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.08);border-radius:2px}
+/* 인트로 */
+#intro{position:fixed;inset:0;z-index:9999;background:#06060E;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:all;overflow:hidden}
+#intro.fade-out{animation:introOut 1.2s ease forwards}
+@keyframes introOut{to{opacity:0}}
+.intro-seq{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;text-align:center}
+/* 손글씨 느낌 밑줄 */
+.intro-underline{width:0;height:1px;background:rgba(255,255,255,0.12);margin:0 auto;animation:ulIn 1s ease 0.4s forwards}
+@keyframes ulIn{to{width:260px}}
+/* 페인포인트 - 타이핑처럼 한 줄씩 */
+.iline{font-size:15px;font-weight:400;color:var(--text-faint);letter-spacing:0.01em;line-height:1;opacity:0;margin:0}
+.iline.l1{animation:lnIn 1s ease 0.5s forwards;margin-top:32px}
+.iline.l2{animation:lnIn 1s ease 1.4s forwards;margin-top:20px}
+.iline.l3{animation:lnIn 1s ease 2.3s forwards;margin-top:20px}
+@keyframes lnIn{from{opacity:0;transform:translateX(-6px)}to{opacity:1;transform:translateX(0)}}
+/* 전환 점 */
+.intro-dots{display:flex;gap:6px;justify-content:center;margin-top:36px;opacity:0;animation:lnIn 0.6s ease 3.4s forwards}
+.intro-dots span{width:4px;height:4px;border-radius:50%;background:var(--text-faint);opacity:0.4}
+/* 솔루션 문장 */
+.intro-ans{font-size:19px;font-weight:700;color:var(--text);letter-spacing:-0.02em;line-height:1.6;opacity:0;margin-top:28px;word-break:keep-all}
+.intro-ans em{color:var(--purple-light);font-style:normal}
+.intro-ans{animation:ansIn 1s cubic-bezier(0.16,1,0.3,1) 3.8s forwards}
+@keyframes ansIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+/* 로고 */
+.intro-logo{display:flex;align-items:center;gap:8px;opacity:0;margin-top:48px;animation:ansIn 0.9s cubic-bezier(0.16,1,0.3,1) 4.6s forwards}
+.intro-logo .mark{font-size:20px;color:var(--purple);filter:drop-shadow(0 0 10px var(--purple-glow))}
+.intro-logo .wordmark{font-size:18px;font-weight:900;letter-spacing:0.02em;color:rgba(255,255,255,0.5)}
+.intro-logo .wordmark em{color:var(--purple-light);font-style:normal}
+/* skip */
+.intro-skip{position:absolute;bottom:32px;right:36px;font-size:11px;color:var(--text-faint);cursor:pointer;border:none;background:none;font-family:inherit;letter-spacing:0.08em;transition:color 0.2s;opacity:0;animation:skipIn 0.5s ease 0.8s forwards;z-index:4}
+.intro-skip:hover{color:var(--text-dim)}
+@keyframes skipIn{to{opacity:1}}
 @media(max-width:768px){.sidebar{display:none}.pg{grid-template-columns:1fr}.mg{flex-direction:column}.mc{flex:none;width:100%}.chp{flex-direction:column}.ip{width:100%}.vh,.vb{padding-left:20px;padding-right:20px}}
 </style>
 </head>
 <body>
+<!-- 인트로 -->
+<div id="intro">
+  <div class="intro-seq">
+    <div class="intro-underline"></div>
+    <div class="iline l1">"화수가 쌓일수록 내 설정이 기억나질 않아요"</div>
+    <div class="iline l2">"캐릭터가 앞뒤로 흔들리는데 어디서 틀렸는지 모르겠어요"</div>
+    <div class="iline l3">"혼자 쓰는 게 맞는지 모르겠어요"</div>
+    <div class="intro-dots"><span></span><span></span><span></span></div>
+    <div class="intro-ans">창작하는 작가님의 고민,<br><em>이젠 같이 해결해요.</em></div>
+    <div class="intro-logo">
+      <span class="mark">✦</span>
+      <span class="wordmark">Mantra <em>Copilot</em></span>
+    </div>
+  </div>
+  <button class="intro-skip" onclick="skipIntro()">SKIP ›</button>
+</div>
 <div class="orb o1"></div><div class="orb o2"></div>
 <aside class="sidebar">
   <div class="sb-logo">✦ Mantra <em>Copilot</em></div>
@@ -306,12 +406,53 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
       </div>
     </div>
   </section>
+  <!-- 기획 목차 -->
+  <section class="view" id="view-plan">
+    <div class="plan-header">
+      <div class="plan-title-wrap">
+        <div class="plan-proj-name" id="plan-proj-name">새 작품</div>
+        <div class="plan-sub" id="plan-sub">목차를 클릭해서 채워보세요. 순서는 드래그로 바꿀 수 있어요.</div>
+      </div>
+      <div class="plan-actions">
+        <button class="plan-btn" onclick="addPlanItem()">+ 항목 추가</button>
+        <button class="plan-btn primary" onclick="finishPlan()">완성하기</button>
+      </div>
+    </div>
+    <div class="plan-body">
+      <div class="plan-list" id="plan-list"></div>
+    </div>
+  </section>
 </main>
+<!-- 항목 입력 모달 -->
+<div class="item-modal" id="item-modal">
+  <div class="im-box">
+    <div class="im-label" id="im-label">기획 항목</div>
+    <div class="im-q" id="im-q"></div>
+    <div class="im-hint" id="im-hint" style="display:none"></div>
+    <textarea class="im-ta" id="im-ta" placeholder="내용을 입력하세요..."></textarea>
+    <div class="im-row">
+      <button class="im-cancel" onclick="closeItemModal()">취소</button>
+      <button class="im-save" onclick="saveItemModal()">저장</button>
+    </div>
+  </div>
+</div>
 <div class="fl" id="fl"></div>
 <!-- 인사이트 패널 -->
 <div class="ip" id="ip">
   <div class="iph"><div class="ipt">✦ 스토리텔링 인사이트</div><button class="ipc" onclick="closeInsight()">✕</button></div>
   <div class="ipb" id="ipb"></div>
+</div>
+<!-- 오버레이: 프로젝트 이름 -->
+<div class="ov" id="ov-projname">
+  <div class="pn-box">
+    <div>
+      <div class="pn-title">작품 이름을 정해볼까요?</div>
+      <div class="pn-sub">나중에 언제든 바꿀 수 있어요.</div>
+    </div>
+    <input class="pn-input" id="pn-input" type="text" placeholder="예) 귀신들린 그래플러"
+      onkeydown="if(event.key==='Enter')confirmProjName()">
+    <button class="pn-next" onclick="confirmProjName()">다음 →</button>
+  </div>
 </div>
 <!-- 오버레이: 모드 선택 -->
 <div class="ov" id="ov-mode">
@@ -398,10 +539,13 @@ function navTo(v){
     $('tpn').textContent=selProj.title;
   }
 }
-function goHome(){navTo('works');}
 // ── 오버레이 ──
 const openOv=id=>$(id).classList.add('on');
 const closeOv=id=>$(id).classList.remove('on');
+function goHome(){navTo('works');}
+document.addEventListener('DOMContentLoaded',()=>{
+  const ta=$('im-ta');if(ta)ta.addEventListener('keydown',e=>{if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)){e.preventDefault();saveItemModal();}});
+});
 // ── 프로젝트 ──
 async function loadProjects(){
   const local=JSON.parse(localStorage.getItem('mp')||'[]');
@@ -419,24 +563,15 @@ function renderProjects(){
   projects.forEach(p=>{
     const c=document.createElement('div');c.className='pc';
     c.innerHTML=`<div><span class="pc-genre">${p.genre||'미분류'}</span></div><div class="pc-title">${p.title}</div><div class="pc-syn">${p.synopsis||'시놉시스가 없습니다.'}</div><div class="pc-foot"><span>${p.routine_type==='short'?'단편':'장편'}</span><span>${(p.answer_history||[]).length}단계 완료</span></div>`;
-    c.onclick=()=>{selProj=p;flash(`'${p.title}' 선택됨`);};g.appendChild(c);
+    c.onclick=()=>{selProj=p;flash(`'${p.title}' 선택됨`);};
+    g.appendChild(c);
   });
   const a=document.createElement('div');a.className='pc-add';
   a.innerHTML='<div class="plus">+</div><span>새 작품 기획하기</span>';a.onclick=openMode;g.appendChild(a);
 }
-async function saveProject(synopsis){
-  const pid='p_'+Date.now();
-  const ts=hist.find(h=>['l-1','l-3','s-1','s-3'].includes(h.id));
-  const title=ts?ts.value.slice(0,30):'새 작품';
-  const gs=hist.find(h=>['l-2','s-2'].includes(h.id));
-  const genre=gs?gs.value.slice(0,20):'';
-  const proj={id:pid,title,genre,synopsis,answer_history:hist,routine_type:steps===LONG?'long':'short'};
-  const arr=JSON.parse(localStorage.getItem('mp')||'[]');
-  arr.unshift(proj);localStorage.setItem('mp',JSON.stringify(arr.slice(0,50)));
-  if(user&&user.id!=='t001'){try{await sb.from('projects').insert({...proj,user_id:user.id,completed_at:new Date().toISOString()});}catch(e){}}
-  flash('💾 작품이 저장됐습니다');
-}
-// ── 모드/루틴/캐릭터 선택 ──
+// ── 모드/루틴/캐릭터/이름 선택 ──
+let pendingRoutineType='';
+let newProjName='';
 function openMode(){openOv('ov-mode');}
 function selMode(m){
   closeOv('ov-mode');
@@ -445,86 +580,134 @@ function selMode(m){
 }
 function selRoutine(type){
   closeOv('ov-routine');
-  steps=type==='long'?LONG:SHORT;
+  pendingRoutineType=type;
+  openOv('ov-projname');
+  setTimeout(()=>$('pn-input').focus(),300);
+}
+function confirmProjName(){
+  const v=$('pn-input').value.trim();
+  if(!v){flash('작품 이름을 입력해주세요');return;}
+  newProjName=v;
+  closeOv('ov-projname');
+  $('pn-input').value='';
   openOv('ov-char');
 }
 function selChar(name){
   closeOv('ov-char');
-  charName=name;hist=[];step=0;
-  startChat();
+  charName=name;
+  initPlanView(pendingRoutineType);
 }
-// ── 빌드업 챗 ──
-function startChat(){
-  navTo('chat');
-  $('cnp').textContent=charName;
-  $('dsp').textContent=charName;
-  initDots(steps.length);
-  renderStep(0);
-}
-function initDots(total){
-  const w=$('sdots');w.innerHTML='';$('st').textContent=total;
-  for(let i=0;i<Math.min(total,30);i++){const d=document.createElement('div');d.className='sd';d.id='sd'+i;w.appendChild(d);}
-}
-function updateDots(idx){
-  $('sn').textContent=idx+1;
-  document.querySelectorAll('.sd').forEach((d,i)=>{d.className='sd'+(i<idx?' done':i===idx?' act':'');});
-}
-function renderStep(idx){
-  step=idx;
-  if(idx>=steps.length){finishChat();return;}
-  const s=steps[idx];
-  updateDots(idx);
-  $('ce').textContent=s.v;
-  const sh=$('shint');
-  if(s.h){sh.innerHTML=md(s.h);sh.style.display='block';}else{sh.style.display='none';}
-  $('dt').innerHTML=md(s.q);
-  $('ia').style.display='flex';
-  $('cr').innerHTML='';
-  if(s.choices){s.choices.forEach(c=>{const b=document.createElement('button');b.className='cbtn';b.textContent=c;b.onclick=()=>submitAns(c);$('cr').appendChild(b);});}
-  setTimeout(()=>{const b=$('cbody');b.scrollTop=b.scrollHeight;},100);
-}
-function doSend(){
-  const b=$('ci');const v=b.value.trim();if(!v)return;
-  b.value='';b.style.height='44px';submitAns(v);
-}
-async function submitAns(val){
-  $('ia').style.display='none';
-  flash(val.length>30?val.slice(0,30)+'...':val);
-  const s=steps[step];
-  hist.push({id:s.id,value:val});
-  $('dt').innerHTML='<div class="thk">분석 중... <div class="td"><span>●</span><span>●</span><span>●</span></div></div>';
-  const fb=await ai([
-    {role:'system',content:buildPersona()},
-    {role:'user',content:'[기획 단계: '+s.q.split('\n')[0]+']\n[작가 답변]: '+val+'\n\n답변을 한 줄로 요약해주세요. (최대 60자)'}  
+// ── 기획 목차 ──
+let planItems=[];   // [{id,v,q,h,value:''}]
+let editingIdx=-1;
+let dragIdx=-1;
 
-
-
-  ]);
-  flash('✓ '+(fb||'저장됨'));
-  setTimeout(()=>renderStep(step+1),600);
+function initPlanView(type){
+  const base=(type==='long'?LONG:SHORT).map(s=>({...s,value:''}));
+  planItems=[...base];
+  selProj=null; // 새 프로젝트 시작
+  $('plan-proj-name').textContent=newProjName;
+  renderPlanList();
+  navTo('plan');
 }
-async function finishChat(){
-  $('ce').textContent='✨';
-  $('shint').style.display='none';
-  $('dt').innerHTML='<div class="thk">시놉시스를 작성하고 있습니다... <div class="td"><span>●</span><span>●</span><span>●</span></div></div>';
-  $('ia').style.display='none';
-  updateDots(steps.length);
-  const ctx=hist.map(h=>{const s=steps.find(st=>st.id===h.id);return s?`- ${s.q.split('\n')[0]}: ${h.value}`:''}).filter(Boolean).join('\n');
+
+function renderPlanList(){
+  const list=$('plan-list');
+  list.innerHTML='';
+  planItems.forEach((item,i)=>{
+    const el=document.createElement('div');
+    el.className='plan-item'+(item.value?' filled':'');
+    el.draggable=true;
+    el.dataset.idx=i;
+    el.innerHTML=`
+      <span class="pi-drag" title="드래그로 순서 변경">⠿</span>
+      <span class="pi-icon">${item.v}</span>
+      <div class="pi-info">
+        <div class="pi-name">${item.q.split('\n').pop()}</div>
+        ${item.value?`<div class="pi-val">${item.value}</div>`:''}
+      </div>
+      <div class="pi-status"></div>
+      <button class="pi-del" title="삭제" onclick="deletePlanItem(event,${i})">✕</button>`;
+    // 클릭 → 입력 모달
+    el.addEventListener('click', e=>{
+      if(e.target.classList.contains('pi-del')||e.target.classList.contains('pi-drag'))return;
+      openItemModal(i);
+    });
+    // 드래그
+    el.addEventListener('dragstart',()=>{dragIdx=i;el.classList.add('dragging');});
+    el.addEventListener('dragend',()=>{dragIdx=-1;el.classList.remove('dragging');renderPlanList();});
+    el.addEventListener('dragover',e=>{e.preventDefault();el.classList.add('drag-over');});
+    el.addEventListener('dragleave',()=>el.classList.remove('drag-over'));
+    el.addEventListener('drop',e=>{
+      e.preventDefault();el.classList.remove('drag-over');
+      if(dragIdx<0||dragIdx===i)return;
+      const moved=planItems.splice(dragIdx,1)[0];
+      planItems.splice(i,0,moved);
+      renderPlanList();
+    });
+    list.appendChild(el);
+  });
+}
+
+function openItemModal(idx){
+  editingIdx=idx;
+  const item=planItems[idx];
+  $('im-label').textContent=`${item.v} ${item.q.split('\n')[0]}`;
+  $('im-q').textContent=item.q.split('\n').pop();
+  const hint=$('im-hint');
+  if(item.h){hint.textContent=item.h;hint.style.display='block';}
+  else{hint.style.display='none';}
+  $('im-ta').value=item.value||'';
+  $('item-modal').classList.add('on');
+  setTimeout(()=>$('im-ta').focus(),200);
+}
+function closeItemModal(){$('item-modal').classList.remove('on');editingIdx=-1;}
+function saveItemModal(){
+  const v=$('im-ta').value.trim();
+  if(editingIdx>=0)planItems[editingIdx].value=v;
+  closeItemModal();
+  renderPlanList();
+}
+
+function deletePlanItem(e,idx){
+  e.stopPropagation();
+  if(!confirm(`"${planItems[idx].q.split('\n').pop()}" 항목을 삭제할까요?`))return;
+  planItems.splice(idx,1);
+  renderPlanList();
+}
+
+function addPlanItem(){
+  const name=prompt('추가할 항목 이름을 입력하세요');
+  if(!name)return;
+  planItems.push({id:'custom-'+Date.now(),v:'📝',q:name,h:null,value:''});
+  renderPlanList();
+  // 바로 입력 모달 열기
+  openItemModal(planItems.length-1);
+}
+
+async function finishPlan(){
+  const filled=planItems.filter(p=>p.value);
+  if(filled.length<2){flash('최소 2개 이상 채워주세요');return;}
+  flash('✨ 시놉시스 작성 중...');
+  const ctx=filled.map(p=>`- ${p.q.split('\n').pop()}: ${p.value}`).join('\n');
   const syn=await ai([
     {role:'system',content:'당신은 시놉시스 전문 작가입니다. 웹소설/웹툰 시놉시스를 [로그라인], [주인공], [갈등], [주제]를 포함하여 200자 내외로 작성하세요.'},
-    {role:'user',content:`스토리 기획 정보:\n${ctx}\n\n이 정보를 바탕으로 시놉시스를 작성해주세요.`}
+    {role:'user',content:`작품명: ${newProjName}\n스토리 기획:\n${ctx}\n\n시놉시스를 작성해주세요.`}
   ]);
-  $('dt').innerHTML=md(syn||'기획이 완성됐습니다! ✨');
-  $('ia').style.display='flex';
-  $('ibt').style.display='none';
-  $('cr').innerHTML='';
-  ['새 기획 시작하기','내 작품 보기'].forEach(lbl=>{
-    const b=document.createElement('button');b.className='cbtn';b.textContent=lbl;
-    b.onclick=()=>{if(lbl==='새 기획 시작하기')openMode();else navTo('works');};
-    $('cr').appendChild(b);
-  });
-  $('ia').querySelector('.ibw').style.display='none';
-  saveProject(syn);
+  // 저장
+  hist=filled.map(p=>({id:p.id,value:p.value}));
+  steps=planItems;
+  await savePlanProject(syn);
+  navTo('works');
+  flash(`'${newProjName}' 저장됐습니다 💾`);
+}
+
+async function savePlanProject(synopsis){
+  const pid='p_'+Date.now();
+  const proj={id:pid,title:newProjName,genre:planItems.find(p=>p.id.includes('2'))?.value?.slice(0,20)||'',synopsis,answer_history:planItems.map(p=>({id:p.id,value:p.value})),routine_type:pendingRoutineType};
+  const arr=JSON.parse(localStorage.getItem('mp')||'[]');
+  arr.unshift(proj);localStorage.setItem('mp',JSON.stringify(arr.slice(0,50)));
+  if(user&&user.id!=='t001'){try{await sb.from('projects').insert({...proj,user_id:user.id,completed_at:new Date().toISOString()});}catch(e){}}
 }
 // ── 오늘의 작업 ──
 function startTask(type){
@@ -625,6 +808,15 @@ function buildPersona(){
   if(charName==='조수 B')return`당신은 웹소설 기획 조수 'B'입니다. 공감 능력이 뛰어나고 따뜻합니다. 유저의 답변을 한 줄로 요약하세요.`;
   return`당신은 작품 기획을 돕는 AI 조수입니다. 논리적이고 직관적입니다. 허점은 날카롭게 짚되 칭찬은 잘 된 경우에만 합니다. 유저의 답변을 한 줄로 요약하세요.`;
 }
+// ── 인트로 ──
+function skipIntro(){
+  const el=document.getElementById('intro');
+  el.classList.add('fade-out');
+  setTimeout(()=>el.remove(),800);
+}
+(function(){
+  setTimeout(skipIntro, 6000);
+})();
 // ── 인증 ──
 async function logout(){try{await sb.auth.signOut();}catch(e){}window.location.href='login.html';}
 // ── 초기화 ──
