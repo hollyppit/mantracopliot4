@@ -3,3355 +3,676 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>만트라 코파일럿 - Premium Edition</title>
-<link rel="stylesheet" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+<title>만트라 코파일럿</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <style>
-:root {
-  --bg: #030305;
-  --purple: #8B5CF6;
-  --purple-light: #C4B5FD;
-  --purple-glow: rgba(139, 92, 246, 0.4);
-  --gold: #D6B75A;
-  --gold-light: #FDE68A;
-  --text: #F8FAFC;
-  --text-dim: #94A3B8;
-  --text-faint: #475569;
-  --border: rgba(255, 255, 255, 0.08); /* softer, more premium border */
-  --seller-color: #10B981;
-  --seller-glow: rgba(16, 185, 129, 0.3);
-  --verify-color: #3B82F6;
-  --verify-glow: rgba(59, 130, 246, 0.3);
-  --panel-dark: rgba(15, 23, 42, 0.4);
-  --blur: blur(40px);
-}
-
-* { margin:0; padding:0; box-sizing:border-box; }
-
-body {
-  font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  min-height: 100vh;
-  display: flex; /* Sidebar + Main */
-  user-select: none;
-  letter-spacing: -0.01em;
-  overflow: hidden; /* Main and sidebar will have their own scrolls */
-}
-
-/* ── SCENE BACKGROUND ── */
-#scene {
-  position:fixed; inset:0; z-index:0;
-  transition:opacity 0.8s ease;
-}
-.scene-bg {
-  position:absolute; inset:0;
-  transition:opacity 1s ease;
-}
-.scene-onboard  { background: radial-gradient(circle at 50% 50%, #16103A 0%, #05050A 70%); }
-.scene-consumer { background: radial-gradient(circle at 20% 80%, rgba(139,92,246,0.15) 0%, #05050A 60%); }
-.scene-seller   { background: radial-gradient(circle at 80% 20%, rgba(16,185,129,0.15) 0%, #05050A 60%); }
-.scene-verify   { background: radial-gradient(circle at 50% 20%, rgba(59,130,246,0.15) 0%, #05050A 70%); }
-.scene-story    { background: radial-gradient(circle at 50% 80%, rgba(214,183,90,0.1) 0%, #05050A 70%); }
-
-/* ── FLOATING PARTICLES (BOKEH) ── */
-.particles { position:fixed; inset:0; pointer-events:none; z-index:1; overflow:hidden; }
-.particle {
-  position:absolute; border-radius:50%;
-  animation:float linear infinite;
-  opacity:0;
-  filter: blur(8px);
-}
-@keyframes float {
-  0%   { transform:translateY(100vh) scale(0) rotate(0deg); opacity:0; }
-  20%  { opacity:0.6; }
-  80%  { opacity:0.3; }
-  100% { transform:translateY(-10vh) scale(1) rotate(360deg); opacity:0; }
-}
-
-/* ── MAIN LAYOUT ── */
-.vn-wrapper {
-  position:relative; z-index:10;
-  flex: 1; min-height:100vh;
-  display:flex; flex-direction:column;
-  overflow-y: auto; 
-}
-
-/* ── SIDEBAR ── */
-.sidebar {
-  width: 240px; background: rgba(10,10,18,0.95); border-right: 1px solid rgba(255,255,255,0.08);
-  display: flex; flex-direction: column; z-index: 100; backdrop-filter: var(--blur);
-  transition: transform 0.3s ease;
-  flex-shrink: 0;
-}
-.sidebar-header {
-  padding: 32px 24px; border-bottom: 1px solid rgba(255,255,255,0.05);
-}
-.sidebar-logo {
-  font-size: 18px; font-weight: 900; color: var(--text); display: flex; align-items: center; gap: 8px; margin-bottom: 24px;
-}
-.sidebar-logo span { color: var(--purple); }
-
-.sidebar-user {
-  display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.03); 
-  padding: 10px 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);
-}
-.user-avatar { width: 28px; height: 28px; background: var(--purple); border-radius: 6px; font-weight: 800; display: flex; align-items: center; justify-content: center; font-size: 12px; }
-.user-info { flex: 1; overflow: hidden; }
-.user-name { font-size: 13px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.logout-btn { font-size: 10px; color: var(--text-dim); cursor: pointer; border: none; background: none; padding: 0; text-align: left; width: 100%; }
-.logout-btn:hover { color: #fca5a5; text-decoration: underline; }
-
-.sidebar-menu { flex: 1; padding: 24px 12px; display: flex; flex-direction: column; gap: 4px; overflow-y: auto; }
-.menu-item {
-  display: flex; align-items: center; gap: 12px; padding: 10px 16px; 
-  border-radius: 10px; cursor: pointer; color: var(--text-dim); font-size: 14px; font-weight: 600;
-  transition: all 0.3s;
-}
-.menu-item:hover { background: rgba(255,255,255,0.05); color: var(--text); }
-.menu-item.active { background: rgba(139, 92, 246, 0.1); color: var(--purple-light); border: 1px solid rgba(139, 92, 246, 0.2); }
-.menu-item .icon { font-size: 16px; }
-
-.sidebar-footer { padding: 20px 16px; }
-.new-project-btn {
-  width: 100%; padding: 16px; background: var(--purple); color: white; border: none; border-radius: 16px;
-  font-size: 14px; font-weight: 800; cursor: pointer; box-shadow: 0 10px 20px var(--purple-glow);
-  transition: all 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px;
-}
-.new-project-btn:hover { transform: translateY(-2px); filter: brightness(1.1); }
-
-/* ── VIEW SECTIONS ── */
-.view-section { display: none; padding-top: 20px; }
-.view-section.active { display: flex; flex-direction: column; }
-
-/* ── PROJECT GRID ── */
-.project-grid {
-  display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px;
-  padding: 0 40px 40px;
-}
-.p-card {
-  background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 24px;
-  padding: 24px; cursor: pointer; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-  display: flex; flex-direction: column; gap: 16px; backdrop-filter: var(--blur);
-}
-.p-card:hover { transform: translateY(-6px); border-color: rgba(255,255,255,0.2); box-shadow: 0 30px 60px rgba(0,0,0,0.4); background: rgba(255,255,255,0.06); }
-.p-header { display: flex; justify-content: space-between; align-items: flex-start; }
-.p-genre { font-size: 11px; font-weight: 800; color: var(--purple-light); text-transform: uppercase; letter-spacing: 0.05em; background: rgba(139, 92, 246, 0.15); padding: 4px 10px; border-radius: 20px; }
-.p-title { font-size: 18px; font-weight: 800; color: var(--text); line-height: 1.4; word-break: keep-all; }
-.p-synopsis { font-size: 13px; color: var(--text-dim); line-height: 1.6;  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  line-clamp: 3;
-  -webkit-box-orient: vertical; overflow: hidden; min-height: 60px; }
-.p-footer { margin-top: auto; display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: var(--text-faint); font-weight: 600; }
-
-/* ── TASK CARDS ── */
-.task-grid { display: flex; gap: 20px; padding: 20px 40px 40px; flex-wrap: wrap; }
-.task-card {
-  flex: 1; min-width: 250px; background: rgba(255,255,255,0.03); border: 1px solid var(--border);
-  border-radius: 24px; padding: 32px; cursor: pointer; transition: all 0.3s; text-align: left;
-}
-.task-card:hover { transform: translateY(-4px); background: rgba(255,255,255,0.08); border-color: var(--purple); }
-.task-icon { font-size: 32px; margin-bottom: 20px; }
-.task-name { font-size: 18px; font-weight: 800; margin-bottom: 8px; }
-.task-desc { font-size: 13px; color: var(--text-dim); line-height: 1.5; }
-
-/* ── CHAT STATUS BAR ── */
-.chat-status {
-  background: rgba(139, 92, 246, 0.1); border-bottom: 1px solid rgba(139, 92, 246, 0.2);
-  padding: 10px 40px; font-size: 12px; font-weight: 700; color: var(--purple-light);
-  display: flex; align-items: center; gap: 8px; backdrop-filter: var(--blur);
-}
-.status-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--purple); animation: pulse 2s infinite; }
-@keyframes pulse { 0% { opacity: 0.4; transform: scale(0.8); } 50% { opacity: 1; transform: scale(1.1); } 100% { opacity: 0.4; transform: scale(0.8); } }
-
-/* ── MOBILE TABS ── */
-.mobile-tabs { display: none; position: fixed; bottom: 0; left: 0; right: 0; background: rgba(10,10,18,0.95); border-top: 1px solid rgba(255,255,255,0.08); z-index: 1000; height: 72px; padding: 0 12px; backdrop-filter: blur(20px); }
-.tab-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; color: var(--text-dim); font-size: 10px; font-weight: 700; transition: 0.3s; }
-.tab-item.active { color: var(--purple); }
-.tab-item .icon { font-size: 20px; }
-
-/* ── TOP HUD ── */
-.hud {
-  display:flex; align-items:center; justify-content:space-between;
-  padding:16px 40px;
-  background: transparent;
-  flex-shrink:0;
-}
-.hud-left { display:flex; align-items:center; gap:24px; }
-.back-btn, .home-btn {
-  background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1);
-  color:var(--text-dim); width:36px; height:36px; border-radius:50%;
-  display:flex; align-items:center; justify-content:center; cursor:pointer;
-  transition:all .3s ease; backdrop-filter:var(--blur);
-  opacity: 0; pointer-events: none;
-}
-.back-btn.show, .home-btn.show { opacity: 1; pointer-events: all; }
-.back-btn:hover, .home-btn:hover { background:rgba(255,255,255,0.1); color:var(--text); transform:scale(1.05); }
-.hud-logo-container { display:flex; flex-direction:column; gap:2px; }
-.hud-logo { font-size:18px; font-weight:800; color:var(--text); letter-spacing:0; display:flex; align-items:center; gap:8px;}
-.hud-logo span { color:var(--purple-light); font-weight:600; }
-.hud-logo .sparkle { color:var(--gold); font-size: 14px; }
-.hud-subtitle { font-size:11px; font-weight:500; color:var(--text-dim); letter-spacing:0.02em; padding-left: 22px; }
-.hud-mode { font-size:12px; font-weight:600; padding:6px 16px; border-radius:100px; opacity:0; transition:opacity .4s; backdrop-filter: var(--blur); }
-.hud-mode.show { opacity:1; }
-.hud-mode.consumer { color:var(--purple-light); background:rgba(139,92,246,0.1); border:1px solid rgba(139,92,246,0.2); }
-.hud-mode.seller   { color:var(--seller-color); background:rgba(16,185,129,0.1); border:1px solid rgba(16,185,129,0.2); }
-.hud-mode.verify   { color:var(--verify-color); background:rgba(59,130,246,0.1); border:1px solid rgba(59,130,246,0.2); }
-.hud-progress { display:flex; align-items:center; gap:16px; background: rgba(255,255,255,0.03); border:1px solid var(--border); padding:8px 20px; border-radius:100px; backdrop-filter:var(--blur); }
-.hud-step { font-size:12px; font-weight:500; color:var(--text-dim); }
-.hud-step strong { color:var(--text); font-weight:700; }
-.progress-dots { display:flex; gap:6px; }
-.pdot { width:24px; height:4px; border-radius:3px; background:rgba(255,255,255,0.15); transition:all .4s; box-shadow: inset 0 1px 1px rgba(0,0,0,0.2); }
-.pdot.done   { background:var(--purple); box-shadow: 0 0 12px var(--purple-glow); }
-.pdot.active { background:var(--gold); box-shadow:0 0 12px rgba(214,183,90,0.6); }
-
-/* ── CHARACTER STAGE ── */
-.char-stage {
-  flex:1; display:flex; align-items:flex-end;
-  justify-content:center; padding-bottom:120px;
-  position:relative; overflow:hidden;
-  pointer-events:none;
-}
-.char-figure {
-  display:flex; flex-direction:column; align-items:center;
-  transition:all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-  transform:translateY(40px) scale(0.95); opacity:0;
-}
-.char-figure.show { transform:translateY(0) scale(1); opacity:1; }
-
-/* step-change animation classes */
-.char-anim-pop { animation: char-pop 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-@keyframes char-pop {
-  0% { transform: scale(0.8) translateY(20px); opacity: 0; filter: blur(10px); }
-  100% { transform: scale(1) translateY(0); opacity: 1; filter: blur(0); }
-}
-
-.char-text {
-  font-size:76px; font-weight:900; line-height:1;
-  color:var(--text);
-  text-shadow:0 15px 50px var(--purple-glow);
-  animation:char-breathe 4s ease-in-out infinite;
-  background: linear-gradient(135deg, #fff 20%, #C4B5FD 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  transition: all 0.5s ease;
-}
-/* If they want to use a real image instead of text */
-.char-image-bg {
-  width: 120px; height: 120px; border-radius: 50%;
-  background-size: cover; background-position: center;
-  box-shadow: 0 15px 50px var(--purple-glow);
-  animation:char-breathe 4s ease-in-out infinite;
-  display: none; /* hidden by default, shown if image is used */
-}
-.char-figure.seller-mode .char-text {
-  background: linear-gradient(135deg, #fff 20%, #6EE7B7 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  text-shadow:0 15px 50px var(--seller-glow);
-}
-@keyframes char-breathe {
-  0%,100% { transform:translateY(0) scale(1); }
-  50%      { transform:translateY(-12px) scale(1.02); filter: drop-shadow(0 10px 30px rgba(255,255,255,0.1)); }
-}
-.char-name-plate {
-  font-size:13px; font-weight:700; letter-spacing:.12em;
-  color:var(--text); background:rgba(255,255,255,0.06);
-  border:1px solid rgba(255,255,255,0.12); padding:6px 20px; border-radius:100px;
-  margin-top:20px; margin-bottom:16px; backdrop-filter:var(--blur);
-  box-shadow: 0 10px 20px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.1);
-}
-
-/* ── DIALOG BOX ── */
-.dialog-area {
-  flex-shrink:0;
-  padding:0 40px 40px;
-  display:flex; flex-direction:column; gap:16px;
-  max-width: 900px; margin: 0 auto; width: 100%;
-}
-
-/* stage intro banner */
-.stage-banner {
-  background:rgba(255,255,255,0.03);
-  border:1px solid rgba(255,255,255,0.1);
-  border-radius:16px; padding:16px 20px;
-  font-size:15px; font-weight:500; color:var(--text-dim); line-height:1.6;
-  opacity:0; transform:translateY(10px); text-align:center;
-  transition:all .5s cubic-bezier(0.16, 1, 0.3, 1);
-  backdrop-filter:blur(30px) saturate(120%); word-break: keep-all;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-}
-.stage-banner.show { opacity:1; transform:translateY(0); }
-.stage-banner.seller-banner { border-color:rgba(16,185,129,0.3); background:rgba(16,185,129,0.02); }
-.stage-banner-label { font-size:13px; color:var(--purple-light); font-weight:800; margin-bottom:8px; letter-spacing:0.05em; display:inline-block; }
-.stage-banner.seller-banner .stage-banner-label { color:var(--seller-color); }
-
-/* main dialog box */
-.dialog-box {
-  background:rgba(10,12,18,0.5);
-  border:1px solid rgba(255,255,255,0.12);
-  border-radius:32px; padding:36px;
-  position:relative;
-  box-shadow:0 30px 60px rgba(0,0,0,0.6), inset 0 2px 0 rgba(255,255,255,0.1);
-  backdrop-filter:blur(60px) saturate(200%);
-  min-height:140px; text-align:center;
-  max-height: 55vh;
-  overflow-y: auto;
-  scrollbar-width: thin;
-  scrollbar-color: rgba(139,92,246,0.4) transparent;
-}
-.dialog-speaker {
-  font-size:15px; font-weight:800; letter-spacing:.05em; text-transform:uppercase;
-  color:var(--purple-light); margin-bottom:16px;
-  display:inline-flex; align-items:center; gap:6px;
-  justify-content:center;
-}
-.dialog-speaker::before {
-  content:''; display:inline-block; width:6px; height:6px; border-radius:50%; background:currentColor; box-shadow:0 0 12px currentColor;
-}
-.dialog-box.seller-box { background: rgba(10,18,15,0.5); }
-.dialog-box.seller-box .dialog-speaker { color:var(--seller-color); }
-.dialog-text {
-  font-size:19px; font-weight:500; line-height:1.7; color:var(--text);
-  min-height:36px; word-break: keep-all; letter-spacing: -0.01em;
-}
-.dialog-cursor {
-  display:inline-block; width:4px; height:24px; border-radius:2px;
-  background:var(--text); vertical-align:middle;
-  margin-left:8px; animation:blink-cursor .9s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-  box-shadow: 0 0 10px rgba(255,255,255,0.5);
-}
-.dialog-example {
-  margin-top: 20px; font-size: 15px; color: var(--text-dim);
-  font-weight: 500; opacity: 0; transition: opacity 0.4s;
-}
-.dialog-example.show { opacity: 1; }
-.dialog-example span { color: var(--purple-light); opacity:0.9; margin-right:6px; font-size: 13px; font-weight: 700; padding: 4px 10px; border-radius: 8px; background: rgba(139,92,246,0.15); border:1px solid rgba(139,92,246,0.2); }
-.seller-box .dialog-example span { color: var(--seller-color); background: rgba(16,185,129,0.15); border:1px solid rgba(16,185,129,0.2); }
-@keyframes blink-cursor { 0%,100%{opacity:1;} 50%{opacity:0; box-shadow:none;} }
-
-/* ── ANSWER AREA (CHOICES + INPUT) ── */
-.insight-bar-btn {
-  width: 100%;
-  max-width: 820px;
-  background: rgba(214, 183, 90, 0.06);
-  border: 1px solid rgba(214, 183, 90, 0.3);
-  color: var(--gold-light);
-  padding: 13px 24px;
-  border-radius: 16px;
-  font-size: 15px;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  cursor: pointer;
-  transition: all .3s ease;
-  margin-bottom: 4px;
-  font-family: inherit;
-  backdrop-filter: var(--blur);
-  letter-spacing: 0.01em;
-}
-.insight-bar-btn:hover {
-  background: rgba(214, 183, 90, 0.14);
-  border-color: rgba(214, 183, 90, 0.7);
-  transform: translateY(-2px);
-  box-shadow: 0 10px 30px rgba(214, 183, 90, 0.2);
-  color: #fff;
-}
-.insight-bar-btn.seller-bar-btn {
-  background: rgba(16,185,129,0.06);
-  border-color: rgba(16,185,129,0.3);
-  color: #6EE7B7;
-}
-.insight-bar-btn.seller-bar-btn:hover {
-  background: rgba(16,185,129,0.14);
-  border-color: rgba(16,185,129,0.6);
-  box-shadow: 0 10px 30px var(--seller-glow);
-  color: #fff;
-}
-
-/* ── INSIGHT PANEL ── */
-.insight-panel {
-  position: fixed;
-  top: 0; right: 0; bottom: 0;
-  width: 420px;
-  background: rgba(10, 10, 18, 0.92);
-  border-left: 1px solid rgba(214, 183, 90, 0.2);
-  backdrop-filter: blur(60px) saturate(180%);
-  z-index: 50;
-  display: flex;
-  flex-direction: column;
-  transform: translateX(100%);
-  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: -20px 0 60px rgba(0,0,0,0.5);
-}
-.insight-panel.open {
-  transform: translateX(0);
-}
-.insight-panel-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 24px 28px 20px;
-  border-bottom: 1px solid rgba(214, 183, 90, 0.15);
-  flex-shrink: 0;
-}
-.insight-panel-title {
-  font-size: 15px;
-  font-weight: 800;
-  color: var(--gold-light);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  letter-spacing: 0.02em;
-}
-.insight-panel-close {
-  width: 32px; height: 32px;
-  border-radius: 50%;
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.08);
-  color: var(--text-dim);
-  display: flex; align-items: center; justify-content: center;
-  cursor: pointer;
-  font-size: 16px;
-  transition: all .2s;
-}
-.insight-panel-close:hover {
-  background: rgba(255,255,255,0.1);
-  color: var(--text);
-}
-.insight-panel-body {
-  flex: 1;
-  overflow-y: auto;
-  padding: 24px 28px 32px;
-  scrollbar-width: thin;
-  scrollbar-color: rgba(214,183,90,0.3) transparent;
-}
-.insight-loading {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 200px;
-  gap: 16px;
-  color: var(--text-dim);
-  font-size: 14px;
-}
-.insight-spinner {
-  width: 32px; height: 32px;
-  border: 3px solid rgba(214,183,90,0.2);
-  border-top-color: var(--gold);
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-}
-@keyframes spin { to { transform: rotate(360deg); } }
-
-.insight-section {
-  margin-bottom: 24px;
-  padding-bottom: 24px;
-  border-bottom: 1px solid rgba(255,255,255,0.06);
-}
-.insight-section:last-child {
-  border-bottom: none;
-  margin-bottom: 0;
-  padding-bottom: 0;
-}
-.insight-section-label {
-  font-size: 11px;
-  font-weight: 800;
-  color: var(--gold);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  margin-bottom: 10px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-.insight-section-text {
-  font-size: 14px;
-  font-weight: 400;
-  color: var(--text-dim);
-  line-height: 1.75;
-  word-break: keep-all;
-}
-.insight-section-text strong {
-  color: var(--text);
-  font-weight: 600;
-}
-.insight-section-text em {
-  color: var(--purple-light);
-  font-style: normal;
-  font-weight: 600;
-}
-.insight-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 49;
-  background: rgba(0,0,0,0.3);
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.4s ease;
-}
-.insight-overlay.open {
-  opacity: 1;
-  pointer-events: all;
-}
-@media (max-width: 768px) {
-  .insight-panel { width: 100%; }
-}
-
-.answer-area {
-  display: flex; flex-direction: column; gap: 20px;
-  align-items: center; width: 100%; max-width: 820px; margin: 0 auto;
-  opacity: 0; transform: translateY(20px);
-  transition: all .6s cubic-bezier(0.16, 1, 0.3, 1);
-  pointer-events: none;
-}
-.answer-area.show { opacity: 1; transform: translateY(0); pointer-events: all; }
-.input-wrapper {
-  display:flex; flex-direction: column; gap:12px;
-  background:rgba(20,20,30,0.5);
-  border:1px solid rgba(255,255,255,0.08);
-  border-radius:32px; padding:12px 12px 12px 20px;
-  width:100%; max-width:820px;
-  backdrop-filter:blur(40px) saturate(150%);
-  transition:border-color .4s, box-shadow .4s;
-  box-shadow: 0 20px 50px rgba(0,0,0,0.4), inset 0 2px 0 rgba(255,255,255,0.05);
-}
-.input-wrapper:focus-within {
-  border-color:var(--purple-light);
-  background:rgba(30,25,50,0.6);
-  box-shadow: 0 20px 50px rgba(139,92,246,0.15), inset 0 2px 0 rgba(255,255,255,0.1);
-}
-.input-wrapper.seller-wrapper:focus-within {
-  border-color:var(--seller-color);
-  background:rgba(20,40,30,0.6);
-  box-shadow: 0 20px 50px rgba(16,185,129,0.15), inset 0 2px 0 rgba(255,255,255,0.1);
-}
-
-.choices-box {
-  display:flex; flex-wrap:wrap; gap:8px; justify-content:flex-start;
-  padding-bottom: 8px;
-  border-bottom: 1px solid rgba(255,255,255,0.05);
-}
-.choices-box.show { opacity:1; transform:translateY(0); }
-.choice-btn {
-  background:rgba(255,255,255,0.03);
-  border:1px solid rgba(255,255,255,0.08);
-  color:var(--text); padding:10px 20px; border-radius:100px;
-  font-size:15px; font-weight:600; font-family:inherit;
-  cursor:pointer; transition:all .4s cubic-bezier(0.16, 1, 0.3, 1);
-  backdrop-filter:var(--blur);
-}
-.choice-btn:hover {
-  background:rgba(139,92,246,0.15);
-  border-color:var(--purple-light);
-  transform:translateY(-3px);
-  box-shadow:0 10px 25px var(--purple-glow);
-}
-.choice-btn.seller-btn:hover {
-  background:rgba(16,185,129,0.15);
-  border-color:var(--seller-color);
-  box-shadow:0 10px 25px var(--seller-glow);
-}
-
-/* ── ONBOARDING MODE SELECT ── */
-.mode-cards {
-  position:fixed; inset:0; z-index:300;
-  display:none; align-items:center; justify-content:center;
-  background:rgba(3,3,5,0.7); backdrop-filter:blur(24px);
-  gap:40px; padding:40px;
-  opacity:0; transition:opacity .8s ease;
-  pointer-events:none;
-}
-.mode-cards.show { display:flex; opacity:1; pointer-events:all; }
-.mode-card {
-  flex:0 1 380px; padding:60px 40px; border-radius:40px;
-  border:1px solid rgba(255,255,255,0.08);
-  background:linear-gradient(180deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%);
-  backdrop-filter:blur(50px) saturate(150%);
-  cursor:pointer; text-align:center;
-  display:flex; flex-direction:column; align-items:center; gap:24px;
-  transition:all .5s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow:0 30px 80px rgba(0,0,0,0.6), inset 0 2px 0 rgba(255,255,255,0.1);
-}
-.mode-card:hover { transform:translateY(-16px) scale(1.02); border-color:rgba(255,255,255,0.3); }
-.mode-card.consumer:hover { box-shadow:0 40px 120px var(--purple-glow), inset 0 0 80px rgba(139,92,246,0.1); }
-.mode-card.seller:hover   { box-shadow:0 40px 120px var(--seller-glow), inset 0 0 80px rgba(16,185,129,0.1); }
-.mc-icon { font-size:72px; margin-bottom: 12px; filter: drop-shadow(0 15px 30px rgba(0,0,0,0.5)); }
-.mc-title { font-size:32px; font-weight:800; color:var(--text); letter-spacing:-0.03em; }
-.mc-desc { font-size:16px; font-weight:500; color:var(--text-dim); line-height:1.7; }
-.mc-badge { font-size:14px; font-weight:800; padding:8px 24px; border-radius:100px; margin-top:20px; display:inline-block; }
-.mode-card.consumer .mc-badge { background:linear-gradient(90deg, #8B5CF6, #6D28D9); box-shadow: 0 10px 25px rgba(139,92,246,0.4); }
-.mode-card.seller   .mc-badge { background:linear-gradient(90deg, #10B981, #047857); box-shadow: 0 10px 25px rgba(16,185,129,0.4); }
-
-/* ── ROUTINE SELECT (AND CHAR SELECT) ── */
-.routine-overlay, .char-overlay {
-  position:fixed; inset:0; z-index:300;
-  display:none; align-items:center; justify-content:center;
-  background:rgba(3,3,5,0.8); backdrop-filter:blur(24px);
-  opacity:0; transition:opacity .5s ease; pointer-events:none;
-}
-.routine-overlay.show, .char-overlay.show { display:flex; opacity:1; pointer-events:all; }
-.routine-panel {
-  background:rgba(15,15,20,0.6); border:1px solid rgba(255,255,255,0.08);
-  border-radius:32px; padding:40px; width:480px;
-  box-shadow:0 40px 100px rgba(0,0,0,0.8), inset 0 2px 0 rgba(255,255,255,0.1);
-  backdrop-filter:blur(50px) saturate(150%);
-}
-.rp-title { font-size:24px; font-weight:800; color:var(--text); margin-bottom:8px; letter-spacing:-0.02em; }
-.rp-sub { font-size:15px; color:var(--text-dim); margin-bottom:32px; }
-.routine-item {
-  display:flex; align-items:center; gap:16px;
-  padding:20px 24px; border-radius:20px;
-  border:1px solid rgba(255,255,255,0.05);
-  background:rgba(255,255,255,0.02);
-  cursor:pointer; transition:all .4s cubic-bezier(0.16, 1, 0.3, 1);
-  margin-bottom:16px;
-}
-.routine-item:hover { border-color:var(--purple-light); background:rgba(139,92,246,0.1); transform:translateX(8px); box-shadow:0 10px 30px var(--purple-glow); }
-.ri-icon { font-size:32px; background:rgba(255,255,255,0.05); width:56px; height:56px; border-radius:16px; display:flex; align-items:center; justify-content:center; box-shadow:inset 0 2px 0 rgba(255,255,255,0.1); }
-.ri-info { flex:1; }
-.ri-name { font-size:17px; font-weight:700; color:var(--text); }
-.ri-desc { font-size:14px; color:var(--text-dim); margin-top:6px; }
-.ri-badge { font-size:13px; font-weight:700; color:var(--bg); background:var(--gold); border:none; padding:6px 16px; border-radius:100px; white-space:nowrap; box-shadow:0 4px 15px rgba(214,183,90,0.4); }
-
-.char-panel {
-  display:flex; gap:24px; max-width: 800px; width: 90%;
-  justify-content: center; flex-wrap: wrap;
-}
-.char-card {
-  flex: 1; min-width: 240px; background:rgba(255,255,255,0.02); 
-  border:1px solid rgba(255,255,255,0.06); border-radius:32px; 
-  padding:40px 32px; text-align:center; cursor:pointer;
-  transition:all .4s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 0 20px 50px rgba(0,0,0,0.5), inset 0 2px 0 rgba(255,255,255,0.05);
-  backdrop-filter:blur(40px);
-}
-.char-card:hover { transform:translateY(-12px); border-color:var(--purple-light); background:rgba(139,92,246,0.1); box-shadow:0 30px 80px var(--purple-glow); }
-.cc-avatar { width: 96px; height: 96px; background: rgba(255,255,255,0.05); border-radius: 50%; margin: 0 auto 20px; display:flex; align-items:center; justify-content:center; font-size:48px; box-shadow: 0 10px 30px rgba(0,0,0,0.4); }
-.cc-name { font-size:22px; font-weight:800; color:var(--text); margin-bottom: 12px; }
-.cc-desc { font-size:15px; font-weight:500; color:var(--text-dim); line-height:1.7; }
-
-.input-bar-inner {
-  display:flex; align-items:flex-end; gap:16px; width:100%;
-}
-.input-box {
-  flex:1; background:transparent; border:none;
-  color:var(--text); font-family:inherit; font-size:16px; font-weight:500;
-  resize:none; outline:none; height:48px; max-height:160px;
-  line-height:1.6; padding:10px 0; margin: 4px 0;
-}
-.input-box::placeholder { color:rgba(255,255,255,0.3); }
-.send-btn {
-  width:48px; height:48px; border-radius:50%;
-  background:var(--text); color:var(--bg); border:none; cursor:pointer;
-  display:flex; align-items:center; justify-content:center;
-  transition:all .3s cubic-bezier(0.16, 1, 0.3, 1); flex-shrink:0; margin-bottom:4px;
-}
-.send-btn:hover { transform:scale(1.1); box-shadow:0 10px 25px rgba(255,255,255,0.4); }
-.send-btn.seller-send { background:var(--seller-color); color:#fff; }
-.send-btn.seller-send:hover { box-shadow:0 10px 25px var(--seller-glow); }
-.send-btn svg { width:22px; height:22px; fill:currentColor; margin-left: 2px; }
-
-/* ── SHEET SIDE PANEL ── */
-.sheet-toggle {
-  position:fixed; right:0; top:50%; transform:translateY(-50%);
-  z-index:30; cursor:pointer;
-  background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08);
-  border-right:none; border-radius:24px 0 0 24px;
-  padding:24px 14px; writing-mode:vertical-rl; text-orientation: upright;
-  font-size:13px; font-weight:800; color:var(--text-dim); letter-spacing:3px;
-  transition:all .4s cubic-bezier(0.16, 1, 0.3, 1); backdrop-filter:blur(30px) saturate(150%);
-  box-shadow: -10px 0 30px rgba(0,0,0,0.3);
-}
-.sheet-toggle:hover { background:rgba(255,255,255,0.1); color:var(--text); padding-right:20px; box-shadow: -15px 0 40px var(--purple-glow); }
-
-.sheet-panel {
-  position:fixed; right:-420px; top:0; bottom:0; width:420px; z-index:29;
-  background:rgba(5,5,10,0.75); border-left:1px solid rgba(255,255,255,0.08);
-  backdrop-filter:blur(60px) saturate(200%);
-  transition:right .6s cubic-bezier(0.16, 1, 0.3, 1);
-  display:flex; flex-direction:column; padding:40px;
-  overflow-y:auto; box-shadow: -30px 0 80px rgba(0,0,0,0.6);
-}
-.sheet-panel.open { right:0; }
-.sheet-panel::-webkit-scrollbar { width:6px; }
-.sheet-panel::-webkit-scrollbar-thumb { background:rgba(255,255,255,0.15); border-radius:3px; }
-.sp-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:40px; }
-.sp-title { font-size:22px; font-weight:900; color:var(--gold); letter-spacing:-0.02em; }
-.sp-title.seller-title { color:var(--seller-color); }
-.sp-close { cursor:pointer; color:var(--text-dim); font-size:24px; transition:all .3s cubic-bezier(0.16, 1, 0.3, 1); width:40px; height:40px; display:flex; align-items:center; justify-content:center; border-radius:50%; background:rgba(255,255,255,0.05); }
-.sp-close:hover { color:var(--text); background:rgba(255,255,255,0.15); transform:rotate(90deg); }
-.sp-field { margin-bottom:24px; }
-.sp-label { font-size:12px; font-weight:700; color:var(--text-faint); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:10px; }
-.sp-value {
-  font-size:15px; font-weight:500; color:var(--text-dim); padding:16px 20px;
-  background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.06);
-  border-radius:20px; line-height:1.7; transition:all .5s cubic-bezier(0.16, 1, 0.3, 1);
-}
-.sp-value.filled { color:var(--text); border-color:rgba(214,183,90,0.4); background:rgba(214,183,90,0.05); }
-.sp-value.seller-filled { color:var(--text); border-color:rgba(16,185,129,0.4); background:rgba(16,185,129,0.05); }
-.sp-value.flash { animation:spflash .6s ease; }
-.sp-value.seller-flash { animation:spflash-g .6s ease; }
-@keyframes spflash { 0%{border-color:var(--gold); box-shadow:0 0 20px rgba(214,183,90,0.4);} 100%{} }
-@keyframes spflash-g { 0%{border-color:var(--seller-color); box-shadow:0 0 20px rgba(16,185,129,0.4);} 100%{} }
-
-/* ── SYNOPSIS SECTION ── */
-.sp-synopsis-wrap {
-  margin-top: 28px;
-  padding-top: 24px;
-  border-top: 1px solid rgba(255,255,255,0.07);
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-.sp-synopsis-label {
-  font-size: 16px; color: var(--gold);
-  display: flex; align-items: center; gap: 6px;
-}
-.sp-synopsis-label::before {
-  content: '▶'; display: inline-block; font-size: 12px;
-}
-.sp-synopsis-box {
-  font-size: 16px; line-height: 1.9;
-  color: var(--text-dim);
-  padding: 16px 18px;
-  background: #111;
-  border: 4px solid #555;
-  border-radius: 0;
-  word-break: keep-all;
-  transition: all .1s step-end;
-  min-height: 60px;
-}
-.sp-synopsis-box.ready {
-  color: var(--text);
-  border-color: rgba(214,183,90,0.5);
-  background: rgba(214,183,90,0.07);
-  box-shadow: 0 0 30px rgba(214,183,90,0.08);
-}
-.sp-synopsis-box.seller-synopsis {
-  border-color: rgba(16,185,129,0.4);
-  background: rgba(16,185,129,0.06);
-}
-.sp-synopsis-box.seller-synopsis.ready {
-  border-color: rgba(16,185,129,0.6);
-  background: rgba(16,185,129,0.1);
-  box-shadow: 0 0 30px rgba(16,185,129,0.1);
-}
-.sp-synopsis-generating {
-  font-size: 13px; color: var(--text-faint);
-  font-style: italic; animation: pulse-dim 1.5s ease-in-out infinite;
-}
-@keyframes pulse-dim {
-  0%,100% { opacity: 0.5; }
-  50%      { opacity: 1; }
-}
-
-/* ── STORYBOARD SENTENCE SUMMARY ── */
-.sp-sentence-wrap { display:flex; flex-direction:column; gap:12px; }
-.sp-sentence-label { font-size:16px; color:var(--text-faint); margin-bottom:4px; }
-.sp-sentence-box {
-  font-size:18px; line-height:1.8; color:var(--text-dim);
-  padding:16px 18px;
-  background:#111; border:2px solid #555;
-  border-radius:0; min-height:80px;
-  transition: all .1s step-end;
-  word-break: keep-all;
-}
-.sp-sentence-box.has-content {
-  color:var(--text);
-  border-color:rgba(214,183,90,0.35);
-  background:rgba(214,183,90,0.04);
-}
-.sp-sentence-box.seller-content {
-  border-color:rgba(16,185,129,0.35);
-  background:rgba(16,185,129,0.04);
-}
-.sp-sentence-box .sp-placeholder {
-  font-size:13px; color:var(--text-faint); font-weight:400; font-style:italic;
-}
-.sp-sentence-flash { animation: sentence-flash .7s ease; }
-@keyframes sentence-flash {
-  0%   { border-color:var(--gold); box-shadow:0 0 24px rgba(214,183,90,0.5); }
-  100% { }
-}
-.sp-sentence-flash.seller-sentence-flash { animation: sentence-flash-g .7s ease; }
-@keyframes sentence-flash-g {
-  0%   { border-color:var(--seller-color); box-shadow:0 0 24px rgba(16,185,129,0.5); }
-  100% { }
-}
-.sp-chips { display:flex; flex-wrap:wrap; gap:6px; margin-top:4px; }
-.sp-chip {
-  font-size:12px; font-weight:600; padding:4px 12px; border-radius:100px;
-  background:rgba(214,183,90,0.12); color:var(--gold-light);
-  border:1px solid rgba(214,183,90,0.25);
-}
-.sp-chip.seller-chip {
-  background:rgba(16,185,129,0.12); color:#6EE7B7;
-  border:1px solid rgba(16,185,129,0.25);
-}
-
-/* ── REVIEWER PANEL ── */
-.reviewer-overlay {
-  position: fixed; inset: 0; z-index: 60;
-  background: rgba(0,0,0,0.6); backdrop-filter: blur(20px);
-  opacity: 0; pointer-events: none;
-  transition: opacity 0.4s ease;
-}
-.reviewer-overlay.open { opacity: 1; pointer-events: all; }
-.reviewer-panel {
-  position: fixed; bottom: 0; left: 0; right: 0; z-index: 61;
-  background: rgba(8, 8, 14, 0.97);
-  border-top: 1px solid rgba(239, 68, 68, 0.3);
-  border-radius: 32px 32px 0 0;
-  padding: 0 0 40px;
-  max-height: 80vh; overflow-y: auto;
-  transform: translateY(100%);
-  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-  scrollbar-width: thin;
-  scrollbar-color: rgba(239,68,68,0.3) transparent;
-  box-shadow: 0 -20px 60px rgba(0,0,0,0.8);
-}
-.reviewer-panel.open { transform: translateY(0); }
-.reviewer-panel-header {
-  position: sticky; top: 0; z-index: 1;
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 24px 36px 20px;
-  background: rgba(8,8,14,0.98);
-  border-bottom: 1px solid rgba(239,68,68,0.15);
-  backdrop-filter: blur(40px);
-}
-.reviewer-panel-title {
-  display: flex; align-items: center; gap: 12px;
-}
-.reviewer-badge {
-  font-size: 11px; font-weight: 800; letter-spacing: 0.1em;
-  color: #FCA5A5; background: rgba(239,68,68,0.15);
-  border: 1px solid rgba(239,68,68,0.3);
-  padding: 4px 12px; border-radius: 100px;
-}
-.reviewer-name {
-  font-size: 18px; font-weight: 800; color: var(--text);
-  letter-spacing: -0.02em;
-}
-.reviewer-close {
-  width: 36px; height: 36px; border-radius: 50%;
-  background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
-  color: var(--text-dim); font-size: 18px;
-  display: flex; align-items: center; justify-content: center;
-  cursor: pointer; transition: all .2s;
-}
-.reviewer-close:hover { background: rgba(239,68,68,0.2); border-color: rgba(239,68,68,0.4); color: #FCA5A5; }
-.reviewer-body { padding: 32px 36px; }
-.reviewer-loading {
-  display: flex; flex-direction: column; align-items: center;
-  justify-content: center; padding: 60px 0; gap: 16px;
-  color: var(--text-dim); font-size: 14px;
-}
-.reviewer-spinner {
-  width: 36px; height: 36px;
-  border: 3px solid rgba(239,68,68,0.2);
-  border-top-color: #EF4444;
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-}
-.review-section {
-  margin-bottom: 28px; padding-bottom: 28px;
-  border-bottom: 1px solid rgba(255,255,255,0.06);
-}
-.review-section:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
-.review-section-label {
-  font-size: 11px; font-weight: 800; letter-spacing: 0.1em;
-  text-transform: uppercase; margin-bottom: 12px;
-  display: flex; align-items: center; gap: 6px;
-}
-.review-section-label.strength { color: #4ADE80; }
-.review-section-label.weakness { color: #F87171; }
-.review-section-label.strategy { color: var(--gold); }
-.review-item {
-  display: flex; align-items: flex-start; gap: 12px;
-  padding: 14px 16px; border-radius: 12px;
-  background: rgba(255,255,255,0.03);
-  border: 1px solid rgba(255,255,255,0.06);
-  margin-bottom: 10px; font-size: 14px; line-height: 1.7;
-  color: var(--text-dim); word-break: keep-all;
-}
-.review-item:last-child { margin-bottom: 0; }
-.review-item-num {
-  flex-shrink: 0; width: 22px; height: 22px; border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 11px; font-weight: 800; margin-top: 1px;
-}
-.strength .review-item-num { background: rgba(74,222,128,0.15); color: #4ADE80; }
-.weakness .review-item-num { background: rgba(248,113,113,0.15); color: #F87171; }
-.strategy .review-item-num { background: rgba(214,183,90,0.15); color: var(--gold); }
-.reviewer-verdict {
-  margin-top: 28px; padding: 20px 24px;
-  background: linear-gradient(135deg, rgba(239,68,68,0.06), rgba(214,183,90,0.04));
-  border: 1px solid rgba(239,68,68,0.2); border-radius: 16px;
-  font-size: 15px; line-height: 1.8; color: var(--text);
-  font-style: italic; word-break: keep-all;
-}
-.reviewer-actions {
-  display: flex; gap: 12px; margin-top: 28px; padding-top: 28px;
-  border-top: 1px solid rgba(255,255,255,0.06);
-}
-.reviewer-action-btn {
-  flex: 1; padding: 14px 20px; border-radius: 14px;
-  font-size: 14px; font-weight: 700; cursor: pointer;
-  font-family: inherit; transition: all .3s; border: 1px solid;
-}
-.reviewer-action-btn.primary {
-  background: rgba(239,68,68,0.1); border-color: rgba(239,68,68,0.3);
-  color: #FCA5A5;
-}
-.reviewer-action-btn.primary:hover { background: rgba(239,68,68,0.2); border-color: rgba(239,68,68,0.5); }
-.reviewer-action-btn.secondary {
-  background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.1);
-  color: var(--text-dim);
-}
-.reviewer-action-btn.secondary:hover { background: rgba(255,255,255,0.08); color: var(--text); }
-
-/* ── 3-ACT FRAMEWORK HUD ── */
-.act-hud {
-  display: none; align-items: center; gap: 0;
-  background: rgba(255,255,255,0.03); border: 1px solid var(--border);
-  border-radius: 100px; overflow: hidden;
-  backdrop-filter: var(--blur);
-}
-.act-hud.show { display: flex; }
-.act-segment {
-  padding: 6px 16px; font-size: 11px; font-weight: 700;
-  letter-spacing: 0.05em; color: var(--text-faint);
-  transition: all .4s; white-space: nowrap;
-  border-right: 1px solid rgba(255,255,255,0.06);
-  cursor: default;
-}
-.act-segment:last-child { border-right: none; }
-.act-segment.active {
-  color: var(--gold-light);
-  background: rgba(214,183,90,0.12);
-}
-.act-segment.done { color: var(--text-dim); }
-
-/* ── SCENE TRANSITION ── */
-#sceneOverlay {
-  position:fixed; inset:0; z-index:100;
-  background:var(--bg); opacity:0; pointer-events:none;
-  transition:opacity .6s cubic-bezier(0.16, 1, 0.3, 1);
-}
-#sceneOverlay.fade-in  { opacity:1; pointer-events:all; }
-#sceneOverlay.fade-out { opacity:0; pointer-events:none; }
-
-/* user reply flash */
-.reply-flash {
-  position:fixed; top:40%; left:50%; transform:translate(-50%,-50%);
-  z-index:50; background:rgba(255,255,255,0.05);
-  border:1px solid rgba(255,255,255,0.1); border-radius:24px;
-  padding:20px 40px; font-size:18px; font-weight:700; color:var(--text); letter-spacing:-0.02em;
-  opacity:0; transition:all .5s cubic-bezier(0.16, 1, 0.3, 1); pointer-events:none;
-  backdrop-filter:blur(30px) saturate(150%);
-  box-shadow: 0 30px 60px rgba(0,0,0,0.6);
-}
-.reply-flash.show { opacity:1; transform:translate(-50%, -60%); }
-
-/* ── ROUTINE BUILDER ── */
-.routine-builder {
-  flex-shrink:0; padding:0 40px 40px; display:none; flex-direction:column; gap:20px;
-  max-width: 900px; margin: 0 auto; width: 100%;
-}
-.rb-header { text-align:center; margin-bottom: 20px; }
-.rb-header h2 { font-size:26px; font-weight:900; color:var(--seller-color); margin-bottom:12px; letter-spacing:-0.03em; }
-.rb-header p { font-size:15px; color:var(--text-dim); }
-.rb-steps { display:flex; flex-direction:column; gap:24px; }
-.rb-step-card {
-  background:rgba(10,25,18,0.5); border:1px solid rgba(16,185,129,0.15);
-  border-radius:24px; padding:32px; text-align:left;
-  backdrop-filter:blur(40px) saturate(150%);
-  position:relative; transition:all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 0 20px 50px rgba(0,0,0,0.4), inset 0 2px 0 rgba(255,255,255,0.05);
-}
-.rb-step-card:hover { border-color:rgba(16,185,129,0.4); box-shadow: 0 30px 60px rgba(16,185,129,0.1); transform:translateY(-2px); }
-.rb-step-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:24px; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:16px;}
-.rb-step-title { font-size:20px; font-weight:800; color:var(--text); letter-spacing:-0.02em; }
-.rb-step-controls { display:flex; gap:8px; }
-.rb-btn { background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); color:var(--text); width:36px; height:36px; border-radius:10px; cursor:pointer; font-family:inherit; transition:all 0.3s; display:flex; align-items:center; justify-content:center; }
-.rb-btn:hover:not([disabled]) { background:rgba(255,255,255,0.15); border-color:rgba(255,255,255,0.25); }
-.rb-btn.delete { color:#FCA5A5; }
-.rb-btn.delete:hover { background:rgba(239,68,68,0.2); border-color:rgba(239,68,68,0.4); }
-.rb-field-group { display:flex; flex-direction:column; gap:20px; }
-.rb-field { display:flex; flex-direction:column; gap:8px; }
-.rb-field label { font-size:13px; color:var(--text-faint); font-weight:700; text-transform:uppercase; letter-spacing:0.05em; }
-.rb-input, .rb-textarea {
-  background:rgba(0,0,0,0.4); border:1px solid rgba(255,255,255,0.08);
-  border-radius:16px; padding:14px 18px; font-size:15px; font-weight:500; color:var(--text);
-  font-family:inherit; outline:none; transition:all 0.3s;
-  box-shadow:inset 0 2px 4px rgba(0,0,0,0.5);
-}
-.rb-input:focus, .rb-textarea:focus { border-color:var(--seller-color); background:rgba(16,185,129,0.05); box-shadow:0 0 0 3px rgba(16,185,129,0.15); }
-.rb-textarea { resize:vertical; min-height:80px; }
-.rb-toggles { display:flex; gap:24px; margin-top:24px; padding-top:24px; border-top:1px solid rgba(255,255,255,0.08); }
-.rb-toggle-lbl { display:flex; align-items:center; gap:10px; font-size:14px; font-weight:500; color:var(--text-dim); cursor:pointer; }
-.rb-toggle-lbl input { accent-color:var(--seller-color); width:18px; height:18px; cursor:pointer; }
-.rb-actions { display:flex; gap:16px; margin-top:32px; justify-content:center; }
-.rb-add-btn { background:rgba(16,185,129,0.05); border:2px dashed rgba(16,185,129,0.4); color:var(--seller-color); border-radius:20px; padding:20px; font-size:16px; font-weight:700; cursor:pointer; flex:1; transition:all 0.3s; }
-.rb-add-btn:hover { background:rgba(16,185,129,0.1); border-color:var(--seller-color); transform:translateY(-2px); box-shadow:0 10px 20px rgba(16,185,129,0.1); }
-.rb-save-btn { background:var(--seller-color); border:none; color:#000; border-radius:20px; padding:20px; font-size:16px; font-weight:800; cursor:pointer; flex:1; transition:all 0.3s; box-shadow:0 10px 30px rgba(16,185,129,0.3); }
-.rb-save-btn:hover { filter:brightness(1.1); transform:translateY(-2px); box-shadow:0 15px 40px rgba(16,185,129,0.4); }
-
-/* ── ROUTINE BOARD UI ── */
-.routine-board {
-  flex: 1; display: none; flex-direction: column; gap: 32px;
-  padding: 0 40px 60px; max-width: 1200px; margin: 0 auto; width: 100%;
-  animation: fadeIn 0.8s ease forwards;
-}
-@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-.board-header {
-  background: rgba(255,255,255,0.03); border: 1px solid var(--border);
-  border-radius: 24px; padding: 24px 32px; backdrop-filter: var(--blur);
-  display: flex; flex-direction: column; gap: 16px;
-}
-.board-progress-info { display: flex; justify-content: space-between; align-items: center; }
-.board-progress-label { font-size: 14px; font-weight: 700; color: var(--text-dim); }
-.board-progress-percent { font-size: 18px; font-weight: 800; color: var(--gold); }
-.board-progress-track {
-  height: 8px; background: rgba(255,255,255,0.05); border-radius: 4px; overflow: hidden;
-}
-.board-progress-fill {
-  height: 100%; width: 0%; background: linear-gradient(90deg, var(--purple), var(--gold));
-  transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 0 0 20px var(--purple-glow);
-}
-
-.board-sections {
-  display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
-}
-.board-section {
-  display: flex; flex-direction: column; gap: 16px;
-}
-.board-section-title {
-  font-size: 13px; font-weight: 800; color: var(--text-faint);
-  text-transform: uppercase; letter-spacing: 0.1em;
-  padding-left: 8px; margin-bottom: 4px; display: flex; align-items: center; gap: 8px;
-}
-.board-section-title::before { content: ''; width: 4px; height: 12px; background: var(--purple); border-radius: 2px; }
-.board-section:nth-child(2) .board-section-title::before { background: var(--gold); }
-.board-section:nth-child(3) .board-section-title::before { background: var(--seller-color); }
-
-.board-card {
-  background: rgba(255,255,255,0.03); border: 1px solid var(--border);
-  border-radius: 20px; padding: 20px; cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-  position: relative; overflow: hidden;
-  display: flex; flex-direction: column; gap: 10px;
-}
-.board-card:hover {
-  background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.2);
-  transform: translateY(-4px); box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-}
-.board-card.filled { border-color: rgba(214,183,90,0.3); background: rgba(214,183,90,0.03); }
-.board-card-header { display: flex; justify-content: space-between; align-items: center; }
-.board-card-num { font-size: 11px; font-weight: 800; color: var(--text-faint); opacity: 0.8; }
-.board-card-check {
-  width: 20px; height: 20px; border-radius: 50%; border: 1px solid var(--border);
-  display: flex; align-items: center; justify-content: center; font-size: 10px; color: transparent;
-  transition: all 0.3s;
-}
-.board-card.filled .board-card-check { background: var(--gold); border-color: var(--gold); color: var(--bg); }
-.board-card-q { font-size: 15px; font-weight: 700; color: var(--text); line-height: 1.4; word-break: keep-all; }
-.board-card-a {
-  font-size: 13px; color: var(--text-dim); line-height: 1.5;
-  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; 
-  line-clamp: 2; overflow: hidden;
-  min-height: 38px;
-}
-
-.board-footer {
-  text-align: center; margin-top: 20px;
-}
-.board-finish-btn {
-  background: var(--gold); color: var(--bg); border: none; border-radius: 100px;
-  padding: 20px 60px; font-size: 18px; font-weight: 800; cursor: pointer;
-  box-shadow: 0 20px 40px rgba(214,183,90,0.2); transition: all 0.4s;
-  display: none; opacity: 0; transform: translateY(10px);
-}
-.board-finish-btn.show { display: inline-block; animation: finishIn 0.6s ease forwards; }
-@keyframes finishIn { to { opacity: 1; transform: translateY(0); } }
-.board-finish-btn:hover { transform: translateY(-4px) scale(1.05); box-shadow: 0 30px 60px rgba(214,183,90,0.3); filter: brightness(1.1); }
-
-/* ── INPUT POPUP ── */
-.input-popup {
-  position: fixed; inset: 0; z-index: 1000;
-  display: none; align-items: flex-end; justify-content: center;
-  background: rgba(0,0,0,0.6); backdrop-filter: blur(10px);
-}
-.input-popup.open { display: flex; }
-.popup-content {
-  background: #0f172a; border: 1px solid var(--border);
-  border-radius: 32px 32px 0 0; width: 100%; max-width: 800px;
-  padding: 40px; transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 0 -20px 60px rgba(0,0,0,0.5);
-}
-.input-popup.open .popup-content { transform: translateY(0); }
-.popup-header { display: flex; justify-content: space-between; margin-bottom: 24px; align-items: flex-start; }
-.popup-title-wrap { display: flex; flex-direction: column; gap: 8px; }
-.popup-visual { font-size: 32px; margin-bottom: 8px; }
-.popup-q { font-size: 22px; font-weight: 800; color: var(--text); line-height: 1.4; }
-.popup-close { background: none; border: none; font-size: 24px; color: var(--text-dim); cursor: pointer; padding: 8px; }
-.popup-body { display: flex; flex-direction: column; gap: 24px; }
-.popup-textarea {
-  width: 100%; background: rgba(255,255,255,0.03); border: 1px solid var(--border);
-  border-radius: 20px; padding: 24px; font-size: 16px; color: var(--text); font-family: inherit;
-  min-height: 140px; outline: none; transition: all 0.3s; line-height: 1.6;
-}
-.popup-textarea:focus { border-color: var(--purple); background: rgba(255,255,255,0.06); }
-.popup-actions { display: flex; gap: 16px; align-items: center; }
-.popup-save-btn {
-  flex: 1; background: var(--purple); color: white; border: none; border-radius: 16px;
-  padding: 18px; font-size: 16px; font-weight: 700; cursor: pointer; transition: all 0.3s;
-}
-.popup-save-btn:hover { background: #7c3aed; transform: translateY(-2px); }
-.popup-insight-btn {
-  background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--gold-light);
-  border-radius: 16px; padding: 18px 24px; font-size: 15px; font-weight: 600; cursor: pointer;
-  transition: all 0.3s; display: flex; align-items: center; gap: 8px;
-}
-.popup-insight-btn:hover { background: rgba(255,255,255,0.1); border-color: var(--gold); }
-
-/* ── RESPONSIVE DESIGN (MOBILE) ── */
-@media (max-width: 768px) {
-  .hud {
-    padding: 12px 20px;
-    flex-wrap: wrap;
-    gap: 12px;
-  }
-  .hud-left { gap: 12px; flex: 1; min-width: 200px; }
-  .hud-logo { font-size: 16px; }
-  .hud-subtitle { font-size: 10px; padding-left: 20px; }
-  .back-btn, .home-btn { width: 32px; height: 32px; }
-  
-  .hud-progress {
-    order: 3;
-    width: 100%;
-    justify-content: center;
-    padding: 6px 12px;
-  }
-  
-  .char-stage { padding-bottom: 240px; }
-  .char-text { font-size: 56px; }
-  
-  .dialog-area {
-    padding: 0 16px 16px;
-    position: absolute;
-    bottom: 80px;
-    left: 0; right: 0;
-  }
-  .dialog-box {
-    padding: 24px;
-    min-height: 100px;
-  }
-  .dialog-text { font-size: 16px; }
-  .choices-box { justify-content: center; }
-  .choice-btn { padding: 10px 16px; font-size: 14px; }
-  
-  .input-overlay { padding: 12px 16px 16px; }
-  .input-wrapper { border-radius: 24px; padding: 6px 6px 6px 16px; }
-  .input-box { height:40px; }
-  
-  .sidebar {
-    display: none;
-  }
-  .vn-wrapper {
-    min-height: calc(100vh - 72px);
-    overflow-y: auto;
-  }
-  .mobile-tabs {
-    display: flex;
-  }
-  
-  .routine-panel {
-    width: 90%;
-    max-width: 400px;
-    padding: 24px;
-    max-height: 80vh;
-    overflow-y: auto;
-  }
-  
-  .sheet-panel { width: 320px; right: -320px; padding: 24px; }
-  .sheet-toggle { padding: 20px 10px; font-size: 11px; }
-}
-/* ── INTRO SEQUENCE ── */
-#intro-overlay {
-  position: fixed; inset: 0; z-index: 9999; background: #030305;
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  transition: transform 1s cubic-bezier(0.16, 1, 0.3, 1), opacity 1s ease;
-  cursor: pointer; overflow: hidden;
-}
-.intro-container {
-  position: absolute; display: flex; flex-direction: column; align-items: center; justify-content: center;
-  text-align: center; width: 100%; transition: all 1s ease;
-}
-.intro-line {
-  font-size: 18px; color: rgba(255,255,255,0); letter-spacing: 0.3em; margin: 12px 0;
-  transition: color 1s ease, transform 1.5s ease; transform: translateY(10px);
-}
-.intro-line.show { color: rgba(255,255,255,0.4); transform: translateY(0); }
-
-.intro-solve-main {
-  font-size: 28px; font-weight: 800; color: #fff; opacity: 0; transform: scale(0.95);
-  transition: all 1s ease; margin-bottom: 12px; filter: blur(10px);
-}
-.intro-solve-sub {
-  font-size: 14px; color: var(--purple-light); opacity: 0; transform: translateY(10px);
-  transition: all 1s ease 0.3s;
-}
-.intro-solve-main.show { opacity: 1; transform: scale(1); filter: blur(0); }
-.intro-solve-sub.show { opacity: 0.8; transform: translateY(0); }
-
-#intro-logo { opacity: 0; transform: translateY(20px); filter: blur(10px); transition: all 1s ease; }
-#intro-logo.show { opacity: 1; transform: translateY(0); filter: blur(0); }
-.intro-logo-img { width: 64px; height: 64px; margin-bottom: 16px; }
-.intro-logo-text { font-size: 24px; font-weight: 900; color: #fff; }
-.intro-logo-text span { color: var(--purple); }
-
-#intro-overlay.exit { transform: translateY(-100%); opacity: 0; pointer-events: none; }
-#intro-overlay.hide { display: none; }
-
-@media (max-width: 768px) {
-  .intro-solve-main { font-size: 20px; }
-  .intro-line { font-size: 15px; }
-}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#07070F;--surface:rgba(255,255,255,0.03);--surface2:rgba(255,255,255,0.07);
+  --border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.16);
+  --purple:#8B5CF6;--purple-light:#C4B5FD;--purple-glow:rgba(139,92,246,0.35);
+  --green:#10B981;--green-glow:rgba(16,185,129,0.3);
+  --gold:#D6B75A;--gold-light:#FDE68A;
+  --text:#F1F5F9;--text-dim:#94A3B8;--text-faint:#475569;
+  --sw:220px;--blur:blur(40px);--r:18px;--rs:12px;
+}
+body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;overflow:hidden;letter-spacing:-0.02em}
+.orb{position:fixed;border-radius:50%;filter:blur(80px);pointer-events:none;z-index:0}
+.o1{width:600px;height:600px;top:-200px;left:-100px;background:radial-gradient(circle,rgba(139,92,246,0.12),transparent 70%)}
+.o2{width:500px;height:500px;bottom:-150px;right:-100px;background:radial-gradient(circle,rgba(16,185,129,0.08),transparent 70%)}
+/* 사이드바 */
+.sidebar{width:var(--sw);min-height:100vh;background:rgba(10,10,20,0.95);border-right:1px solid var(--border);display:flex;flex-direction:column;position:relative;z-index:100;flex-shrink:0;backdrop-filter:var(--blur)}
+.sb-logo{padding:26px 20px 18px;font-size:16px;font-weight:900;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+.sb-logo em{color:var(--purple-light);font-style:normal}
+.sb-user{margin:14px 12px;padding:10px 14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--rs);display:flex;align-items:center;gap:10px}
+.ua{width:28px;height:28px;border-radius:7px;background:var(--purple);font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.un{font-size:13px;font-weight:700;flex:1}
+.lo{font-size:10px;color:var(--text-dim);cursor:pointer;background:none;border:none;font-family:inherit}
+.lo:hover{color:#fca5a5}
+.sb-nav{flex:1;padding:8px 12px;display:flex;flex-direction:column;gap:4px}
+.ni{display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:var(--rs);cursor:pointer;color:var(--text-dim);font-size:14px;font-weight:600;transition:all 0.2s;border:1px solid transparent;user-select:none}
+.ni:hover{background:var(--surface);color:var(--text)}
+.ni.on{background:rgba(139,92,246,0.12);color:var(--purple-light);border-color:rgba(139,92,246,0.2)}
+.ni .ic{font-size:16px;width:20px;text-align:center}
+.nb{font-size:10px;color:var(--text-faint);margin-left:auto}
+.sb-foot{padding:16px 12px}
+.nbtn{width:100%;padding:14px;background:var(--purple);color:#fff;border:none;border-radius:var(--rs);font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;transition:all 0.2s;box-shadow:0 8px 24px var(--purple-glow)}
+.nbtn:hover{filter:brightness(1.1);transform:translateY(-1px)}
+/* 메인 */
+.main{flex:1;display:flex;flex-direction:column;position:relative;z-index:10;overflow:hidden}
+.view{display:none;flex-direction:column;height:100vh;overflow-y:auto}
+.view.on{display:flex}
+.vh{padding:28px 36px 0;flex-shrink:0;display:flex;align-items:center;justify-content:space-between}
+.vt{font-size:22px;font-weight:900}
+.vb{flex:1;padding:24px 36px 36px;overflow-y:auto}
+/* 프로젝트 그리드 */
+.pg{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:20px}
+.pc{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:22px;cursor:pointer;transition:all 0.25s;display:flex;flex-direction:column;gap:12px}
+.pc:hover{border-color:var(--border2);background:var(--surface2);transform:translateY(-3px);box-shadow:0 20px 40px rgba(0,0,0,0.3)}
+.pc-genre{font-size:11px;font-weight:800;color:var(--purple-light);background:rgba(139,92,246,0.12);padding:3px 10px;border-radius:20px;display:inline-block}
+.pc-title{font-size:17px;font-weight:800;line-height:1.4}
+.pc-syn{font-size:13px;color:var(--text-dim);line-height:1.6;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.pc-foot{font-size:11px;color:var(--text-faint);font-weight:600;display:flex;justify-content:space-between;margin-top:auto}
+.pc-add{background:var(--surface);border:1px dashed var(--border2);border-radius:var(--r);padding:22px;cursor:pointer;transition:all 0.25s;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;min-height:160px;color:var(--text-dim)}
+.pc-add:hover{border-color:var(--purple);color:var(--purple-light);background:rgba(139,92,246,0.05)}
+.pc-add .plus{font-size:28px}
+/* 작업 카드 */
+.tg{display:flex;gap:16px;flex-wrap:wrap}
+.tc{flex:1;min-width:220px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:28px;cursor:pointer;transition:all 0.25s}
+.tc:hover{transform:translateY(-3px);background:var(--surface2);border-color:var(--purple)}
+.ti{font-size:28px;margin-bottom:16px}
+.tn{font-size:16px;font-weight:800;margin-bottom:6px}
+.td{font-size:13px;color:var(--text-dim);line-height:1.5}
+/* 챗 */
+.cw{display:flex;flex-direction:column;height:100vh}
+.chud{display:flex;align-items:center;gap:16px;padding:16px 28px;border-bottom:1px solid var(--border);flex-shrink:0;background:rgba(7,7,15,0.8);backdrop-filter:var(--blur)}
+.cbk{width:34px;height:34px;border-radius:50%;background:var(--surface);border:1px solid var(--border);color:var(--text-dim);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;transition:all 0.2s;flex-shrink:0}
+.cbk:hover{background:var(--surface2);color:var(--text)}
+.chi{flex:1}
+.cht{font-size:14px;font-weight:800}
+.chs{font-size:11px;color:var(--text-dim);margin-top:2px}
+.sbar{display:flex;align-items:center;gap:12px}
+.slbl{font-size:12px;color:var(--text-dim);white-space:nowrap}
+.sdots{display:flex;gap:4px}
+.sd{width:20px;height:3px;border-radius:2px;background:var(--surface2);transition:all 0.3s}
+.sd.done{background:var(--purple)}
+.sd.act{background:var(--gold);box-shadow:0 0 8px rgba(214,183,90,0.6)}
+.cbody{flex:1;overflow-y:auto;padding:28px;display:flex;flex-direction:column;gap:0}
+.cbody::-webkit-scrollbar{width:4px}
+.cbody::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);border-radius:2px}
+/* 캐릭터 */
+.chara{display:flex;flex-direction:column;align-items:center;padding:20px 0 10px;flex-shrink:0}
+.ce{font-size:64px;animation:flt 4s ease-in-out infinite;filter:drop-shadow(0 10px 30px var(--purple-glow))}
+@keyframes flt{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+.cnp{font-size:12px;font-weight:700;letter-spacing:0.08em;color:var(--text-dim);background:var(--surface);border:1px solid var(--border);padding:5px 16px;border-radius:20px;margin-top:12px}
+/* 다이얼로그 */
+.dw{max-width:760px;margin:0 auto;width:100%;padding:0 0 16px}
+.shint{background:rgba(139,92,246,0.06);border:1px solid rgba(139,92,246,0.15);border-radius:var(--rs);padding:12px 18px;font-size:13px;color:var(--text-dim);line-height:1.6;margin-bottom:12px;animation:fu 0.4s ease forwards}
+.db{background:rgba(10,12,22,0.6);border:1px solid var(--border2);border-radius:var(--r);padding:28px 32px;backdrop-filter:blur(60px);box-shadow:0 20px 50px rgba(0,0,0,0.5);animation:fu 0.4s ease forwards}
+@keyframes fu{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.dsp{font-size:12px;font-weight:800;letter-spacing:0.05em;color:var(--purple-light);text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;gap:6px}
+.dsp::before{content:'';display:inline-block;width:6px;height:6px;border-radius:50%;background:currentColor;box-shadow:0 0 10px currentColor}
+.dt{font-size:18px;font-weight:500;line-height:1.75;color:var(--text);word-break:keep-all}
+/* 입력 */
+.ia{max-width:760px;margin:0 auto;width:100%;display:flex;flex-direction:column;gap:10px;padding-bottom:24px}
+.cr{display:flex;flex-wrap:wrap;gap:8px}
+.cbtn{background:var(--surface);border:1px solid var(--border);color:var(--text);padding:9px 18px;border-radius:100px;font-size:14px;font-weight:600;font-family:inherit;cursor:pointer;transition:all 0.25s}
+.cbtn:hover{background:rgba(139,92,246,0.12);border-color:var(--purple-light);transform:translateY(-2px);box-shadow:0 8px 20px var(--purple-glow)}
+.ibtn{width:100%;background:rgba(214,183,90,0.06);border:1px solid rgba(214,183,90,0.25);color:var(--gold-light);padding:12px 20px;border-radius:var(--rs);font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;transition:all 0.25s;display:flex;align-items:center;justify-content:center;gap:8px}
+.ibtn:hover{background:rgba(214,183,90,0.12);border-color:rgba(214,183,90,0.5)}
+.ibw{background:rgba(15,15,28,0.6);border:1px solid var(--border);border-radius:24px;padding:12px 12px 12px 20px;display:flex;gap:12px;align-items:flex-end;backdrop-filter:blur(40px);transition:border-color 0.3s}
+.ibw:focus-within{border-color:var(--purple-light)}
+.ibw textarea{flex:1;background:none;border:none;color:var(--text);font-family:inherit;font-size:15px;font-weight:500;line-height:1.6;resize:none;outline:none;height:44px;max-height:140px;padding:6px 0}
+.ibw textarea::placeholder{color:rgba(255,255,255,0.25)}
+.sb2{width:44px;height:44px;border-radius:50%;background:var(--purple);border:none;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s;flex-shrink:0}
+.sb2:hover{filter:brightness(1.15);transform:scale(1.05)}
+.sb2 svg{width:20px;height:20px;fill:currentColor;margin-left:2px}
+/* flash */
+.fl{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-10px);background:rgba(30,30,50,0.95);border:1px solid var(--border2);border-radius:var(--rs);padding:10px 20px;font-size:13px;font-weight:600;color:var(--text);opacity:0;pointer-events:none;z-index:500;transition:all 0.3s;white-space:nowrap;max-width:90vw;overflow:hidden;text-overflow:ellipsis;backdrop-filter:var(--blur)}
+.fl.on{opacity:1;transform:translateX(-50%) translateY(0)}
+/* 오버레이 */
+.ov{position:fixed;inset:0;z-index:400;background:rgba(5,5,12,0.88);backdrop-filter:blur(20px);display:none;align-items:center;justify-content:center;padding:20px}
+.ov.on{display:flex}
+/* 모드 카드 */
+.mg{display:flex;gap:28px;flex-wrap:wrap;justify-content:center}
+.mc{flex:0 1 340px;background:rgba(15,15,28,0.8);border:1px solid var(--border2);border-radius:28px;padding:48px 36px;text-align:center;cursor:pointer;transition:all 0.35s;display:flex;flex-direction:column;align-items:center;gap:18px;box-shadow:0 20px 60px rgba(0,0,0,0.5)}
+.mc:hover{transform:translateY(-10px)}
+.mc.cs:hover{border-color:var(--purple);box-shadow:0 30px 80px var(--purple-glow)}
+.mc.sl:hover{border-color:var(--green);box-shadow:0 30px 80px var(--green-glow)}
+.mci{font-size:60px}
+.mct{font-size:26px;font-weight:900}
+.mcd{font-size:15px;color:var(--text-dim);line-height:1.7;word-break:keep-all}
+.mcb{font-size:13px;font-weight:800;padding:7px 22px;border-radius:100px;margin-top:8px}
+.mc.cs .mcb{background:linear-gradient(90deg,#7C3AED,#8B5CF6);box-shadow:0 6px 20px var(--purple-glow);color:#fff}
+.mc.sl .mcb{background:linear-gradient(90deg,#059669,#10B981);box-shadow:0 6px 20px var(--green-glow);color:#fff}
+/* 루틴 패널 */
+.rp{background:rgba(12,12,24,0.97);border:1px solid var(--border2);border-radius:28px;padding:36px;width:100%;max-width:460px;box-shadow:0 30px 80px rgba(0,0,0,0.7)}
+.rpt{font-size:22px;font-weight:900;margin-bottom:6px}
+.rps{font-size:14px;color:var(--text-dim);margin-bottom:28px}
+.ri{display:flex;align-items:center;gap:16px;padding:18px 20px;border-radius:var(--rs);border:1px solid var(--border);background:var(--surface);cursor:pointer;margin-bottom:12px;transition:all 0.25s}
+.ri:last-child{margin-bottom:0}
+.ri:hover{border-color:var(--purple-light);background:rgba(139,92,246,0.1);transform:translateX(6px)}
+.rii{font-size:28px;background:var(--surface2);width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.rin{font-size:16px;font-weight:700}
+.rid{font-size:13px;color:var(--text-dim);margin-top:3px}
+.rib{font-size:11px;font-weight:800;color:var(--bg);background:var(--gold);padding:4px 12px;border-radius:20px;white-space:nowrap;margin-left:auto;flex-shrink:0}
+/* 캐릭터 패널 */
+.chp{display:flex;gap:20px;flex-wrap:wrap;justify-content:center;max-width:680px}
+.chc{flex:1;min-width:220px;max-width:280px;background:rgba(12,12,24,0.97);border:1px solid var(--border2);border-radius:24px;padding:36px 28px;text-align:center;cursor:pointer;transition:all 0.3s;box-shadow:0 20px 50px rgba(0,0,0,0.5)}
+.chc:hover{transform:translateY(-10px);border-color:var(--purple-light);box-shadow:0 30px 70px var(--purple-glow)}
+.cca{width:80px;height:80px;border-radius:50%;background:var(--surface2);margin:0 auto 18px;display:flex;align-items:center;justify-content:center;font-size:40px}
+.ccn{font-size:20px;font-weight:900;margin-bottom:10px}
+.ccd{font-size:13px;color:var(--text-dim);line-height:1.7}
+/* 작품 검증 */
+.vg{display:flex;flex-direction:column;gap:32px}
+.vst{font-size:15px;font-weight:800;color:var(--text-dim);margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--border)}
+.eg{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px}
+.ec{background:var(--surface);border:1px solid var(--border);border-radius:var(--rs);padding:20px 16px;text-align:center;cursor:pointer;transition:all 0.25s}
+.ec:hover{border-color:var(--purple-light);background:rgba(139,92,246,0.1);transform:translateY(-3px)}
+.eci{font-size:28px;margin-bottom:10px}
+.ecn{font-size:13px;font-weight:700;color:var(--text)}
+/* 인사이트 패널 */
+.ip{position:fixed;right:0;top:0;bottom:0;width:380px;z-index:300;background:rgba(10,10,20,0.97);border-left:1px solid rgba(214,183,90,0.2);display:flex;flex-direction:column;transform:translateX(100%);transition:transform 0.4s cubic-bezier(0.16,1,0.3,1);backdrop-filter:blur(60px);box-shadow:-20px 0 60px rgba(0,0,0,0.5)}
+.ip.on{transform:translateX(0)}
+.iph{padding:24px;border-bottom:1px solid rgba(214,183,90,0.15);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.ipt{font-size:14px;font-weight:800;color:var(--gold-light)}
+.ipc{width:30px;height:30px;border-radius:50%;background:var(--surface);border:1px solid var(--border);color:var(--text-dim);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;transition:all 0.2s}
+.ipc:hover{color:var(--text);background:var(--surface2)}
+.ipb{flex:1;overflow-y:auto;padding:24px}
+.ips{margin-bottom:24px;padding-bottom:24px;border-bottom:1px solid var(--border)}
+.ips:last-child{border-bottom:none;margin-bottom:0}
+.ipl{font-size:11px;font-weight:800;color:var(--gold);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:8px}
+.iptx{font-size:13px;color:var(--text-dim);line-height:1.8}
+.ipld{display:flex;flex-direction:column;align-items:center;justify-content:center;height:200px;gap:14px;color:var(--text-dim);font-size:13px}
+.ipspin{width:28px;height:28px;border:2px solid rgba(214,183,90,0.2);border-top-color:var(--gold);border-radius:50%;animation:spin 0.8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+/* 컨텍스트 챗 */
+.xb{flex:1;overflow-y:auto;padding:24px 28px;display:flex;flex-direction:column;gap:16px}
+.xm{max-width:600px}
+.xm.u{margin-left:auto}
+.xmi{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px 20px}
+.xm.u .xmi{background:rgba(139,92,246,0.12);border-color:rgba(139,92,246,0.25)}
+.xr{font-size:11px;font-weight:800;letter-spacing:0.05em;text-transform:uppercase;color:var(--text-dim);margin-bottom:8px}
+.xm.u .xr{color:var(--purple-light)}
+.xc{font-size:15px;line-height:1.7;color:var(--text);word-break:keep-all}
+.xiw{padding:16px 28px;border-top:1px solid var(--border);flex-shrink:0;display:flex;gap:12px;align-items:flex-end}
+.xi{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:12px 18px;color:var(--text);font-family:inherit;font-size:15px;resize:none;outline:none;height:48px;max-height:120px;line-height:1.5;transition:border-color 0.3s}
+.xi:focus{border-color:var(--purple-light)}
+.xi::placeholder{color:var(--text-faint)}
+.xs{width:44px;height:44px;border-radius:50%;background:var(--purple);border:none;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.2s}
+.xs:hover{filter:brightness(1.1)}
+.xs svg{width:20px;height:20px;fill:currentColor;margin-left:2px}
+/* 마켓 빈 상태 */
+.mp{display:flex;flex-direction:column;align-items:center;justify-content:center;height:60vh;gap:16px;color:var(--text-dim);text-align:center}
+.mp .mpi{font-size:56px}
+.mp h3{font-size:20px;font-weight:800;color:var(--text)}
+.mp p{font-size:14px;line-height:1.7;max-width:320px}
+/* 로딩 */
+.thk{color:var(--text-dim);font-size:14px;display:flex;align-items:center;gap:10px;padding:4px 0}
+.td span{animation:blk 1.2s infinite}.td span:nth-child(2){animation-delay:0.2s}.td span:nth-child(3){animation-delay:0.4s}
+@keyframes blk{0%,80%,100%{opacity:0}40%{opacity:1}}
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.08);border-radius:2px}
+@media(max-width:768px){.sidebar{display:none}.pg{grid-template-columns:1fr}.mg{flex-direction:column}.mc{flex:none;width:100%}.chp{flex-direction:column}.ip{width:100%}.vh,.vb{padding-left:20px;padding-right:20px}}
 </style>
 </head>
 <body>
-
-<!-- INTRO OVERLAY -->
-<div id="intro-overlay">
-  <div id="intro-problems" class="intro-container">
-    <div class="intro-line" id="p1">작가의 설정 충돌</div>
-    <div class="intro-line" id="p2">복선 누락</div>
-    <div class="intro-line" id="p3">캐릭터 일관성 오류</div>
+<div class="orb o1"></div><div class="orb o2"></div>
+<aside class="sidebar">
+  <div class="sb-logo">✦ Mantra <em>Copilot</em></div>
+  <div class="sb-user">
+    <div class="ua" id="ua">T</div>
+    <div style="flex:1"><div class="un" id="un">테스터</div><button class="lo" onclick="logout()">로그아웃</button></div>
   </div>
-  <div id="intro-solution" class="intro-container" style="display:none">
-    <div class="intro-solve-main" id="s1">이제 혼자 싸우지 않아도 됩니다.</div>
-    <div class="intro-solve-sub" id="s2">당신의 이야기를 기억하는 AI 창작 비서</div>
-  </div>
-  <div id="intro-logo" class="intro-container" style="display:none">
-    <img src="images/로고만(흰).png" alt="logo" class="intro-logo-img">
-    <div class="intro-logo-text">Mantra <span>Copilot</span></div>
-  </div>
-</div>
-
-<!-- SIDEBAR -->
-<div class="sidebar" id="sidebar">
-  <div class="sidebar-header">
-    <div class="sidebar-logo">Mantra <span>Copilot</span></div>
-    <div class="sidebar-user">
-      <div class="user-avatar" id="userAvatar">M</div>
-      <div class="user-info">
-        <div class="user-name" id="userNameDisplay">작가님</div>
-        <button class="logout-btn" onclick="logout()">로그아웃</button>
-      </div>
-    </div>
-  </div>
-  
-  <div class="sidebar-menu">
-    <div class="menu-item active" id="menu-works" onclick="navTo('works')">
-      <span class="icon">📖</span> 내 작품
-    </div>
-    <div class="menu-item" id="menu-tasks" onclick="navTo('tasks')">
-      <span class="icon">✍️</span> 오늘의 작업
-    </div>
-    <div class="menu-item" id="menu-verify" onclick="navTo('verify')">
-      <span class="icon">🔍</span> 작품 검증
-    </div>
-    <div class="menu-item" id="menu-market" onclick="navTo('market')">
-      <span class="icon">🛍️</span> 루틴 마켓 <small style="font-size:10px; opacity:0.5; margin-left:4px;">(준비 중)</small>
-    </div>
-  </div>
-  
-  <div class="sidebar-footer">
-    <button class="new-project-btn" onclick="navTo('new-project')">
-      <span>+</span> 새 작품 기획하기
-    </button>
-  </div>
-</div>
-
-<!-- MOBILE TABS -->
-<div class="mobile-tabs">
-  <div class="tab-item active" onclick="navTo('works')"><span class="icon">📖</span>내 작품</div>
-  <div class="tab-item" onclick="navTo('tasks')"><span class="icon">✍️</span>오늘의 작업</div>
-  <div class="tab-item" onclick="navTo('new-project')"><span class="icon">✨</span>기획</div>
-  <div class="tab-item" onclick="navTo('verify')"><span class="icon">🔍</span>검증</div>
-</div>
-
-<!-- SCENE BACKGROUND -->
-<div id="scene">
-  <div class="scene-bg scene-onboard" id="sceneBg"></div>
-</div>
-<div class="particles" id="particles"></div>
-<div id="sceneOverlay"></div>
-
-<div class="vn-wrapper">
-  <!-- VIEW: MY WORKS -->
-  <section id="view-works" class="view-section active">
-    <div class="hud" style="justify-content: flex-start; gap:20px;">
-      <h1 style="font-size:24px; font-weight:800;">내 작품 목록</h1>
-    </div>
-    <div class="project-grid" id="projectGrid">
-      <!-- Loaded via script -->
-    </div>
+  <nav class="sb-nav">
+    <div class="ni on" id="n-works" onclick="navTo('works')"><span class="ic">📚</span>내 작품</div>
+    <div class="ni" id="n-tasks" onclick="navTo('tasks')"><span class="ic">⚡</span>오늘의 작업</div>
+    <div class="ni" id="n-verify" onclick="navTo('verify')"><span class="ic">🔍</span>작품 검증</div>
+    <div class="ni" id="n-market" onclick="navTo('market')"><span class="ic">🛍️</span>루틴 마켓<span class="nb">준비 중</span></div>
+  </nav>
+  <div class="sb-foot"><button class="nbtn" onclick="openMode()">+ 새 작품 기획하기</button></div>
+</aside>
+<main class="main">
+  <!-- 내 작품 -->
+  <section class="view on" id="view-works">
+    <div class="vh"><div class="vt">내 작품</div></div>
+    <div class="vb"><div class="pg" id="pg"></div></div>
   </section>
-
-  <!-- VIEW: TODAY'S TASKS -->
-  <section id="view-tasks" class="view-section">
-    <div class="hud" style="justify-content: space-between; align-items: center; padding: 20px 40px;">
-      <h1 style="font-size:24px; font-weight:800;">✍️ 오늘의 작업</h1>
-      <div id="currentProjectBadge" style="background:rgba(139,92,246,0.1); border:1px solid rgba(139,92,246,0.2); padding:6px 16px; border-radius:100px; font-size:12px; font-weight:700; color:var(--purple-light);">
-        선택됨: <span id="selectedProjectNameDisplay">없음</span>
-      </div>
-    </div>
-    <div class="task-grid" id="taskGrid">
-      <div class="task-card" onclick="startWorkTask('outline')">
-        <div class="task-icon">🎬</div>
-        <div class="task-name">이번 화 개요 짜기</div>
-        <div class="task-desc">기획 설정을 바탕으로 다음 에피소드의 핵심 흐름을 구성합니다.</div>
-      </div>
-      <div class="task-card" onclick="startWorkTask('tone')">
-        <div class="task-icon">🗣️</div>
-        <div class="task-name">대사 톤 검토</div>
-        <div class="task-desc">캐릭터의 성격에 맞는 매력적인 대사인지 AI가 체크해 드립니다.</div>
-      </div>
-      <div class="task-card" onclick="startWorkTask('foreshadow')">
-        <div class="task-icon">🗝️</div>
-        <div class="task-name">복선 체크</div>
-        <div class="task-desc">현재 설정과 충돌하는 부분은 없는지, 복선이 잘 배치됐는지 확인합니다.</div>
+  <!-- 오늘의 작업 -->
+  <section class="view" id="view-tasks">
+    <div class="vh"><div class="vt" id="tpn">작업 선택</div></div>
+    <div class="vb">
+      <div class="tg">
+        <div class="tc" onclick="startTask('outline')"><div class="ti">📋</div><div class="tn">회차 개요 짜기</div><div class="td">이번 화의 핵심 사건과 전개를 함께 설계합니다.</div></div>
+        <div class="tc" onclick="startTask('tone')"><div class="ti">💬</div><div class="tn">대사 검토</div><div class="td">캐릭터 성격에 맞는 대사인지 확인하고 다듬습니다.</div></div>
+        <div class="tc" onclick="startTask('foreshadow')"><div class="ti">🔗</div><div class="tn">복선 체크</div><div class="td">이전 화 복선과 설정 충돌이 없는지 점검합니다.</div></div>
+        <div class="tc" onclick="startTask('general')"><div class="ti">💡</div><div class="tn">자유 대화</div><div class="td">작품 설정을 기억한 AI와 자유롭게 대화합니다.</div></div>
       </div>
     </div>
   </section>
-
-  <!-- VIEW: VERIFICATION (Relocated existing overlay content) -->
-  <section id="view-verify" class="view-section">
-    <div class="hud" style="justify-content: flex-start; gap:20px;">
-      <h1 style="font-size:24px; font-weight:800;">작품 검증</h1>
-    </div>
-    <div id="verifyPersonaGrid" style="display:flex; flex-direction:column; gap:40px; padding: 20px 40px;">
-      <!-- Content from former verifyCharOverlay -->
-       <div>
-        <h3 style="font-size:18px; color:var(--text); margin-bottom:20px; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:10px;">🛡️ 전문가 고증</h3>
-        <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(200px, 1fr)); gap:16px;">
-          <div class="char-card" onclick="selectVerifyCharacter('의학 전문가')" style="padding:20px; text-align:center;">
-            <div style="font-size:32px; margin-bottom:12px;">🩺</div>
-            <div style="font-weight:700; color:var(--text);">의학/법의학</div>
-          </div>
-          <div class="char-card" onclick="selectVerifyCharacter('수사 전문가')" style="padding:20px; text-align:center;">
-            <div style="font-size:32px; margin-bottom:12px;">🚓</div>
-            <div style="font-weight:700; color:var(--text);">형사/수사</div>
-          </div>
-          <div class="char-card" onclick="selectVerifyCharacter('법률 전문가')" style="padding:20px; text-align:center;">
-            <div style="font-size:32px; margin-bottom:12px;">⚖️</div>
-            <div style="font-weight:700; color:var(--text);">법률/재판</div>
-          </div>
-          <div class="char-card" onclick="selectVerifyCharacter('심리학 전문가')" style="padding:20px; text-align:center;">
-            <div style="font-size:32px; margin-bottom:12px;">🧠</div>
-            <div style="font-weight:700; color:var(--text);">심리학</div>
-          </div>
-          <div class="char-card" onclick="selectVerifyCharacter('역사 전문가')" style="padding:20px; text-align:center;">
-            <div style="font-size:32px; margin-bottom:12px;">📜</div>
-            <div style="font-weight:700; color:var(--text);">역사/시대</div>
-          </div>
-          <div class="char-card" onclick="selectVerifyCharacter('군사 전문가')" style="padding:20px; text-align:center;">
-            <div style="font-size:32px; margin-bottom:12px;">⚔️</div>
-            <div style="font-weight:700; color:var(--text);">군사/무기</div>
+  <!-- 작품 검증 -->
+  <section class="view" id="view-verify">
+    <div class="vh"><div class="vt">작품 검증</div></div>
+    <div class="vb">
+      <div class="vg">
+        <div>
+          <div class="vst">🛡️ 전문가 고증</div>
+          <div class="eg">
+            <div class="ec" onclick="startVerify('의학 전문가')"><div class="eci">🩺</div><div class="ecn">의학/법의학</div></div>
+            <div class="ec" onclick="startVerify('수사 전문가')"><div class="eci">🚓</div><div class="ecn">형사/수사</div></div>
+            <div class="ec" onclick="startVerify('법률 전문가')"><div class="eci">⚖️</div><div class="ecn">법률/재판</div></div>
+            <div class="ec" onclick="startVerify('심리학 전문가')"><div class="eci">🧠</div><div class="ecn">심리학</div></div>
+            <div class="ec" onclick="startVerify('역사 전문가')"><div class="eci">📜</div><div class="ecn">역사/시대</div></div>
+            <div class="ec" onclick="startVerify('군사 전문가')"><div class="eci">⚔️</div><div class="ecn">군사/무기</div></div>
           </div>
         </div>
-      </div>
-      <div>
-        <h3 style="font-size:18px; color:var(--text); margin-bottom:20px; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:10px;">📝 편집자 검토</h3>
-        <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(200px, 1fr)); gap:16px;">
-          <div class="char-card" onclick="selectVerifyCharacter('냉정한 편집자')" style="padding:20px; text-align:center;">
-            <div style="font-size:32px; margin-bottom:12px;">🥶</div>
-            <div style="font-weight:700; color:var(--text);">냉정한 편집자</div>
-          </div>
-          <div class="char-card" onclick="selectVerifyCharacter('공감형 편집자')" style="padding:20px; text-align:center;">
-            <div style="font-size:32px; margin-bottom:12px;">🥰</div>
-            <div style="font-weight:700; color:var(--text);">공감형 편집자</div>
-          </div>
-          <div class="char-card" onclick="selectVerifyCharacter('로판 편집자')" style="padding:20px; text-align:center;">
-            <div style="font-size:32px; margin-bottom:12px;">✨</div>
-            <div style="font-weight:700; color:var(--text);">장르별 편집자</div>
+        <div>
+          <div class="vst">📝 편집자 검토</div>
+          <div class="eg">
+            <div class="ec" onclick="startVerify('냉정한 편집자')"><div class="eci">🥶</div><div class="ecn">냉정한 편집자</div></div>
+            <div class="ec" onclick="startVerify('공감형 편집자')"><div class="eci">🥰</div><div class="ecn">공감형 편집자</div></div>
+            <div class="ec" onclick="startVerify('로판 편집자')"><div class="eci">✨</div><div class="ecn">장르별 편집자</div></div>
+            <div class="ec" onclick="startVerify('10년차 평론가')"><div class="eci">🔍</div><div class="ecn">10년차 평론가</div></div>
           </div>
         </div>
       </div>
     </div>
   </section>
-
-  <!-- VIEW: PLANNING (LEGACY BOARD) -->
-  <section id="view-new-project" class="view-section">
+  <!-- 루틴 마켓 -->
+  <section class="view" id="view-market">
+    <div class="vh"><div class="vt">루틴 마켓</div></div>
+    <div class="vb"><div class="mp"><div class="mpi">🛍️</div><h3>루틴 마켓 준비 중</h3><p>창작자들의 노하우를 담은 루틴을 사고팔 수 있는 마켓이 곧 오픈됩니다.</p></div></div>
   </section>
-  
-
-  <!-- VIEW: AI CHAT (Project Context Mode) -->
-  <section id="view-chat-context" class="view-section">
-    <div class="chat-status" id="chatStatusIndicator" style="display:none;">
-      <div class="status-dot"></div>
-      <span id="contextProjectName">작품 맥락으로 대화 중</span>
-    </div>
-    
-    <div class="char-stage" style="padding-bottom: 60px;">
-       <div class="char-figure show">
-         <div class="char-text" id="contextCharEmoji">🤖</div>
-         <div class="char-name-plate">창작 비서</div>
-       </div>
-    </div>
-
-    <div class="dialog-area" style="max-height: 40vh; overflow-y: auto; margin-bottom: 20px;" id="contextChatHistory">
-      <div class="dialog-box">
-        <div class="dialog-speaker">Mantra AI</div>
-        <div class="dialog-text" id="contextDialogText">어떤 작업을 도와드릴까요? 작품의 설정을 기억하고 있습니다.</div>
+  <!-- 스토리 빌드업 챗 -->
+  <section class="view" id="view-chat">
+    <div class="cw">
+      <div class="chud">
+        <button class="cbk" onclick="goHome()">←</button>
+        <div class="chi"><div class="cht" id="cht">스토리 빌드업</div><div class="chs" id="chs">진행 중</div></div>
+        <div class="sbar"><span class="slbl">Step <strong id="sn">1</strong>/<span id="st">22</span></span><div class="sdots" id="sdots"></div></div>
       </div>
-    </div>
-
-    <div class="answer-area show">
-      <div class="input-wrapper">
-        <div class="input-bar-inner">
-          <textarea class="input-box" id="contextInputBox" placeholder="작품에 대해 궁금한 점이나 다음 이야기를 물어보세요..." onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();handleContextSend();}"></textarea>
-          <button class="send-btn" onclick="handleContextSend()">
-            <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
-          </button>
+      <div class="cbody" id="cbody">
+        <div class="chara"><div class="ce" id="ce">✦</div><div class="cnp" id="cnp">조수 어시스턴트</div></div>
+        <div class="dw">
+          <div class="shint" id="shint" style="display:none"></div>
+          <div class="db"><div class="dsp" id="dsp">조수 어시스턴트</div><div class="dt" id="dt"></div></div>
         </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- REPLACING OLD CHAT section with appropriate wrappers if needed, but let's keep it for legacy routines -->
-  <section id="view-chat-legacy" class="view-section">
-    <div class="hud-left">
-      <div style="display:flex; gap:8px;">
-        <button class="home-btn" id="homeBtn" onclick="goHome()" title="처음으로">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-        </button>
-        <button class="back-btn" id="backBtn" onclick="goBack()" title="이전 단계로">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-        </button>
-      </div>
-      <div class="hud-logo-container">
-        <div class="hud-logo">
-          <img src="images/로고만(흰).png" alt="logo" style="width:24px; height:24px; vertical-align:middle; margin-right:4px;">
-          Mantra <span>Copilot</span>
-        </div>
-        <div class="hud-subtitle">Storytelling Build-up Platform</div>
-      </div>
-    </div>
-    <!-- ACT HUD -->
-  <div class="act-hud" id="actHud">
-    <div class="act-segment" id="act1Seg">① 욕망</div>
-    <div class="act-segment" id="act2Seg">② 갈등</div>
-    <div class="act-segment" id="act3Seg">③ 극복</div>
-  </div>
-  <div class="hud-mode" id="hudMode"></div>
-    <div class="hud-progress" id="hudProgress" style="opacity:0">
-      <div class="hud-step">Step <strong id="stepNum">1</strong> / <span id="stepTotal">9</span></div>
-      <div class="progress-dots" id="progressDots"></div>
-    </div>
-  </div>
-
-    <!-- CHARACTER STAGE -->
-    <div class="char-stage" id="charStageLegacy">
-      <div class="char-figure" id="charFigureLegacy">
-        <div class="char-text" id="charEmoji">Copilot</div>
-        <div class="char-image-bg" id="charImage"></div>
-        <div class="char-name-plate" id="charName">조수 어시스턴트</div>
-      </div>
-    </div>
-
-    <!-- DIALOG AREA -->
-    <div class="dialog-area" style="position:relative; bottom:auto; left:auto; right:auto; padding:0 40px 20px;">
-      <div class="dialog-box" id="dialogBox">
-        <div class="dialog-speaker" id="dialogSpeaker">조수 어시스턴트</div>
-        <div class="dialog-text" id="dialogText">
-          <span id="dialogTxt"></span><span class="dialog-cursor" id="dialogCursor"></span>
-        </div>
-        <div class="dialog-example" id="dialogExample"></div>
-      </div>
-      <div class="stage-banner" id="stageBanner">
-        <div class="stage-banner-label">시스템 메시지 ▶</div>
-        <div id="stageBannerText"></div>
-      </div>
-      
-      <!-- ANSWER AREA -->
-      <div class="answer-area" id="answerArea" style="position:static; padding:20px 0;">
-        <button class="insight-bar-btn" id="solutionBarBtn" onclick="openInsightPanel()">
-          ✦ 이 질문의 스토리텔링 인사이트 보기
-        </button>
-        <div class="input-wrapper" id="inputWrapper">
-          <div class="choices-box" id="choicesBox" style="display:none;"></div>
-          <div class="input-bar-inner">
-            <textarea class="input-box" id="inputBox" placeholder="직접 명령어를 타이핑하세요..." rows="1" onkeydown="if(event.key==='Enter' && !event.shiftKey) { event.preventDefault(); handleSend(); } else { this.style.height='44px'; this.style.height = this.scrollHeight + 'px'; }"></textarea>
-            <button class="send-btn" id="sendBtn" onclick="handleSend()">
-              <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
-            </button>
+        <div class="ia" id="ia" style="display:none">
+          <button class="ibtn" id="ibt" onclick="openInsight()">✦ 이 질문의 스토리텔링 인사이트 보기</button>
+          <div class="cr" id="cr"></div>
+          <div class="ibw">
+            <textarea id="ci" placeholder="직접 입력하세요..." rows="1"
+              onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();doSend();}"
+              oninput="this.style.height='44px';this.style.height=Math.min(this.scrollHeight,140)+'px'"></textarea>
+            <button class="sb2" onclick="doSend()"><svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg></button>
           </div>
         </div>
       </div>
     </div>
   </section>
-
-  <!-- VIEW: PLANNING BOARD -->
-  <section id="view-planning-board" class="view-section">
-    <div id="planning-board-root"></div>
-    <!-- Routine Builder (Relocated) -->
-    <div class="routine-builder" id="routineBuilder" style="display:none; position:static; margin:40px; width:auto;">
-      <div class="rb-header">
-        <h2>🛠️ 루틴 템플릿 빌더</h2>
-        <p>단계별 질문, 안내, 옵션을 자유롭게 설계하세요</p>
+  <!-- 컨텍스트 챗 -->
+  <section class="view" id="view-xc">
+    <div class="cw">
+      <div class="chud">
+        <button class="cbk" onclick="goHome()">←</button>
+        <div class="chi"><div class="cht" id="xct">AI 편집자</div><div class="chs" id="xcs"></div></div>
       </div>
-      <div class="rb-steps" id="rbSteps"></div>
-      <div class="rb-actions">
-        <button class="rb-add-btn" onclick="addBuilderStep()">+ 새로운 단계 추가하기</button>
-        <button class="rb-save-btn" onclick="saveBuilderRoutine()">저장 및 빌드업 테스트</button>
+      <div class="xb" id="xb"></div>
+      <div class="xiw">
+        <textarea class="xi" id="xi" placeholder="원고나 설정을 입력하세요..."
+          onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();doXSend();}"></textarea>
+        <button class="xs" onclick="doXSend()"><svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg></button>
       </div>
     </div>
   </section>
-
-</div> <!-- /vn-wrapper -->
-
-<!-- INPUT POPUP (Board Mode) -->
-<div class="input-popup" id="inputPopup">
-  <div class="popup-content">
-    <div class="popup-header">
-      <div class="popup-title-wrap">
-        <div class="popup-visual" id="popupVisual">🎯</div>
-        <div class="popup-q" id="popupQuestion">질문을 불러오는 중...</div>
-      </div>
-      <button class="popup-close" onclick="closeBoardInput()">✕</button>
-    </div>
-    <div class="popup-body">
-      <textarea class="popup-textarea" id="popupTextArea" placeholder="답변을 입력해주세요..."></textarea>
-      <div class="popup-actions">
-        <button class="popup-save-btn" onclick="saveBoardStep()">저장하기</button>
-        <button class="popup-insight-btn" onclick="openInsightPanel()">✦ 인사이트</button>
-      </div>
-    </div>
+</main>
+<div class="fl" id="fl"></div>
+<!-- 인사이트 패널 -->
+<div class="ip" id="ip">
+  <div class="iph"><div class="ipt">✦ 스토리텔링 인사이트</div><button class="ipc" onclick="closeInsight()">✕</button></div>
+  <div class="ipb" id="ipb"></div>
+</div>
+<!-- 오버레이: 모드 선택 -->
+<div class="ov" id="ov-mode">
+  <div class="mg">
+    <div class="mc cs" onclick="selMode('consumer')"><div class="mci">📖</div><div class="mct">스토리 빌드업</div><div class="mcd">선택된 루틴으로 AI와 함께<br>이야기를 기획합니다</div><div class="mcb">소비자 모드</div></div>
+    <div class="mc sl" onclick="selMode('seller')"><div class="mci">🛍️</div><div class="mct">루틴 설계 &amp; 판매</div><div class="mcd">나만의 창작 템플릿을 만들어<br>마켓에 등록하고 판매합니다</div><div class="mcb">판매자 모드</div></div>
   </div>
 </div>
-<!-- REVIEWER OVERLAY -->
-<div class="reviewer-overlay" id="reviewerOverlay" onclick="closeReviewer()"></div>
-
-<!-- REVIEWER PANEL -->
-<div class="reviewer-panel" id="reviewerPanel">
-  <div class="reviewer-panel-header">
-    <div class="reviewer-panel-title">
-      <span class="reviewer-badge">10년차 평론가</span>
-      <span class="reviewer-name">🔍 플롯 리뷰어</span>
-    </div>
-    <div class="reviewer-close" onclick="closeReviewer()">✕</div>
-  </div>
-  <div class="reviewer-body" id="reviewerBody">
-    <div class="reviewer-loading" id="reviewerLoading">
-      <div class="reviewer-spinner"></div>
-      <span>원고를 분석하고 있습니다...</span>
-    </div>
-    <div id="reviewerContent" style="display:none;"></div>
+<!-- 오버레이: 루틴 선택 -->
+<div class="ov" id="ov-routine">
+  <div class="rp">
+    <div class="rpt">어떤 루틴으로 시작할까요?</div>
+    <div class="rps">기획하려는 작품 형태를 선택해주세요.</div>
+    <div class="ri" onclick="selRoutine('long')"><div class="rii">📖</div><div><div class="rin">장편 루틴</div><div class="rid">22단계로 탄탄한 장편 스토리를 기획합니다</div></div><div class="rib">추천</div></div>
+    <div class="ri" onclick="selRoutine('short')"><div class="rii">✍️</div><div><div class="rin">단편 루틴</div><div class="rid">11단계로 빠르게 단편 아이디어를 정리합니다</div></div></div>
   </div>
 </div>
-
-<!-- INSIGHT OVERLAY -->
-<div class="insight-overlay" id="insightOverlay" onclick="closeInsightPanel()"></div>
-
-<!-- INSIGHT PANEL -->
-<div class="insight-panel" id="insightPanel">
-  <div class="insight-panel-header">
-    <div class="insight-panel-title">✦ 스토리텔링 인사이트</div>
-    <div class="insight-panel-close" onclick="closeInsightPanel()">✕</div>
-  </div>
-  <div class="insight-panel-body" id="insightPanelBody">
-    <div class="insight-loading" id="insightLoading">
-      <div class="insight-spinner"></div>
-      <span>분석 중입니다...</span>
-    </div>
-    <div id="insightContent" style="display:none;"></div>
+<!-- 오버레이: 캐릭터 선택 -->
+<div class="ov" id="ov-char">
+  <div class="chp">
+    <div class="chc" onclick="selChar('조수 어시스턴트')"><div class="cca">🤖</div><div class="ccn">조수 어시스턴트</div><div class="ccd">논리적이고 직관적인 기획 파트너.<br>허점을 날카롭게 짚어줍니다.</div></div>
+    <div class="chc" onclick="selChar('조수 B')"><div class="cca">💜</div><div class="ccn">조수 B</div><div class="ccd">공감 능력이 뛰어난 감성형 파트너.<br>캐릭터 감정선을 깊이 분석합니다.</div></div>
   </div>
 </div>
-
-<!-- SHEET TOGGLE -->
-<div class="sheet-toggle" id="sheetToggle" style="display:none" onclick="toggleSheet()">
-  SHEET
-</div>
-
-<!-- SHEET PANEL -->
-<div class="sheet-panel" id="sheetPanel">
-  <div class="sp-header">
-    <div class="sp-title" id="spTitle">📋 스토리 보드</div>
-    <div class="sp-close" onclick="toggleSheet()">✕</div>
-  </div>
-  <div id="spConsumer">
-    <div class="sp-sentence-wrap">
-      <div class="sp-sentence-label">이야기 요약</div>
-      <div class="sp-sentence-box" id="story-summary-box">
-        <span class="sp-placeholder">대화를 진행하면 여기에 이야기가 한 문장으로 정리됩니다.</span>
-      </div>
-      <div class="sp-chips" id="story-chips"></div>
-    </div>
-    <div class="sp-synopsis-wrap" id="consumer-synopsis-wrap" style="display:none">
-      <div class="sp-synopsis-label">완성 시놈펼스</div>
-      <div class="sp-synopsis-box" id="story-synopsis-box">
-        <span class="sp-synopsis-generating">시놈펼스 생성 중...</span>
-      </div>
-    </div>
-  </div>
-  <div id="spSeller" style="display:none">
-    <div class="sp-sentence-wrap">
-      <div class="sp-sentence-label">루틴 요약</div>
-      <div class="sp-sentence-box" id="seller-summary-box">
-        <span class="sp-placeholder">대화를 진행하면 여기에 루틴이 한 문장으로 정리됩니다.</span>
-      </div>
-      <div class="sp-chips" id="seller-chips"></div>
-    </div>
-    <div class="sp-synopsis-wrap" id="seller-synopsis-wrap" style="display:none">
-      <div class="sp-synopsis-label">루틴 소개문</div>
-      <div class="sp-synopsis-box seller-synopsis" id="seller-synopsis-box">
-        <span class="sp-synopsis-generating">루틴 소개문 생성 중...</span>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- MODE CARDS OVERLAY -->
-<div class="mode-cards" id="modeCards">
-  <div class="mode-card consumer" onclick="selectMode('consumer')">
-    <div class="mc-icon">📖</div>
-    <div class="mc-title">스토리 빌드업</div>
-    <div class="mc-desc">선택된 루틴으로<br>AI와 함께 이야기를 기획합니다</div>
-    <div class="mc-badge">소비자 모드</div>
-  </div>
-  <div class="mode-card seller" onclick="selectMode('seller')">
-    <div class="mc-icon">🛍️</div>
-    <div class="mc-title">루틴 설계 &amp; 판매</div>
-    <div class="mc-desc">나만의 창작 템플릿을 만들어<br>마켓에 등록하고 판매합니다</div>
-    <div class="mc-badge">판매자 모드</div>
-  </div>
-</div>
-
-<!-- ROUTINE OVERLAY -->
-<div class="routine-overlay" id="routineOverlay">
-  <div class="routine-panel">
-    <div class="rp-title">어떤 루틴으로 시작할까요?</div>
-    <div class="rp-sub">기획하려는 작품 형태를 선택해주세요.</div>
-    <div class="routine-item" onclick="startRoutine('장편 루틴')">
-      <div class="ri-icon">📖</div>
-      <div class="ri-info">
-        <div class="ri-name">장편 루틴</div>
-        <div class="ri-desc">22단계로 탄탄한 장편 스토리를 기획합니다</div>
-      </div>
-      <button class="ri-badge">추천</button>
-    </div>
-    <div class="routine-item" onclick="startRoutine('단편 루틴')">
-      <div class="ri-icon">✍️</div>
-      <div class="ri-info">
-        <div class="ri-name">단편 루틴</div>
-        <div class="ri-desc">11단계로 빠르게 단편 아이디어를 정리합니다</div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- CHAR OVERLAY -->
-<div class="char-overlay" id="charOverlay">
-  <div class="char-panel">
-    <div class="char-card" onclick="selectCharacter('조수 어시스턴트')">
-      <div class="cc-avatar">🤖</div>
-      <div class="cc-name">조수 어시스턴트</div>
-      <div class="cc-desc">논리적이고 직관적인 기획 파트너.<br>허점을 날카롭게 짚어줍니다.</div>
-    </div>
-    <div class="char-card" onclick="selectCharacter('조수 B')">
-      <div class="cc-avatar">💜</div>
-      <div class="cc-name">조수 B</div>
-      <div class="cc-desc">공감 능력이 뛰어난 감성형 파트너.<br>캐릭터 감정선을 깊이 분석합니다.</div>
-    </div>
-  </div>
-</div>
-
-<!-- Supabase SDK -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
-// API Keys are managed on the server side (Cloudflare Functions)
-
-// ── SUPABASE CONFIG ──
-const SUPABASE_URL = 'https://mvygorffhbshubqkerpo.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im12eWdvcmZmaGJzaHVicWtlcnBvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2MzU3ODQsImV4cCI6MjA4OTIxMTc4NH0.p7usz-l53gmibWpswzTFvhzmR3UX7QkWb3oPsy3A50c';
-const _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-// ── APP STATE ──
-let currentUser = null;
-let myProjects = [];
-let selectedProject = null;
-let currentChatRoutine = null; // 'outline', 'tone', 'foreshadow'
-let isSeller = false;
-let currentStep = 0;
-let activeSteps = [];
-let answerHistory = [];
-let selectedCharName = '조수 어시스턴트';
-let _currentLoadedProject = null; // Currently selected project context
-
-const ACT_MAP = {
-  desire: ['l-1','l-2','l-3','l-3b','l-3c','l-4','l-5','l-6','l-7', 's-1','s-2','s-3'],
-  conflict: ['l-8','l-9','l-10','l-11','l-12','l-13','l-14','l-15', 's-4','s-5','s-6','s-7','s-8','s-9'],
-  overcome: ['l-16','l-17','l-18','l-19','l-20', 's-10','s-11']
-};
-
-// ── HELPERS ──
-function $(id){ return document.getElementById(id); }
-let typing = false;
-let sheetOpen = false;
-
-// ── INTRO LOGIC ──
-let introResolve;
-let introTimeouts = [];
-
-function runIntro() {
-  return new Promise((resolve) => {
-    if (sessionStorage.getItem('mantra_intro_shown')) {
-      if ($('intro-overlay')) $('intro-overlay').style.display = 'none';
-      return resolve();
-    }
-    
-    introResolve = resolve;
-    const overlay = $('intro-overlay');
-    
-    // Add skip listeners
-    overlay.addEventListener('click', skipIntro);
-    window.addEventListener('keydown', (e) => {
-      if (e.code === 'Space' || e.key === ' ') {
-        e.preventDefault();
-        skipIntro();
-      }
-    });
-
-    // Stage 1: Problems (0-3s)
-    introTimeouts.push(setTimeout(() => $('p1').classList.add('show'), 300));
-    introTimeouts.push(setTimeout(() => $('p2').classList.add('show'), 900));
-    introTimeouts.push(setTimeout(() => $('p3').classList.add('show'), 1500));
-    
-    // Stage 2: Solution (3-4s)
-    introTimeouts.push(setTimeout(() => {
-      $('intro-problems').style.opacity = '0';
-      $('intro-problems').style.filter = 'blur(10px)';
-      introTimeouts.push(setTimeout(() => $('intro-problems').style.display = 'none', 1000));
-      
-      $('intro-solution').style.display = 'flex';
-      introTimeouts.push(setTimeout(() => {
-        $('s1').classList.add('show');
-        $('s2').classList.add('show');
-      }, 50));
-    }, 3000));
-    
-    // Stage 3: Logo (4-5s)
-    introTimeouts.push(setTimeout(() => {
-      $('intro-solution').style.opacity = '0';
-      $('intro-solution').style.filter = 'blur(10px)';
-      introTimeouts.push(setTimeout(() => $('intro-solution').style.display = 'none', 1000));
-      
-      $('intro-logo').style.display = 'flex';
-      introTimeouts.push(setTimeout(() => $('intro-logo').classList.add('show'), 50));
-    }, 4000));
-    
-    // Stage 4: Exit (5.5s)
-    introTimeouts.push(setTimeout(() => {
-      finishIntro();
-    }, 5500));
-  });
-}
-
-function finishIntro() {
-  if (!introResolve) return;
-  
-  introTimeouts.forEach(t => clearTimeout(t));
-  introTimeouts = [];
-  
-  const overlay = $('intro-overlay');
-  overlay.classList.add('exit');
-  sessionStorage.setItem('mantra_intro_shown', 'true');
-  
-  const resolve = introResolve;
-  introResolve = null;
-  
-  setTimeout(() => {
-    overlay.classList.add('hide');
-    resolve();
-  }, 1000);
-}
-
-function skipIntro() {
-  finishIntro();
-}
-
-
-// ── PROJECT LIST ──
-async function loadMyProjects() {
-  if (!currentUser) return;
-  
-  // 테스트 더미 유저면 Supabase 호출 스킵
-  if (currentUser.id === 'test-user-001') {
-    myProjects = [{
-      id: 'test-001',
-      title: '귀신들린 그래플러',
-      genre: '액션/스릴러',
-      synopsis: '격투기 선수 주인공이 귀신에 씐 채로 링 위에서 싸우는 이야기.',
-      answer_history: [],
-      routine_type: 'long'
-    }];
-    renderProjectGrid();
-    return;
-  }
-
-  try {
-    const { data, error } = await _sb.from('projects')
-      .select('*')
-      .eq('user_id', currentUser.id)
-      .order('completed_at', { ascending: false });
-
-    if (error) throw error;
-    myProjects = data || [];
-  } catch(e) {
-    console.warn('프로젝트 로드 실패 (로컬 데이터 사용):', e.message);
-    myProjects = [];
-  }
-
-  if (myProjects.length === 0) {
-    myProjects.push({
-      id: 'test-001',
-      title: '귀신들린 그래플러',
-      genre: '액션/스릴러',
-      synopsis: '격투기 선수 주인공이 귀신에 씐 채로 링 위에서 싸우는 이야기.',
-      answer_history: [],
-      routine_type: 'long'
-    });
-  }
-  
-  renderProjectGrid();
-}
-
-function renderProjectGrid() {
-  const grid = $('projectGrid');
-  if (!grid) return;
-  grid.innerHTML = '';
-  if (!myProjects.length) {
-    grid.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:60px; color:var(--text-faint);">아직 기획된 작품이 없습니다.</div>';
-    return;
-  }
-
-  myProjects.forEach(p => {
-    const card = document.createElement('div');
-    card.className = 'p-card';
-    card.onclick = () => selectProjectForChat(p.id);
-    card.innerHTML = `
-      <div class="p-header">
-        <div class="p-genre">${p.genre || '장르 미정'}</div>
-      </div>
-      <div class="p-title">${p.title || '제목 없음'}</div>
-      <div class="p-synopsis">${p.synopsis || '시놉시스가 없습니다.'}</div>
-      <div class="p-footer">
-        <span>${p.routine_type === 'short' ? '단편' : '장편'} 루틴</span>
-        <span>${(p.answer_history || []).length}단계 완료</span>
-      </div>
-    `;
-    grid.appendChild(card);
-  });
-}
-
-function selectProjectForChat(pid) {
-  selectedProject = myProjects.find(p => p.id === pid);
-  if (!selectedProject) return;
-  
-  _currentLoadedProject = selectedProject; // Sync context
-  
-  showReplyFlash(`'${selectedProject.title}' 맥락 로드됨`);
-  
-  // Enter universal chat mode directly
-  currentChatRoutine = 'general';
-  const persona = "창작 비서";
-  const greeting = getGreetingForRoutine('general');
-  
-  $('contextProjectName').textContent = `${selectedProject.title} (${persona})`;
-  $('contextChatHistory').innerHTML = '';
-  
-  appendChatMessage('assistant', greeting);
-  navTo('chat-context');
-}
-
-// ── CONTEXT CHAT ──
-function startWorkTask(taskType) {
-  if (!selectedProject) {
-    alert('먼저 작품을 선택해주세요!');
-    navTo('works');
-    return;
-  }
-  
-  currentChatRoutine = taskType;
-  const persona = getPersonaForRoutine(taskType);
-  const greeting = getGreetingForRoutine(taskType);
-  
-  $('contextProjectName').textContent = `${selectedProject.title} (${persona})`;
-  $('contextChatHistory').innerHTML = ''; // Clear previous chat
-  
-  appendChatMessage('assistant', greeting);
-  navTo('chat-context');
-  
-  setTimeout(() => $('contextInputBox').focus(), 300);
-}
-
-function getPersonaForRoutine(type) {
-  if (type === 'outline') return "에피소드 설계자";
-  if (type === 'tone') return "대사 전문가";
-  if (type === 'foreshadow') return "플롯 검토가";
-  return "창작 비서";
-}
-
-function getGreetingForRoutine(type) {
-  if (type === 'outline') return `반갑습니다. **'${selectedProject.title}'** 이번 화의 개요를 함께 짜볼까요? 핵심 사건을 말씀해 주세요.`;
-  if (type === 'tone') return `캐릭터들의 대사를 검토해 봅시다. 특정 장면의 대사를 보여주시면 **'${selectedProject.title}'** 캐릭터 성격에 맞춰 다듬어 드릴게요.`;
-  if (type === 'foreshadow') return `복선 체크 시간입니다. **'${selectedProject.title}'** 현재 장면에서 심고 싶은 복선이나 나중에 해결할 설정을 공유해 주세요.`;
-  return `안녕하세요! **'${selectedProject.title}'** 작품에 대해 무엇을 도와드릴까요?`;
-}
-
-async function handleContextSend() {
-  const box = $('contextInputBox');
-  const userText = box.value.trim();
-  if (!userText) return;
-  
-  box.value = '';
-  appendChatMessage('user', userText);
-  
-  const loadingId = appendChatMessage('assistant', '(생각 중...)');
-  
-  try {
-    const systemPrompt = getSystemPromptForRoutine();
-    const stepLabelMap = {
-      'l-1':'콘셉트','l-2':'장르','l-3':'로그라인','l-3b':'배경','l-3c':'동기','l-4':'주인공','l-5':'적대자',
-      'l-6':'프롤로그','l-7':'문제직면','l-8':'미끼','l-9':'검증','l-10':'신념',
-      'l-11':'발전','l-12':'가짜승리','l-13':'방심','l-14':'혼란','l-15':'각성',
-      'l-16':'초긴박','l-17':'클라이막스','l-18':'반전','l-19':'이완','l-20':'에필로그'
-    };
-
-    const formattedHistory = (selectedProject.answer_history || []).map(h => {
-      const label = stepLabelMap[h.stepId] || h.stepId;
-      return { stepId: label, value: h.boardValue || h.value };
-    });
-
-    const response = await fetch('/api/chat', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: userText }
-        ],
-        projectContext: {
-          title: selectedProject.title,
-          genre: selectedProject.genre,
-          synopsis: selectedProject.synopsis,
-          answerHistory: formattedHistory
-        }
-      })
-    });
-    
-    const data = await response.json();
-    const aiText = data.choices?.[0]?.message?.content || '죄송합니다. 오류가 발생했습니다.';
-    updateChatMessage(loadingId, aiText);
-  } catch (e) {
-    updateChatMessage(loadingId, '네트워크 오류가 발생했습니다.');
-  }
-}
-
-function getSystemPromptForRoutine() {
-  if (currentChatRoutine === 'outline') return "당신은 유능한 드라마/웹소설 작가입니다. 작품 설정을 완벽히 이해하고 있으며, 작가가 이번 화의 개요를 짤 때 흥미로운 전개와 갈등 요소를 제안하세요.";
-  if (currentChatRoutine === 'tone') return "당신은 대사 스페셜리스트입니다. 캐릭터의 성격과 말투가 설정에 부합하는지, 그리고 독자에게 매력적으로 다가가는지 날카롭게 분석하고 대안을 제시하세요.";
-  if (currentChatRoutine === 'foreshadow') return "당신은 치밀한 서사 검토자입니다. 작품 전체의 복선과 설정을 대조하여 모순되는 부분을 지적하고, 서사적 완결성을 높일 수 있는 디테일을 제안하세요.";
-  return "당신은 작가의 창작을 돕는 유능한 AI 비서입니다. 작품 설정을 바탕으로 작가의 질문에 성실히 답변하세요.";
-}
-
-function appendChatMessage(role, text) {
-  const history = $('contextChatHistory');
-  const id = 'msg-' + Date.now();
-  const div = document.createElement('div');
-  div.className = 'dialog-box';
-  div.style.marginBottom = '12px';
-  div.innerHTML = `
-    <div class="dialog-speaker" style="color:${role==='user'?'#fff':'var(--purple-light)'}">${role==='user'?'Writer':'Mantra AI'}</div>
-    <div class="dialog-text" id="${id}">${markdownToHtml(text)}</div>
-  `;
-  history.appendChild(div);
-  history.scrollTop = history.scrollHeight;
-  return id;
-}
-
-function updateChatMessage(id, text) {
-  const el = $(id);
-  if (el) el.innerHTML = markdownToHtml(text);
-  const history = $('contextChatHistory');
-  history.scrollTop = history.scrollHeight;
-}
-
-// ── LEGACY & CORE ──
-async function logout() {
-  await _sb.auth.signOut();
-  window.location.href = 'login.html';
-}
-
-// Initialize on load
-document.addEventListener('DOMContentLoaded', () => {
-  spawnParticles();
-});
-function spawnParticles() {
-  const container = document.getElementById('particles');
-  for (let i=0; i<20; i++) {
-    const p = document.createElement('div');
-    p.className = 'particle';
-    const size = Math.random()*8+4;
-    p.style.cssText = `
-      width:${size}px; height:${size}px;
-      left:${Math.random()*100}%;
-      background:${Math.random()>.5?'rgba(139,92,246,':'rgba(214,183,90,'}${(Math.random()*.5+.2)});
-      animation-duration:${Math.random()*20+15}s;
-      animation-delay:${Math.random()*10}s;
-    `;
-    container.appendChild(p);
-  }
-}
-spawnParticles();
-
-// ── NAVIGATION ──
-function navTo(viewId) {
-  document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
-  document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
-  document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
-
-  const targetView = $(`view-${viewId}`);
-  if (targetView) targetView.classList.add('active');
-
-  const menu = $(`menu-${viewId}`);
-  if (menu) menu.classList.add('active');
-  
-  // Mobile tabs support
-  const tabIdxMap = { 'works': 0, 'tasks': 1, 'new-project': 2, 'verify': 3 };
-  const tabs = document.querySelectorAll('.tab-item');
-  const viewToTabMap = { 'works': 0, 'tasks': 1, 'new-project': 2, 'verify': 3 };
-  if (viewToTabMap[viewId] !== undefined) {
-    tabs.forEach(t => t.classList.remove('active'));
-    if (tabs[viewToTabMap[viewId]]) tabs[viewToTabMap[viewId]].classList.add('active');
-  }
-
-  if (viewId === 'works') {
-    loadMyProjects();
-  }
-  
-  if (viewId === 'tasks') {
-    if (!selectedProject) {
-      alert('작업을 시작할 작품을 먼저 선택해 주세요!');
-      navTo('works');
-      return;
-    }
-    $('selectedProjectNameDisplay').textContent = selectedProject.title;
-  }
-  
-  if (viewId === 'new-project') {
-    // Show mode selection for new projects
-    const board = $('planning-board-root');
-    if (board) board.style.display = 'none';
-    const rb = $('routineBuilder');
-    if (rb) rb.style.display = 'none';
-    const modeCards = $('modeCards');
-    if (modeCards) {
-      modeCards.classList.add('show');
-    }
-  }
-}
-
-
-// ── SHEET TOGGLE ──
-function toggleSheet() {
-  sheetOpen = !sheetOpen;
-  const panel = $('sheetPanel');
-  if (panel) panel.classList.toggle('open', sheetOpen);
-  const toggle = $('sheetToggle');
-  if (toggle) toggle.classList.toggle('open', sheetOpen);
-}
-
-// ── STEPS ──
-const shortSteps = [
-  { id:'s-1', visual:'🎯', stageIntro:'[단편 기획 플랜]\n끌리게 된 키워드와 사람들의 반응 요소를 결합해 보길 제안합니다.', question:'어떤 단편 이야기를 만들고 싶으세요?', fieldId:'f-s1' },
-  { id:'s-2', visual:'📚', stageIntro:'장르 선택에 따라 사람들의 반응 패턴은 달라집니다.', question:'이야기의 장르는 무엇인가요?', fieldId:'f-s2' },
-  { id:'s-3', visual:'✍️', stageIntro:'전체 이야기를 관통하는 한 문장이자 질문일 수 있습니다.\n*이 이야기는 주인공이 목표를 위해 모험을 떠나지만 딜레마에 빠져 매우 어렵다, 라는 내용이 들어가야 합니다.', question:'로그라인을 만들어 봐요!', fieldId:'f-s3' },
-  { id:'s-4', visual:'👤', stageIntro:'같이 모험을 떠나게 될 아바타입니다.\n*사람들이 마음을 내줄 수 있는 호감형 캐릭터입니다.', question:'주인공을 먼저 간략하게 만들어 볼까요?', fieldId:'f-s4' },
-  { id:'s-5', visual:'⚔️', stageIntro:'주인공의 반대편에 선 인물들입니다.\n*희망이 아닌 두려움으로 인해 \'욕망\'에 굴복한 사람들이죠.', question:'이번엔 안타고니스트(적대자)를 만들어 볼까요?', fieldId:'f-s5' },
-  { id:'s-6', visual:'🎉', stageIntro:'[이제부터 개연성 전개를 해보겠습니다.]\n독자와의 라포(친밀감)를 형성하는 첫인상 구간입니다.\n*사람들끼리 친해지려면 수다를 떨거나, 유머를 나누는 것과 같습니다.', question:'[코믹 릴리프]\n주인공은 언제, 어디서 일상을 보내고 있나요?', fieldId:'f-s6' },
-  { id:'s-7', visual:'🌧️', stageIntro:null, question:'[트러블]\n그런데 어느 날, 어떤 문제가 터질까요?', fieldId:'f-s-7' },
-  { id:'s-8', visual:'⚖️', stageIntro:null, question:'[딜레마]\n어떤 갈등으로 고통 받게 될까요?', fieldId:'f-s8' },
-  { id:'s-9', visual:'⏱️', stageIntro:'긴장감이 고조되는 시간입니다.\n*시간적, 공간적 제약으로 인해 아슬아슬해집니다.', question:'[서스펜스]\n진상파악으로 악화되는 시간입니다. 그게 뭘까요?', fieldId:'f-s9' },
-  { id:'s-10', visual:'🔥', stageIntro:null, question:'[클라이막스]\n결국 걱정하던 일이 터져 버렸습니다. 그게 뭘까요?', fieldId:'f-s10' },
-  { id:'s-11', visual:'✨', stageIntro:'반전으로 쾌감을 주는 가장 중요한 구간입니다.', question:'[획기적인 해결]\n전혀 생각지 못한 방법으로 해결합니다. 그게 뭘까요?', fieldId:'f-s11' },
+// ── 상수 ──
+const SB_URL='https://mvygorffhbshubqkerpo.supabase.co';
+const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im12eWdvcmZmaGJzaHVicWtlcnBvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2MzU3ODQsImV4cCI6MjA4OTIxMTc4NH0.p7usz-l53gmibWpswzTFvhzmR3UX7QkWb3oPsy3A50c';
+const sb=window.supabase.createClient(SB_URL,SB_KEY);
+// ── 상태 ──
+let user=null,projects=[],selProj=null,steps=[],step=0,hist=[],charName='조수 어시스턴트',xMsgs=[],xPersona='';
+// ── 루틴 데이터 ──
+const LONG=[
+  {id:'l-1',v:'🎯',h:'[장편 기획 플랜]
+끌리게 된 키워드와 사람들의 반응 요소를 결합해 보길 제안합니다.',q:'어떤 이야기를 만들고 싶으세요?'},
+  {id:'l-2',v:'📚',h:'장르 선택에 따라 사람들의 반응 패턴은 달라집니다.',q:'이야기의 장르는 무엇인가요?'},
+  {id:'l-4',v:'👤',h:'같이 모험을 떠나게 될 아바타입니다.
+*사람들이 마음을 내줄 수 있는 호감형 캐릭터입니다.',q:'주인공을 먼저 간략하게 만들어 볼까요?'},
+  {id:'l-3b',v:'🌍',h:'주인공이 움직일 공간입니다.',q:'[배경] 이 작품의 세계관은 어때요?'},
+  {id:'l-3c',v:'💪',h:'등장인물은 극 중에서 반드시 움직여야 합니다.
+움직이게 만드는 건 강력한 동기구요.',q:'[행동] 주인공은 뭘 하고 싶어 하나요?'},
+  {id:'l-3',v:'✍️',h:'전체 이야기를 관통하는 한 문장이자 질문일 수 있습니다.
+*주인공이 목표를 위해 모험을 떠나지만 딜레마에 빠져 매우 어렵다, 라는 내용이 들어가야 합니다.',q:'로그라인을 만들어 봐요!'},
+  {id:'l-5',v:'⚔️',h:"주인공의 반대편에 선 인물들입니다.
+*희망이 아닌 두려움으로 인해 '욕망'에 굴복한 사람들이죠.",q:'이번엔 안타고니스트(적대자)를 만들어 볼까요?'},
+  {id:'l-6',v:'🎬',h:"[이제부터 개연성 전개를 해보겠습니다.]
+어떤 컨셉이며 어떤 이야기인지 보여주는 동시에 초장부터 '반전'을 보여주며 이목을 확 집중시켜야 합니다.",q:'[프롤로그]
+처음엔 어떤 장면으로 이목을 끌어 볼까요?'},
+  {id:'l-7',v:'🌧️',h:'지금 주인공은 내면적 결핍으로 힘든 상태입니다.',q:'[문제 직면의 순간]
+주인공이 어쩔 수 없이 마주해야 할 시련은 무엇이 있을까요?'},
+  {id:'l-8',v:'🎣',h:'강력한 동기를 만들 만한 사건입니다.
+*악순환을 방치할 것인가, 미끼에 걸려들 것인가? 선택하는 순간입니다.',q:'[미끼의 순간]
+주인공의 내적 변화를 일으키려면 어떻게 해야 할까요?'},
+  {id:'l-9',v:'🔑',h:'모험 시작의 열쇠를 찾은 순간입니다.',q:'[검증의 순간]
+주인공은 어떤 잠재력을 가졌고 이 여정을 떠나기 위한 조건은 뭘까요?'},
+  {id:'l-10',v:'🗺️',h:'이제 다신 일상으로 돌아갈 수 없습니다.',q:'[신념의 순간]
+주인공이 그리는 청사진은 무엇일까?'},
+  {id:'l-11',v:'📈',h:null,q:'[발전의 순간]
+갈등, 변화를 겪은 주인공은 앞으로 어떤 흥미진진한 일을 벌일까요?'},
+  {id:'l-12',v:'🏆',h:'앞으로 치고 나가 공략할 수 있는 뭔가를 발견한 순간입니다.',q:'[가짜 승리]
+주인공과 동료들은 어떤 활약을 펼칠까요?'},
+  {id:'l-13',v:'⚠️',h:'건들지 말아야 할 걸 건드려버렸거나 가지 말아야 할 곳을 가버렸어요.',q:'[방심의 순간]
+엉뚱한 데서 사건이 터져 계획이 완전 틀어져 버렸어요! 그게 뭘까요?'},
+  {id:'l-14',v:'🌪️',h:'그냥 말이 아닌, 눈앞에 시련을 보여주며 주인공을 흔들리게 만드세요.',q:'[혼란의 순간]
+실패하면 어떤 참극을 초래할까요?'},
+  {id:'l-15',v:'💡',h:'게임에 대한 실마리를 조금은 알 것 같은 순간입니다.
+*클라이막스를 위한 추진력을 얻는 구간입니다.',q:'[각성의 순간]
+"비밀은 바로 이거였어?!"'},
+  {id:'l-16',v:'⏱️',h:'시간적, 공간적 제약으로 인해 아슬아슬한 긴장감이 고조됩니다.',q:'[초긴박한 순간]
+회심의 프로젝트, 과연 성공할 수 있을까요?'},
+  {id:'l-17',v:'🔥',h:'지독하게 괴롭혀 왔던 내면적 결핍과 극한으로 마주하는 순간입니다.
+*감정-행동-갈등이 극한으로 폭발하는 순간입니다.',q:'[클라이막스-폭발의 순간]
+마지막 끝판왕 갈등. 최악의 순간에서 주인공은 어떤 선택을 할까요?'},
+  {id:'l-18',v:'🔄',h:'완전한 각성을 이루는 순간입니다.
+*초반부터 무심코 지나쳤는데 이게 이렇게 중요했다니 무릎을 탁 치는 순간입니다.',q:'[반전의 순간]
+"이건 미처 몰랐지?! 충격, 갈등 해결의 열쇠가 이거였다니!"'},
+  {id:'l-19',v:'🌅',h:'긴장 해소, 주인공들의 일상 복귀와 아이러닉한 변화가 보입니다.',q:'[이완의 순간]
+주인공과 동료들은 이렇게 내적 변화하거나 성장했어요.'},
+  {id:'l-20',v:'🏁',h:'처음부터 꽁꽁 숨겨왔던 비밀을 풀거나, 질문을 던지면서 끝날 수도 있습니다.',q:'[에필로그]
+이 여정 이후 어떻게 될까요?'},
 ];
-
-const consumerSteps = [
-  { id:'l-1', visual:'🎯', stageIntro:'[장편 기획 플랜]\n끌리게 된 키워드와 사람들의 반응 요소를 결합해 보길 제안합니다.', question:'어떤 이야기를 만들고 싶으세요?', fieldId:'f-l1' },
-  { id:'l-2', visual:'📚', stageIntro:'장르 선택에 따라 사람들의 반응 패턴은 달라집니다.', question:'이야기의 장르는 무엇인가요?', fieldId:'f-l2' },
-  { id:'l-4', visual:'👤', stageIntro:'같이 모험을 떠나게 될 아바타입니다.\n*사람들이 마음을 내줄 수 있는 호감형 캐릭터입니다.', question:'주인공을 먼저 간략하게 만들어 볼까요?', fieldId:'f-l4' },
-  {
-    id:'l-3b', visual:'🌍', 
-    stageIntro:'주인공이 움직일 공간입니다.',
-    question:'[배경] 이 작품의 세계관은 어때요?', 
-    fieldId:'f-l3b'
-  },
-  {
-    id:'l-3c', visual:'💪', 
-    stageIntro:'등장인물은 극 중에서 반드시 움직여야 합니다.\n움직이게 만드는 건 강력한 동기구요.',
-    question:'[행동] 주인공은 뭘 하고 싶어 하나요?', 
-    fieldId:'f-l3c'
-  },
-  { id:'l-3', visual:'✍️', stageIntro:'전체 이야기를 관통하는 한 문장이자 질문일 수 있습니다.\n*이 이야기는 주인공이 목표를 위해 모험을 떠나지만 딜레마에 빠져 매우 어렵다, 라는 내용이 들어가야 합니다.', question:'로그라인을 만들어 봐요!', fieldId:'f-l3' },
-  { id:'l-5', visual:'⚔️', stageIntro:'주인공의 반대편에 선 인물들입니다.\n*희망이 아닌 두려움으로 인해 \'욕망\'에 굴복한 사람들이죠.', question:'이번엔 안타고니스트(적대자)를 만들어 볼까요?', fieldId:'f-l5' },
-  { id:'l-6', visual:'🎬', stageIntro:'[이제부터 개연성 전개를 해보겠습니다.]\n어떤 컨셉이며 어떤 이야기인지 보여주는 동시에 초장부터 \'반전\'을 보여주며 이목을 확 집중시켜야 합니다.', question:'[프롤로그]\n첫인상입니다. 처음엔 어떤 장면으로 이목을 끌어 볼까요?', fieldId:'f-l6' },
-  { id:'l-7', visual:'🌧️', stageIntro:'지금 주인공은 내면적 결핍으로 힘든 상태입니다.', question:'[문제 직면의 순간]\n주인공이 어쩔 수 없이 마주해야 할 시련은 무엇이 있을까요?', fieldId:'f-l7' },
-  { id:'l-8', visual:'🎣', stageIntro:'강력한 동기를 만들 만한 사건입니다.\n*악순환을 방치할 것인가, 미끼에 걸려들 것인가? 선택하는 순간입니다.', question:'[미끼의 순간]\n뭔가 악순환이 반복되고 있어요.. 주인공의 내적 변화를 일으키려면 어떻게 해야 할까요?', fieldId:'f-l8' },
-  { id:'l-9', visual:'🔑', stageIntro:'모험 시작의 열쇠를 찾은 순간입니다.', question:'[검증의 순간]\n주인공은 어떤 잠재력을 가졌고 이 여정을 떠나기 위한 조건은 뭘까요?', fieldId:'f-l9' },
-  { id:'l-10', visual:'🗺️', stageIntro:'이제 다신 일상으로 돌아갈 수 없습니다.', question:'[신념의 순간]\n주인공이 그리는 청사진은 무엇일까?', fieldId:'f-l10' },
-  { id:'l-11', visual:'📈', stageIntro:null, question:'[발전의 순간]\n갈등, 변화를 겪은 주인공은 앞으로 어떤 흥미진진한 일을 벌일까요?', fieldId:'f-l11' },
-  { id:'l-12', visual:'🏆', stageIntro:'앞으로 치고 나가 공략할 수 있는 뭔가를 발견한 순간입니다.', question:'[가짜 승리]\n주인공과 동료들은 어떤 활약을 펼칠까요?', fieldId:'f-l12' },
-  { id:'l-13', visual:'⚠️', stageIntro:'건들지 말아야 할 걸 건드려버렸거나 가지 말아야 할 곳을 가버렸어요.', question:'[방심의 순간]\n엉뚱한 데서 사건이 터져 계획이 완전 틀어져 버렸어요! 그게 뭘까요?', fieldId:'f-l13' },
-  { id:'l-14', visual:'🌪️', stageIntro:'그냥 말이 아닌, 눈앞에 시련을 보여주며 주인공을 흔들리게 만드세요. 여기서는 내부 분열이 일어나기도 합니다.', question:'[혼란의 순간]\n실패하면 어떤 참극을 초래할까요?', fieldId:'f-l14' },
-  { id:'l-15', visual:'💡', stageIntro:'게임에 대한 실마리를 조금은 알 것 같은 순간입니다.\n*클라이막스를 위한 추진력을 얻는 구간입니다.', question:'[각성의 순간]\n"비밀은 바로 이거였어?!"', fieldId:'f-l15' },
-  { id:'l-16', visual:'⏱️', stageIntro:'시간적, 공간적 제약으로 인해 아슬아슬한 긴장감이 고조됩니다.', question:'[초긴박한 순간]\n회심의 프로젝트, 과연 성공할 수 있을까요?', fieldId:'f-l16' },
-  { id:'l-17', visual:'🔥', stageIntro:'지독하게 괴롭혀 왔던 내면적 결핍과 극한으로 마주하는 순간입니다.\n*각성해서 발견했던 희망이 통하지 않아요. 죽음에 필적하는 고통이 느껴집니다.\n*감정-행동-갈등이 극한으로 폭발하는 순간입니다.', question:'[클라이막스-폭발의 순간]\n마지막 끝판왕 갈등. 최악의 순간에서 주인공은 어떤 선택을 할까요?', fieldId:'f-l17' },
-  { id:'l-18', visual:'🔄', stageIntro:'완전한 각성을 이루는 순간입니다.\n*초반부터 무심코 지나쳤는데 이게 이렇게 중요했다니 무릎을 탁 치는 순간입니다.\n*사건 해결은 반드시 주인공이 관여해야 합니다.', question:'[반전의 순간]\n"이건 미처 몰랐지?! 충격, 갈등 해결의 열쇠가 이거였다니!"', fieldId:'f-l18' },
-  { id:'l-19', visual:'🌅', stageIntro:'긴장 해소, 주인공들의 일상 복귀와 아이러닉한 변화가 보입니다.', question:'[이완의 순간]\n주인공과 동료들은 이렇게 내적 변화하거나 성장했어요.', fieldId:'f-l19' },
-  { id:'l-20', visual:'🏁', stageIntro:'처음부터 꽁꽁 숨겨왔던 비밀을 풀거나, 질문을 던지면서 끝날 수도 있습니다.', question:'[에필로그]\n이 여정 이후 어떻게 될까요?', fieldId:'f-l20' },
+const SHORT=[
+  {id:'s-1',v:'🎯',h:'[단편 기획 플랜]
+끌리게 된 키워드와 사람들의 반응 요소를 결합해 보길 제안합니다.',q:'어떤 단편 이야기를 만들고 싶으세요?'},
+  {id:'s-2',v:'📚',h:'장르 선택에 따라 사람들의 반응 패턴은 달라집니다.',q:'이야기의 장르는 무엇인가요?'},
+  {id:'s-3',v:'✍️',h:'전체 이야기를 관통하는 한 문장이자 질문일 수 있습니다.',q:'로그라인을 만들어 봐요!'},
+  {id:'s-4',v:'👤',h:'같이 모험을 떠나게 될 아바타입니다.',q:'주인공을 먼저 간략하게 만들어 볼까요?'},
+  {id:'s-5',v:'⚔️',h:'주인공의 반대편에 선 인물들입니다.',q:'안타고니스트(적대자)를 만들어 볼까요?'},
+  {id:'s-6',v:'🎉',h:'독자와의 라포(친밀감)를 형성하는 첫인상 구간입니다.',q:'[코믹 릴리프]
+주인공은 언제, 어디서 일상을 보내고 있나요?'},
+  {id:'s-7',v:'🌧️',h:null,q:'[트러블]
+그런데 어느 날, 어떤 문제가 터질까요?'},
+  {id:'s-8',v:'⚖️',h:null,q:'[딜레마]
+어떤 갈등으로 고통 받게 될까요?'},
+  {id:'s-9',v:'⏱️',h:'긴장감이 고조되는 시간입니다.',q:'[서스펜스]
+진상파악으로 악화되는 시간입니다. 그게 뭘까요?'},
+  {id:'s-10',v:'🔥',h:null,q:'[클라이막스]
+결국 걱정하던 일이 터져 버렸습니다. 그게 뭘까요?'},
+  {id:'s-11',v:'✨',h:'반전으로 쾌감을 주는 가장 중요한 구간입니다.',q:'[획기적인 해결]
+전혀 생각지 못한 방법으로 해결합니다. 그게 뭘까요?'},
 ];
-
-
-
-const sellerSteps = [
-  { id:'s-name',  visual:'🏷️', stageIntro:'이 단계에서는 루틴 이름과 기본 정보를 설정합니다.\n구매자가 한눈에 이해할 수 있는 매력적인 이름이 좋습니다.', question:'루틴의 이름을 정해주세요.', example:'예시: 10분 완성 로판 기획 루틴, 캐릭터 빌드업 마스터, 악역 서사 7단계', choices:['10분 기획 챌린지', '캐릭터 빌드업 루틴', '악역 서사 메이커'], fieldId:'s-name' },
-  { id:'s-genre', visual:'🎭', stageIntro:null, question:'이 루틴은 어떤 장르에 적합한 기획을 도와주나요?', example:'예시: 로맨스 코미디, 빙의물, 모든 장르 범용', choices:['로맨스판타지','정통 판타지','현대물','장르 무관 범용'], fieldId:'s-genre' },
-  { id:'s-steps', visual:'🪜', stageIntro:null, question:'루틴을 총 몇 단계로 구성하시겠어요?', example:'예시: 5단계(단편), 10단계(장편), 유동적', choices:['5단계 (빠른 단편 기획)','10단계 (표준 진행형)','15단계 이상 (심화 기획)'], fieldId:'s-steps' },
-  { id:'s-q1',    visual:'💬', stageIntro:'여기서는 루틴의 첫 번째 질문을 설계합니다.\n창작자들을 몰입시킬 매력적인 질문을 작성해주세요.', question:'작가님만의 첫 번째 기획 질문은 무엇인가요?', example:'예시: 주인공이 절대 들키고 싶지 않은 흑역사는 무엇인가요?', choices:['주인공이 절대 들키고 싶지 않은 흑역사는?', '주인공의 가장 큰 결핍은?', '이야기의 시작을 알리는 발단 사건은?'], fieldId:'s-q1' },
-  { id:'s-q1c',   visual:'🔘', stageIntro:null, question:'이 질문에 제안용 선택지를 추가하시겠어요?', example:'예시: [신분 위조], [과거의 살인], [금지된 사랑] 같은 선택지를 주고 싶어', choices:['미리 세팅된 예시 선택지 제공','자유 입력 형태로만 진행'], fieldId:'s-q1c' },
-  { id:'s-desc',  visual:'📝', stageIntro:'이 단계에서는 마켓을 위한 상품 소개를 작성합니다.', question:'루틴을 홍보할 한 줄 소개 문구를 작성해주세요.', example:'예시: 플롯이 막힌 작가님을 위한 가장 완벽한 10단계 솔루션!', choices:['막힌 플롯을 단숨에 뚫어주는 마법의 기획법', '누구나 쉽게 따라하는 베스트셀러의 비밀', '캐릭터가 스스로 움직이게 만드는 마법의 루틴'], fieldId:'s-desc' },
-  { id:'s-price', visual:'💰', stageIntro:null, question:'?ㅽ넗???먮ℓ 媛寃⑹쓣 ?ㅼ젙?댁＜?몄슂.', example:'?덉떆: 1500???뺣룄濡?媛蹂띻쾶 梨낆젙, 4900???꾨━誘몄뾼)', choices:['무료 배포','990원','2,900원','4,900원(프리미엄)'], fieldId:'s-price' }
-];
-
-async function fetchAIFeedback(userInput, stepInfo) {
-  const endpoint = `/api/chat`;
-  const projectContext = _currentLoadedProject || { title: "새 작품", answerHistory: answerHistory };
-  
-  let persona = "당신은 작품 기획을 돕는 유능한 AI 조수입니다.\n\n[행동 규칙]\n1. 유저의 답변에서 논리적 허점을 발견하면 반드시 지적하세요.\n2. 칭찬은 정말 잘 된 경우에만 1문장으로 간결하게.\n3. 제안은 구체적 근거와 함께 제시하세요.";
-  
-  if (selectedCharName && selectedCharName.includes('조수 B')) {
-    persona = `당신은 웹소설 기획 조수 'B(F형)'입니다.
-
-[성격 & 말투]
-- 공감 능력이 뛰어나고 따뜻합니다. 작가의 의도를 먼저 읽으려 합니다.
-- 문장에 감정이 담겨 있습니다. 격려와 칭찬을 아끼지 않습니다.
-- 부드럽게 시작해서 조심스럽게 제안합니다.
-
-[전문 영역]
-- 캐릭터 감정선: 주인공이 어떤 감정을 느끼는지, 독자가 공감할 수 있는지 분석합니다.
-- 서사의 온기: 이야기가 독자의 마음에 닿을 수 있는지 감정적 관점에서 평가합니다.
-
-[행동 규칙]
-1. 유저의 답변에서 감정적으로 강한 요소를 발견하면 먼저 공감을 표현하세요.
-2. 개선점은 "~하면 더 좋을 것 같아요"처럼 제안형으로 말하세요.
-3. 마지막은 항상 격려로 마무리하세요.`;
-  } else if (selectedCharName === '심리학 전문가') {
-    persona = "당신은 임상심리학 전문가입니다. 작가가 원고나 캐릭터 설정을 보여주면 심리학적 관점에서 현실성을 검토하고 구체적인 피드백을 제공하세요. 틀린 부분은 명확히 지적하고 올바른 심리학적 근거를 설명해주세요.";
-  } else if (selectedCharName === '냉정한 편집자') {
-    persona = "당신은 10년 경력의 웹툰 담당 편집자입니다. 작가의 원고를 받으면 독자 이탈 가능성, 개연성 오류, 구조적 문제점, 트렌드 부합 여부 등을 냉정하고 직접적으로 피드백하세요. 칭찬보다 문제점 파악에 집중하세요.";
-  } else if (selectedCharName === '의학 전문가') {
-    persona = "당신은 의학 및 법의학 전문가입니다. 작가가 제시한 상처, 부검 결과, 질병, 약물 등의 설정이 의학적으로 타당한지 검토하고, 오류를 날카롭게 지적하며 정확한 의학적 지식을 제공해주세요.";
-  } else if (selectedCharName === '수사 전문가') {
-    persona = "당신은 현장 경험이 풍부한 강력계 형사 및 범죄수사 전문가입니다. 경찰 조직의 생리, 체포 절차, 증거 수집 과정의 현실성을 검토하고, 수사물로서의 디테일을 살릴 수 있도록 조언해주세요.";
-  } else if (selectedCharName === '법률 전문가') {
-    persona = "당신은 현직 변호사입니다. 작가의 시나리오에 등장하는 재판 과정, 형량, 법적 절차, 계약서 내용 등의 맹점을 지적하고, 실제 법률에 기반한 정확한 자문을 시니컬한 어투로 제공하세요.";
-  } else if (selectedCharName === '역사 전문가') {
-    persona = "당신은 까다로운 역사학자입니다. 시대물이나 대체역사물에서 복식, 문화, 제도, 언어 사용 등의 고증 오류를 철저히 검증하고, 당시 시대상에 맞는 올바른 디테일을 제시하세요.";
-  } else if (selectedCharName === '군사 전문가') {
-    persona = "당신은 무기와 전술에 정통한 군사 전문가입니다. 총기, 냉병기, 군사 전술, 부대 단위 이동 등의 묘사가 밀리터리 고증에 맞는지 분석하고, 전투씬의 현실성을 높일 조언을 제공하세요.";
-  } else if (selectedCharName === '공감형 편집자') {
-    persona = "당신은 독자와의 소통을 최우선으로 생각하는 공감형 편집자입니다. 원고를 읽고 독자들이 어느 포인트에서 감동하고 슬퍼할지 감정선을 짚어주며, 캐릭터의 매력을 극대화할 수 있도록 따뜻하게 피드백해주세요.";
-  } else if (selectedCharName === '로판 편집자') {
-    persona = "당신은 로맨스 판타지, 스릴러, 판타지 등 장르 문법에 정통한 편집자입니다. 해당 장르의 주요 클리셰와 독자들의 니즈(사이다 전개, 관계성 등)를 완벽히 이해하고 있으며, 트렌디한 장르물로 다듬기 위한 맞춤형 조언을 제공하세요.";
-  } else if (selectedCharName === '작품 편집자') {
-    persona = "당신은 작가의 작품 기획을 돕는 '작품 편집자'입니다. 작가가 여태까지 기획한 내용(projectContext)을 완벽히 숙지하고 있으며, 이를 바탕으로 일관성 있는 제안과 피드백을 제공합니다. 친절하면서도 전문적인 어조로 대화하세요.";
-  }
-
-  const isRequestingRecommendation = userInput.includes('추천') || userInput.includes('모르겠');
-  
-  const storyContext = answerHistory.map(h => {
-    const s = activeSteps.find(st => st.id === h.stepId);
-    return s ? `- ${s.fieldId ? s.fieldId.replace(/^[fsl]-/,'') : s.id}: ${h.boardValue || h.value}` : '';
-  }).filter(Boolean).join('\n');
-  
-  let promptText = "";
-  if (isRequestingRecommendation) {
-    promptText = `[현재 기획 단계]: ${stepInfo.stageIntro ? stepInfo.stageIntro + ' ' : ''}${stepInfo.question}
-[유저의 답변]: ${userInput}
-${storyContext ? `\n[지금까지 수집된 이야기 요소]:\n${storyContext}\n` : ''}
-지시사항:
-1. 유저의 답변을 한 줄로 요약하세요.
-4. 응답 맨 마지막 줄에 반드시 아래 형식으로 전체 스토리를 통합한 문장을 추가하세요 (절대 본문에 노출 금지):
-[BOARD]: 지금까지 수집된 모든 이야기 요소를 통합하여 "[장르] [분위기] 작품으로, [주인공 설명]이/가 [핵심 갈등/두려움]에 맞서는 이야기" 형식의 완전한 한 문장으로 작성하세요. (50자 내외)`;
-  } else if (currentStep === 999) {
-    promptText = `
-[유저의 질문/원고]: ${userInput}
-
-지시사항:
-1. 설정된 페르소나 관점에서 유저의 질문이나 원고 내용에 대해 전문적이고 구체적인 피드백을 제공하세요.
-2. 잘된 점과 수정이 필요한 점(또는 논리적 모순, 고증 오류 등)을 구조적으로 짚어주세요.
-3. 답변 길이는 500자 내외로 유지하며 가독성 좋게 작성하세요.
-4. 마지막 줄에는 반드시 "추가로 더 검증하고 싶은 부분이나 다른 궁금한 점이 있으신가요?" 라는 뉘앙스의 질문을 덧붙여 대화가 이어질 수 있게 유도하세요.`;
-  } else {
-    promptText = `
-[현재 기획 단계]: ${stepInfo.stageIntro ? stepInfo.stageIntro + ' ' : ''}${stepInfo.question}
-[유저의 답변]: ${userInput}
-${storyContext ? `\n[지금까지 수집된 이야기 요소]:\n${storyContext}` : ''}
-
-지시사항:
-유저의 답변을 한 줄로 요약하세요 (한 문장, 간결하게).
-응답 맨 마지막 줄에 반드시 아래 형식으로 전체 스토리를 통합한 문장을 추가하세요 (절대 본문에 노출 금지):
-[BOARD]: 지금까지 수집된 모든 이야기 요소를 통합하여 "[장르] [분위기] 작품으로, [주인공 설명]이/가 [핵심 갈등/두려움]에 맞서는 이야기" 형식의 완전한 한 문장으로 작성하세요. (50자 내외)`;
-  }
-
-  try {
-    const res = await fetch(endpoint, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        messages: [
-          { role: 'system', content: persona },
-          { role: 'user', content: promptText }
-        ],
-        projectContext: projectContext
-      })
-    });
-
-    if (!res.ok) throw new Error(`서버 오류 (${res.status})`);
-    const data = await res.json();
-    return data.choices?.[0]?.message?.content || '응답을 받지 못했습니다.';
-  } catch (e) {
-    console.error('AI 피드백 오류:', e);
-    return `⚠️ AI 통신 오류: ${e.message}\n인터넷 연결을 확인하거나 나중에 다시 시도해주세요.`;
+// ── 유틸 ──
+const $=id=>document.getElementById(id);
+const flash=(msg,d=2000)=>{const e=$('fl');e.textContent=msg.length>45?msg.slice(0,45)+'...':msg;e.classList.add('on');setTimeout(()=>e.classList.remove('on'),d)};
+const md=t=>{if(!t)return'';return t.replace(/\*\*(.+?)\*\*/g,'<strong style="color:var(--purple-light)">$1</strong>').replace(/
+/g,'<br>')};
+// ── 네비 ──
+function navTo(v){
+  document.querySelectorAll('.view').forEach(e=>e.classList.remove('on'));
+  document.querySelectorAll('.ni').forEach(e=>e.classList.remove('on'));
+  const ve=$('view-'+v),ne=$('n-'+v);
+  if(ve)ve.classList.add('on');
+  if(ne)ne.classList.add('on');
+  if(v==='works')loadProjects();
+  if(v==='tasks'){
+    if(!selProj){flash('먼저 작품을 선택해주세요');navTo('works');return;}
+    $('tpn').textContent=selProj.title;
   }
 }
-
-async function processUserAnswer(val) {
-  hideInput();
-  showReplyFlash(val);
-  
-  const stepInfo = currentStep === 999 
-    ? { id: 'verify-mode', question: '작품 검증 Q&A' } 
-    : activeSteps[currentStep];
-
-  // 로딩 텍스트
-  const txtField = $('dialogTxt');
-  const exField = $('dialogExample');
-  exField.classList.remove('show');
-  txtField.innerHTML = '<span style="color:var(--text-dim);font-weight:normal;font-size:16px;">(정리하고 있습니다...)</span>';
-  $('dialogCursor').style.display = 'none';
-
-  // BOARD 태그 추출을 위해 간단 AI 호출 (컨펌 없이)
-  const feedback = await fetchAIFeedback(val, stepInfo);
-
-  const boardMatch = feedback.match(/\[BOARD\]:\s*([\s\S]+?)(?:\n|$)/i);
-  const boardSummary = boardMatch ? boardMatch[1].trim() : val;
-  const visibleFeedback = feedback.replace(/\[BOARD\]:[\s\S]*/i, '').trim();
-
-  if (currentStep !== 999) {
-    const stepLabelMap = {
-      'l-1':'콘셉트','l-2':'장르','l-3':'로그라인','l-3b':'배경','l-3c':'동기','l-4':'주인공','l-5':'적대자',
-      'l-6':'프롤로그','l-7':'문제직면','l-8':'미끼','l-9':'검증','l-10':'신념',
-      'l-11':'발전','l-12':'가짜승리','l-13':'방심','l-14':'혼란','l-15':'각성',
-      'l-16':'초긴박','l-17':'클라이막스','l-18':'반전','l-19':'이완','l-20':'에필로그',
-      's-1':'콘셉트','s-2':'장르','s-3':'로그라인','s-4':'주인공','s-5':'적대자',
-      's-6':'코믹릴리프','s-7':'트러블','s-8':'딜레마','s-9':'서스펜스','s-10':'클라이막스','s-11':'해결',
-      's-name':'루틴명','s-genre':'대상장르','s-steps':'단계수',
-      's-q1':'첫질문','s-q1c':'선택지','s-desc':'소개','s-price':'가격'
-    };
-    const chipLabel = stepLabelMap[stepInfo.id] || stepInfo.id;
-    updateStorySentence(boardSummary, chipLabel);
+function goHome(){navTo('works');}
+// ── 오버레이 ──
+const openOv=id=>$(id).classList.add('on');
+const closeOv=id=>$(id).classList.remove('on');
+// ── 프로젝트 ──
+async function loadProjects(){
+  const local=JSON.parse(localStorage.getItem('mp')||'[]');
+  if(!user||user.id==='t001'){
+    projects=local.length?local:[{id:'d1',title:'귀신들린 그래플러',genre:'액션/스릴러',synopsis:'격투기 선수 주인공이 귀신에 씐 채로 링 위에서 싸우는 이야기.',answer_history:[],routine_type:'long'}];
+    renderProjects();return;
   }
-
-  // 답변 이력 저장 후 바로 다음 단계 진행
-  if (currentStep === 999) {
-    // 검증 모드: 짧은 AI 코멘트 보여주고 다시 입력 열기
-    typing = false;
-    showDialogText({ question: visibleFeedback }, () => {
-      showChoices(['계속 질문하기', '검증 종료하고 처음으로'], (c) => {
-        hideInput();
-        showReplyFlash(c);
-        if (c === '검증 종료하고 처음으로') {
-          setTimeout(() => goHome(), 1000);
-        } else {
-          setTimeout(() => {
-            showDialogText({ question: `좋습니다. 더 궁금한 점이나 다음 원고 내용을 편하게 적어주세요.` }, () => {
-              showInput(false);
-            });
-          }, 600);
-        }
-      });
-      showInput(false);
-    });
-  } else {
-    // 스토리 빌드업: 확인 없이 즉시 다음 단계
-    answerHistory.push({
-      stepIdx: currentStep,
-      stepId: stepInfo.id,
-      value: val,
-      boardValue: boardSummary
-    });
-    // AI 코멘트를 간단히 flash로만 보여주고 바로 다음 단계
-    const shortFeedback = visibleFeedback.split('\n')[0].substring(0, 80);
-    showReplyFlash(shortFeedback || '✓ 저장됨');
-    setTimeout(() => runStep(currentStep + 1), 800);
-  }
+  try{const{data,error}=await sb.from('projects').select('*').eq('user_id',user.id).order('completed_at',{ascending:false});if(error)throw error;projects=data||[];}
+  catch(e){projects=local;}
+  if(!projects.length)projects=[{id:'d1',title:'귀신들린 그래플러',genre:'액션/스릴러',synopsis:'격투기 선수 주인공이 귀신에 씐 채로 링 위에서 싸우는 이야기.',answer_history:[],routine_type:'long'}];
+  renderProjects();
 }
-
-function handleChoice(val) {
-  processUserAnswer(val);
-}
-
-function handleSend() {
-  const box = $('inputBox');
-  const val = box.value.trim();
-  if (!val) return;
-  box.value = ''; box.style.height = '40px';
-  processUserAnswer(val);
-}
-
-// ── INSIGHT PANEL ──
-function hideInput() {
-  const area = $('answerArea');
-  if (area) area.classList.remove('show');
-  const box = $('choicesBox');
-  if (box) { box.innerHTML = ''; box.style.display = 'none'; }
-}
-
-function showReplyFlash(text) {
-  const el = $('replyFlash');
-  if (!el) return;
-  el.textContent = text.length > 40 ? text.substring(0, 40) + '...' : text;
-  el.classList.add('show');
-  setTimeout(() => el.classList.remove('show'), 1800);
-}
-
-function updateStorySentence(summary, chipLabel) {
-  const boxId = isSeller ? 'seller-summary-box' : 'story-summary-box';
-  const chipsId = isSeller ? 'seller-chips' : 'story-chips';
-  const box = $(boxId);
-  const chips = $(chipsId);
-  if (box) {
-    box.innerHTML = summary;
-    box.classList.add('has-content');
-    if (isSeller) box.classList.add('seller-content');
-  }
-  if (chips && chipLabel) {
-    const chip = document.createElement('span');
-    chip.className = 'sp-chip' + (isSeller ? ' seller-chip' : '');
-    chip.textContent = chipLabel;
-    chips.appendChild(chip);
-  }
-}
-
-let currentBoardStepId = null;
-
-function renderBoard() {
-  const root = $('planning-board-root');
-  if (!root) return;
-  root.style.display = 'block';
-  
-  const total = activeSteps.length;
-  const completedCount = answerHistory.length;
-  const percent = total > 0 ? Math.round((completedCount / total) * 100) : 0;
-
-  root.innerHTML = `
-    <div class="routine-board" style="display:flex;">
-      <div class="board-header">
-        <div class="board-progress-info">
-          <div class="board-progress-label">
-            <span id="boardActLabel">설계 단계 진행 중</span>
-            <span style="margin-left:12px; opacity:0.6; font-weight:500;">(${completedCount}/${total} 단계 완료)</span>
-          </div>
-          <div style="display:flex; align-items:center; gap:20px;">
-            <div class="board-progress-percent">${percent}%</div>
-            <button id="genSynopsisBtn" class="board-finish-btn" style="padding:10px 24px; font-size:14px; ${percent >= 60 ? 'display:block; opacity:1; transform:none;' : ''}" onclick="finalizeProject()">시놉시스 생성</button>
-          </div>
-        </div>
-        <div class="board-progress-track">
-          <div class="board-progress-fill" style="width:${percent}%"></div>
-        </div>
-      </div>
-      
-      <div class="board-sections">
-        <div class="board-section" id="board-desire">
-          <div class="board-section-title">① 욕망</div>
-          <div class="board-grid" id="grid-desire"></div>
-        </div>
-        <div class="board-section" id="board-conflict">
-          <div class="board-section-title">② 갈등</div>
-          <div class="board-grid" id="grid-conflict"></div>
-        </div>
-        <div class="board-section" id="board-overcome">
-          <div class="board-section-title">③ 극복</div>
-          <div class="board-grid" id="grid-overcome"></div>
-        </div>
-      </div>
-    </div>
-  `;
-
-  // Render cards into grids
-  activeSteps.forEach((step, idx) => {
-    let actKey = 'desire';
-    if (ACT_MAP.conflict.includes(step.id)) actKey = 'conflict';
-    else if (ACT_MAP.overcome.includes(step.id)) actKey = 'overcome';
-    
-    const grid = $(`grid-${actKey}`);
-    if (!grid) return;
-
-    const history = answerHistory.find(h => h.stepId === step.id);
-    const card = document.createElement('div');
-    card.className = 'board-card' + (history ? ' filled' : '');
-    card.onclick = () => openBoardInput(idx);
-    card.innerHTML = `
-      <div class="board-card-header">
-        <div class="board-card-num">STEP ${idx + 1}</div>
-        <div class="board-card-check">${history ? '✓' : '?'}</div>
-      </div>
-      <div class="board-card-q">${step.question}</div>
-      <div class="board-card-a">${history ? (history.boardValue || history.value) : '내용을 입력해주세요...'}</div>
-    `;
-    grid.appendChild(card);
+function renderProjects(){
+  const g=$('pg');g.innerHTML='';
+  projects.forEach(p=>{
+    const c=document.createElement('div');c.className='pc';
+    c.innerHTML=`<div><span class="pc-genre">${p.genre||'미분류'}</span></div><div class="pc-title">${p.title}</div><div class="pc-syn">${p.synopsis||'시놉시스가 없습니다.'}</div><div class="pc-foot"><span>${p.routine_type==='short'?'단편':'장편'}</span><span>${(p.answer_history||[]).length}단계 완료</span></div>`;
+    c.onclick=()=>{selProj=p;flash(`'${p.title}' 선택됨`);};g.appendChild(c);
   });
-
-  // Update current act label based on progress
-  let currentAct = '① 욕망';
-  if (percent > 30) currentAct = '② 갈등';
-  if (percent > 70) currentAct = '③ 극복';
-  $('boardActLabel').textContent = currentAct;
+  const a=document.createElement('div');a.className='pc-add';
+  a.innerHTML='<div class="plus">+</div><span>새 작품 기획하기</span>';a.onclick=openMode;g.appendChild(a);
 }
-
-function openBoardInput(idx) {
-  const step = activeSteps[idx];
-  currentBoardStepId = step.id;
-  const history = answerHistory.find(h => h.stepId === step.id);
-  
-  $('popupVisual').textContent = step.visual || '📝';
-  $('popupQuestion').textContent = step.question;
-  const area = $('popupTextArea');
-  area.value = history ? history.value : '';
-  
-  $('inputPopup').classList.add('open');
-  area.focus();
+async function saveProject(synopsis){
+  const pid='p_'+Date.now();
+  const ts=hist.find(h=>['l-1','l-3','s-1','s-3'].includes(h.id));
+  const title=ts?ts.value.slice(0,30):'새 작품';
+  const gs=hist.find(h=>['l-2','s-2'].includes(h.id));
+  const genre=gs?gs.value.slice(0,20):'';
+  const proj={id:pid,title,genre,synopsis,answer_history:hist,routine_type:steps===LONG?'long':'short'};
+  const arr=JSON.parse(localStorage.getItem('mp')||'[]');
+  arr.unshift(proj);localStorage.setItem('mp',JSON.stringify(arr.slice(0,50)));
+  if(user&&user.id!=='t001'){try{await sb.from('projects').insert({...proj,user_id:user.id,completed_at:new Date().toISOString()});}catch(e){}}
+  flash('💾 작품이 저장됐습니다');
 }
-
-function closeBoardInput() {
-  $('inputPopup').classList.remove('open');
+// ── 모드/루틴/캐릭터 선택 ──
+function openMode(){openOv('ov-mode');}
+function selMode(m){
+  closeOv('ov-mode');
+  if(m==='seller'){flash('판매자 모드 — 준비 중입니다');return;}
+  openOv('ov-routine');
 }
-
-async function saveBoardStep() {
-  const val = $('popupTextArea').value.trim();
-  if (!val) return;
-  
-  const stepIdx = activeSteps.findIndex(s => s.id === currentBoardStepId);
-  const stepInfo = activeSteps[stepIdx];
-  
-  // Show localized loading/saving state
-  const saveBtn = document.querySelector('.popup-save-btn');
-  const originalText = saveBtn.textContent;
-  saveBtn.textContent = '저장 중...';
-  saveBtn.disabled = true;
-
-  try {
-    const feedback = await fetchAIFeedback(val, stepInfo);
-    const boardMatch = feedback.match(/\[BOARD\]:\s*([\s\S]+?)(?:\n|$)/i);
-    const boardSummary = boardMatch ? boardMatch[1].trim() : val;
-    
-    // Update or Add to history
-    const existingIdx = answerHistory.findIndex(h => h.stepId === currentBoardStepId);
-    const entry = {
-      stepIdx: stepIdx,
-      stepId: currentBoardStepId,
-      value: val,
-      boardValue: boardSummary
-    };
-    
-    if (existingIdx >= 0) answerHistory[existingIdx] = entry;
-    else answerHistory.push(entry);
-
-    // Update SHEET
-    const stepLabelMap = {
-      'l-1':'콘셉트','l-2':'장르','l-3':'로그라인','l-3b':'배경','l-3c':'동기','l-4':'주인공','l-5':'적대자',
-      'l-6':'프롤로그','l-7':'문제직면','l-8':'미끼','l-9':'검증','l-10':'신념',
-      'l-11':'발전','l-12':'가짜승리','l-13':'방심','l-14':'혼란','l-15':'각성',
-      'l-16':'초긴박','l-17':'클라이막스','l-18':'반전','l-19':'이완','l-20':'에필로그',
-      's-1':'콘셉트','s-2':'장르','s-3':'로그라인','s-4':'주인공','s-5':'적대자',
-      's-6':'코믹릴리프','s-7':'트러블','s-8':'딜레마','s-9':'서스펜스','s-10':'클라이막스','s-11':'해결'
-    };
-    updateStorySentence(boardSummary, stepLabelMap[currentBoardStepId]);
-    
-    closeBoardInput();
-    renderBoard();
-    showReplyFlash('✓ 단계가 저장되었습니다');
-  } catch (e) {
-    alert('저장 중 오류가 발생했습니다.');
-  } finally {
-    saveBtn.textContent = originalText;
-    saveBtn.disabled = false;
-  }
+function selRoutine(type){
+  closeOv('ov-routine');
+  steps=type==='long'?LONG:SHORT;
+  openOv('ov-char');
 }
-function finalizeProject() {
-  const percent = Math.round((answerHistory.length / activeSteps.length) * 100);
-  if (percent < 60) {
-    alert('최소 60% 이상 기획을 채워주세요! (약 12단계 이상)');
-    return;
-  }
-  finishFlow();
+function selChar(name){
+  closeOv('ov-char');
+  charName=name;hist=[];step=0;
+  startChat();
 }
+// ── 빌드업 챗 ──
+function startChat(){
+  navTo('chat');
+  $('cnp').textContent=charName;
+  $('dsp').textContent=charName;
+  initDots(steps.length);
+  renderStep(0);
+}
+function initDots(total){
+  const w=$('sdots');w.innerHTML='';$('st').textContent=total;
+  for(let i=0;i<Math.min(total,30);i++){const d=document.createElement('div');d.className='sd';d.id='sd'+i;w.appendChild(d);}
+}
+function updateDots(idx){
+  $('sn').textContent=idx+1;
+  document.querySelectorAll('.sd').forEach((d,i)=>{d.className='sd'+(i<idx?' done':i===idx?' act':'');});
+}
+function renderStep(idx){
+  step=idx;
+  if(idx>=steps.length){finishChat();return;}
+  const s=steps[idx];
+  updateDots(idx);
+  $('ce').textContent=s.v;
+  const sh=$('shint');
+  if(s.h){sh.innerHTML=md(s.h);sh.style.display='block';}else{sh.style.display='none';}
+  $('dt').innerHTML=md(s.q);
+  $('ia').style.display='flex';
+  $('cr').innerHTML='';
+  if(s.choices){s.choices.forEach(c=>{const b=document.createElement('button');b.className='cbtn';b.textContent=c;b.onclick=()=>submitAns(c);$('cr').appendChild(b);});}
+  setTimeout(()=>{const b=$('cbody');b.scrollTop=b.scrollHeight;},100);
+}
+function doSend(){
+  const b=$('ci');const v=b.value.trim();if(!v)return;
+  b.value='';b.style.height='44px';submitAns(v);
+}
+async function submitAns(val){
+  $('ia').style.display='none';
+  flash(val.length>30?val.slice(0,30)+'...':val);
+  const s=steps[step];
+  hist.push({id:s.id,value:val});
+  $('dt').innerHTML='<div class="thk">분석 중... <div class="td"><span>●</span><span>●</span><span>●</span></div></div>';
+  const fb=await ai([
+    {role:'system',content:buildPersona()},
+    {role:'user',content:`[기획 단계: ${s.q.split('\n')[0]}]
+[작가 답변]: ${val}
 
-
-function openInsightPanel() {
-  const panel = $('insightPanel');
-  const overlay = $('insightOverlay');
-  const loading = $('insightLoading');
-  const content = $('insightContent');
-
-  // 현재 단계 정보
-  const stepInfo = currentStep >= 0 && currentStep < activeSteps.length 
-    ? activeSteps[currentStep] 
-    : null;
-
-  if (!stepInfo) return;
-
-  // 패널 열기
-  panel.classList.add('open');
-  overlay.classList.add('open');
-  loading.style.display = 'flex';
-  content.style.display = 'none';
-
-  // 인사이트 로드
-  loadInsight(stepInfo).then(html => {
-    loading.style.display = 'none';
-    content.innerHTML = html;
-    content.style.display = 'block';
+답변을 한 줄로 요약해주세요. (최대 60자)`}
+  ]);
+  flash('✓ '+(fb||'저장됨'));
+  setTimeout(()=>renderStep(step+1),600);
+}
+async function finishChat(){
+  $('ce').textContent='✨';
+  $('shint').style.display='none';
+  $('dt').innerHTML='<div class="thk">시놉시스를 작성하고 있습니다... <div class="td"><span>●</span><span>●</span><span>●</span></div></div>';
+  $('ia').style.display='none';
+  updateDots(steps.length);
+  const ctx=hist.map(h=>{const s=steps.find(st=>st.id===h.id);return s?`- ${s.q.split('\n')[0]}: ${h.value}`:''}).filter(Boolean).join('\n');
+  const syn=await ai([
+    {role:'system',content:'당신은 시놉시스 전문 작가입니다. 웹소설/웹툰 시놉시스를 [로그라인], [주인공], [갈등], [주제]를 포함하여 200자 내외로 작성하세요.'},
+    {role:'user',content:`스토리 기획 정보:\n${ctx}\n\n이 정보를 바탕으로 시놉시스를 작성해주세요.`}
+  ]);
+  $('dt').innerHTML=md(syn||'기획이 완성됐습니다! ✨');
+  $('ia').style.display='flex';
+  $('ibt').style.display='none';
+  $('cr').innerHTML='';
+  ['새 기획 시작하기','내 작품 보기'].forEach(lbl=>{
+    const b=document.createElement('button');b.className='cbtn';b.textContent=lbl;
+    b.onclick=()=>{if(lbl==='새 기획 시작하기')openMode();else navTo('works');};
+    $('cr').appendChild(b);
   });
+  $('ia').querySelector('.ibw').style.display='none';
+  saveProject(syn);
 }
-
-function closeInsightPanel() {
-  $('insightPanel').classList.remove('open');
-  $('insightOverlay').classList.remove('open');
-}
-
-async function loadInsight(stepInfo) {
-  const storyContext = answerHistory.map(h => {
-    const s = activeSteps.find(st => st.id === h.stepId);
-    return s ? `- ${s.id}: ${h.boardValue || h.value}` : '';
-  }).filter(Boolean).join('\n');
-
-  const insightPrompt = `당신은 스토리텔링 구조 전문가이자 창작 코치입니다.
-아래 기획 단계에 대해 작가에게 깊은 인사이트를 제공하세요.
-
-[현재 기획 단계 ID]: ${stepInfo.id}
-[질문]: ${stepInfo.question}
-[단계 안내]: ${stepInfo.stageIntro || ''}
-${storyContext ? `\n[지금까지 도출된 이야기 요소]:\n${storyContext}` : ''}
-
-다음 JSON 형식으로만 응답하세요 (코드블록 없이, 순수 JSON):
-{
-  "role": "이 단계가 서사 구조에서 하는 역할 (2~3문장)",
-  "principle": "이 단계에서 적용해야 할 스토리텔링 원칙 (2~3문장)",
-  "examples": "실제 인기 웹툰/웹소설/드라마에서 이 단계가 어떻게 구현됐는지 구체적 예시 2개 (각 작품명 포함)",
-  "context_tip": "${storyContext ? '지금까지 쌓인 이야기 맥락을 고려할 때 이 단계에서 특히 주의할 점' : '이 단계에서 작가들이 가장 많이 실수하는 것과 그 해결책'}",
-  "question_hint": "이 질문에 답하기 전에 스스로에게 던져볼 핵심 질문 1개"
-}`;
-
-  let resultText = '';
-
-  try {
-    const res = await fetch('/api/chat', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-5',
-        max_tokens: 1024,
-        system: '당신은 스토리텔링 전문가입니다. 반드시 순수한 JSON만 응답하세요. 코드블록(```)은 절대 사용하지 마세요.',
-        messages: [{ role: 'user', content: insightPrompt }]
-      })
-    });
-
-    if (!res.ok) throw new Error(`서버 오류 (${res.status})`);
-    const d = await res.json();
-    // Anthropic 응답 형식
-    if (d.content && d.content[0]) {
-      resultText = d.content[0].text.trim();
-    }
-    // OpenAI 응답 형식 (fallback)
-    else if (d.choices && d.choices[0]) {
-      resultText = d.choices[0].message.content.trim();
-    }
-
-    if (!resultText) throw new Error('빈 응답');
-
-    const clean = resultText.replace(/```json|```/g, '').trim();
-    const parsed = JSON.parse(clean);
-
-    return `
-      <div class="insight-section">
-        <div class="insight-section-label">📍 이 단계의 서사적 역할</div>
-        <div class="insight-section-text">${parsed.role.replace(/\n/g, '<br>')}</div>
-      </div>
-      <div class="insight-section">
-        <div class="insight-section-label">📐 핵심 스토리텔링 원칙</div>
-        <div class="insight-section-text">${parsed.principle.replace(/\n/g, '<br>')}</div>
-      </div>
-      <div class="insight-section">
-        <div class="insight-section-label">🎬 실제 작품 레퍼런스</div>
-        <div class="insight-section-text">${parsed.examples.replace(/\n/g, '<br>')}</div>
-      </div>
-      <div class="insight-section">
-        <div class="insight-section-label">💡 맥락 팁</div>
-        <div class="insight-section-text">${parsed.context_tip.replace(/\n/g, '<br>')}</div>
-      </div>
-      <div class="insight-section" style="background:rgba(214,183,90,0.05);border-radius:12px;padding:16px;border:1px solid rgba(214,183,90,0.15);border-bottom:none;margin-top:8px;">
-        <div class="insight-section-label" style="margin-bottom:8px;">✦ 답하기 전에 스스로 물어보세요</div>
-        <div class="insight-section-text" style="color:var(--gold-light);font-style:italic;font-size:15px;">"${parsed.question_hint}"</div>
-      </div>
-    `;
-  } catch (e) {
-    return `<div class="insight-section">
-      <div class="insight-section-label">⚠️ 오류</div>
-      <div class="insight-section-text">인사이트를 불러오는 데 실패했습니다.<br>${e.message}</div>
-    </div>`;
-  }
-}
-
-// ── 3-ACT FRAMEWORK HUD ── 
-// (ACT_MAP moved to top)
-
-function openReviewer() {
-  $('reviewerOverlay').classList.add('open');
-  $('reviewerPanel').classList.add('open');
-  $('reviewerLoading').style.display = 'flex';
-  $('reviewerContent').style.display = 'none';
-  runReview().then(html => {
-    $('reviewerLoading').style.display = 'none';
-    $('reviewerContent').innerHTML = html;
-    $('reviewerContent').style.display = 'block';
-  });
-}
-
-function closeReviewer() {
-  $('reviewerOverlay').classList.remove('open');
-  $('reviewerPanel').classList.remove('open');
-}
-
-async function runReview() {
-  const steps = isSeller ? sellerSteps : activeSteps;
-  const collectedData = answerHistory.map(h => {
-    const s = steps.find(st => st.id === h.stepId);
-    return s ? `[${h.stepId}] ${s.question.replace(/\n/g,' ')}: ${h.boardValue || h.value}` : '';
-  }).filter(Boolean).join('\n');
-
-  const reviewPrompt = `당신은 10년 경력의 장르 소설 평론가이자 웹툰 편집자입니다.
-냉정하고 직접적이며, 칭찬보다 문제점 파악에 집중합니다. 하지만 건설적입니다.
-
-아래는 작가가 기획한 스토리 요소들입니다:
-${collectedData}
-
-다음 JSON 형식으로만 응답하세요 (코드블록 없이, 순수 JSON):
-{
-  "strengths": ["강점 1", "강점 2"],
-  "weaknesses": ["논리적 약점 1", "논리적 약점 2"],
-  "strategies": ["개선 전략 1", "개선 전략 2", "개선 전략 3"],
-  "verdict": "전체 기획에 대한 날카로운 총평 (2~3문장, 직설적으로)"
-}`;
-
-  try {
-    const res = await fetch('/api/chat', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-5',
-        max_tokens: 1024,
-        system: '당신은 10년차 장르 소설 평론가입니다. 반드시 순수한 JSON만 응답하세요. 코드블록은 사용하지 마세요.',
-        messages: [{ role: 'user', content: reviewPrompt }]
-      })
-    });
-
-    if (!res.ok) throw new Error(`서버 오류 (${res.status})`);
-    const d = await res.json();
-    let text = d.content?.[0]?.text?.trim() || d.choices?.[0]?.message?.content?.trim() || '';
-    const parsed = JSON.parse(text.replace(/```json|```/g, '').trim());
-
-    const makeItems = (arr, cls) => arr.map((t, i) => `
-      <div class="review-item">
-        <div class="review-item-num ${cls}">${i+1}</div>
-        <div>${t}</div>
-      </div>`).join('');
-
-    return `
-      <div class="review-section strength">
-        <div class="review-section-label strength">✦ 강점 ${parsed.strengths.length}가지</div>
-        ${makeItems(parsed.strengths, 'strength')}
-      </div>
-          <div class="review-section strategy">
-        <div class="review-section-label strategy">◆ 전략적 제안 ${parsed.strategies.length}가지</div>
-        ${makeItems(parsed.strategies, 'strategy')}
-      </div>
-      <div class="reviewer-verdict">"${parsed.verdict}"</div>
-      <div class="reviewer-actions">
-        <button class="reviewer-action-btn primary" onclick="closeReviewer(); goHome();">새 기획 시작</button>
-        <button class="reviewer-action-btn secondary" onclick="closeReviewer();">기획안 보기</button>
-      </div>`;
-  } catch(e) {
-    return `<div style="color:var(--text-dim);font-size:14px;padding:20px 0;">리뷰 생성 실패: ${e.message}</div>`;
-  }
-}
-
-// ── NAVIGATION HELPERS ──
-
-async function finishFlow() {
-  hideInput();
-  const cb = $('choicesBox'); if (cb) cb.innerHTML = '';
-
-  const synopsisWrapId = isSeller ? 'seller-synopsis-wrap' : 'consumer-synopsis-wrap';
-  const synopsisBoxId  = isSeller ? 'seller-synopsis-box'  : 'story-synopsis-box';
-  const synopsisWrap = $(synopsisWrapId);
-  const synopsisBox  = $(synopsisBoxId);
-  if (synopsisWrap) synopsisWrap.style.display = 'block';
-  if (synopsisBox)  synopsisBox.innerHTML = '<span class="sp-synopsis-generating">시놉시스를 쓰고 있습니다...</span>';
-
-  if (!sheetOpen) toggleSheet();
-
-  const collectedData = answerHistory.map(h => {
-    const s = activeSteps.find(st => st.id === h.stepId);
-    return s ? `- ${s.id}: ${h.boardValue || h.value}` : '';
-  }).filter(Boolean).join('\n');
-
-  const synopsisPrompt = isSeller
-    ? `제품/루틴 설계 정보:\n${collectedData}\n\n이 정보를 바탕으로 매력적인 루틴 소개문(3~5줄)을 작성해주세요. 톤앤매너는 ${selectedCharName}스럽게.`
-    : `스토리 기획 정보:\n${collectedData}\n\n이 정보를 바탕으로 웹소설 시놉시스를 작성하세요.\n[로그라인], [주인공], [갈등], [주제]를 포함하여 200자 내외로 작성하세요.`;
-
-  let synopsis = '';
-  try {
-    const res = await fetch('/api/chat', {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        messages: [
-          { role: 'system', content: `당신은 시놉시스 전문 작가입니다. ${selectedCharName}의 말투로 작성하세요.` },
-          { role: 'user', content: synopsisPrompt }
-        ],
-        projectContext: _currentLoadedProject || { title: "새 작품", answerHistory: answerHistory }
-      })
-    });
-    const d = await res.json();
-    synopsis = d.choices?.[0]?.message?.content || '시놉시스 생성에 실패했습니다.';
-  } catch(e) {
-    synopsis = `⚠️ 시놉시스 생성 오류: ${e.message}`;
-  }
-
-  if (synopsisBox) {
-    synopsisBox.innerHTML = synopsis.replace(/\n/g, '<br>');
-    synopsisBox.classList.add('ready');
-  }
-
-  saveProjectToStorage(synopsis);
-
-  sceneTransition(isSeller ? 'scene-seller' : 'scene-story', () => {
-    setStageBanner('');
-    const intro = isSeller
-      ? '루틴 설계가 완성되었습니다!\n우측 보드에서 루틴 소개문을 확인해보세요. ✨'
-      : '기획이 완성되었습니다! 작품 대시보드에 자동 저장됩니다. ✨';
-
-    showDialogText({ question: intro + '\n\n' + synopsis }, () => {
-      const finChoices = isSeller
-        ? ['마켓에 바로 등록하기', '시트 수정하기', '새 기획 시작']
-        : ['🔍 10년차 평론가 리뷰 받기', '새 기획 시작'];
-      setTimeout(() => showChoices(finChoices, (c) => {
-        if (c === '새 기획 시작') goHome();
-        else if (c === '🔍 10년차 평론가 리뷰 받기') openReviewer();
-        else showReplyFlash(c);
-      }), 700);
-    });
-  });
-}
-
-function sceneTransition(newBgClass, cb) {
-  const overlay = $('sceneOverlay');
-  if (!overlay) { cb && cb(); return; }
-  overlay.classList.add('fade-in');
-  setTimeout(() => {
-    const bg = $('sceneBg');
-    if (bg) bg.className = 'scene-bg ' + newBgClass;
-    overlay.classList.remove('fade-in');
-    overlay.classList.add('fade-out');
-    setTimeout(() => { overlay.className = ''; cb && cb(); }, 600);
-  }, 600);
-}
-
-function markdownToHtml(text) {
-  if (!text) return '';
-  return text
-    .replace(/\*\*(.+?)\*\*/g, '<strong style="color:#c4b5fd;">$1</strong>')
-    .replace(/^#{1,3}\s(.+)$/gm, '<span style="font-weight:800;font-size:1.05em;">$1</span>')
-    .replace(/^\* (.+)$/gm, '• $1')
-    .replace(/\n/g, '<br>');
-}
-
-function showDialogText(step, cb) {
-  if (typing) return;
-  typing = true;
-  const txtField = $('dialogTxt');
-  const exField = $('dialogExample');
-  if (!txtField) { typing = false; cb && cb(); return; }
-  
-  txtField.innerHTML = '';
-  if (exField) {
-    exField.innerHTML = '';
-    exField.classList.remove('show');
-  }
-  const cursor = $('dialogCursor');
-  if (cursor) cursor.style.display = 'none';
-  
-  const choicesBox = $('choicesBox');
-  if (choicesBox) {
-    choicesBox.innerHTML = '';
-    choicesBox.classList.remove('show');
-  }
-
-  const text = typeof step === 'string' ? step : (step.question || '');
-  const example = typeof step === 'object' ? step.example : null;
-
-  const htmlContent = markdownToHtml(text);
-  
-  txtField.style.opacity = '0';
-  txtField.innerHTML = htmlContent;
-  txtField.scrollTop = 0;
-
-  setTimeout(() => {
-    txtField.style.transition = 'opacity 0.4s ease';
-    txtField.style.opacity = '1';
-    typing = false;
-    if (example && exField) {
-      exField.innerHTML = '<span>Tip!</span> ' + example;
-      exField.classList.add('show');
-    }
-    if (cb) cb();
-  }, 200);
-}
-
-function setStageBanner(text) {
-  const banner = $('stageBanner');
-  if (!banner) return;
-  if (text) {
-    let htmlText = text.replace(/\n/g, '<br>');
-    const bannerTxt = $('stageBannerText');
-    if (bannerTxt) bannerTxt.innerHTML = htmlText;
-    banner.classList.toggle('seller-banner', isSeller);
-    banner.style.display = 'block';
-    setTimeout(() => banner.classList.add('show'), 50);
-  } else {
-    banner.classList.remove('show');
-    setTimeout(() => banner.style.display = 'none', 500);
-  }
-}
-
-function showChoices(choices, customHandler) {
-  const box = $('choicesBox');
-  if (!box) return;
-  box.innerHTML = '';
-  if (!choices || !choices.length) {
-    box.style.display = 'none';
-    return;
-  }
-  choices.forEach(c => {
-    const btn = document.createElement('button');
-    btn.className = 'choice-btn' + (isSeller ? ' seller-btn' : '');
-    btn.textContent = c;
-    btn.onclick = () => {
-      if (customHandler) customHandler(c);
-      else handleChoice(c);
-    };
-    box.appendChild(btn);
-  });
-  box.style.display = 'flex';
-}
-
-function showInput(hideInputBar = false) {
-  const area = $('answerArea');
-  if (area) area.classList.add('show');
-  
-  const insightBtn = $('solutionBarBtn');
-  if (insightBtn) {
-    insightBtn.className = 'insight-bar-btn' + (isSeller ? ' seller-bar-btn' : '');
-    insightBtn.style.display = (currentStep === 999 || hideInputBar) ? 'none' : 'flex';
-  }
-
-  const inputWrapper = $('inputWrapper');
-  if (inputWrapper) inputWrapper.style.display = hideInputBar ? 'none' : 'flex';
-}
-
-function updateActHud(stepId) {
-  const hud = $('actHud');
-  if (!hud || isSeller) return;
-  hud.classList.add('show');
-  const isDesire  = ACT_MAP.desire.includes(stepId);
-  const isConfl   = ACT_MAP.conflict.includes(stepId);
-  const isOverc   = ACT_MAP.overcome.includes(stepId);
-  
-  const a1 = $('act1Seg');
-  const a2 = $('act2Seg');
-  const a3 = $('act3Seg');
-  if (a1) a1.className = 'act-segment' + (isDesire ? ' active' : isConfl||isOverc ? ' done' : '');
-  if (a2) a2.className = 'act-segment' + (isConfl  ? ' active' : isOverc ? ' done' : '');
-  if (a3) a3.className = 'act-segment' + (isOverc  ? ' active' : '');
-}
-
-function goBack() {
-  if (currentStep <= 0) return;
-  answerHistory.pop();
-  
-  const chipsEl = $(isSeller ? 'seller-chips' : 'story-chips');
-  if (chipsEl && chipsEl.lastChild) chipsEl.removeChild(chipsEl.lastChild);
-
-  const prevHistory = answerHistory[answerHistory.length - 1];
-  if (prevHistory && prevHistory.boardValue) {
-    updateStorySentence(prevHistory.boardValue, null);
-  } else {
-    const box = $(isSeller ? 'seller-summary-box' : 'story-summary-box');
-    if (box) {
-      box.innerHTML = '<span class="sp-placeholder">대화를 진행하면 여기에 이야기가 한 문장으로 정리됩니다.</span>';
-      box.classList.remove('has-content', 'seller-content');
-    }
-  }
-  runStep(currentStep - 1);
-}
-
-function initProgressDots(total) {
-  const wrap = $('progressDots');
-  if (!wrap) return;
-  wrap.innerHTML = '';
-  for (let i = 0; i < total; i++) {
-    const d = document.createElement('div');
-    d.className = 'pdot';
-    d.id = 'pdot-' + i;
-    wrap.appendChild(d);
-  }
-  const totalEl = $('stepTotal');
-  if (totalEl) totalEl.textContent = total;
-  const hud = $('hudProgress');
-  if (hud) hud.style.opacity = '1';
-}
-
-function updateProgressDots(idx, total) {
-  const numEl = $('stepNum');
-  if (numEl) numEl.textContent = idx + 1;
-  for (let i = 0; i < total; i++) {
-    const d = $('pdot-' + i);
-    if (!d) continue;
-    d.className = 'pdot' + (i < idx ? ' done' : i === idx ? ' active' : '');
-  }
-}
-
-function runStep(idx) {
-  // closeInsightPanel(); // If exists
-
-  if (idx >= activeSteps.length) {
-    finishFlow();
-    return;
-  }
-
-  currentStep = idx;
-  const step = activeSteps[idx];
-
-  updateProgressDots(idx, activeSteps.length);
-  // updateActHud(step.id); // If exists
-
-  // Character Figure Update (Optional/Legacy check)
-  const charEmoji = $('charEmoji');
-  if (charEmoji && step.visual) {
-    charEmoji.textContent = step.visual;
-  }
-
-  // Question & Input
-  showDialogText(step, () => {
-    showInput(false);
-    if (step.choices && step.choices.length) {
-      showChoices(step.choices);
-    }
-  });
-
-  const backBtn = $('backBtn');
-  if (backBtn) backBtn.classList.toggle('show', idx > 0);
-}
-
-// ── MODE SELECT ──
-function selectMode(m) {
-  // modeCards 닫기
-  const modeCards = $('modeCards');
-  if (modeCards) modeCards.classList.remove('show');
-
-  isSeller = (m === 'seller');
-  // setup HUD
-  const isVerify = (m === 'verify');
-
-  const chatStatus = $('chatStatusIndicator');
-  if (chatStatus) chatStatus.style.display = (m === 'projectChat' || _currentLoadedProject) ? 'flex' : 'none';
-
-  // setup char
-  if (isSeller) {
-    const charFigLeg = $('charFigureLegacy');
-    if (charFigLeg) charFigLeg.classList.add('seller-mode');
-    const dialogBox = $('dialogBox');
-    if (dialogBox) dialogBox.classList.add('seller-box');
-    const spConsumer = $('spConsumer');
-    if (spConsumer) spConsumer.style.display = 'none';
-    const spSeller = $('spSeller');
-    if (spSeller) spSeller.style.display = 'block';
-    const spTitle = $('spTitle');
-    if (spTitle) { spTitle.textContent = '🛍️ 템플릿 보드'; spTitle.className = 'sp-title seller-title'; }
-    const sheetToggle = $('sheetToggle');
-    if (sheetToggle) sheetToggle.textContent = 'BOARD';
-    activeSteps = sellerSteps;
-  } else {
-    activeSteps = consumerSteps;
-  }
-  
-  const sheetToggleEl = $('sheetToggle');
-  if (sheetToggleEl) sheetToggleEl.style.display = isVerify ? 'none' : 'block';
-
-  const homeBtnEl = $('homeBtn');
-  if (homeBtnEl) homeBtnEl.classList.add('show');
-  initProgressDots(activeSteps.length);
-  currentStep = 0;
-  answerHistory = [];
-
-  navTo('chat-legacy');
-
-  if (isSeller) {
-    sceneTransition('scene-seller', () => {
-      const cf = $('charFigureLegacy'); if (cf) cf.classList.add('show');
-      const da = document.querySelector('.dialog-area'); if (da) da.style.display = 'none';
-      const rb = $('routineBuilder');
-      if (rb) { rb.style.display = 'flex'; renderBuilder(); }
-    });
-  } else if (isVerify) {
-    sceneTransition('scene-verify', () => {
-      const cf = $('charFigureLegacy'); if (cf) cf.classList.add('show');
-      showDialogText('작품 검증 모드에 오신 것을 환영합니다.\n원하시는 검증 분야의 페르소나를 선택해 주세요.', () => {
-        setTimeout(() => navTo('verify'), 500);
-      });
-    });
-  } else if (m === 'projectChat') {
-    selectedCharName = '작품 편집자';
-    const cn = $('charName'); if (cn) cn.textContent = selectedCharName;
-    const ds = $('dialogSpeaker'); if (ds) ds.textContent = selectedCharName;
-    currentStep = 999;
-    sceneTransition('scene-verify', () => {
-      const cf = $('charFigureLegacy'); if (cf) cf.classList.add('show');
-      const rb2 = $('routineBoard'); if (rb2) rb2.style.display = 'none';
-      showDialogText('반갑습니다. 작가님의 작품 편집자입니다.\n\n기획하신 내용을 바탕으로 함께 대화하며 설정을 다듬어 볼까요?\n궁금한 점이나 막히는 부분이 있다면 무엇이든 물어보세요.', () => {
-        showInput(false);
-      });
-    });
-  } else {
-    sceneTransition('scene-consumer', () => {
-      const cf = $('charFigureLegacy'); if (cf) cf.classList.add('show');
-      const rb3 = $('routineBoard'); if (rb3) rb3.style.display = 'none';
-      const da2 = document.querySelector('.dialog-area'); if (da2) da2.style.display = 'flex';
-      showDialogText('스토리 빌드업을 시작합니다.\n먼저 원하시는 기획 루틴을 골라주세요.', () => {
-        setTimeout(() => {
-          const overlay = $('routineOverlay');
-          if (overlay) { overlay.style.display = 'block'; overlay.classList.add('show'); }
-        }, 500);
-      });
-    });
-  }
-}
-
-function startRoutine(name) {
-  const overlay = $('routineOverlay');
-  overlay.style.opacity = '0';
-  showReplyFlash(name);
-  if (!isSeller) {
-    activeSteps = consumerSteps;
-    setTimeout(() => {
-      overlay.style.display = 'none';
-      overlay.classList.remove('show');
-      const co = $('charOverlay');
-      if (co) { co.style.display = 'block'; co.classList.add('show'); }
-    }, 600);
-  } else {
-    setTimeout(() => {
-      navTo('planning-board');
-      renderBoard();
-    }, 1000);
-  }
-}
-
-function selectCharacter(name) {
-  selectedCharName = name;
-  const cn = $('charName'); if (cn) cn.textContent = name;
-  const ds = $('dialogSpeaker'); if (ds) ds.textContent = name;
-  
-  const co = $('charOverlay');
-  if (co) { co.style.display = 'none'; co.classList.remove('show'); }
-  showReplyFlash(`${name} 선택됨`);
-  
-  setTimeout(() => {
-    navTo('chat-legacy'); 
-    runStep(0);
-  }, 800);
-}
-
-function selectVerifyCharacter(name) {
-  selectedCharName = name;
-  $('charName').textContent = name;
-  $('dialogSpeaker').textContent = name;
-  
-  const overlay = $('verifyCharOverlay');
-  overlay.style.opacity = '0';
-  setTimeout(() => overlay.classList.remove('show'), 500);
-  
-  showReplyFlash(`${name} 선택됨`);
-  currentStep = 999; // Verify Mode open-chat flag
-  
-  setTimeout(() => {
-    showDialogText(`저는 ${name}입니다.\n지금 작업 중인 원고 일부를 보내주시거나, 평가받고 싶은 설정(로그라인, 캐릭터 등)을 알려주세요.\n\n날카롭고 정확한 피드백을 드리겠습니다.`, () => {
-      showInput(false);
-    });
-  }, 1000);
-}
-
-function goHome() {
-  navTo('works');
-}
-// ── ROUTINE BUILDER LOGIC ──
-let builderSteps = [
-  { id: 'step-1', visual: '📝', stageIntro: '이 단계에서는 기본 정보와 콘셉트를 물어봅니다.', question: '가장 먼저 독자에게 묻고 싶은 것은 무엇인가요?', useSolutionBar: true, useDirectInput: true },
-  { id: 'step-2', visual: '✨', stageIntro: '핵심 딜레마를 도출하는 단계입니다.', question: '주인공이 겪을 딜레마를 입력해주세요.', useSolutionBar: true, useDirectInput: true }
-];
-
-function renderBuilder() {
-  const container = $('rbSteps');
-  container.innerHTML = '';
-  builderSteps.forEach((step, idx) => {
-    const card = document.createElement('div');
-    card.className = 'rb-step-card';
-    card.innerHTML = `
-      <div class="rb-step-header">
-        <div class="rb-step-title">Step ${idx + 1}</div>
-        <div class="rb-step-controls">
-          <button class="rb-btn" onclick="moveBuilderStep(${idx}, -1)" ${idx === 0 ? 'disabled style="opacity:0.3"' : ''}>⬆️</button>
-          <button class="rb-btn" onclick="moveBuilderStep(${idx}, 1)" ${idx === builderSteps.length - 1 ? 'disabled style="opacity:0.3"' : ''}>⬇️</button>
-          <button class="rb-btn delete" onclick="deleteBuilderStep(${idx})">🗑️</button>
-        </div>
-      </div>
-      <div class="rb-field-group">
-        <div style="display:flex; gap:12px;">
-          <div class="rb-field" style="flex:1;">
-            <label>단계 ID (라벨용)</label>
-            <input type="text" class="rb-input" value="${step.id || ''}" onchange="updateBuilderStep(${idx}, 'id', this.value)" placeholder="예: 첫인상">
-          </div>
-          <div class="rb-field" style="width:100px;">
-            <label>이모지/시각</label>
-            <input type="text" class="rb-input" value="${step.visual || ''}" onchange="updateBuilderStep(${idx}, 'visual', this.value)" placeholder="예: 🚀">
-          </div>
-        </div>
-        <div class="rb-field">
-          <label>배경 가이드 (안내 말풍선)</label>
-          <textarea class="rb-textarea" onchange="updateBuilderStep(${idx}, 'stageIntro', this.value)" placeholder="이 단계의 목적이나 팁을 작성하세요">${step.stageIntro || ''}</textarea>
-        </div>
-        <div class="rb-field">
-          <label>핵심 질문</label>
-          <textarea class="rb-textarea" style="min-height:50px; font-weight:700;" onchange="updateBuilderStep(${idx}, 'question', this.value)" placeholder="사용자에게 던질 결정적 질문을 작성하세요">${step.question || ''}</textarea>
-        </div>
-        <div class="rb-toggles">
-          <label class="rb-toggle-lbl">
-            <input type="checkbox" ${step.useSolutionBar !== false ? 'checked' : ''} onchange="updateBuilderStep(${idx}, 'useSolutionBar', this.checked)">
-            AI 솔루션 제안 바 표시
-          </label>
-          <label class="rb-toggle-lbl">
-            <input type="checkbox" ${step.useDirectInput !== false ? 'checked' : ''} onchange="updateBuilderStep(${idx}, 'useDirectInput', this.checked)">
-            직접 입력 바 표시
-          </label>
-        </div>
-      </div>
-    `;
-    container.appendChild(card);
-  });
-}
-
-function updateBuilderStep(idx, field, val) {
-  builderSteps[idx][field] = val;
-}
-
-function addBuilderStep() {
-  builderSteps.push({
-    id: 'step-' + (builderSteps.length + 1),
-    visual: '🎯',
-    stageIntro: '',
-    question: '',
-    useSolutionBar: true,
-    useDirectInput: true
-  });
-  renderBuilder();
-}
-
-function deleteBuilderStep(idx) {
-  if (confirm('이 단계를 삭제하시겠습니까?')) {
-    builderSteps.splice(idx, 1);
-    renderBuilder();
-  }
-}
-
-function moveBuilderStep(idx, dir) {
-  if (idx + dir < 0 || idx + dir >= builderSteps.length) return;
-  const temp = builderSteps[idx];
-  builderSteps[idx] = builderSteps[idx + dir];
-  builderSteps[idx + dir] = temp;
-  renderBuilder();
-}
-
-function saveBuilderRoutine() {
-  activeSteps = builderSteps;
-  sellerSteps = builderSteps; // Override sellerSteps so it saves
-  initProgressDots(activeSteps.length);
-  $('routineBuilder').style.display = 'none';
-  document.querySelector('.dialog-area').style.display = 'flex';
-  runStep(0);
-}
-
-// ── HELPERS & UTILS ──
-function getSb() { return _sb; }
-async function getCurrentUser() {
-  if (currentUser) return currentUser;
-  const { data: { user } } = await _sb.auth.getUser();
-  currentUser = user;
-  return user;
-}
-
-function getCurrentProjectId() {
-  let pid = sessionStorage.getItem('mantra_current_pid');
-  if (!pid) {
-    pid = 'p_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
-    sessionStorage.setItem('mantra_current_pid', pid);
-  }
-  return pid;
-}
-
-async function saveProjectToStorage(synopsis) {
-  const user = await getCurrentUser();
-  const guestId = localStorage.getItem('mantra_guest_id') || (() => {
-    const id = Date.now().toString(36);
-    localStorage.setItem('mantra_guest_id', id);
-    return id;
-  })();
-  const uid = user ? user.id : `guest_${guestId}`;
-  const pid = getCurrentProjectId();
-
-  const titleAnswer = answerHistory.find(h => ['l-3','s-3','l-1','s-1'].includes(h.stepId));
-  const title = titleAnswer
-    ? (titleAnswer.value.length > 30 ? titleAnswer.value.slice(0, 30) + '...' : titleAnswer.value)
-    : '제목 없는 작품';
-  const genreAnswer = answerHistory.find(h => h.stepId === 'l-2' || h.stepId === 's-2');
-  const genre = genreAnswer ? genreAnswer.value.slice(0, 20) : '';
-
-  const project = {
-    id: pid, uid, title, genre,
-    synopsis: synopsis || '',
-    routineType: activeSteps === shortSteps ? 'short' : 'long',
-    copilotName: selectedCharName,
-    answerHistory,
-    completedAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
+// ── 오늘의 작업 ──
+function startTask(type){
+  if(!selProj){flash('먼저 작품을 선택해주세요');navTo('works');return;}
+  const PM={
+    outline:'당신은 드라마/웹소설 작가 에이전트입니다. 이번 화 개요를 함께 짜줍니다.',
+    tone:'당신은 대사 스페셜리스트입니다. 캐릭터 성격과 말투가 설정에 부합하는지 분석합니다.',
+    foreshadow:'당신은 치밀한 서사 검토자입니다. 복선과 설정 충돌을 체크합니다.',
+    general:'당신은 작가의 창작을 돕는 AI 편집자입니다. 작품 설정을 기억한 상태로 답변합니다.',
   };
-
-  // localStorage 즉시 저장
-  localStorage.setItem(`mantra_project_${pid}`, JSON.stringify(project));
-  const idx = JSON.parse(localStorage.getItem(`mantra_index_${uid}`) || '[]');
-  const ei = idx.findIndex(p => p.id === pid);
-  const meta = { id: pid, title, genre, completedAt: project.completedAt };
-  if (ei >= 0) idx[ei] = meta; else idx.unshift(meta);
-  localStorage.setItem(`mantra_index_${uid}`, JSON.stringify(idx));
-
-  // Supabase 저장 (로그인 시)
-  if (user) {
-    try {
-      const sb = getSb();
-      await sb.from('projects').upsert({
-        id: pid, user_id: uid, title, genre,
-        synopsis: synopsis || '',
-        routine_type: project.routineType,
-        copilot_name: selectedCharName,
-        answer_history: answerHistory,
-        completed_at: project.completedAt,
-        updated_at: project.updatedAt,
-      });
-    } catch (e) { console.warn('Supabase 저장 실패:', e); }
-  }
-
-  showReplyFlash('💾 작품이 저장됐습니다');
+  const GM={
+    outline:`반갑습니다. **'${selProj.title}'** 이번 화의 개요를 함께 짜볼까요? 핵심 사건을 말씀해 주세요.`,
+    tone:`캐릭터들의 대사를 검토해 봅시다. **'${selProj.title}'** 캐릭터 성격에 맞춰 다듬어 드릴게요.`,
+    foreshadow:`복선 체크 시간입니다. **'${selProj.title}'** 현재 장면에서 심고 싶은 복선을 공유해 주세요.`,
+    general:`안녕하세요! **'${selProj.title}'** 작품에 대해 무엇을 도와드릴까요?`,
+  };
+  xMsgs=[];
+  xPersona=PM[type]+projCtx();
+  openXChat(GM[type],selProj.title);
 }
-
-// ── INIT ──
-(async () => {
-  // 1. Run Intro First
-  await runIntro();
-
-  // 2. Check Session (임시 비활성화 - 출시 전 테스트용)
-  // 아래 주석 풀면 로그인 기능 복구됨
+// ── 작품 검증 ──
+function startVerify(name){
+  const PM={
+    '의학 전문가':'당신은 의학 및 법의학 전문가입니다. 의학적 타당성을 검토하고 오류를 날카롭게 지적하며 정확한 의학적 지식을 제공해주세요.',
+    '수사 전문가':'당신은 강력계 형사 및 범죄수사 전문가입니다. 경찰 절차, 증거 수집 등의 현실성을 검토하고 조언해주세요.',
+    '법률 전문가':'당신은 현직 변호사입니다. 재판 과정, 형량, 법적 절차의 맹점을 지적하고 시니컬한 어투로 자문을 제공하세요.',
+    '심리학 전문가':'당신은 임상심리학 전문가입니다. 캐릭터 심리의 현실성을 검토하고 올바른 심리학적 근거를 설명해주세요.',
+    '역사 전문가':'당신은 까다로운 역사학자입니다. 복식, 문화, 제도 등의 고증 오류를 검증하고 정확한 디테일을 제시하세요.',
+    '군사 전문가':'당신은 무기와 전술에 정통한 군사 전문가입니다. 전투씬의 현실성을 높일 조언을 제공하세요.',
+    '냉정한 편집자':'당신은 10년 경력의 웹툰 담당 편집자입니다. 독자 이탈 가능성, 개연성 오류, 구조적 문제를 냉정하고 직접적으로 피드백하세요.',
+    '공감형 편집자':'당신은 독자와의 소통을 최우선으로 생각하는 공감형 편집자입니다. 감정선을 짚어주며 캐릭터의 매력을 극대화할 수 있도록 따뜻하게 피드백하세요.',
+    '로판 편집자':'당신은 로맨스 판타지 등 장르 문법에 정통한 편집자입니다. 트렌디한 장르물로 다듬기 위한 맞춤형 조언을 제공하세요.',
+    '10년차 평론가':'당신은 10년 경력의 장르 소설 평론가입니다. 냉정하고 직접적으로 강점 2가지 / 논리적 약점 2가지 / 개선 전략 3가지 형식으로 피드백하세요.',
+  };
+  xMsgs=[];
+  xPersona=(PM[name]||'당신은 전문 검증 에이전트입니다.')+(selProj?projCtx():'');
+  openXChat(`저는 **${name}**입니다.\n\n지금 작업 중인 원고 일부를 보내주시거나, 평가받고 싶은 설정을 알려주세요.\n\n날카롭고 정확한 피드백을 드리겠습니다.`,name);
+}
+function projCtx(){
+  if(!selProj)return'';
+  const h=(selProj.answer_history||[]).slice(0,10).map(e=>`- ${e.id}: ${e.value}`).join('\n');
+  return `\n\n[작품 정보]\n제목: ${selProj.title}\n장르: ${selProj.genre||''}\n시놉시스: ${selProj.synopsis||''}${h?'\n[기획 내용]\n'+h:''}`;
+}
+function openXChat(greeting,sub){
+  navTo('xc');
+  $('xct').textContent=sub||'AI 편집자';
+  $('xcs').textContent='';
+  $('xb').innerHTML='';
+  addXMsg('assistant',greeting);
+  setTimeout(()=>$('xi').focus(),300);
+}
+function addXMsg(role,text){
+  const b=$('xb');
+  const d=document.createElement('div');d.className='xm '+role;
+  d.innerHTML=`<div class="xmi"><div class="xr">${role==='user'?'Writer':'Mantra AI'}</div><div class="xc">${md(text)}</div></div>`;
+  b.appendChild(d);b.scrollTop=b.scrollHeight;
+}
+async function doXSend(){
+  const b=$('xi');const v=b.value.trim();if(!v)return;
+  b.value='';addXMsg('user',v);xMsgs.push({role:'user',content:v});
+  const ld=document.createElement('div');ld.className='xm assistant';
+  ld.innerHTML='<div class="xmi"><div class="xr">Mantra AI</div><div class="xc thk">생각 중... <div class="td"><span>●</span><span>●</span><span>●</span></div></div></div>';
+  $('xb').appendChild(ld);$('xb').scrollTop=$('xb').scrollHeight;
+  const reply=await ai([{role:'system',content:xPersona},...xMsgs]);
+  xMsgs.push({role:'assistant',content:reply});
+  ld.querySelector('.xc').innerHTML=md(reply);
+  $('xb').scrollTop=$('xb').scrollHeight;
+}
+// ── 인사이트 ──
+async function openInsight(){
+  const p=$('ip');p.classList.add('on');
+  const b=$('ipb');b.innerHTML='<div class="ipld"><div class="ipspin"></div><span>인사이트 분석 중...</span></div>';
+  const s=steps[step];
+  const ctx=hist.slice(-3).map(h=>{const st=steps.find(x=>x.id===h.id);return st?`${st.q.split('\n')[0]}: ${h.value}`:''}).filter(Boolean).join('\n');
+  const raw=await ai([{role:'user',content:`당신은 스토리텔링 구조 전문가입니다.
+기획 단계 질문: "${s.q}"
+지금까지 쌓인 내용: ${ctx||'없음'}
+다음 JSON 형식으로만 응답하세요 (코드블록 없이):
+{"role":"이 단계의 서사적 역할 2~3문장","principle":"핵심 스토리텔링 원칙 2~3문장","tip":"이 단계에서 자주 실수하는 것과 해결책","question":"답하기 전에 스스로 물어볼 질문 1개"}`}]);
+  try{
+    const parsed=JSON.parse(raw.replace(/\`\`\`json|\`\`\`/g,'').trim());
+    b.innerHTML=`<div class="ips"><div class="ipl">📍 서사적 역할</div><div class="iptx">${parsed.role}</div></div><div class="ips"><div class="ipl">📐 핵심 원칙</div><div class="iptx">${parsed.principle}</div></div><div class="ips"><div class="ipl">💡 실수와 해결책</div><div class="iptx">${parsed.tip}</div></div><div class="ips" style="background:rgba(214,183,90,0.05);border-radius:12px;padding:16px;border:1px solid rgba(214,183,90,0.15)"><div class="ipl">✦ 스스로에게 물어보세요</div><div class="iptx" style="color:var(--gold-light);font-style:italic">"${parsed.question}"</div></div>`;
+  }catch(e){b.innerHTML=`<div class="ips"><div class="iptx">${raw}</div></div>`;}
+}
+function closeInsight(){$('ip').classList.remove('on');}
+// ── AI 호출 ──
+async function ai(messages){
+  try{
+    const r=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages,model:'claude-sonnet-4-5',max_tokens:800})});
+    if(!r.ok)throw new Error('fail');
+    const d=await r.json();
+    if(d.content?.[0]?.text)return d.content[0].text.trim();
+    if(d.choices?.[0]?.message?.content)return d.choices[0].message.content.trim();
+    throw new Error('empty');
+  }catch(e){return'⚠️ AI 연결 오류. 잠시 후 다시 시도해주세요.';}
+}
+// ── 페르소나 ──
+function buildPersona(){
+  if(charName==='조수 B')return`당신은 웹소설 기획 조수 'B'입니다. 공감 능력이 뛰어나고 따뜻합니다. 유저의 답변을 한 줄로 요약하세요.`;
+  return`당신은 작품 기획을 돕는 AI 조수입니다. 논리적이고 직관적입니다. 허점은 날카롭게 짚되 칭찬은 잘 된 경우에만 합니다. 유저의 답변을 한 줄로 요약하세요.`;
+}
+// ── 인증 ──
+async function logout(){try{await sb.auth.signOut();}catch(e){}window.location.href='login.html';}
+// ── 초기화 ──
+(async()=>{
   /*
-  const { data: { session } } = await getSb().auth.getSession();
-  if (!session) {
-    window.location.href = 'login.html';
-    return;
-  }
-  currentUser = session.user;
+  const{data:{session}}=await sb.auth.getSession();
+  if(!session){window.location.href='login.html';return;}
+  user=session.user;
   */
-  // 임시 더미 유저
-  currentUser = { id: 'test-user-001', email: 'test@test.com', user_metadata: { nickname: '테스터' } };
-
-  // Sidebar User Info
-  const nickname = currentUser.user_metadata?.nickname || currentUser.user_metadata?.full_name || currentUser.email.split('@')[0] || '작가님';
-  $('userNameDisplay').textContent = nickname;
-  $('userAvatar').textContent = nickname[0].toUpperCase();
-
-  // Initial View
+  user={id:'t001',email:'test@test.com',user_metadata:{nickname:'테스터'}};
+  const nick=user.user_metadata?.nickname||'작가님';
+  $('un').textContent=nick;$('ua').textContent=nick[0].toUpperCase();
   navTo('works');
-  loadMyProjects();
-  
-  // $('charFigureLegacy').classList.add('show');
-  
-  const loadData = sessionStorage.getItem('mantra_load_data');
-  if (loadData) {
-    const pid = sessionStorage.getItem('mantra_load_pid');
-    if (pid) selectProjectForChat(pid);
-  }
 })();
-
-// ── KEYBOARD ──
-const _inputBox = $('inputBox');
-if (_inputBox) {
-  _inputBox.addEventListener('keydown', function(e) {
-    if (e.key==='Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); }
-  });
-  _inputBox.addEventListener('input', function() {
-    this.style.height='40px';
-    this.style.height=Math.min(this.scrollHeight,140)+'px';
-  });
-}
 </script>
 </body>
 </html>
