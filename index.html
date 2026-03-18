@@ -1757,9 +1757,9 @@ async function loadMyProjects() {
       id: 'test-001',
       title: '귀신들린 그래플러',
       genre: '액션/스릴러',
-      synopsis: '테스트용 작품입니다.',
+      synopsis: '격투기 선수 주인공이 귀신에 씐 채로 링 위에서 싸우는 이야기. 귀신의 힘과 자신의 의지 사이에서 갈등하며 성장한다.',
       answer_history: [],
-      routine_type: 'short'
+      routine_type: 'long'
     });
   }
   
@@ -3208,7 +3208,7 @@ async function saveProjectToStorage(synopsis) {
   currentUser = session.user;
   */
   // 임시 더미 유저
-  currentUser = { id: 'test-user-id', email: 'test@test.com', user_metadata: { nickname: '테스터' } };
+  currentUser = { id: 'test-user-001', email: 'test@test.com', user_metadata: { nickname: '테스터' } };
 
   // Sidebar User Info
   const nickname = currentUser.user_metadata?.nickname || currentUser.user_metadata?.full_name || currentUser.email.split('@')[0] || '작가님';
