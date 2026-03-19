@@ -452,7 +452,7 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
     <div class="im-label" id="im-label">기획 항목</div>
     <div class="im-q" id="im-q"></div>
     <div class="im-hint" id="im-hint" style="display:none"></div>
-    <button class="ibtn" style="margin-bottom:4px" onclick="openInsightFromModal()">✦ 이 질문의 스토리텔링 인사이트 보기</button>
+    <button class="ibtn" style="margin-bottom:4px" onclick="openInsightFromModal()">✦ 대화에서 스토리텔링 인사이트 보기</button>
     <textarea class="im-ta" id="im-ta" placeholder="내용을 입력하세요..."></textarea>
     <div class="im-row">
       <button class="im-cancel" onclick="closeItemModal()">취소</button>
@@ -735,7 +735,19 @@ function openItemModal(idx){
   setTimeout(()=>$('im-ta').focus(),200);
 }
 function openInsightFromModal(){
-  openInsightAt(editingIdx);
+  const idx=editingIdx;
+  // 모달 닫기
+  closeItemModal();
+  // 챗이 이미 열려있지 않으면 빌드업 챗으로 이동 (해당 항목부터)
+  if(document.getElementById('view-chat').classList.contains('on')){
+    // 이미 챗에 있으면 바로 인사이트
+    openInsightAt(idx);
+  } else {
+    // 목록 화면이면 해당 항목부터 챗 시작 후 인사이트
+    startBuildup(idx);
+    // 챗 렌더링 후 인사이트 패널 열기
+    setTimeout(()=>openInsightAt(idx), 200);
+  }
 }
 
 async function openInsightAt(idx){
