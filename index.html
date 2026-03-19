@@ -162,6 +162,9 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
 .plan-btn:hover{color:var(--text);border-color:var(--border2)}
 .plan-btn.primary{background:var(--purple);border-color:var(--purple);color:#fff;box-shadow:0 4px 16px var(--purple-glow)}
 .plan-btn.primary:hover{filter:brightness(1.1)}
+.plan-btn.chat-start{background:rgba(16,185,129,0.1);border-color:rgba(16,185,129,0.3);color:#6EE7B7}
+.plan-btn.chat-start:hover{background:rgba(16,185,129,0.2);border-color:rgba(16,185,129,0.5);color:#A7F3D0}
+.pi-chat-badge{font-size:10px;font-weight:700;color:#6EE7B7;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.2);border-radius:20px;padding:2px 8px;white-space:nowrap;flex-shrink:0;margin-right:4px}
 /* 목차 리스트 */
 .plan-body{flex:1;overflow-y:auto;padding:20px 36px 36px}
 .plan-list{display:flex;flex-direction:column;gap:8px;max-width:760px}
@@ -175,7 +178,8 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
 .pi-drag:active{cursor:grabbing}
 .pi-icon{font-size:20px;flex-shrink:0;width:28px;text-align:center}
 .pi-info{flex:1;min-width:0}
-.pi-name{font-size:14px;font-weight:700;color:var(--text)}
+.pi-kw{font-size:10px;font-weight:800;letter-spacing:0.08em;color:var(--purple-light);text-transform:uppercase;margin-bottom:4px;opacity:0.8}
+.pi-name{font-size:14px;font-weight:600;color:var(--text)}
 .pi-val{font-size:12px;color:var(--text-dim);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
 .pi-status{width:8px;height:8px;border-radius:50%;background:var(--border2);flex-shrink:0;transition:background 0.2s}
 .plan-item.filled .pi-status{background:var(--purple)}
@@ -197,9 +201,9 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
 .im-save{padding:10px 24px;border-radius:var(--rs);font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;background:var(--purple);border:none;color:#fff;box-shadow:0 4px 16px var(--purple-glow);transition:all 0.2s}
 .im-save:hover{filter:brightness(1.1)}
 /* 프로젝트 이름 오버레이 */
-.pn-box{background:rgba(12,12,24,0.98);border:1px solid var(--border2);border-radius:24px;padding:44px 40px;width:100%;max-width:480px;box-shadow:0 30px 80px rgba(0,0,0,0.7);display:flex;flex-direction:column;gap:24px}
+.pn-box{background:rgba(12,12,24,0.98);border:1px solid var(--border2);border-radius:24px;padding:44px 40px;width:100%;max-width:480px;box-shadow:0 30px 80px rgba(0,0,0,0.7);display:flex;flex-direction:column;gap:20px}
 .pn-title{font-size:22px;font-weight:900}
-.pn-sub{font-size:14px;color:var(--text-dim);margin-top:-14px;line-height:1.6}
+.pn-sub{font-size:14px;color:var(--text-dim);line-height:1.6}
 .pn-input{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:var(--rs);color:var(--text);font-family:inherit;font-size:17px;font-weight:600;padding:16px 18px;outline:none;transition:border-color 0.2s}
 .pn-input:focus{border-color:var(--purple-light)}
 .pn-input::placeholder{color:rgba(255,255,255,0.2)}
@@ -220,22 +224,34 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
 .ipld{display:flex;flex-direction:column;align-items:center;justify-content:center;height:200px;gap:14px;color:var(--text-dim);font-size:13px}
 .ipspin{width:28px;height:28px;border:2px solid rgba(214,183,90,0.2);border-top-color:var(--gold);border-radius:50%;animation:spin 0.8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-/* 컨텍스트 챗 */
-.xb{flex:1;overflow-y:auto;padding:24px 28px;display:flex;flex-direction:column;gap:16px}
-.xm{max-width:600px}
-.xm.u{margin-left:auto}
-.xmi{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px 20px}
-.xm.u .xmi{background:rgba(139,92,246,0.12);border-color:rgba(139,92,246,0.25)}
-.xr{font-size:11px;font-weight:800;letter-spacing:0.05em;text-transform:uppercase;color:var(--text-dim);margin-bottom:8px}
-.xm.u .xr{color:var(--purple-light)}
-.xc{font-size:15px;line-height:1.7;color:var(--text);word-break:keep-all}
-.xiw{padding:16px 28px;border-top:1px solid var(--border);flex-shrink:0;display:flex;gap:12px;align-items:flex-end}
-.xi{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:12px 18px;color:var(--text);font-family:inherit;font-size:15px;resize:none;outline:none;height:48px;max-height:120px;line-height:1.5;transition:border-color 0.3s}
+/* 컨텍스트 챗 — 말풍선형 */
+.xb{flex:1;overflow-y:auto;padding:20px 24px;display:flex;flex-direction:column;gap:12px}
+.xb::-webkit-scrollbar{width:4px}
+.xb::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.08);border-radius:2px}
+/* AI 버블 */
+.xm{display:flex;flex-direction:column;max-width:75%;animation:xmIn 0.25s ease}
+@keyframes xmIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.xm.user{align-self:flex-end;align-items:flex-end}
+.xm.assistant{align-self:flex-start;align-items:flex-start}
+.xm-name{font-size:11px;font-weight:700;letter-spacing:0.06em;color:var(--text-faint);margin-bottom:4px;padding:0 4px}
+.xm.user .xm-name{color:var(--purple-light)}
+.xmi{padding:13px 17px;border-radius:18px;line-height:1.7;font-size:14px;word-break:keep-all}
+.xm.assistant .xmi{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-bottom-left-radius:4px;color:var(--text)}
+.xm.user .xmi{background:rgba(139,92,246,0.2);border:1px solid rgba(139,92,246,0.3);border-bottom-right-radius:4px;color:var(--text)}
+.xc{font-size:14px;line-height:1.75;color:var(--text);word-break:keep-all}
+/* 입력창 */
+.xiw{padding:12px 20px 16px;border-top:1px solid var(--border);flex-shrink:0;display:flex;flex-direction:column;gap:8px;background:rgba(7,7,15,0.6);backdrop-filter:blur(20px)}
+.xlink-row{display:flex;gap:8px;flex-wrap:wrap}
+.xlink-btn{font-size:12px;font-weight:700;padding:5px 12px;border-radius:20px;border:1px solid var(--border);background:var(--surface);color:var(--text-dim);cursor:pointer;font-family:inherit;transition:all 0.2s;white-space:nowrap}
+.xlink-btn:hover{border-color:var(--purple-light);color:var(--purple-light);background:rgba(139,92,246,0.08)}
+.xlink-btn.active{border-color:var(--green);color:#6EE7B7;background:rgba(16,185,129,0.08)}
+.xiw-row{display:flex;gap:10px;align-items:flex-end}
+.xi{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:11px 18px;color:var(--text);font-family:inherit;font-size:14px;resize:none;outline:none;height:44px;max-height:120px;line-height:1.5;transition:border-color 0.3s}
 .xi:focus{border-color:var(--purple-light)}
 .xi::placeholder{color:var(--text-faint)}
-.xs{width:44px;height:44px;border-radius:50%;background:var(--purple);border:none;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.2s}
+.xs{width:40px;height:40px;border-radius:50%;background:var(--purple);border:none;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.2s}
 .xs:hover{filter:brightness(1.1)}
-.xs svg{width:20px;height:20px;fill:currentColor;margin-left:2px}
+.xs svg{width:18px;height:18px;fill:currentColor;margin-left:2px}
 /* 마켓 빈 상태 */
 .mp{display:flex;flex-direction:column;align-items:center;justify-content:center;height:60vh;gap:16px;color:var(--text-dim);text-align:center}
 .mp .mpi{font-size:56px}
@@ -370,6 +386,7 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
       <div class="chud">
         <button class="cbk" onclick="goHome()">←</button>
         <div class="chi"><div class="cht" id="cht">스토리 빌드업</div><div class="chs" id="chs">진행 중</div></div>
+        <button class="plan-btn" id="back-to-plan-btn" onclick="backToPlan()" style="display:none;margin-right:8px;font-size:12px;padding:6px 14px">📋 목록으로</button>
         <div class="sbar"><span class="slbl">Step <strong id="sn">1</strong>/<span id="st">22</span></span><div class="sdots" id="sdots"></div></div>
       </div>
       <div class="cbody" id="cbody">
@@ -400,21 +417,27 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
       </div>
       <div class="xb" id="xb"></div>
       <div class="xiw">
-        <textarea class="xi" id="xi" placeholder="원고나 설정을 입력하세요..."
-          onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();doXSend();}"></textarea>
-        <button class="xs" onclick="doXSend()"><svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg></button>
+        <div class="xlink-row" id="xlink-row">
+          <span style="font-size:11px;color:var(--text-faint);align-self:center;white-space:nowrap">내 작품 연동:</span>
+        </div>
+        <div class="xiw-row">
+          <textarea class="xi" id="xi" placeholder="원고나 설정을 입력하세요..."
+            onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();doXSend();}"
+            oninput="this.style.height='44px';this.style.height=Math.min(this.scrollHeight,120)+'px'"></textarea>
+          <button class="xs" onclick="doXSend()"><svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg></button>
+        </div>
       </div>
     </div>
   </section>
-  <!-- 기획 목차 -->
   <section class="view" id="view-plan">
     <div class="plan-header">
       <div class="plan-title-wrap">
         <div class="plan-proj-name" id="plan-proj-name">새 작품</div>
-        <div class="plan-sub" id="plan-sub">목차를 클릭해서 채워보세요. 순서는 드래그로 바꿀 수 있어요.</div>
+        <div class="plan-sub">목차를 클릭해 직접 채우거나, 대화로 순서대로 채워나갈 수 있어요.</div>
       </div>
       <div class="plan-actions">
         <button class="plan-btn" onclick="addPlanItem()">+ 항목 추가</button>
+        <button class="plan-btn chat-start" id="plan-chat-btn" onclick="startBuildup()">💬 빌드업 대화 시작하기</button>
         <button class="plan-btn primary" onclick="finishPlan()">완성하기</button>
       </div>
     </div>
@@ -429,6 +452,7 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
     <div class="im-label" id="im-label">기획 항목</div>
     <div class="im-q" id="im-q"></div>
     <div class="im-hint" id="im-hint" style="display:none"></div>
+    <button class="ibtn" style="margin-bottom:4px" onclick="openInsightFromModal()">✦ 이 질문의 스토리텔링 인사이트 보기</button>
     <textarea class="im-ta" id="im-ta" placeholder="내용을 입력하세요..."></textarea>
     <div class="im-row">
       <button class="im-cancel" onclick="closeItemModal()">취소</button>
@@ -445,10 +469,8 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
 <!-- 오버레이: 프로젝트 이름 -->
 <div class="ov" id="ov-projname">
   <div class="pn-box">
-    <div>
-      <div class="pn-title">작품 이름을 정해볼까요?</div>
-      <div class="pn-sub">나중에 언제든 바꿀 수 있어요.</div>
-    </div>
+    <div class="pn-title">작품 이름을 정해볼까요?</div>
+    <div class="pn-sub">나중에 언제든 바꿀 수 있어요.</div>
     <input class="pn-input" id="pn-input" type="text" placeholder="예) 귀신들린 그래플러"
       onkeydown="if(event.key==='Enter')confirmProjName()">
     <button class="pn-next" onclick="confirmProjName()">다음 →</button>
@@ -483,49 +505,85 @@ const SB_URL='https://mvygorffhbshubqkerpo.supabase.co';
 const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im12eWdvcmZmaGJzaHVicWtlcnBvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2MzU3ODQsImV4cCI6MjA4OTIxMTc4NH0.p7usz-l53gmibWpswzTFvhzmR3UX7QkWb3oPsy3A50c';
 const sb=window.supabase.createClient(SB_URL,SB_KEY);
 // ── 상태 ──
-let user=null,projects=[],selProj=null,steps=[],step=0,hist=[],charName='조수 어시스턴트',xMsgs=[],xPersona='';
+let user=null,projects=[],selProj=null,steps=[],step=0,hist=[],charName='조수 어시스턴트',xMsgs=[],xPersona='',xPersonaBase='',xLinkedProj=null;
 // ── 루틴 데이터 ──
 const LONG=[
-  {id:'l-1',v:'🎯',h:'[장편 기획 플랜]\n끌리게 된 키워드와 사람들의 반응 요소를 결합해 보길 제안합니다.',q:'어떤 이야기를 만들고 싶으세요?'},
-  {id:'l-2',v:'📚',h:'장르 선택에 따라 사람들의 반응 패턴은 달라집니다.',q:'이야기의 장르는 무엇인가요?'},
-  {id:'l-4',v:'👤',h:'같이 모험을 떠나게 될 아바타입니다.\n*사람들이 마음을 내줄 수 있는 호감형 캐릭터입니다.',q:'주인공을 먼저 간략하게 만들어 볼까요?'},
-  {id:'l-3b',v:'🌍',h:'주인공이 움직일 공간입니다.',q:'[배경] 이 작품의 세계관은 어때요?'},
-  {id:'l-3c',v:'💪',h:'등장인물은 극 중에서 반드시 움직여야 합니다.\n움직이게 만드는 건 강력한 동기구요.',q:'[행동] 주인공은 뭘 하고 싶어 하나요?'},
-  {id:'l-3',v:'✍️',h:'전체 이야기를 관통하는 한 문장이자 질문일 수 있습니다.\n*주인공이 목표를 위해 모험을 떠나지만 딜레마에 빠져 매우 어렵다, 라는 내용이 들어가야 합니다.',q:'로그라인을 만들어 봐요!'},
-  {id:'l-5',v:'⚔️',h:"주인공의 반대편에 선 인물들입니다.\n*희망이 아닌 두려움으로 인해 '욕망'에 굴복한 사람들이죠.",q:'이번엔 안타고니스트(적대자)를 만들어 볼까요?'},
-  {id:'l-6',v:'🎬',h:"[이제부터 개연성 전개를 해보겠습니다.]\n어떤 컨셉이며 어떤 이야기인지 보여주는 동시에 초장부터 '반전'을 보여주며 이목을 확 집중시켜야 합니다.",q:'[프롤로그]\n처음엔 어떤 장면으로 이목을 끌어 볼까요?'},
-  {id:'l-7',v:'🌧️',h:'지금 주인공은 내면적 결핍으로 힘든 상태입니다.',q:'[문제 직면의 순간]\n주인공이 어쩔 수 없이 마주해야 할 시련은 무엇이 있을까요?'},
-  {id:'l-8',v:'🎣',h:'강력한 동기를 만들 만한 사건입니다.\n*악순환을 방치할 것인가, 미끼에 걸려들 것인가? 선택하는 순간입니다.',q:'[미끼의 순간]\n주인공의 내적 변화를 일으키려면 어떻게 해야 할까요?'},
-  {id:'l-9',v:'🔑',h:'모험 시작의 열쇠를 찾은 순간입니다.',q:'[검증의 순간]\n주인공은 어떤 잠재력을 가졌고 이 여정을 떠나기 위한 조건은 뭘까요?'},
-  {id:'l-10',v:'🗺️',h:'이제 다신 일상으로 돌아갈 수 없습니다.',q:'[신념의 순간]\n주인공이 그리는 청사진은 무엇일까?'},
-  {id:'l-11',v:'📈',h:null,q:'[발전의 순간]\n갈등, 변화를 겪은 주인공은 앞으로 어떤 흥미진진한 일을 벌일까요?'},
-  {id:'l-12',v:'🏆',h:'앞으로 치고 나가 공략할 수 있는 뭔가를 발견한 순간입니다.',q:'[가짜 승리]\n주인공과 동료들은 어떤 활약을 펼칠까요?'},
-  {id:'l-13',v:'⚠️',h:'건들지 말아야 할 걸 건드려버렸거나 가지 말아야 할 곳을 가버렸어요.',q:'[방심의 순간]\n엉뚱한 데서 사건이 터져 계획이 완전 틀어져 버렸어요! 그게 뭘까요?'},
-  {id:'l-14',v:'🌪️',h:'그냥 말이 아닌, 눈앞에 시련을 보여주며 주인공을 흔들리게 만드세요.',q:'[혼란의 순간]\n실패하면 어떤 참극을 초래할까요?'},
-  {id:'l-15',v:'💡',h:'게임에 대한 실마리를 조금은 알 것 같은 순간입니다.\n*클라이막스를 위한 추진력을 얻는 구간입니다.',q:'[각성의 순간]\n"비밀은 바로 이거였어?!"'},
-  {id:'l-16',v:'⏱️',h:'시간적, 공간적 제약으로 인해 아슬아슬한 긴장감이 고조됩니다.',q:'[초긴박한 순간]\n회심의 프로젝트, 과연 성공할 수 있을까요?'},
-  {id:'l-17',v:'🔥',h:'지독하게 괴롭혀 왔던 내면적 결핍과 극한으로 마주하는 순간입니다.\n*감정-행동-갈등이 극한으로 폭발하는 순간입니다.',q:'[클라이막스-폭발의 순간]\n마지막 끝판왕 갈등. 최악의 순간에서 주인공은 어떤 선택을 할까요?'},
-  {id:'l-18',v:'🔄',h:'완전한 각성을 이루는 순간입니다.\n*초반부터 무심코 지나쳤는데 이게 이렇게 중요했다니 무릎을 탁 치는 순간입니다.',q:'[반전의 순간]\n"이건 미처 몰랐지?! 충격, 갈등 해결의 열쇠가 이거였다니!"'},
-  {id:'l-19',v:'🌅',h:'긴장 해소, 주인공들의 일상 복귀와 아이러닉한 변화가 보입니다.',q:'[이완의 순간]\n주인공과 동료들은 이렇게 내적 변화하거나 성장했어요.'},
-  {id:'l-20',v:'🏁',h:'처음부터 꽁꽁 숨겨왔던 비밀을 풀거나, 질문을 던지면서 끝날 수도 있습니다.',q:'[에필로그]\n이 여정 이후 어떻게 될까요?'},
+  {id:'l-1',v:'🎯',h:'끌리게 된 키워드와 사람들의 반응 요소를 결합해 보길 제안합니다.',k:'아이디어',q:'어떤 이야기를 만들고 싶으세요?'},
+  {id:'l-2',v:'📚',h:'장르 선택에 따라 사람들의 반응 패턴은 달라집니다.',k:'장르',q:'이야기의 장르는 무엇인가요?'},
+  {id:'l-4',v:'👤',h:'같이 모험을 떠나게 될 아바타입니다.\n사람들이 마음을 내줄 수 있는 호감형 캐릭터여야 합니다.',k:'인물',q:'주인공을 먼저 간략하게 만들어 볼까요?'},
+  {id:'l-3b',v:'🌍',h:'주인공이 움직일 공간입니다.',k:'배경',q:'이 작품의 세계관은 어때요?'},
+  {id:'l-3c',v:'💪',h:'등장인물은 극 중에서 반드시 움직여야 합니다. 움직이게 만드는 건 강력한 동기입니다.',k:'행동',q:'주인공은 뭘 하고 싶어 하나요?'},
+  {id:'l-3',v:'✍️',h:'전체 이야기를 관통하는 한 문장이자 질문입니다.\n주인공이 목표를 위해 모험을 떠나지만 딜레마에 빠져 매우 어렵다, 라는 내용이 들어가야 합니다.',k:'핵심 축',q:'로그라인을 만들어 봐요!'},
+  {id:'l-5',v:'⚔️',h:"주인공의 반대편에 선 인물들입니다.\n희망이 아닌 두려움으로 인해 '욕망'에 굴복한 사람들이죠.",k:'시련',q:'이번엔 안타고니스트(적대자)를 만들어 볼까요?'},
+  {id:'l-6',v:'🎬',h:"어떤 컨셉이며 어떤 이야기인지 보여주는 동시에 초장부터 '반전'을 보여주며 이목을 확 집중시켜야 합니다.",k:'프롤로그',q:'첫인상입니다. 처음엔 어떤 장면으로 이목을 끌어 볼까요?'},
+  {id:'l-7',v:'🌧️',h:'지금 주인공은 내면적 결핍으로 힘든 상태입니다.',k:'문제 직면의 순간',q:'주인공이 어쩔 수 없이 마주해야 할 시련은 무엇이 있을까요?'},
+  {id:'l-8',v:'🎣',h:'악순환을 방치할 것인가, 미끼에 걸려들 것인가? 선택하는 순간입니다.',k:'미끼의 순간',q:'뭔가 악순환이 반복되고 있어요. 주인공의 내적 변화를 일으키려면 어떻게 해야 할까요?'},
+  {id:'l-9',v:'🔑',h:'모험 시작의 열쇠를 찾은 순간입니다.',k:'검증의 순간',q:'주인공은 어떤 잠재력을 가졌고 이 여정을 떠나기 위한 조건은 뭘까요?'},
+  {id:'l-10',v:'🗺️',h:'이제 다신 일상으로 돌아갈 수 없습니다.',k:'신념의 순간',q:'주인공이 그리는 청사진은 무엇일까요?'},
+  {id:'l-11',v:'📈',h:'갈등과 변화를 겪은 주인공이 본격적으로 움직이기 시작합니다.',k:'발전의 순간',q:'갈등, 변화를 겪은 주인공은 앞으로 어떤 흥미진진한 일을 벌일까요?'},
+  {id:'l-12',v:'🏆',h:'앞으로 치고 나가 공략할 수 있는 뭔가를 발견한 순간입니다.',k:'가짜 승리',q:'주인공과 동료들은 어떤 활약을 펼칠까요?'},
+  {id:'l-13',v:'⚠️',h:'건들지 말아야 할 걸 건드려버렸거나 가지 말아야 할 곳을 가버렸어요.',k:'방심의 순간',q:'엉뚱한 데서 사건이 터져 계획이 완전 틀어져 버렸어요! 그게 뭘까요?'},
+  {id:'l-14',v:'🌪️',h:'말이 아닌, 눈앞에 시련을 보여주며 주인공을 흔들리게 만드세요.',k:'혼란의 순간',q:'실패하면 어떤 참극을 초래할까요?'},
+  {id:'l-15',v:'💡',h:'게임에 대한 실마리를 조금은 알 것 같은 순간입니다. 클라이막스를 위한 추진력을 얻는 구간입니다.',k:'각성의 순간',q:'"비밀은 바로 이거였어?!" 주인공이 깨닫는 것은 무엇인가요?'},
+  {id:'l-16',v:'⏱️',h:'시간적, 공간적 제약으로 인해 아슬아슬한 긴장감이 고조됩니다.',k:'초긴박한 순간',q:'회심의 프로젝트, 과연 성공할 수 있을까요?'},
+  {id:'l-17',v:'🔥',h:'감정-행동-갈등이 극한으로 폭발하는 순간입니다.',k:'클라이막스 — 폭발의 순간',q:'마지막 끝판왕 갈등. 최악의 순간에서 주인공은 어떤 선택을 할까요?'},
+  {id:'l-18',v:'🔄',h:'초반부터 무심코 지나쳤는데 이게 이렇게 중요했다니 무릎을 탁 치는 순간입니다.',k:'반전의 순간',q:'"이건 미처 몰랐지?!" 충격, 갈등 해결의 열쇠는 무엇인가요?'},
+  {id:'l-19',v:'🌅',h:'긴장 해소, 주인공들의 일상 복귀와 아이러닉한 변화가 보입니다.',k:'이완의 순간',q:'주인공과 동료들은 어떻게 내적으로 변화하거나 성장했나요?'},
+  {id:'l-20',v:'🏁',h:'처음부터 꽁꽁 숨겨왔던 비밀을 풀거나, 질문을 던지면서 끝날 수도 있습니다.',k:'에필로그',q:'이 여정 이후 어떻게 될까요?'},
 ];
 const SHORT=[
-  {id:'s-1',v:'🎯',h:'[단편 기획 플랜]\n끌리게 된 키워드와 사람들의 반응 요소를 결합해 보길 제안합니다.',q:'어떤 단편 이야기를 만들고 싶으세요?'},
-  {id:'s-2',v:'📚',h:'장르 선택에 따라 사람들의 반응 패턴은 달라집니다.',q:'이야기의 장르는 무엇인가요?'},
-  {id:'s-3',v:'✍️',h:'전체 이야기를 관통하는 한 문장이자 질문일 수 있습니다.',q:'로그라인을 만들어 봐요!'},
-  {id:'s-4',v:'👤',h:'같이 모험을 떠나게 될 아바타입니다.',q:'주인공을 먼저 간략하게 만들어 볼까요?'},
-  {id:'s-5',v:'⚔️',h:'주인공의 반대편에 선 인물들입니다.',q:'안타고니스트(적대자)를 만들어 볼까요?'},
-  {id:'s-6',v:'🎉',h:'독자와의 라포(친밀감)를 형성하는 첫인상 구간입니다.',q:'[코믹 릴리프]\n주인공은 언제, 어디서 일상을 보내고 있나요?'},
-  {id:'s-7',v:'🌧️',h:null,q:'[트러블]\n그런데 어느 날, 어떤 문제가 터질까요?'},
-  {id:'s-8',v:'⚖️',h:null,q:'[딜레마]\n어떤 갈등으로 고통 받게 될까요?'},
-  {id:'s-9',v:'⏱️',h:'긴장감이 고조되는 시간입니다.',q:'[서스펜스]\n진상파악으로 악화되는 시간입니다. 그게 뭘까요?'},
-  {id:'s-10',v:'🔥',h:null,q:'[클라이막스]\n결국 걱정하던 일이 터져 버렸습니다. 그게 뭘까요?'},
-  {id:'s-11',v:'✨',h:'반전으로 쾌감을 주는 가장 중요한 구간입니다.',q:'[획기적인 해결]\n전혀 생각지 못한 방법으로 해결합니다. 그게 뭘까요?'},
+  {id:'s-1',v:'🎯',h:'끌리게 된 키워드와 사람들의 반응 요소를 결합해 보길 제안합니다.',k:'아이디어',q:'어떤 이야기를 만들고 싶으세요?'},
+  {id:'s-2',v:'📚',h:'장르 선택에 따라 사람들의 반응 패턴은 달라집니다.',k:'장르',q:'이야기의 장르는 무엇인가요?'},
+  {id:'s-4',v:'👤',h:'같이 모험을 떠나게 될 아바타입니다.',k:'인물',q:'주인공을 먼저 간략하게 만들어 볼까요?'},
+  {id:'s-4b',v:'🌍',h:'주인공이 움직일 공간입니다.',k:'배경',q:'이 작품의 세계관은 어때요?'},
+  {id:'s-4c',v:'💪',h:'등장인물은 극 중에서 반드시 움직여야 합니다. 움직이게 만드는 건 강력한 동기입니다.',k:'행동',q:'주인공은 뭘 하고 싶어 하나요?'},
+  {id:'s-3',v:'✍️',h:'전체 이야기를 관통하는 한 문장이자 질문입니다.',k:'핵심 축',q:'로그라인을 만들어 봐요!'},
+  {id:'s-5',v:'⚔️',h:'주인공의 반대편에 선 인물들입니다.',k:'시련',q:'이번엔 안타고니스트(적대자)를 만들어 볼까요?'},
+  {id:'s-6',v:'🎉',h:'독자와의 라포(친밀감)를 형성하는 첫인상 구간입니다.',k:'코믹 릴리프',q:'주인공은 언제, 어디서 일상을 보내고 있나요?'},
+  {id:'s-7',v:'🌧️',h:'예상치 못한 사건이 일상을 뒤흔드는 순간입니다.',k:'트러블',q:'그러던 어느 날, 어떤 문제가 터질까요?'},
+  {id:'s-8',v:'⚖️',h:'선택지 없이 고통받는 상황을 만들어야 독자가 몰입합니다.',k:'딜레마',q:'어떤 갈등으로 고통 받게 될까요?'},
+  {id:'s-9',v:'⏱️',h:'긴장감이 고조되는 시간입니다.',k:'서스펜스',q:'설상가상으로 악화되는 순간입니다. 그게 뭘까요?'},
+  {id:'s-10',v:'🔥',h:'걱정하던 최악의 상황이 현실이 되는 순간입니다.',k:'클라이막스',q:'결국 걱정한 일이 터져 버렸습니다. 그게 뭘까요?'},
+  {id:'s-11',v:'✨',h:'반전으로 쾌감을 주는 가장 중요한 구간입니다.',k:'획기적인 해결',q:'전혀 생각치 못했던 방법으로 해결합니다. 그게 뭘까요?'},
 ];
 // ── 유틸 ──
 const $=id=>document.getElementById(id);
 const flash=(msg,d=2000)=>{const e=$('fl');e.textContent=msg.length>45?msg.slice(0,45)+'...':msg;e.classList.add('on');setTimeout(()=>e.classList.remove('on'),d)};
-const md=t=>{if(!t)return'';return t.replace(/\*\*(.+?)\*\*/g,'<strong style="color:var(--purple-light)">$1</strong>').replace(/\n/g,'<br>')};
+const md=t=>{
+  if(!t)return'';
+  // 코드블록
+  t=t.replace(/```[\s\S]*?```/g,m=>`<pre style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:12px 14px;overflow-x:auto;font-size:13px;font-family:monospace;margin:8px 0">${m.replace(/```\w*\n?/g,'').replace(/```/g,'')}</pre>`);
+  // 인라인 코드
+  t=t.replace(/`([^`]+)`/g,'<code style="background:rgba(255,255,255,0.07);border-radius:4px;padding:1px 6px;font-size:0.9em;font-family:monospace">$1</code>');
+  // 헤딩
+  t=t.replace(/^### (.+)$/gm,'<div style="font-size:14px;font-weight:800;color:var(--text);margin:16px 0 6px">$1</div>');
+  t=t.replace(/^## (.+)$/gm,'<div style="font-size:16px;font-weight:900;color:var(--text);margin:18px 0 8px;border-bottom:1px solid rgba(255,255,255,0.08);padding-bottom:6px">$1</div>');
+  t=t.replace(/^# (.+)$/gm,'<div style="font-size:18px;font-weight:900;color:var(--text);margin:20px 0 10px">$1</div>');
+  // 표 (|col|col| 형태)
+  t=t.replace(/((?:^\|.+\|\n?)+)/gm,tableStr=>{
+    const rows=tableStr.trim().split('\n').filter(r=>r.trim()&&!r.match(/^\|[-: |]+\|$/));
+    if(!rows.length)return tableStr;
+    const toRow=(r,isHead)=>{
+      const cells=r.split('|').filter((_,i,a)=>i>0&&i<a.length-1);
+      const tag=isHead?'th':'td';
+      const style=isHead?'background:rgba(255,255,255,0.06);font-weight:700;':'';
+      return`<tr>${cells.map(c=>`<${tag} style="padding:8px 12px;border:1px solid rgba(255,255,255,0.08);${style}">${c.trim()}</${tag}>`).join('')}</tr>`;
+    };
+    return`<div style="overflow-x:auto;margin:10px 0"><table style="border-collapse:collapse;width:100%;font-size:13px">${rows.map((r,i)=>toRow(r,i===0)).join('')}</table></div>`;
+  });
+  // 굵게+기울임
+  t=t.replace(/\*\*\*(.+?)\*\*\*/g,'<strong><em>$1</em></strong>');
+  t=t.replace(/\*\*(.+?)\*\*/g,'<strong style="color:var(--purple-light)">$1</strong>');
+  t=t.replace(/\*(.+?)\*/g,'<em>$1</em>');
+  // 목록
+  t=t.replace(/^- (.+)$/gm,'<div style="display:flex;gap:8px;margin:3px 0"><span style="color:var(--purple-light);flex-shrink:0">•</span><span>$1</span></div>');
+  t=t.replace(/^\d+\. (.+)$/gm,(m,c,i)=>`<div style="display:flex;gap:8px;margin:3px 0"><span style="color:var(--purple-light);flex-shrink:0;min-width:16px">${m.match(/^\d+/)[0]}.</span><span>${c}</span></div>`);
+  // 수평선
+  t=t.replace(/^---+$/gm,'<hr style="border:none;border-top:1px solid rgba(255,255,255,0.08);margin:12px 0">');
+  // 줄바꿈
+  t=t.replace(/\n/g,'<br>');
+  return t;
+};
 // ── 네비 ──
 function navTo(v){
   document.querySelectorAll('.view').forEach(e=>e.classList.remove('on'));
@@ -623,14 +681,17 @@ function renderPlanList(){
       <span class="pi-drag" title="드래그로 순서 변경">⠿</span>
       <span class="pi-icon">${item.v}</span>
       <div class="pi-info">
-        <div class="pi-name">${item.q.split('\n').pop()}</div>
+        <div class="pi-kw">${item.k||''}</div>
+        <div class="pi-name">${item.q}</div>
         ${item.value?`<div class="pi-val">${item.value}</div>`:''}
       </div>
+      ${item.value?'':'<span class="pi-chat-badge" title="이 항목부터 대화 시작">💬</span>'}
       <div class="pi-status"></div>
       <button class="pi-del" title="삭제" onclick="deletePlanItem(event,${i})">✕</button>`;
-    // 클릭 → 입력 모달
     el.addEventListener('click', e=>{
       if(e.target.classList.contains('pi-del')||e.target.classList.contains('pi-drag'))return;
+      // 💬 뱃지 클릭 시 해당 항목부터 대화 시작
+      if(e.target.classList.contains('pi-chat-badge')){startBuildup(i);return;}
       openItemModal(i);
     });
     // 드래그
@@ -652,14 +713,21 @@ function renderPlanList(){
 function openItemModal(idx){
   editingIdx=idx;
   const item=planItems[idx];
-  $('im-label').textContent=`${item.v} ${item.q.split('\n')[0]}`;
-  $('im-q').textContent=item.q.split('\n').pop();
+  $('im-label').textContent=item.k||item.v;
+  $('im-q').textContent=item.q;
   const hint=$('im-hint');
   if(item.h){hint.textContent=item.h;hint.style.display='block';}
   else{hint.style.display='none';}
   $('im-ta').value=item.value||'';
   $('item-modal').classList.add('on');
   setTimeout(()=>$('im-ta').focus(),200);
+}
+function openInsightFromModal(){
+  // editingIdx 기준으로 chatStep 임시 세팅 후 인사이트 열기
+  const prevStep=chatStep;
+  chatStep=editingIdx;
+  openInsight();
+  chatStep=prevStep;
 }
 function closeItemModal(){$('item-modal').classList.remove('on');editingIdx=-1;}
 function saveItemModal(){
@@ -709,7 +777,119 @@ async function savePlanProject(synopsis){
   arr.unshift(proj);localStorage.setItem('mp',JSON.stringify(arr.slice(0,50)));
   if(user&&user.id!=='t001'){try{await sb.from('projects').insert({...proj,user_id:user.id,completed_at:new Date().toISOString()});}catch(e){}}
 }
-// ── 오늘의 작업 ──
+// ── 빌드업 챗 (목차 연동) ──
+let chatStep=0;       // planItems 기준 현재 인덱스
+let chatFromPlan=false; // plan에서 진입했는지
+
+function startBuildup(fromIdx){
+  // fromIdx: 특정 항목부터 시작 (없으면 첫 미완료 항목부터)
+  chatFromPlan=true;
+  chatStep=(fromIdx!=null)?fromIdx:planItems.findIndex(p=>!p.value);
+  if(chatStep<0)chatStep=0;
+  $('back-to-plan-btn').style.display='';
+  $('cht').textContent=newProjName||'빌드업';
+  $('cnp').textContent=charName;
+  $('dsp').textContent=charName;
+  $('ce').textContent='✦';
+  initDots(planItems.length);
+  renderBuildupStep(chatStep);
+  navTo('chat');
+}
+
+function backToPlan(){
+  renderPlanList();
+  // 대화 이어하기 버튼 상태 갱신
+  const btn=$('plan-chat-btn');
+  const nextUnfilled=planItems.findIndex(p=>!p.value);
+  if(nextUnfilled>=0){
+    btn.textContent='💬 대화 이어하기';
+    btn.onclick=()=>startBuildup();
+  } else {
+    btn.textContent='✅ 모두 채워졌어요';
+    btn.onclick=null;
+  }
+  navTo('plan');
+}
+
+function initDots(total){
+  const w=$('sdots');w.innerHTML='';$('st').textContent=total;
+  for(let i=0;i<Math.min(total,30);i++){const d=document.createElement('div');d.className='sd';d.id='sd'+i;w.appendChild(d);}
+}
+function updateDots(idx){
+  $('sn').textContent=idx+1;
+  // 완료된 항목은 done, 현재는 act, 나머지는 빈칸
+  planItems.forEach((p,i)=>{
+    const d=$('sd'+i);if(!d)return;
+    d.className='sd'+(p.value?' done':i===idx?' act':'');
+  });
+}
+
+function renderBuildupStep(idx){
+  chatStep=idx;
+  if(idx>=planItems.length){finishBuildup();return;}
+  const s=planItems[idx];
+  updateDots(idx);
+  $('ce').textContent=s.v;
+  const sh=$('shint');
+  if(s.h){sh.innerHTML=md(s.h);sh.style.display='block';}else{sh.style.display='none';}
+  // 키워드 배지 + 질문
+  $('dt').innerHTML=`<span style="font-size:11px;font-weight:800;letter-spacing:0.08em;color:var(--purple-light);opacity:0.8;display:block;margin-bottom:8px">${s.k||''}</span>${md(s.q)}`
+    +(s.value?`<div style="margin-top:14px;padding:12px 14px;background:rgba(139,92,246,0.06);border:1px solid rgba(139,92,246,0.15);border-radius:10px;font-size:13px;color:var(--text-dim)">이전 답변: ${s.value}</div>`:'');
+  $('ia').style.display='flex';
+  $('ibt').style.display='';
+  $('cr').innerHTML='';
+  setTimeout(()=>{const b=$('cbody');b.scrollTop=b.scrollHeight;},100);
+}
+
+function doSend(){
+  const b=$('ci');const v=b.value.trim();if(!v)return;
+  b.value='';b.style.height='44px';submitBuildupAns(v);
+}
+
+async function submitBuildupAns(val){
+  $('ia').style.display='none';
+  const s=planItems[chatStep];
+  // planItems에 바로 저장
+  planItems[chatStep].value=val;
+  flash(val.length>30?val.slice(0,30)+'...':val);
+  $('dt').innerHTML='<div class="thk">분석 중... <div class="td"><span>●</span><span>●</span><span>●</span></div></div>';
+  const fb=await ai([
+    {role:'system',content:buildPersona()},
+    {role:'user',content:`[기획 단계: ${s.k||s.q}]\n[작가 답변]: ${val}\n\n한 줄로 요약해주세요. (최대 60자)`}
+  ]);
+  flash('✓ '+(fb||'저장됨'));
+  updateDots(chatStep);
+  // 다음 미완료 항목으로 자동 이동
+  const nextIdx=findNextUnfilled(chatStep+1);
+  if(nextIdx>=0){setTimeout(()=>renderBuildupStep(nextIdx),500);}
+  else{setTimeout(()=>finishBuildup(),500);}
+}
+
+function findNextUnfilled(fromIdx){
+  for(let i=fromIdx;i<planItems.length;i++){if(!planItems[i].value)return i;}
+  return -1;
+}
+
+function finishBuildup(){
+  $('ce').textContent='✨';
+  $('shint').style.display='none';
+  $('ia').style.display='flex';
+  $('ibt').style.display='none';
+  $('cr').innerHTML='';
+  const remaining=planItems.filter(p=>!p.value).length;
+  if(remaining>0){
+    $('dt').innerHTML=`<strong style="color:var(--green)">수고하셨어요!</strong><br><br>아직 채우지 않은 항목이 <strong>${remaining}개</strong> 있어요.<br>목록으로 돌아가서 나머지를 채우거나, 지금 바로 완성할 수 있어요.`;
+  } else {
+    $('dt').innerHTML=`<strong style="color:var(--green)">모든 항목을 채웠어요! ✨</strong><br><br>목록으로 돌아가 확인하거나, 지금 바로 완성할 수 있어요.`;
+  }
+  ['목록으로 돌아가기','지금 완성하기'].forEach(lbl=>{
+    const b=document.createElement('button');b.className='cbtn';b.textContent=lbl;
+    b.onclick=()=>{if(lbl==='목록으로 돌아가기')backToPlan();else finishPlan();};
+    $('cr').appendChild(b);
+  });
+  $('ia').querySelector('.ibw').style.display='none';
+}
+
 function startTask(type){
   if(!selProj){flash('먼저 작품을 선택해주세요');navTo('works');return;}
   const PM={
@@ -725,7 +905,9 @@ function startTask(type){
     general:`안녕하세요! **'${selProj.title}'** 작품에 대해 무엇을 도와드릴까요?`,
   };
   xMsgs=[];
-  xPersona=PM[type]+projCtx();
+  xLinkedProj=selProj;
+  xPersonaBase=PM[type];
+  xPersona=xPersonaBase+projCtx();
   openXChat(GM[type],selProj.title);
 }
 // ── 작품 검증 ──
@@ -743,7 +925,9 @@ function startVerify(name){
     '10년차 평론가':'당신은 10년 경력의 장르 소설 평론가입니다. 냉정하고 직접적으로 강점 2가지 / 논리적 약점 2가지 / 개선 전략 3가지 형식으로 피드백하세요.',
   };
   xMsgs=[];
-  xPersona=(PM[name]||'당신은 전문 검증 에이전트입니다.')+(selProj?projCtx():'');
+  xLinkedProj=selProj||null;
+  xPersonaBase=PM[name]||'당신은 전문 검증 에이전트입니다.';
+  xPersona=xPersonaBase+(xLinkedProj?projCtxOf(xLinkedProj):'');
   openXChat(`저는 **${name}**입니다.\n\n지금 작업 중인 원고 일부를 보내주시거나, 평가받고 싶은 설정을 알려주세요.\n\n날카롭고 정확한 피드백을 드리겠습니다.`,name);
 }
 function projCtx(){
@@ -756,13 +940,52 @@ function openXChat(greeting,sub){
   $('xct').textContent=sub||'AI 편집자';
   $('xcs').textContent='';
   $('xb').innerHTML='';
+  renderXLinkButtons();
   addXMsg('assistant',greeting);
   setTimeout(()=>$('xi').focus(),300);
 }
+
+function renderXLinkButtons(){
+  const row=$('xlink-row');
+  // 레이블 유지하고 버튼만 교체
+  row.innerHTML='<span style="font-size:11px;color:var(--text-faint);align-self:center;white-space:nowrap">내 작품 연동:</span>';
+  const linked=xLinkedProj;
+  if(linked){
+    const b=document.createElement('button');
+    b.className='xlink-btn active';
+    b.textContent=`✓ ${linked.title}`;
+    b.title='클릭하면 연동 해제';
+    b.onclick=()=>{xLinkedProj=null;xPersona=xPersonaBase;renderXLinkButtons();flash('연동 해제됨');};
+    row.appendChild(b);
+  }
+  // 내 작품 목록 버튼들
+  const projs=JSON.parse(localStorage.getItem('mp')||'[]');
+  projs.slice(0,4).forEach(p=>{
+    if(linked&&linked.id===p.id)return;
+    const b=document.createElement('button');
+    b.className='xlink-btn';
+    b.textContent=p.title;
+    b.onclick=()=>{
+      xLinkedProj=p;
+      xPersona=xPersonaBase+projCtxOf(p);
+      renderXLinkButtons();
+      addXMsg('assistant',`**'${p.title}'** 작품 정보를 불러왔어요. 이제 이 작품 기준으로 검토해 드릴게요.`);
+    };
+    row.appendChild(b);
+  });
+}
+
+function projCtxOf(p){
+  if(!p)return'';
+  const h=(p.answer_history||[]).slice(0,10).map(e=>`- ${e.id}: ${e.value}`).join('\n');
+  return`\n\n[작품 정보]\n제목: ${p.title}\n장르: ${p.genre||''}\n시놉시스: ${p.synopsis||''}${h?'\n[기획 내용]\n'+h:''}`;
+}
+
 function addXMsg(role,text){
   const b=$('xb');
-  const d=document.createElement('div');d.className='xm '+role;
-  d.innerHTML=`<div class="xmi"><div class="xr">${role==='user'?'Writer':'Mantra AI'}</div><div class="xc">${md(text)}</div></div>`;
+  const d=document.createElement('div');
+  d.className='xm '+(role==='user'?'user':'assistant');
+  d.innerHTML=`<div class="xm-name">${role==='user'?'나':'Mantra AI'}</div><div class="xmi"><div class="xc">${md(text)}</div></div>`;
   b.appendChild(d);b.scrollTop=b.scrollHeight;
 }
 async function doXSend(){
@@ -780,8 +1003,8 @@ async function doXSend(){
 async function openInsight(){
   const p=$('ip');p.classList.add('on');
   const b=$('ipb');b.innerHTML='<div class="ipld"><div class="ipspin"></div><span>인사이트 분석 중...</span></div>';
-  const s=steps[step];
-  const ctx=hist.slice(-3).map(h=>{const st=steps.find(x=>x.id===h.id);return st?`${st.q.split('\n')[0]}: ${h.value}`:''}).filter(Boolean).join('\n');
+  const s=planItems[chatStep]||planItems[0];
+  const ctx=planItems.filter(p=>p.value).slice(-3).map(p=>`${p.k||p.q}: ${p.value}`).join('\n');
   const raw=await ai([{role:'user',content:'당신은 스토리텔링 구조 전문가입니다.\n기획 단계 질문: "'+s.q+'"\n지금까지 쌓인 내용: '+(ctx||'없음')+'\n다음 JSON으로만 응답 (코드블록 없이):\n{"role":"이 단계의 서사적 역할 2~3문장","principle":"핵심 스토리텔링 원칙 2~3문장","tip":"이 단계에서 자주 실수하는 것과 해결책","reference":"이 단계에서 실제 작품들은 어떤 선택을 했는지 구체적인 레퍼런스 2~3개. 예시 형식: \'작품명 — 이 단계에서 [어떤 선택]을 했고, 그 결과 [어떤 효과]가 생겼다.\' 웹툰·소설·드라마 등 장르 다양하게.","question":"답하기 전에 스스로 물어볼 질문 1개"}'}]);
   try{
     const parsed=JSON.parse(raw.replace(/\`\`\`json|\`\`\`/g,'').trim());
