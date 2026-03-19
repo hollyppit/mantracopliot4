@@ -229,10 +229,10 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
 .xb::-webkit-scrollbar{width:4px}
 .xb::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.08);border-radius:2px}
 /* AI 버블 */
-.xm{display:flex;flex-direction:column;max-width:75%;animation:xmIn 0.25s ease}
+.xm{display:flex;flex-direction:column;max-width:88%;animation:xmIn 0.25s ease}
 @keyframes xmIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
-.xm.user{align-self:flex-end;align-items:flex-end}
-.xm.assistant{align-self:flex-start;align-items:flex-start}
+.xm.user{align-self:flex-end;align-items:flex-end;max-width:72%}
+.xm.assistant{align-self:flex-start;align-items:flex-start;max-width:92%}
 .xm-name{font-size:11px;font-weight:700;letter-spacing:0.06em;color:var(--text-faint);margin-bottom:4px;padding:0 4px}
 .xm.user .xm-name{color:var(--purple-light)}
 .xmi{padding:13px 17px;border-radius:18px;line-height:1.7;font-size:14px;word-break:keep-all}
@@ -552,35 +552,47 @@ const flash=(msg,d=2000)=>{const e=$('fl');e.textContent=msg.length>45?msg.slice
 const md=t=>{
   if(!t)return'';
   // 코드블록
-  t=t.replace(/```[\s\S]*?```/g,m=>`<pre style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:12px 14px;overflow-x:auto;font-size:13px;font-family:monospace;margin:8px 0">${m.replace(/```\w*\n?/g,'').replace(/```/g,'')}</pre>`);
+  t=t.replace(/```[\s\S]*?```/g,m=>`<pre style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:12px 14px;overflow-x:auto;font-size:13px;font-family:monospace;margin:8px 0;white-space:pre-wrap">${m.replace(/```\w*\n?/g,'').replace(/```/g,'')}</pre>`);
   // 인라인 코드
   t=t.replace(/`([^`]+)`/g,'<code style="background:rgba(255,255,255,0.07);border-radius:4px;padding:1px 6px;font-size:0.9em;font-family:monospace">$1</code>');
   // 헤딩
-  t=t.replace(/^### (.+)$/gm,'<div style="font-size:14px;font-weight:800;color:var(--text);margin:16px 0 6px">$1</div>');
-  t=t.replace(/^## (.+)$/gm,'<div style="font-size:16px;font-weight:900;color:var(--text);margin:18px 0 8px;border-bottom:1px solid rgba(255,255,255,0.08);padding-bottom:6px">$1</div>');
-  t=t.replace(/^# (.+)$/gm,'<div style="font-size:18px;font-weight:900;color:var(--text);margin:20px 0 10px">$1</div>');
-  // 표 (|col|col| 형태)
+  t=t.replace(/^### (.+)$/gm,'<div style="font-size:13px;font-weight:800;color:var(--purple-light);margin:14px 0 5px;letter-spacing:0.02em">$1</div>');
+  t=t.replace(/^## (.+)$/gm,'<div style="font-size:15px;font-weight:900;color:var(--text);margin:16px 0 7px;padding-bottom:5px;border-bottom:1px solid rgba(255,255,255,0.08)">$1</div>');
+  t=t.replace(/^# (.+)$/gm,'<div style="font-size:17px;font-weight:900;color:var(--text);margin:18px 0 9px">$1</div>');
+  // 표 → 세로 카드형 (가로 스크롤 없이)
   t=t.replace(/((?:^\|.+\|\n?)+)/gm,tableStr=>{
     const rows=tableStr.trim().split('\n').filter(r=>r.trim()&&!r.match(/^\|[-: |]+\|$/));
-    if(!rows.length)return tableStr;
-    const toRow=(r,isHead)=>{
-      const cells=r.split('|').filter((_,i,a)=>i>0&&i<a.length-1);
-      const tag=isHead?'th':'td';
-      const style=isHead?'background:rgba(255,255,255,0.06);font-weight:700;':'';
-      return`<tr>${cells.map(c=>`<${tag} style="padding:8px 12px;border:1px solid rgba(255,255,255,0.08);${style}">${c.trim()}</${tag}>`).join('')}</tr>`;
-    };
-    return`<div style="overflow-x:auto;margin:10px 0"><table style="border-collapse:collapse;width:100%;font-size:13px">${rows.map((r,i)=>toRow(r,i===0)).join('')}</table></div>`;
+    if(rows.length<2)return tableStr;
+    const headers=rows[0].split('|').filter((_,i,a)=>i>0&&i<a.length-1).map(c=>c.trim());
+    const body=rows.slice(1);
+    // 헤더 2개 이하면 단순 테이블, 아니면 카드형
+    if(headers.length<=3){
+      const toRow=(r,isHead)=>{
+        const cells=r.split('|').filter((_,i,a)=>i>0&&i<a.length-1);
+        const tag=isHead?'th':'td';
+        const st=isHead?'background:rgba(139,92,246,0.1);font-weight:700;font-size:12px;letter-spacing:0.04em;':'';
+        return`<tr>${cells.map(c=>`<${tag} style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,0.06);vertical-align:top;${st}">${c.trim()}</${tag}>`).join('')}</tr>`;
+      };
+      return`<div style="overflow-x:auto;margin:10px 0"><table style="border-collapse:collapse;width:100%;font-size:13px;line-height:1.6">${toRow(rows[0],true)}${body.map(r=>toRow(r,false)).join('')}</table></div>`;
+    }
+    // 컬럼 많은 표 → 행마다 카드로
+    return`<div style="display:flex;flex-direction:column;gap:8px;margin:10px 0">${body.map(r=>{
+      const cells=r.split('|').filter((_,i,a)=>i>0&&i<a.length-1).map(c=>c.trim());
+      const pairs=headers.map((h,i)=>cells[i]?`<div style="display:flex;gap:8px;font-size:13px;line-height:1.6;padding:3px 0;border-bottom:1px solid rgba(255,255,255,0.04)"><span style="color:var(--text-dim);flex-shrink:0;min-width:80px;font-weight:600">${h}</span><span>${cells[i]||'—'}</span></div>`:'').filter(Boolean).join('');
+      return`<div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:12px 14px">${pairs}</div>`;
+    }).join('')}</div>`;
   });
   // 굵게+기울임
   t=t.replace(/\*\*\*(.+?)\*\*\*/g,'<strong><em>$1</em></strong>');
   t=t.replace(/\*\*(.+?)\*\*/g,'<strong style="color:var(--purple-light)">$1</strong>');
-  t=t.replace(/\*(.+?)\*/g,'<em>$1</em>');
+  t=t.replace(/\*(.+?)\*/g,'<em style="color:var(--text-dim)">$1</em>');
   // 목록
-  t=t.replace(/^- (.+)$/gm,'<div style="display:flex;gap:8px;margin:3px 0"><span style="color:var(--purple-light);flex-shrink:0">•</span><span>$1</span></div>');
-  t=t.replace(/^\d+\. (.+)$/gm,(m,c,i)=>`<div style="display:flex;gap:8px;margin:3px 0"><span style="color:var(--purple-light);flex-shrink:0;min-width:16px">${m.match(/^\d+/)[0]}.</span><span>${c}</span></div>`);
+  t=t.replace(/^- (.+)$/gm,'<div style="display:flex;gap:8px;margin:2px 0;line-height:1.7"><span style="color:var(--purple-light);flex-shrink:0;margin-top:1px">•</span><span>$1</span></div>');
+  t=t.replace(/^\d+\. (.+)$/gm,(m,c)=>`<div style="display:flex;gap:8px;margin:2px 0;line-height:1.7"><span style="color:var(--purple-light);flex-shrink:0;min-width:18px;margin-top:1px">${m.match(/^\d+/)[0]}.</span><span>${c}</span></div>`);
   // 수평선
   t=t.replace(/^---+$/gm,'<hr style="border:none;border-top:1px solid rgba(255,255,255,0.08);margin:12px 0">');
-  // 줄바꿈
+  // 줄바꿈 (연속 줄바꿈은 단락 간격으로)
+  t=t.replace(/\n\n/g,'<div style="height:8px"></div>');
   t=t.replace(/\n/g,'<br>');
   return t;
 };
@@ -985,7 +997,8 @@ function addXMsg(role,text){
   const b=$('xb');
   const d=document.createElement('div');
   d.className='xm '+(role==='user'?'user':'assistant');
-  d.innerHTML=`<div class="xm-name">${role==='user'?'나':'Mantra AI'}</div><div class="xmi"><div class="xc">${md(text)}</div></div>`;
+  const name=role==='user'?'나':($('xct').textContent||'Mantra AI');
+  d.innerHTML=`<div class="xm-name">${name}</div><div class="xmi"><div class="xc">${md(text)}</div></div>`;
   b.appendChild(d);b.scrollTop=b.scrollHeight;
 }
 async function doXSend(){
