@@ -252,7 +252,90 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
 .xs{width:40px;height:40px;border-radius:50%;background:var(--purple);border:none;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.2s}
 .xs:hover{filter:brightness(1.1)}
 .xs svg{width:18px;height:18px;fill:currentColor;margin-left:2px}
-/* 마켓 빈 상태 */
+/* 회차 개요 */
+.ol-wrap{display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.ol-header{padding:20px 32px 0;flex-shrink:0}
+.ol-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
+.ol-title-row{display:flex;align-items:center;gap:12px}
+.ol-proj-badge{font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px;background:rgba(139,92,246,0.12);border:1px solid rgba(139,92,246,0.25);color:var(--purple-light);cursor:pointer;transition:all 0.2s}
+.ol-proj-badge:hover{background:rgba(139,92,246,0.2)}
+.ol-proj-badge.none{background:var(--surface);border-color:var(--border);color:var(--text-faint)}
+.ol-acts{display:flex;gap:6px;align-items:center}
+.ol-act-btn{font-size:11px;font-weight:700;padding:4px 10px;border-radius:6px;background:var(--surface);border:1px solid var(--border);color:var(--text-dim);cursor:pointer;transition:all 0.2s;font-family:inherit}
+.ol-act-btn:hover,.ol-act-btn.on{background:rgba(139,92,246,0.12);border-color:rgba(139,92,246,0.25);color:var(--purple-light)}
+.ol-actions{display:flex;gap:8px}
+.ol-btn{padding:7px 14px;border-radius:var(--rs);font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;border:1px solid var(--border);background:var(--surface);color:var(--text-dim);transition:all 0.2s}
+.ol-btn:hover{border-color:var(--border2);color:var(--text)}
+.ol-btn.primary{background:var(--purple);border-color:var(--purple);color:#fff;box-shadow:0 4px 12px var(--purple-glow)}
+.ol-btn.primary:hover{filter:brightness(1.1)}
+/* 긴장감 그래프 */
+.tension-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px 20px;margin-bottom:0;flex-shrink:0}
+.tension-label{font-size:11px;font-weight:700;color:var(--text-faint);letter-spacing:0.06em;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between}
+.tension-canvas-wrap{position:relative;height:80px}
+.tension-canvas-wrap canvas{width:100%;height:100%;cursor:crosshair}
+/* 회차 목록 */
+.ol-body{flex:1;overflow-y:auto;padding:16px 32px 32px}
+.ol-body::-webkit-scrollbar{width:4px}
+.ol-body::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.08);border-radius:2px}
+.ep-list{display:flex;flex-direction:column;gap:6px;max-width:880px}
+/* 회차 카드 */
+.ep-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rs);overflow:hidden;transition:border-color 0.2s}
+.ep-card:hover{border-color:var(--border2)}
+.ep-card.expanded{border-color:rgba(139,92,246,0.3)}
+.ep-row{display:flex;align-items:center;gap:12px;padding:13px 16px;cursor:pointer;user-select:none}
+.ep-num{font-size:11px;font-weight:800;color:var(--text-faint);width:32px;flex-shrink:0;text-align:center}
+.ep-act-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.ep-main{flex:1;min-width:0}
+.ep-keyword{font-size:11px;font-weight:800;letter-spacing:0.06em;color:var(--purple-light);margin-bottom:2px;opacity:0.8}
+.ep-title{font-size:14px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ep-title.empty{color:var(--text-faint);font-style:italic;font-weight:400}
+.ep-type-badge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;white-space:nowrap;flex-shrink:0}
+.ep-tension-mini{width:48px;height:24px;flex-shrink:0}
+.ep-chevron{color:var(--text-faint);font-size:12px;flex-shrink:0;transition:transform 0.2s}
+.ep-card.expanded .ep-chevron{transform:rotate(180deg)}
+.ep-del{width:26px;height:26px;border-radius:50%;background:none;border:none;color:var(--text-faint);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:12px;opacity:0;transition:all 0.2s;flex-shrink:0}
+.ep-row:hover .ep-del{opacity:1}
+.ep-del:hover{background:rgba(252,165,165,0.12);color:#fca5a5}
+/* 펼쳐진 편집 영역 */
+.ep-detail{padding:0 16px 16px;display:none;flex-direction:column;gap:12px;border-top:1px solid var(--border)}
+.ep-card.expanded .ep-detail{display:flex}
+.ep-field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.ep-field{display:flex;flex-direction:column;gap:5px}
+.ep-field.full{grid-column:1/-1}
+.ep-fl{font-size:11px;font-weight:700;color:var(--text-dim);letter-spacing:0.04em}
+.ep-input{background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:inherit;font-size:13px;padding:9px 12px;outline:none;transition:border-color 0.2s;resize:none;line-height:1.5}
+.ep-input:focus{border-color:var(--purple-light)}
+.ep-input::placeholder{color:var(--text-faint)}
+.ep-type-row{display:flex;gap:6px;flex-wrap:wrap}
+.ep-type-chip{font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;border:1px solid var(--border);background:var(--surface);color:var(--text-faint);cursor:pointer;transition:all 0.15s;font-family:inherit}
+.ep-type-chip.on{border-color:currentColor}
+.ep-tension-row{display:flex;align-items:center;gap:10px}
+.ep-tension-slider{flex:1;-webkit-appearance:none;height:4px;border-radius:2px;outline:none;cursor:pointer;background:linear-gradient(to right,var(--purple) 0%,var(--purple) var(--pct,50%),rgba(255,255,255,0.1) var(--pct,50%),rgba(255,255,255,0.1) 100%)}
+.ep-tension-val{font-size:13px;font-weight:800;color:var(--purple-light);width:28px;text-align:right;flex-shrink:0}
+/* 추가 버튼 */
+.ep-add{display:flex;align-items:center;justify-content:center;gap:8px;padding:13px;border:1px dashed var(--border2);border-radius:var(--rs);cursor:pointer;color:var(--text-faint);font-size:13px;font-weight:600;transition:all 0.2s;background:none;width:100%;font-family:inherit}
+.ep-add:hover{border-color:var(--purple);color:var(--purple-light);background:rgba(139,92,246,0.04)}
+/* 프로젝트 선택 오버레이 */
+.ol-proj-ov{position:fixed;inset:0;z-index:600;background:rgba(4,4,12,0.85);backdrop-filter:blur(20px);display:none;align-items:center;justify-content:center;padding:20px}
+.ol-proj-ov.on{display:flex}
+.ol-proj-box{background:rgba(12,12,24,0.98);border:1px solid var(--border2);border-radius:20px;padding:28px;width:100%;max-width:440px;box-shadow:0 30px 80px rgba(0,0,0,0.7)}
+.ol-proj-list{display:flex;flex-direction:column;gap:8px;margin-top:16px;max-height:320px;overflow-y:auto}
+.ol-proj-item{padding:12px 16px;border-radius:var(--rs);border:1px solid var(--border);background:var(--surface);cursor:pointer;transition:all 0.2s;display:flex;align-items:center;gap:12px}
+.ol-proj-item:hover{border-color:var(--purple-light);background:rgba(139,92,246,0.08)}
+.ol-proj-item .opp-title{font-size:14px;font-weight:700}
+.ol-proj-item .opp-meta{font-size:12px;color:var(--text-dim);margin-top:2px}
+/* 막 구분선 */
+.act-divider{display:flex;align-items:center;gap:10px;padding:8px 0 4px;font-size:11px;font-weight:800;color:var(--text-faint);letter-spacing:0.08em}
+.act-divider::before,.act-divider::after{content:'';flex:1;height:1px;background:var(--border)}
+/* 회차 설정 모달 */
+.ep-count-box{background:rgba(12,12,24,0.98);border:1px solid var(--border2);border-radius:20px;padding:32px;width:100%;max-width:400px;box-shadow:0 30px 80px rgba(0,0,0,0.7);display:flex;flex-direction:column;gap:18px}
+.ep-count-title{font-size:18px;font-weight:900}
+.ep-count-sub{font-size:13px;color:var(--text-dim);margin-top:-10px}
+.ep-count-input{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:var(--rs);color:var(--text);font-family:inherit;font-size:22px;font-weight:700;padding:14px 16px;outline:none;text-align:center;transition:border-color 0.2s}
+.ep-count-input:focus{border-color:var(--purple-light)}
+.ep-count-presets{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.ep-count-preset{padding:6px 14px;border-radius:20px;font-size:12px;font-weight:700;border:1px solid var(--border);background:var(--surface);color:var(--text-dim);cursor:pointer;font-family:inherit;transition:all 0.2s}
+.ep-count-preset:hover{border-color:var(--purple-light);color:var(--purple-light)}
 .mp{display:flex;flex-direction:column;align-items:center;justify-content:center;height:60vh;gap:16px;color:var(--text-dim);text-align:center}
 .mp .mpi{font-size:56px}
 .mp h3{font-size:20px;font-weight:800;color:var(--text)}
@@ -323,6 +406,7 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
   </div>
   <nav class="sb-nav">
     <div class="ni on" id="n-works" onclick="navTo('works')"><span class="ic">📚</span>내 작품</div>
+    <div class="ni" id="n-outline" onclick="navTo('outline')"><span class="ic">🎬</span>회차 개요</div>
     <div class="ni" id="n-tasks" onclick="navTo('tasks')"><span class="ic">⚡</span>오늘의 작업</div>
     <div class="ni" id="n-verify" onclick="navTo('verify')"><span class="ic">🔍</span>작품 검증</div>
     <div class="ni" id="n-market" onclick="navTo('market')"><span class="ic">🛍️</span>루틴 마켓<span class="nb">준비 중</span></div>
@@ -334,6 +418,50 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
   <section class="view on" id="view-works">
     <div class="vh"><div class="vt">내 작품</div></div>
     <div class="vb"><div class="pg" id="pg"></div></div>
+  </section>
+  <!-- 회차 개요 -->
+  <section class="view" id="view-outline">
+    <div class="ol-wrap">
+      <div class="ol-header">
+        <div class="ol-top">
+          <div class="ol-title-row">
+            <div style="font-size:20px;font-weight:900">회차 개요</div>
+            <button class="ol-proj-badge none" id="ol-proj-badge" onclick="openOlProjSelect()">작품 선택</button>
+          </div>
+          <div class="ol-actions">
+            <button class="ol-btn" onclick="openEpCountModal()">+ 회차 일괄 추가</button>
+            <button class="ol-btn primary" onclick="saveOutlineData()">저장</button>
+          </div>
+        </div>
+        <!-- 막 필터 -->
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap">
+          <span style="font-size:11px;color:var(--text-faint)">막 보기:</span>
+          <div class="ol-acts">
+            <button class="ol-act-btn on" id="act-all" onclick="filterAct('all')">전체</button>
+            <button class="ol-act-btn" id="act-1" onclick="filterAct(1)">1막</button>
+            <button class="ol-act-btn" id="act-2" onclick="filterAct(2)">2막</button>
+            <button class="ol-act-btn" id="act-3" onclick="filterAct(3)">3막</button>
+            <button class="ol-act-btn" id="act-4" onclick="filterAct(4)">4막</button>
+          </div>
+        </div>
+        <!-- 긴장감 그래프 -->
+        <div class="tension-wrap">
+          <div class="tension-label">
+            <span>📈 극적 긴장감 흐름</span>
+            <span style="font-size:10px;color:var(--text-faint)">각 회차의 긴장도를 반영합니다</span>
+          </div>
+          <div class="tension-canvas-wrap">
+            <canvas id="tension-canvas"></canvas>
+          </div>
+        </div>
+      </div>
+      <div class="ol-body">
+        <div class="ep-list" id="ep-list"></div>
+        <button class="ep-add" onclick="addEpisode()" style="max-width:880px;margin-top:6px">
+          <span style="font-size:16px">+</span> 회차 추가
+        </button>
+      </div>
+    </div>
   </section>
   <!-- 오늘의 작업 -->
   <section class="view" id="view-tasks">
@@ -465,6 +593,33 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
 <div class="ip" id="ip">
   <div class="iph"><div class="ipt">✦ 스토리텔링 인사이트</div><button class="ipc" onclick="closeInsight()">✕</button></div>
   <div class="ipb" id="ipb"></div>
+</div>
+<!-- 회차 개요: 프로젝트 선택 -->
+<div class="ol-proj-ov" id="ol-proj-ov">
+  <div class="ol-proj-box">
+    <div style="font-size:17px;font-weight:900">연동할 작품 선택</div>
+    <div style="font-size:13px;color:var(--text-dim);margin-top:4px">작품 기획 데이터를 함께 참조합니다</div>
+    <div class="ol-proj-list" id="ol-proj-list"></div>
+    <button class="ol-btn" style="width:100%;margin-top:12px;text-align:center" onclick="closeOlProjSelect()">취소</button>
+  </div>
+</div>
+<!-- 회차 수 설정 모달 -->
+<div class="ol-proj-ov" id="ep-count-ov">
+  <div class="ep-count-box">
+    <div class="ep-count-title">회차 수를 정해볼까요?</div>
+    <div class="ep-count-sub">이미 있는 회차 다음부터 추가됩니다</div>
+    <div class="ep-count-presets">
+      <button class="ep-count-preset" onclick="setEpCount(12)">12화</button>
+      <button class="ep-count-preset" onclick="setEpCount(24)">24화</button>
+      <button class="ep-count-preset" onclick="setEpCount(48)">48화</button>
+      <button class="ep-count-preset" onclick="setEpCount(100)">100화</button>
+    </div>
+    <input class="ep-count-input" id="ep-count-input" type="number" min="1" max="300" value="12" placeholder="회차 수">
+    <div style="display:flex;gap:10px">
+      <button class="ol-btn" style="flex:1;text-align:center" onclick="document.getElementById('ep-count-ov').classList.remove('on')">취소</button>
+      <button class="ol-btn primary" style="flex:2;text-align:center" onclick="confirmEpCount()">추가하기</button>
+    </div>
+  </div>
 </div>
 <!-- 오버레이: 프로젝트 이름 -->
 <div class="ov" id="ov-projname">
@@ -604,6 +759,7 @@ function navTo(v){
   if(ve)ve.classList.add('on');
   if(ne)ne.classList.add('on');
   if(v==='works')loadProjects();
+  if(v==='outline'){initOutline();setTimeout(drawTensionGraph,100);}
   if(v==='tasks'){
     if(!selProj){flash('먼저 작품을 선택해주세요');navTo('works');return;}
     $('tpn').textContent=selProj.title;
@@ -1055,6 +1211,347 @@ function buildPersona(){
   if(charName==='조수 B')return`당신은 웹소설 기획 조수 'B'입니다. 공감 능력이 뛰어나고 따뜻합니다. 유저의 답변을 한 줄로 요약하세요.`;
   return`당신은 작품 기획을 돕는 AI 조수입니다. 논리적이고 직관적입니다. 허점은 날카롭게 짚되 칭찬은 잘 된 경우에만 합니다. 유저의 답변을 한 줄로 요약하세요.`;
 }
+// ── 회차 개요 ──
+const EP_TYPES=[
+  {id:'curiosity', label:'호기심/트러블', color:'#60A5FA', bg:'rgba(96,165,250,0.12)'},
+  {id:'conflict',  label:'갈등/딜레마',  color:'#F472B6', bg:'rgba(244,114,182,0.12)'},
+  {id:'suspense',  label:'아슬/서스펜스',color:'#FBBF24', bg:'rgba(251,191,36,0.12)'},
+  {id:'climax',    label:'폭발/쾌감',   color:'#F87171', bg:'rgba(248,113,113,0.12)'},
+  {id:'relief',    label:'이완/코믹',   color:'#34D399', bg:'rgba(52,211,153,0.12)'},
+];
+const ACT_COLORS=['#8B5CF6','#3B82F6','#F59E0B','#EF4444'];
+const ACT_RANGES=[[1,12],[13,35],[36,55],[56,100]]; // 막별 화수 기본 범위 (조정 가능)
+
+let olEpisodes=[]; // [{num,act,title,keyword,synopsis,funPoint,reference,lastPanel,tension,type}]
+let olProjId=null;
+let olFilter='all';
+
+function initOutline(){
+  const saved=localStorage.getItem('ol_episodes');
+  const savedProj=localStorage.getItem('ol_proj');
+  if(saved)olEpisodes=JSON.parse(saved);
+  if(savedProj)olProjId=savedProj;
+  renderOlProj();
+  renderEpList();
+  drawTensionGraph();
+}
+
+// 막 판단
+function getAct(num){
+  const total=Math.max(olEpisodes.length,12);
+  const pct=num/total;
+  if(pct<=0.28)return 1;
+  if(pct<=0.55)return 2;
+  if(pct<=0.78)return 3;
+  return 4;
+}
+
+function renderOlProj(){
+  const projs=JSON.parse(localStorage.getItem('mp')||'[]');
+  const proj=projs.find(p=>p.id===olProjId);
+  const badge=$('ol-proj-badge');
+  if(proj){
+    badge.textContent='📚 '+proj.title;
+    badge.className='ol-proj-badge';
+  } else {
+    badge.textContent='작품 선택';
+    badge.className='ol-proj-badge none';
+  }
+}
+
+function openOlProjSelect(){
+  const projs=JSON.parse(localStorage.getItem('mp')||'[]');
+  const list=$('ol-proj-list');
+  list.innerHTML='';
+  if(!projs.length){list.innerHTML='<div style="color:var(--text-faint);font-size:13px;padding:12px">저장된 작품이 없어요</div>';} 
+  projs.forEach(p=>{
+    const el=document.createElement('div');el.className='ol-proj-item';
+    el.innerHTML=`<div><div class="opp-title">${p.title}</div><div class="opp-meta">${p.genre||'미분류'} · ${(p.answer_history||[]).length}단계</div></div>`;
+    el.onclick=()=>{olProjId=p.id;localStorage.setItem('ol_proj',p.id);renderOlProj();closeOlProjSelect();};
+    list.appendChild(el);
+  });
+  // 연동 해제 버튼
+  if(olProjId){
+    const el=document.createElement('div');el.className='ol-proj-item';
+    el.style.borderColor='rgba(252,165,165,0.2)';
+    el.innerHTML='<div style="color:#fca5a5;font-size:13px;font-weight:700">✕ 연동 해제</div>';
+    el.onclick=()=>{olProjId=null;localStorage.removeItem('ol_proj');renderOlProj();closeOlProjSelect();};
+    list.appendChild(el);
+  }
+  $('ol-proj-ov').classList.add('on');
+}
+function closeOlProjSelect(){$('ol-proj-ov').classList.remove('on');}
+
+function openEpCountModal(){$('ep-count-ov').classList.add('on');}
+function setEpCount(n){$('ep-count-input').value=n;}
+function confirmEpCount(){
+  const n=parseInt($('ep-count-input').value)||12;
+  const start=olEpisodes.length+1;
+  for(let i=start;i<start+n;i++){
+    olEpisodes.push({num:i,act:getAct(i),title:'',keyword:'',synopsis:'',funPoint:'',reference:'',lastPanel:'',tension:5,type:'curiosity'});
+  }
+  // act 재계산
+  olEpisodes.forEach((ep,i)=>ep.act=getAct(i+1));
+  $('ep-count-ov').classList.remove('on');
+  renderEpList();drawTensionGraph();saveOutlineData();
+}
+
+function addEpisode(){
+  const num=olEpisodes.length+1;
+  olEpisodes.push({num,act:getAct(num),title:'',keyword:'',synopsis:'',funPoint:'',reference:'',lastPanel:'',tension:5,type:'curiosity'});
+  renderEpList();drawTensionGraph();saveOutlineData();
+  // 새로 추가된 카드 펼치기
+  setTimeout(()=>{
+    const cards=document.querySelectorAll('.ep-card');
+    if(cards.length)toggleEp(cards[cards.length-1],olEpisodes.length-1);
+  },50);
+}
+
+function deleteEpisode(e,idx){
+  e.stopPropagation();
+  if(!confirm(`${idx+1}화를 삭제할까요?`))return;
+  olEpisodes.splice(idx,1);
+  // 번호 재정렬
+  olEpisodes.forEach((ep,i)=>{ep.num=i+1;ep.act=getAct(i+1);});
+  renderEpList();drawTensionGraph();saveOutlineData();
+}
+
+function filterAct(act){
+  olFilter=act;
+  document.querySelectorAll('.ol-act-btn').forEach(b=>b.classList.remove('on'));
+  $('act-'+(act==='all'?'all':act)).classList.add('on');
+  renderEpList();
+}
+
+function renderEpList(){
+  const list=$('ep-list');list.innerHTML='';
+  const eps=olFilter==='all'?olEpisodes:olEpisodes.filter(ep=>ep.act===olFilter);
+  let lastAct=0;
+  const ACT_NAMES=['','1막 — 모험의 시작','2막 — 활약의 순간','3막 — 방심과 대혼란','4막 — 각성과 최종 임무'];
+  eps.forEach((ep,visIdx)=>{
+    const realIdx=olEpisodes.indexOf(ep);
+    if(ep.act!==lastAct){
+      lastAct=ep.act;
+      const div=document.createElement('div');div.className='act-divider';
+      div.style.color=ACT_COLORS[ep.act-1]||'var(--text-faint)';
+      div.textContent=ACT_NAMES[ep.act]||`${ep.act}막`;
+      list.appendChild(div);
+    }
+    const typeInfo=EP_TYPES.find(t=>t.id===ep.type)||EP_TYPES[0];
+    const card=document.createElement('div');card.className='ep-card';
+    card.innerHTML=`
+      <div class="ep-row">
+        <div class="ep-num">${ep.num}</div>
+        <div class="ep-act-dot" style="background:${ACT_COLORS[ep.act-1]||'#888'}"></div>
+        <div class="ep-main">
+          ${ep.keyword?`<div class="ep-keyword">${ep.keyword}</div>`:''}
+          <div class="ep-title ${ep.title?'':'empty'}">${ep.title||'제목 없음'}</div>
+        </div>
+        <span class="ep-type-badge" style="color:${typeInfo.color};background:${typeInfo.bg}">${typeInfo.label}</span>
+        <canvas class="ep-tension-mini" id="mini-${realIdx}"></canvas>
+        <span class="ep-chevron">▼</span>
+        <button class="ep-del" onclick="deleteEpisode(event,${realIdx})">✕</button>
+      </div>
+      <div class="ep-detail">
+        <div style="margin-top:4px"></div>
+        <div class="ep-field full">
+          <div class="ep-fl">감정 유형</div>
+          <div class="ep-type-row">${EP_TYPES.map(t=>`<button class="ep-type-chip ${ep.type===t.id?'on':''}" style="${ep.type===t.id?`color:${t.color};background:${t.bg};border-color:${t.color}`:''}" onclick="setEpType(${realIdx},'${t.id}')">${t.label}</button>`).join('')}</div>
+        </div>
+        <div class="ep-field-row">
+          <div class="ep-field">
+            <div class="ep-fl">감정 키워드</div>
+            <input class="ep-input" placeholder="예) 배신, 각성" value="${ep.keyword||''}" oninput="updateEp(${realIdx},'keyword',this.value)">
+          </div>
+          <div class="ep-field">
+            <div class="ep-fl">제목 / 핵심 사건</div>
+            <input class="ep-input" placeholder="이번 화 핵심 사건" value="${ep.title||''}" oninput="updateEp(${realIdx},'title',this.value)">
+          </div>
+        </div>
+        <div class="ep-field full">
+          <div class="ep-fl">개요 / 시놉시스</div>
+          <textarea class="ep-input" rows="3" placeholder="이번 화 줄거리를 간략히..." oninput="updateEp(${realIdx},'synopsis',this.value)">${ep.synopsis||''}</textarea>
+        </div>
+        <div class="ep-field-row">
+          <div class="ep-field">
+            <div class="ep-fl">재미 포인트 / 레퍼런스</div>
+            <textarea class="ep-input" rows="2" placeholder="독자가 재미를 느낄 포인트" oninput="updateEp(${realIdx},'funPoint',this.value)">${ep.funPoint||''}</textarea>
+          </div>
+          <div class="ep-field">
+            <div class="ep-fl">막컷 임팩트</div>
+            <textarea class="ep-input" rows="2" placeholder="마지막 컷, 독자를 잡아두는 장치" oninput="updateEp(${realIdx},'lastPanel',this.value)">${ep.lastPanel||''}</textarea>
+          </div>
+        </div>
+        <div class="ep-field full">
+          <div class="ep-fl">극적 긴장도 &nbsp;<span style="color:var(--purple-light);font-weight:800">${ep.tension}</span></div>
+          <div class="ep-tension-row">
+            <input type="range" class="ep-tension-slider" min="1" max="10" value="${ep.tension}" style="--pct:${(ep.tension-1)/9*100}%" oninput="updateEpTension(${realIdx},this)">
+          </div>
+        </div>
+      </div>`;
+    card.querySelector('.ep-row').addEventListener('click',e=>{
+      if(e.target.classList.contains('ep-del'))return;
+      toggleEp(card,realIdx);
+    });
+    list.appendChild(card);
+  });
+  // 미니 그래프 그리기
+  setTimeout(()=>{
+    eps.forEach((ep,i)=>{
+      const realIdx=olEpisodes.indexOf(ep);
+      drawMiniTension(realIdx);
+    });
+  },20);
+}
+
+function toggleEp(card,idx){
+  card.classList.toggle('expanded');
+}
+
+function updateEp(idx,key,val){
+  olEpisodes[idx][key]=val;
+  // 제목/키워드 변경 시 카드 헤더 즉시 반영
+  const cards=document.querySelectorAll('.ep-card');
+  let cardIdx=0;
+  document.querySelectorAll('.ep-card').forEach((c,i)=>{
+    const row=c.querySelector('.ep-row');
+    // 해당 카드 찾기 (ep-num으로)
+    const numEl=row.querySelector('.ep-num');
+    if(numEl&&parseInt(numEl.textContent)===olEpisodes[idx].num){
+      const titleEl=row.querySelector('.ep-title');
+      if(titleEl){titleEl.textContent=val||'제목 없음';titleEl.className='ep-title'+(val?'':' empty');}
+      const kwEl=row.querySelector('.ep-keyword');
+      if(key==='keyword'){
+        if(val&&!kwEl){const d=document.createElement('div');d.className='ep-keyword';d.textContent=val;row.querySelector('.ep-main').prepend(d);}
+        else if(kwEl)kwEl.textContent=val;
+      }
+    }
+  });
+}
+
+function updateEpTension(idx,input){
+  const v=parseInt(input.value);
+  olEpisodes[idx].tension=v;
+  input.style.setProperty('--pct',((v-1)/9*100)+'%');
+  // 라벨 업데이트
+  const label=input.closest('.ep-field').querySelector('.ep-fl');
+  if(label)label.innerHTML=`극적 긴장도 &nbsp;<span style="color:var(--purple-light);font-weight:800">${v}</span>`;
+  drawTensionGraph();
+  drawMiniTension(idx);
+}
+
+function setEpType(idx,type){
+  olEpisodes[idx].type=type;
+  // 칩 active 상태 갱신
+  const card=document.querySelectorAll('.ep-card')[getCardVisIdx(idx)];
+  if(!card)return;
+  card.querySelectorAll('.ep-type-chip').forEach(b=>{
+    const t=EP_TYPES.find(t=>t.label===b.textContent);
+    if(!t)return;
+    if(t.id===type){b.classList.add('on');b.style.color=t.color;b.style.background=t.bg;b.style.borderColor=t.color;}
+    else{b.classList.remove('on');b.style.color='';b.style.background='';b.style.borderColor='';}
+  });
+  // 배지 갱신
+  const typeInfo=EP_TYPES.find(t=>t.id===type)||EP_TYPES[0];
+  const badge=card.querySelector('.ep-type-badge');
+  if(badge){badge.textContent=typeInfo.label;badge.style.color=typeInfo.color;badge.style.background=typeInfo.bg;}
+}
+
+function getCardVisIdx(realIdx){
+  // 필터 적용 시 시각적 인덱스 계산
+  let count=0;let divCount=0;
+  const list=$('ep-list');const children=[...list.children];
+  for(let i=0;i<children.length;i++){
+    if(children[i].classList.contains('act-divider'))continue;
+    if(count===realIdx)return i;
+    count++;
+  }
+  return realIdx;
+}
+
+// 긴장감 그래프
+function drawTensionGraph(){
+  const canvas=$('tension-canvas');if(!canvas)return;
+  const wrap=canvas.parentElement;
+  canvas.width=wrap.offsetWidth||800;canvas.height=80;
+  const ctx=canvas.getContext('2d');
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  if(!olEpisodes.length)return;
+  const eps=olFilter==='all'?olEpisodes:olEpisodes.filter(e=>e.act===olFilter);
+  if(!eps.length)return;
+  const W=canvas.width,H=canvas.height;
+  const pad={l:8,r:8,t:8,b:20};
+  const gW=W-pad.l-pad.r,gH=H-pad.t-pad.b;
+  const step=gW/(eps.length-1||1);
+  // 그라디언트
+  const grad=ctx.createLinearGradient(0,0,W,0);
+  ACT_COLORS.forEach((c,i)=>grad.addColorStop(i/3,c+'99'));
+  // 영역 채우기
+  ctx.beginPath();
+  ctx.moveTo(pad.l,pad.t+gH);
+  eps.forEach((ep,i)=>{
+    const x=pad.l+i*step;
+    const y=pad.t+gH-(ep.tension-1)/9*gH;
+    if(i===0)ctx.lineTo(x,y);else ctx.lineTo(x,y);
+  });
+  ctx.lineTo(pad.l+(eps.length-1)*step,pad.t+gH);
+  ctx.closePath();
+  ctx.fillStyle='rgba(139,92,246,0.08)';ctx.fill();
+  // 선
+  ctx.beginPath();
+  eps.forEach((ep,i)=>{
+    const x=pad.l+i*step;
+    const y=pad.t+gH-(ep.tension-1)/9*gH;
+    i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+  });
+  ctx.strokeStyle=grad;ctx.lineWidth=2.5;ctx.lineJoin='round';ctx.stroke();
+  // 점
+  eps.forEach((ep,i)=>{
+    const x=pad.l+i*step;
+    const y=pad.t+gH-(ep.tension-1)/9*gH;
+    const typeInfo=EP_TYPES.find(t=>t.id===ep.type)||EP_TYPES[0];
+    ctx.beginPath();ctx.arc(x,y,3.5,0,Math.PI*2);
+    ctx.fillStyle=typeInfo.color;ctx.fill();
+  });
+  // x축 막 구분
+  if(olFilter==='all'){
+    let lastAct=0;
+    eps.forEach((ep,i)=>{
+      if(ep.act!==lastAct){
+        lastAct=ep.act;
+        const x=pad.l+i*step;
+        ctx.beginPath();ctx.moveTo(x,pad.t);ctx.lineTo(x,pad.t+gH);
+        ctx.strokeStyle=ACT_COLORS[ep.act-1]+'44';ctx.lineWidth=1;ctx.setLineDash([3,3]);ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.fillStyle=ACT_COLORS[ep.act-1]+'99';ctx.font='9px sans-serif';
+        ctx.fillText(`${ep.act}막`,x+3,pad.t+gH+14);
+      }
+    });
+  }
+}
+
+function drawMiniTension(idx){
+  const canvas=document.getElementById('mini-'+idx);if(!canvas)return;
+  canvas.width=48;canvas.height=24;
+  const ctx=canvas.getContext('2d');ctx.clearRect(0,0,48,24);
+  // 주변 3화 포함 미니 스파크라인
+  const start=Math.max(0,idx-2),end=Math.min(olEpisodes.length-1,idx+2);
+  const slice=olEpisodes.slice(start,end+1);
+  if(slice.length<2)return;
+  const step=46/(slice.length-1);
+  ctx.beginPath();
+  slice.forEach((ep,i)=>{
+    const x=1+i*step,y=22-(ep.tension-1)/9*20;
+    i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+  });
+  ctx.strokeStyle='rgba(139,92,246,0.6)';ctx.lineWidth=1.5;ctx.stroke();
+}
+
+function saveOutlineData(){
+  localStorage.setItem('ol_episodes',JSON.stringify(olEpisodes));
+  flash('💾 개요 저장됨');
+}
+
 // ── 인트로 ──
 function skipIntro(){
   const el=document.getElementById('intro');
