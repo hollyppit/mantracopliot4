@@ -492,13 +492,13 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
         <button onclick="navTo('home')" style="width:34px;height:34px;border-radius:50%;background:var(--surface);border:1px solid var(--border);color:var(--text-dim);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;transition:all 0.2s;flex-shrink:0" onmouseover="this.style.background='var(--surface2)';this.style.color='var(--text)'" onmouseout="this.style.background='var(--surface)';this.style.color='var(--text-dim)'">←</button>
         <div>
           <div style="font-size:14px;font-weight:800">창작 에이전트</div>
-          <div style="font-size:11px;color:var(--text-dim);margin-top:2px">막히는 모든 창작 에이전트을 자유롭게 털어놓으세요</div>
+          <div style="font-size:11px;color:var(--text-dim);margin-top:2px">막히는 창작 고민을 모두 말씀해 주세요</div>
         </div>
       </div>
       <!-- 메시지 영역 -->
       <div id="gm-msgs" style="flex:1;overflow-y:auto;padding:24px;display:flex;flex-direction:column;gap:14px">
         <div id="gm-welcome">
-          <div style="font-size:18px;font-weight:500;color:var(--text);margin-bottom:6px;line-height:1.6">어떤 창작 에이전트이 있나요?</div>
+          <div style="font-size:18px;font-weight:500;color:var(--text);margin-bottom:6px;line-height:1.6">오늘 어떤 창작을 하고 있나요?</div>
           <div style="font-size:13px;color:var(--text-dim);margin-bottom:18px">장르물, 장면 구성, 캐릭터, 플롯, 대사 — 뭐든 편하게 말씀해 주세요.</div>
           <div style="display:flex;flex-wrap:wrap;gap:8px">
             <button onclick="gmFill('이번 화에서 주인공의 동기가 너무 약한 것 같아요')" style="background:var(--surface);border:1px solid var(--border);color:var(--text);padding:9px 18px;border-radius:100px;font-size:14px;font-weight:600;font-family:inherit;cursor:pointer;transition:all 0.25s" onmouseover="this.style.background='rgba(139,92,246,0.12)';this.style.borderColor='var(--purple-light)'" onmouseout="this.style.background='var(--surface)';this.style.borderColor='var(--border)'">✏️ 주인공 동기가 약해요</button>
@@ -515,7 +515,7 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
         <div id="gm-input-wrap" style="background:rgba(15,15,28,0.6);border:1px solid var(--border);border-radius:24px;padding:10px 10px 10px 20px;display:flex;gap:10px;align-items:flex-end;transition:border-color 0.3s">
           <textarea id="gm-ta" rows="1"
             style="flex:1;background:none;border:none;color:var(--text);font-family:inherit;font-size:15px;font-weight:500;line-height:1.6;resize:none;outline:none;height:44px;max-height:130px;padding:4px 0"
-            placeholder="창작 에이전트을 입력하세요..."
+            placeholder="창작 고민을 입력하세요..."
             onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();gmSend();}"
             oninput="this.style.height='44px';this.style.height=Math.min(this.scrollHeight,130)+'px'"></textarea>
           <button id="gm-send" onclick="gmSend()" style="width:42px;height:42px;border-radius:50%;background:var(--purple);border:none;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.2s;box-shadow:0 4px 14px var(--purple-glow)">
@@ -1790,6 +1790,41 @@ function homeChat(){
 }
 
 // ── 창작 에이전트 ──
+// ── 사이트 내 기능 맵 ──
+const SITE_FEATURES = [
+  { keywords:['회차','개요','에피소드','화','목차','구성','막'], label:'회차 개요', icon:'🎬', action:"navTo('outline')", desc:'회차별 긴장감·구성 설계' },
+  { keywords:['기획','아이디어','스토리','플롯','구조','이야기'], label:'스토리 빌드업', icon:'📖', action:"openMode()", desc:'22단계 스토리 구조 기획' },
+  { keywords:['검증','고증','편집','피드백','평론','전문가','의학','법률','심리'], label:'작품 검증', icon:'🔍', action:"navTo('verify')", desc:'전문가 AI가 작품을 검토' },
+  { keywords:['대사','캐릭터','인물','성격','말투'], label:'오늘의 작업 — 대사 검토', icon:'💬', action:"navTo('tasks')", desc:'캐릭터 대사 검토 및 개선' },
+  { keywords:['복선','설정','충돌','오류','체크'], label:'오늘의 작업 — 복선 체크', icon:'🔗', action:"navTo('tasks')", desc:'복선·설정 충돌 점검' },
+];
+
+function getFeatureSuggestion(userText, replyText) {
+  const combined = (userText + ' ' + replyText).toLowerCase();
+  for (const f of SITE_FEATURES) {
+    if (f.keywords.some(k => combined.includes(k))) return f;
+  }
+  return null;
+}
+
+function extractYTKeyword(userText, replyText) {
+  const combined = userText + ' ' + replyText;
+  // AI 답변에서 핵심 키워드 추출 (간단 휴리스틱)
+  const patterns = [
+    /장르물|로맨스|판타지|무협|스릴러|공포|SF|이세계/,
+    /스토리텔링|서사|플롯|구조/,
+    /캐릭터|인물|주인공|빌런/,
+    /대사|연출|장면|씬|컷/,
+    /복선|반전|클라이막스/,
+    /웹툰|웹소설|만화|소설/,
+  ];
+  for (const p of patterns) {
+    const m = combined.match(p);
+    if (m) return m[0] + ' 창작 강좌';
+  }
+  return '웹툰 스토리텔링 강좌';
+}
+
 let gmMsgs=[], gmLoading=false;
 function gmFill(t){
   const ta=$('gm-ta'); if(!ta) return;
@@ -1801,18 +1836,25 @@ async function gmSend(){
   const ta=$('gm-ta'); const v=ta.value.trim(); if(!v) return;
   const welcome=$('gm-welcome'); if(welcome) welcome.style.display='none';
   appendGmMsg('user', v);
+  const userText = v;
   gmMsgs.push({role:'user', content:v});
   ta.value=''; ta.style.height='44px';
   gmLoading=true; $('gm-send').style.opacity='0.5';
   const lid = appendGmLoading();
   try{
     const reply = await ai([
-      {role:'system', content:'당신은 웹툰·웹소설 창작자를 위한 전문 AI 코파일럿입니다. 스토리텔링, 캐릭터, 플롯, 대사, 연출 등 창작 전반에 깊은 식견을 가지고 있습니다. 친근하지만 전문적으로, 구체적이고 실용적인 조언을 제공하세요. 답변은 300자 내외로 간결하게.'},
+      {role:'system', content:`당신은 웹툰·웹소설 창작자를 위한 전문 AI 코파일럿 '만트라 에이전트'입니다. 스토리텔링, 장르물, 캐릭터, 플롯, 대사, 연출 등 창작 전반에 깊은 식견을 가지고 있습니다. 친근하지만 전문적으로, 구체적이고 실용적인 조언을 제공하세요. 답변은 400자 내외로 간결하게. 마크다운 형식(굵게, 목록 등)을 자유롭게 사용하세요.`},
       ...gmMsgs
     ]);
     removeGmLoading(lid);
     appendGmMsg('ai', reply);
     gmMsgs.push({role:'assistant', content:reply});
+
+    // 기능 추천 + 유튜브 영상 비동기로 추가
+    const feature = getFeatureSuggestion(userText, reply);
+    const ytKeyword = extractYTKeyword(userText, reply);
+    appendGmExtras(feature, ytKeyword);
+
   }catch(e){
     removeGmLoading(lid);
     appendGmMsg('ai','⚠️ 연결 오류가 발생했어요. 잠시 후 다시 시도해주세요.');
@@ -1820,6 +1862,72 @@ async function gmSend(){
   gmLoading=false; $('gm-send').style.opacity='1';
   $('gm-msgs').scrollTop=$('gm-msgs').scrollHeight;
 }
+
+async function appendGmExtras(feature, ytKeyword) {
+  const msgs = $('gm-msgs');
+  const wrap = document.createElement('div');
+  wrap.style.cssText = 'display:flex;flex-direction:column;gap:10px;max-width:88%;padding-left:36px';
+  msgs.appendChild(wrap);
+
+  // 기능 추천 카드
+  if (feature) {
+    const fc = document.createElement('div');
+    fc.style.cssText = 'background:rgba(139,92,246,0.08);border:1px solid rgba(139,92,246,0.2);border-radius:12px;padding:12px 14px;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;gap:12px';
+    fc.innerHTML = `<div style="font-size:1.3rem;flex-shrink:0">${feature.icon}</div><div style="flex:1;min-width:0"><div style="font-size:12px;font-weight:700;color:var(--purple-light);margin-bottom:2px">${feature.label}</div><div style="font-size:11px;color:var(--text-faint)">${feature.desc}</div></div><div style="font-size:11px;color:var(--purple-light);font-weight:700;flex-shrink:0">열기 →</div>`;
+    fc.onmouseover = () => { fc.style.background='rgba(139,92,246,0.14)'; fc.style.transform='translateY(-1px)'; };
+    fc.onmouseout = () => { fc.style.background='rgba(139,92,246,0.08)'; fc.style.transform='translateY(0)'; };
+    fc.onclick = () => eval(feature.action);
+    wrap.appendChild(fc);
+  }
+
+  // 유튜브 영상 추천
+  const videos = await fetchGmYT(ytKeyword);
+  if (videos.length > 0) {
+    const ytWrap = document.createElement('div');
+    ytWrap.style.cssText = 'display:flex;flex-direction:column;gap:7px';
+    ytWrap.innerHTML = `<div style="font-size:10px;font-weight:700;letter-spacing:0.08em;color:var(--text-faint);text-transform:uppercase;margin-bottom:2px">▶ 관련 영상</div>` +
+      videos.map(v => `
+        <div onclick="openYTModal('${v.id}','${v.title.replace(/'/g,"\\'")}')"
+          style="background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;display:flex;cursor:pointer;transition:all 0.2s"
+          onmouseover="this.style.borderColor='var(--border2)';this.style.background='var(--surface2)'"
+          onmouseout="this.style.borderColor='var(--border)';this.style.background='var(--surface)'">
+          <div style="width:100px;min-width:100px;position:relative;overflow:hidden;background:rgba(255,255,255,0.04)">
+            <img src="${v.thumb}" alt="" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block">
+          </div>
+          <div style="padding:10px 13px;flex:1;display:flex;flex-direction:column;justify-content:center;gap:3px">
+            <div style="font-size:12px;font-weight:600;color:var(--text);line-height:1.4">${escHtml(v.title)}</div>
+            <div style="font-size:10px;color:var(--text-faint)">${escHtml(v.channel)}</div>
+          </div>
+        </div>`).join('');
+    wrap.appendChild(ytWrap);
+  }
+
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+async function fetchGmYT(keyword) {
+  if (!YT_API_KEY) return getGmDummyVideos(keyword);
+  try {
+    const q = encodeURIComponent(keyword);
+    const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${q}&type=video&maxResults=2&relevanceLanguage=ko&key=${YT_API_KEY}`;
+    const res = await fetch(url); if (!res.ok) throw new Error();
+    const data = await res.json();
+    return (data.items||[]).map(i=>({
+      id: i.id.videoId,
+      title: i.snippet.title,
+      channel: i.snippet.channelTitle,
+      thumb: i.snippet.thumbnails.medium?.url || i.snippet.thumbnails.default?.url
+    }));
+  } catch(e) { return getGmDummyVideos(keyword); }
+}
+
+function getGmDummyVideos(keyword) {
+  return [
+    { id:'dQw4w9WgXcQ', title:`[창작 강좌] ${keyword} — 핵심 정리`, channel:'창작연구소', thumb:'https://img.youtube.com/vi/dQw4w9WgXcQ/mqdefault.jpg' },
+    { id:'9bZkp7q19f0', title:`작가라면 꼭 봐야 할 ${keyword}`, channel:'스토리 아카데미', thumb:'https://img.youtube.com/vi/9bZkp7q19f0/mqdefault.jpg' },
+  ];
+}
+
 function appendGmMsg(role, text){
   const msgs=$('gm-msgs');
   const d=document.createElement('div');
