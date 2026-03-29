@@ -1705,18 +1705,14 @@ async function logout(){try{await sb.auth.signOut();}catch(e){}window.location.h
   navTo('home');
 })();
 
-// ── CONFIG: YouTube API 키 (Cloudflare 환경변수 YOUTUBE_API_KEY) ──
-const YT_API_KEY = typeof __YOUTUBE_API_KEY__ !== 'undefined' ? __YOUTUBE_API_KEY__ : '';
-
 // ── 홈 유튜브 영상 로드 ──
 const YT_QUERIES = ['웹툰 스토리텔링 강좌', '만화 기획 구성법', '시나리오 쓰는 법'];
 async function loadHomeVideos(){
   const list = $('yt-list');
   if(!list) return;
-  if(!YT_API_KEY){ list.innerHTML = renderDummyVideos(); return; }
   try{
     const q = encodeURIComponent(YT_QUERIES[Math.floor(Math.random()*YT_QUERIES.length)]);
-    const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${q}&type=video&maxResults=4&relevanceLanguage=ko&key=${YT_API_KEY}`;
+    const url = `/api/youtube?q=${q}`;
     const res = await fetch(url); if(!res.ok) throw new Error();
     const data = await res.json();
     const items = (data.items||[]).map(i=>({
@@ -1906,10 +1902,9 @@ async function appendGmExtras(feature, ytKeyword) {
 }
 
 async function fetchGmYT(keyword) {
-  if (!YT_API_KEY) return getGmDummyVideos(keyword);
   try {
     const q = encodeURIComponent(keyword);
-    const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${q}&type=video&maxResults=2&relevanceLanguage=ko&key=${YT_API_KEY}`;
+    const url = `/api/youtube?q=${q}`;
     const res = await fetch(url); if (!res.ok) throw new Error();
     const data = await res.json();
     return (data.items||[]).map(i=>({
