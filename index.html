@@ -348,28 +348,28 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
 ::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.08);border-radius:2px}
 /* 인트로 */
 #intro{position:fixed;inset:0;z-index:9999;background:#06060E;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:all;overflow:hidden}
-#intro.fade-out{animation:introOut 1.2s ease forwards}
+#intro.fade-out{animation:introOut 0.6s ease forwards}
 @keyframes introOut{to{opacity:0}}
 .intro-seq{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;text-align:center}
 /* 손글씨 느낌 밑줄 */
-.intro-underline{width:0;height:1px;background:rgba(255,255,255,0.12);margin:0 auto;animation:ulIn 1s ease 0.4s forwards}
+.intro-underline{width:0;height:1px;background:rgba(255,255,255,0.12);margin:0 auto;animation:ulIn 0.6s ease 0s forwards}
 @keyframes ulIn{to{width:260px}}
 /* 페인포인트 - 타이핑처럼 한 줄씩 */
 .iline{font-size:15px;font-weight:400;color:var(--text-faint);letter-spacing:0.01em;line-height:1;opacity:0;margin:0}
-.iline.l1{animation:lnIn 1s ease 0.5s forwards;margin-top:32px}
-.iline.l2{animation:lnIn 1s ease 1.4s forwards;margin-top:20px}
-.iline.l3{animation:lnIn 1s ease 2.3s forwards;margin-top:20px}
+.iline.l1{animation:lnIn 0.6s ease 0s forwards;margin-top:32px}
+.iline.l2{animation:lnIn 0.6s ease 0s forwards;margin-top:20px}
+.iline.l3{animation:lnIn 0.6s ease 0s forwards;margin-top:20px}
 @keyframes lnIn{from{opacity:0;transform:translateX(-6px)}to{opacity:1;transform:translateX(0)}}
 /* 전환 점 */
-.intro-dots{display:flex;gap:6px;justify-content:center;margin-top:36px;opacity:0;animation:lnIn 0.6s ease 3.4s forwards}
+.intro-dots{display:flex;gap:6px;justify-content:center;margin-top:36px;opacity:0;animation:lnIn 0.6s ease 0s forwards}
 .intro-dots span{width:4px;height:4px;border-radius:50%;background:var(--text-faint);opacity:0.4}
 /* 솔루션 문장 */
 .intro-ans{font-size:19px;font-weight:700;color:var(--text);letter-spacing:-0.02em;line-height:1.6;opacity:0;margin-top:28px;word-break:keep-all}
 .intro-ans em{color:var(--purple-light);font-style:normal}
-.intro-ans{animation:ansIn 1s cubic-bezier(0.16,1,0.3,1) 3.8s forwards}
+.intro-ans{animation:lnIn 0.6s ease 0s forwards}
 @keyframes ansIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 /* 로고 */
-.intro-logo{display:flex;align-items:center;gap:8px;opacity:0;margin-top:48px;animation:ansIn 0.9s cubic-bezier(0.16,1,0.3,1) 4.6s forwards}
+.intro-logo{display:flex;align-items:center;gap:8px;opacity:0;margin-top:48px;animation:lnIn 0.6s ease 0s forwards}
 .intro-logo .mark{font-size:20px;color:var(--purple);filter:drop-shadow(0 0 10px var(--purple-glow))}
 .intro-logo .wordmark{font-size:18px;font-weight:900;letter-spacing:0.02em;color:rgba(255,255,255,0.5)}
 .intro-logo .wordmark em{color:var(--purple-light);font-style:normal}
@@ -1685,10 +1685,10 @@ function saveOutlineData(){
 function skipIntro(){
   const el=document.getElementById('intro');
   el.classList.add('fade-out');
-  setTimeout(()=>el.remove(),800);
+  setTimeout(()=>el.remove(),600);
 }
 (function(){
-  setTimeout(skipIntro, 6000);
+  setTimeout(skipIntro, 2000);
 })();
 // ── 인증 ──
 async function logout(){try{await sb.auth.signOut();}catch(e){}window.location.href='login.html';}
