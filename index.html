@@ -52,7 +52,7 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
 .pc:hover{border-color:var(--border2);background:var(--surface2);transform:translateY(-3px);box-shadow:0 20px 40px rgba(0,0,0,0.3)}
 .pc-genre{font-size:11px;font-weight:800;color:var(--purple-light);background:rgba(139,92,246,0.12);padding:3px 10px;border-radius:20px;display:inline-block}
 .pc-title{font-size:17px;font-weight:800;line-height:1.4}
-.pc-syn{font-size:13px;color:var(--text-dim);line-height:1.6;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.pc-syn{font-size:13px;color:var(--text-dim);line-height:1.6;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;line-clamp:3;overflow:hidden}
 .pc-foot{font-size:11px;color:var(--text-faint);font-weight:600;display:flex;justify-content:space-between;margin-top:auto}
 .pc-add{background:var(--surface);border:1px dashed var(--border2);border-radius:var(--r);padding:22px;cursor:pointer;transition:all 0.25s;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;min-height:160px;color:var(--text-dim)}
 .pc-add:hover{border-color:var(--purple);color:var(--purple-light);background:rgba(139,92,246,0.05)}
@@ -310,7 +310,7 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
 .ep-type-chip{font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;border:1px solid var(--border);background:var(--surface);color:var(--text-faint);cursor:pointer;transition:all 0.15s;font-family:inherit}
 .ep-type-chip.on{border-color:currentColor}
 .ep-tension-row{display:flex;align-items:center;gap:10px}
-.ep-tension-slider{flex:1;-webkit-appearance:none;height:4px;border-radius:2px;outline:none;cursor:pointer;background:linear-gradient(to right,var(--purple) 0%,var(--purple) var(--pct,50%),rgba(255,255,255,0.1) var(--pct,50%),rgba(255,255,255,0.1) 100%)}
+.ep-tension-slider{flex:1;-webkit-appearance:none;-moz-appearance:none;appearance:none;height:4px;border-radius:2px;outline:none;cursor:pointer;background:linear-gradient(to right,var(--purple) 0%,var(--purple) var(--pct,50%),rgba(255,255,255,0.1) var(--pct,50%),rgba(255,255,255,0.1) 100%)}
 .ep-tension-val{font-size:13px;font-weight:800;color:var(--purple-light);width:28px;text-align:right;flex-shrink:0}
 /* 추가 버튼 */
 .ep-add{display:flex;align-items:center;justify-content:center;gap:8px;padding:13px;border:1px dashed var(--border2);border-radius:var(--rs);cursor:pointer;color:var(--text-faint);font-size:13px;font-weight:600;transition:all 0.2s;background:none;width:100%;font-family:inherit}
@@ -1692,18 +1692,105 @@ function skipIntro(){
 })();
 // ── 인증 ──
 async function logout(){try{await sb.auth.signOut();}catch(e){}window.location.href='login.html';}
-// ── 초기화 ──
-(async()=>{
-  /*
-  const{data:{session}}=await sb.auth.getSession();
-  if(!session){window.location.href='login.html';return;}
-  user=session.user;
-  */
-  user={id:'t001',email:'test@test.com',user_metadata:{nickname:'테스터'}};
-  const nick=user.user_metadata?.nickname||'작가님';
-  $('un').textContent=nick;$('ua').textContent=nick[0].toUpperCase();
-  navTo('home');
-})();
+// ── 명언 리스트 ──
+const QUOTES = [
+  { text: "글에서 '매우', '무척' 등의 단어만 빼면 좋은 글이 완성된다.", author: "마크 트웨인" },
+  { text: "출석해라, 출석해라, 출석해라. 그러다 보면 얼마 후에 뮤즈도 출석할 것이다.", author: "이사벨 아옌데" },
+  { text: "모든 이야기는 끝까지 계속 가면 죽음으로 끝난다. 그 사실을 숨기려 하는 자는 진정한 스토리텔러가 아니다.", author: "어니스트 헤밍웨이" },
+  { text: "굽히지 말아라. 희석시키지 말아라. 논리적으로 만들려고 애쓰지 말아라. 유행에 맞춰서 당신의 영혼을 편집하지 말아라. 당신의 가장 강렬한 집착들을 무자비하게 따라가라.", author: "프란츠 카프카" },
+  { text: "가끔은 자신의 어두운 부분과 맞서야 한다.", author: "무라카미 하루키" },
+  { text: "창조적 아이디어는 어느 날 갑자기 찾아오지 않는다. 죽을힘을 다해 몰입해야 나오는 것이다.", author: "강원국" },
+  { text: "창의적인 활동과 정신을 좀먹는 물질 사이에 밀접한 관계가 있다는 생각은 우리 시대가 낳은 터무니없는 통념 가운데 하나일 뿐이다.", author: "스티븐 킹" },
+  { text: "가장 흥미진진한 상황들은 대개 ‘만약’으로 시작하는 질문으로 표현될 수 있다.", author: "스티븐 킹" },
+  { text: "글의 시작은 유혹이어야 한다. 치명적인 유혹이면 더욱 좋다.", author: "강원국" },
+  { text: "초고는 가슴으로 쓰고, 재고는 머리로 써야 한다. 글쓰기의 첫 번째 열쇠는 쓰는 거지, 생각하는 것이 아니다.", author: "영화 <파인딩 포레스터>에서" },
+  { text: "좋은 작가란 기본적으로 스토리텔러다. 학자나 인류의 구원자가 아닌.", author: "아이작 싱어" },
+  { text: "가능한 한 자주 글을 써라. 그게 출판될 거라는 생각으로가 아니라, 악기 연주를 배운다는 생각으로.", author: "J.B. 프리슬리" },
+  { text: "난 글을 쓸 때, 정확한 방향성을 가진 약간의 증오가 유용하다는 걸 발견했다.", author: "앨리스 워커" },
+  { text: "핵심 감정(key emotion)을 발견해라. 이게 단편을 쓰기 위해서 알아야 할 전부다.", author: "스콧 피츠제럴드" },
+  { text: "소설은 이미 존재하고 있으나 아직 발견되지 않은 어떤 세계의 유물이다.", author: "스티븐 킹" },
+  { text: "캐릭터는 작가가 창조하는 게 아니다. 원래 존재하고 있었는데, 발견되는 것이다.", author: "엘리자베스 보웬" },
+  { text: "결말을 서두르거나 강요하지 말아라. 당신이 알아야 할 전부는 다음 장, 그다음 몇 장이다.", author: "척 팔라닉" },
+  { text: "한 문장에는 하나의 메시지만 담는 것이 좋다.", author: "강원국" },
+  { text: "못난 글은 다 비슷하지만, 훌륭한 글은 저마다 이유가 다르다.", author: "유시민" },
+  { text: "취향을 두고 논쟁하지 말라.", author: "유시민" },
+  { text: "달이 빛난다고 말하지 말고, 깨진 유리 조각에 반짝이는 한 줄기 빛을 보여줘라.", author: "안톤 체홉" },
+  { text: "‘아무것도 하지 않는다’는 두려움이 ‘잘 해내지 못한다’는 두려움을 초월할 때, 비로소 일하기 시작한다.", author: "알랭 드 보통" },
+  { text: "다 완성하기 전까진, 절대 '이렇게 이렇게 쓸 거야' 남에게 말하지 마라.", author: "마리오 푸조" },
+  { text: "모든 독자가 읽을 글을 쓰기란 불가능하다. 시인은 시를 좋아하지 않는 사람을 위한 시를 쓸 수는 없다.", author: "나탈리 사로트" },
+  { text: "매우 일찍 일어나서 바로 일을 시작해라. 먼저 일하고, 씻는 건 나중에 해라.", author: "W.H. 오든" },
+  { text: "더는 쓸 수 없을 때는 그 기세를 몰아 많이 써버린다든지, 써지지 않을 때는 쉰다든지 하면 규칙이 깨지기 때문에 철저하게 지키려고 한다.", author: "무라카미 하루키" },
+  { text: "언어를 보호하는 유일한 방법은 언어를 공격하는 것뿐이다.", author: "마르셀 프루스트" },
+  { text: "정말로 뭔가 창조하고 싶다면, 넘어질 위험을 감수해야 한다.", author: "알레그라 굿맨" },
+  { text: "모든 초고는 걸레다.", author: "어니스트 헤밍웨이" },
+  { text: "글을 쓸 때는 모든 것을 내려놓아라. 당신의 내면을 표현하기 위해 단순한 단어들로 단순하게 시작하려고 노력하라.", author: "나탈리 골드버그" },
+  { text: "우울하지 않으면, 당신은 진지한 작가가 될 수 없다.", author: "커트 보네거트" },
+  { text: "난 항상 하나의 아이디어, 심지어 지루한 하나의 아이디어로부터 시작한다. 그건 내가 답을 갖고 있지 않은 질문이 된다.", author: "토니 모리슨" },
+  { text: "너무 멀리 갈지 모를 위험을 감수하는 이들만이 얼마나 멀리 갈 수 있는지를 발견할 수 있다.", author: "T.S. 엘리엇" },
+  { text: "양이 곧 재능이다. 재능에 자신 없다면 양으로 승부하자.", author: "나카타니 아키히로" },
+  { text: "글을 쓸 때는 문을 닫을 것, 글을 고칠 때는 문을 열어둘 것.", author: "스티븐 킹" },
+  { text: "아이디어에 대해 큰 소리로 논의하는 건, 종종 그걸 완전히 죽이는 거라는 걸 발견했다.", author: "조앤 K. 롤링" },
+  { text: "쉽다고 해서 무조건 좋다고 할 수는 없지만, 기왕이면 쉬운 게 낫다.", author: "유시민" },
+  { text: "의식은 편집자고, 무의식은 작가다.", author: "스티브 마틴" },
+  { text: "젊은 작가들을 쓰도록 독려해야 한다. 하지만 그들이 작가라는 생각은 못 하게 해야 한다.", author: "월러스 스테그너" },
+  { text: "그 순간 나오는 생각을 적어라. 골똘히 짜내지 않은 생각들이 보통 가장 가치 있다.", author: "프랜시스 베이컨" },
+  { text: "제대로 쓰려 하지 말고 무조건 써라.", author: "제임스 서버" },
+  { text: "내가 해답이 있어서 지저귀는 게 아니다. 부를 노래가 있어서 지저귀는 것이다.", author: "조앤 월시 앤글런드" },
+  { text: "픽션은 거짓말이다. 좋은 픽션은 그 거짓말 속에 감춰진 진실이다.", author: "스티븐 킹" },
+  { text: "테크닉만으로는 충분하지 않다. 열정을 가져야 한다. 테크닉 그 자체는 수를 놓은 냄비 받침대에 불과하다.", author: "레이먼드 챈들러" },
+  { text: "자기 글을 가차 없이 대해라. 그렇지 않으면 다른 사람이 그럴 것이다.", author: "존 베리먼" },
+  { text: "좋은 소설의 기본 원칙 가운데 하나는 독자에게 어떤 내용을 설명하려 하지 말고 직접 보여주라는 것이다.", author: "스티븐 킹" },
+  { text: "그 어디에도 새로운 말은 없다. 지극히 예사로운 평범한 말에 새로운 의미나 특별한 울림을 부여하는 것이 우리가 할 일이다.", author: "무라카미 하루키" },
+  { text: "매일 글을 써라. 강렬하게 독서해라. 그리고 나서 무슨 일이 일어나는지 한번 보자.", author: "레이 브래드버리" },
+  { text: "지옥으로 가는 길은 수많은 부사들로 뒤덮여 있다.", author: "스티븐 킹" },
+  { text: "글쓰기 최고의 적은 횡설수설이다.", author: "강원국" },
+  { text: "적자생존, 적는 자가 살아남는다.", author: "무명" },
+  { text: "명확하게 쓰는 사람들은 독자를 갖게 되고, 불명확하게 쓰는 사람들은 평론가를 갖게 된다.", author: "알베르트 카뮈" },
+  { text: "영감이 찾아오길 기다려선 안 된다. 몽둥이를 들고 그걸 쫓아가야 한다.", author: "잭 런던" },
+  { text: "글을 쓰기 전에는 항상 내 앞에 마주 앉은 누군가에게 이야기한다고 상상해라. 그리고 그 사람이 지루해 자리를 뜨지 않도록 해라.", author: "제임스 패터슨" },
+  { text: "글은 엉덩이로 쓰는 것이다.", author: "강원국" },
+  { text: "글쓰기가 힘들 때면 나는 자신을 격려하기 위해 내 책을 읽는다. 그러면 글쓰기는 언제나 어려웠고 가끔은 거의 불가능했음을 기억하게 된다.", author: "어니스트 헤밍웨이" },
+  { text: "글쓰기를 잘하고 싶다면 그에 맞게 살아야 한다. 사는 만큼 쓴다.", author: "유시민" },
+  { text: "생각의 길이와 글의 길이를 서로 같게 한다는 원칙에 충실해야 한다.", author: "김동식" },
+  { text: "당신만이 전할 수 있는 이야기를 써라. 너보다 똑똑하고 우수한 작가들은 많다.", author: "닐 가이먼" },
+  { text: "훌륭한 커뮤니케이터는 ‘상대의 언어’를 사용한다.", author: "마샬 맥루한" },
+  { text: "당신이 정말로 읽고 싶은 책이 있는데 아직 그런 책이 없다면 당신이 직접 써야 한다.", author: "토니 모리슨" },
+  { text: "작가로서의 삶을 시작하는 사람들에게 글쓰기 재능을 연마하기 전에 뻔뻔함을 기르라고 말하고 싶다.", author: "하퍼 리" },
+  { text: "아무튼 닥치는 대로 읽을 것. 조금이라도 많은 이야기에 내 몸을 통과시킬 것. 수많은 뛰어난 문장을 만날 것. 그것이 가장 중요한 작업이다.", author: "무라카미 하루키" },
+  { text: "재능은 싸구려다. 중요한 건 훈련이다.", author: "앙드레 드뷔" },
+  { text: "소설을 써야겠다면 써라. 하지만 돈을 버는 건 우연한 사고라고 생각해라. 보상은 쓰는 것 자체로부터 얻어라.", author: "펄 벅" },
+  { text: "무엇이든 짧게 서라. 그러면 읽힐 것이다.", author: "조지프 퓰리처" },
+  { text: "나만의 목소리를 갖기 위해선, 그 목소리가 전달될지 여부는 잊어버려야 한다.", author: "앨런 긴즈버그" },
+  { text: "난 한 문장, 한 아이디어, 한 이미지를 갖고 시작한다. 그 이상으론 아무것도 모른다. 그저 따라간다.", author: "데이빗 라비" },
+  { text: "아마추어들이 영감을 기다리는 동안, 우리 프로들은 일어나서 일하러 간다.", author: "스티븐 킹" },
+  { text: "좋은 시나리오 한 편을 써내는 것이 교향곡을 작곡하는 것보다도 더 어려운 일이라는 사실에 대해 그럴지도 모른다는 의심조차 해보지 않는다.", author: "로버트 맥키" },
+  { text: "다른 출판물에서 익숙하게 본 비유나 직유, 상징을 절대 사용하지 마라.", author: "조지 오웰" },
+  { text: "가능하면 글은 매일 쓰려고 노력한다. 영감이 오길 기다린다면 글을 한 줄도 쓰지 못할 것이다.", author: "알랭 드 보통" },
+  { text: "글을 쓰고 싶다면 종이와 펜 혹은 컴퓨터 그리고 약간의 배짱만 있으면 된다.", author: "로버타 진 브라이언트" },
+  { text: "글쓰기는 사랑을 나누는 것과 비슷하다. 오르가슴을 의식하지 말고 그저 과정에만 집중하라.", author: "이사벨 아옌데" },
+  { text: "픽션의 문제점은 그게 너무 말이 된다는 점이다. 반면 현실은 결코 앞뒤가 맞지 않는다.", author: "올더스 헉슬리" },
+  { text: "좋은 작가가 되는 건 3%는 재능이고, 97%는 인터넷에 주의를 뺏기지 않는 것이다.", author: "무명" },
+  { text: "내 인생의 절반은 고쳐 쓰는 작업을 위해 존재한다.", author: "존 어빙" },
+  { text: "언어 사용은 우리가 죽음과 침묵에 맞서 싸우게 할만한 유일한 것이다.", author: "조이스 캐롤 오츠" },
+  { text: "내가 어디서 아이디어를 얻냐고? 지어낸다. 다 내 머릿속에서 나온다.", author: "닐 가이먼" },
+  { text: "글쓰기의 목적은 여러분 아버지와 어머니가 부끄러워서 졸도하게 만드는 데 있다.", author: "J.P. 돈리비" },
+  { text: "없애는 건, 남아 있는 걸 응축시킨다.", author: "트레이시 슈발리에" },
+  { text: "글쓰기는 사회적으로 용인되는 형태의 정신분열증이다.", author: "E.L. 독토로우" },
+  { text: "캐릭터가 스타일이다. 나쁘고 잘 다듬어지지 않은 캐릭터에선 좋은 스타일이 나올 수가 없다.", author: "노먼 메일러" },
+  { text: "어떤 문장이든 반드시 개량의 여지가 있다. 본인이 아무리 ‘잘 썼다’ ‘완벽하다’라고 생각해도 거기에는 좀 더 좋아질 가능성이 분명히 있다.", author: "무라카미 하루키" },
+  { text: "누구나 글을 쓸 때는 그 글을 읽을 사람이 누구인지, 그들이 무슨 얘기를 기대하는지 의식해야 한다.", author: "강원국" },
+  { text: "누구도 좋은 책을 읽으며 자살하지 않는다. 하지만 좋은 책을 쓰면서는 많은 이들이 자살했다.", author: "로버트 번" },
+  { text: "위대한 글쓰기는 존재하지 않는다. 오직 위대한 고쳐 쓰기만 존재할 뿐이다.", author: "E.B. 화이트" },
+  { text: "글쓰기는 집을 짓는 것과 같으며, 좋은 집을 짓기 위해서는 연장통을 잘 갖춰놓아야 한다.", author: "스티븐 킹" },
+  { text: "요점을 한 줄로 명확하게 정리할 수 있는 게 좋은 글이다.", author: "강원국" },
+  { text: "내게 작가란 모든 것에 관심을 두는 사람을 뜻한다.", author: "수전 손택" },
+  { text: "글쓰기와 메모는 불가분의 관계에 있다.", author: "강원국" },
+  { text: "1막에 권총을 소개했다면 3막에서는 쏴야 한다. 안 쏠 거면 없애버려라.", author: "안톤 체홉" },
+  { text: "저널리즘은 독자로 하여금 역사를 목격하게 하지만, 픽션은 독자로 하여금 역사를 살게 한다.", author: "존 허시" },
+  { text: "당신이 창조한 캐릭터들을 존중해라. 예술에선 실제 인생에서처럼, 모든 이들이 각자 스토리의 주인공이다.", author: "사라 월터스" },
+  { text: "글쓰기 근육을 만드는 유일한 방법은 쓰는 것이다.", author: "유시민" },
+  { text: "작가가 지켜야 할 규율은 가만히 서서 등장인물들이 말하는 걸 들어보는 것이다.", author: "레이첼 카슨" }
+];
 
 // ── 홈 유튜브 영상 로드 ──
 const YT_QUERIES = [
@@ -1721,6 +1808,26 @@ const YT_QUERIES = [
   // 실전·노하우
   '작가 데뷔 준비 방법', '웹소설 연재 노하우', '독자 후킹 글쓰기', '1화 구성 잡는 법',
 ];
+
+// ── 초기화 ──
+(async()=>{
+  // 인트로 명언 랜덤 설정
+  const q = QUOTES[Math.floor(Math.random()*QUOTES.length)];
+  const ansEl = document.querySelector('.intro-ans');
+  if(ansEl) ansEl.innerHTML = `"${q.text}"<br><em>— ${q.author}</em>`;
+
+  /*
+  const{data:{session}}=await sb.auth.getSession();
+  if(!session){window.location.href='login.html';return;}
+  user=session.user;
+  */
+  user={id:'t001',email:'test@test.com',user_metadata:{nickname:'테스터'}};
+  const nick=user.user_metadata?.nickname||'작가님';
+  $('un').textContent=nick;$('ua').textContent=nick[0].toUpperCase();
+  navTo('home');
+})();
+
+// ── 홈 유튜브 영상 로드 ──
 async function loadHomeVideos(){
   const list = $('yt-list');
   if(!list) return;
