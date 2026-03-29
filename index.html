@@ -1684,7 +1684,7 @@ function skipIntro(){
   setTimeout(()=>el.remove(),600);
 }
 (function(){
-  setTimeout(skipIntro, 2000);
+  setTimeout(skipIntro, 3000);
 })();
 // ── 인증 ──
 async function logout(){try{await sb.auth.signOut();}catch(e){}window.location.href='login.html';}
