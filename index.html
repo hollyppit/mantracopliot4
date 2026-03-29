@@ -1739,9 +1739,10 @@ async function loadHomeVideos(){
 }
 function renderDummyVideos(){
   const dummies=[
-    {id:'dQw4w9WgXcQ',title:'웹툰 스토리텔링 완전 정복 — 기획부터 연출까지',ch:'창작연구소'},
-    {id:'9bZkp7q19f0',title:'만화 기획할 때 꼭 알아야 할 구조 이야기',ch:'스토리 아카데미'},
-    {id:'M7lc1UVf-VE',title:'독자를 사로잡는 웹툰 대사 작성법',ch:'작가의 서재'},
+    {id:'Wraks_lQRSU',title:'이야기 도입부 만드는 법 4가지',ch:'우동이즘 스토리텔링'},
+    {id:'43FW2jz7hKE',title:'스토리와 스토리텔링의 차이? / 스토리텔링 강의',ch:'우동이즘 스토리텔링'},
+    {id:'xqK2HLWOhfk',title:'글 잘쓰는 법 / 첫 작품 만들때 알아야 할 것 3가지',ch:'우동이즘 스토리텔링'},
+    {id:'Yoy86uI0-GM',title:'캐릭터 만들기 강좌 — 인물 기초 & 캐릭터 기획',ch:'우동이즘 스토리텔링'},
   ];
   return dummies.map(v=>`
     <div onclick="openYTModal('${v.id}','${v.title}')"
@@ -1916,11 +1917,20 @@ async function fetchGmYT(keyword) {
   } catch(e) { return getGmDummyVideos(keyword); }
 }
 
+// 더미 풀 — 실제 한국 스토리텔링 강좌 (우동이즘 스토리텔링 채널)
+const GM_DUMMY_POOL = [
+  { id:'Wraks_lQRSU', title:'이야기 도입부 만드는 법 4가지', channel:'우동이즘 스토리텔링' },
+  { id:'Um4-pSMyLdI', title:'왕초보 이야기 만드는 법', channel:'우동이즘 스토리텔링' },
+  { id:'43FW2jz7hKE', title:'스토리와 스토리텔링의 차이? / 스토리텔링 강의', channel:'우동이즘 스토리텔링' },
+  { id:'xqK2HLWOhfk', title:'글 잘쓰는 법 / 첫 작품 만들때 알아야 할 것 3가지', channel:'우동이즘 스토리텔링' },
+  { id:'gIQJL8lSOJc', title:'뻔한 스토리 신선하게 바꾸는 법 (창의력 시나리오 강의)', channel:'우동이즘 스토리텔링' },
+  { id:'-CDL3l1g6BY', title:'주인공 3명이상 만들면 안되는 이유 (캐릭터 작법 강의)', channel:'우동이즘 스토리텔링' },
+  { id:'Yoy86uI0-GM', title:'캐릭터 만들기 강좌 — 인물 기초 & 캐릭터 기획', channel:'우동이즘 스토리텔링' },
+];
 function getGmDummyVideos(keyword) {
-  return [
-    { id:'dQw4w9WgXcQ', title:`[창작 강좌] ${keyword} — 핵심 정리`, channel:'창작연구소', thumb:'https://img.youtube.com/vi/dQw4w9WgXcQ/mqdefault.jpg' },
-    { id:'9bZkp7q19f0', title:`작가라면 꼭 봐야 할 ${keyword}`, channel:'스토리 아카데미', thumb:'https://img.youtube.com/vi/9bZkp7q19f0/mqdefault.jpg' },
-  ];
+  // 풀에서 랜덤 2개 선택
+  const shuffled = GM_DUMMY_POOL.slice().sort(() => Math.random() - 0.5);
+  return shuffled.slice(0, 2).map(v => ({ ...v, thumb: `https://img.youtube.com/vi/${v.id}/mqdefault.jpg` }));
 }
 
 function appendGmMsg(role, text){
