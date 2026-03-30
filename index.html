@@ -1087,7 +1087,7 @@ async function finishPlan(){
 
 async function savePlanProject(synopsis){
   const pid='p_'+Date.now();
-  const proj={id:pid,title:newProjName,genre:planItems.find(p=>p.id.includes('2'))?.value?.slice(0,20)||'',synopsis,answer_history:planItems.map(p=>({id:p.id,value:p.value})),routine_type:pendingRoutineType};
+  const proj={id:pid,title:newProjName,genre:planItems.find(p=>p.id.includes('2'))?.value?.slice(0,20)||'',synopsis,synopsis_detail:synopsis,characters:[],episodes:[],answer_history:planItems.map(p=>({id:p.id,value:p.value})),routine_type:pendingRoutineType};
   const arr=JSON.parse(localStorage.getItem('mp')||'[]');
   arr.unshift(proj);localStorage.setItem('mp',JSON.stringify(arr.slice(0,50)));
   if(user&&user.id!=='t001'){try{await sb.from('projects').insert({...proj,user_id:user.id,completed_at:new Date().toISOString()});}catch(e){}}
@@ -1381,11 +1381,19 @@ let olEpisodes=[]; // [{num,act,title,keyword,synopsis,funPoint,reference,lastPa
 let olProjId=null;
 let olFilter='all';
 
-function initOutline(){
-  const saved=localStorage.getItem('ol_episodes');
+async function initOutline(){
   const savedProj=localStorage.getItem('ol_proj');
-  if(saved)olEpisodes=JSON.parse(saved);
   if(savedProj)olProjId=savedProj;
+  // DB에서 로드 (로그인 유저 + 프로젝트 연동 시)
+  if(user&&user.id!=='t001'&&olProjId){
+    try{
+      const{data}=await sb.from('projects').select('episodes').eq('id',olProjId).eq('user_id',user.id).single();
+      if(data?.episodes?.length){olEpisodes=data.episodes;localStorage.setItem('ol_episodes',JSON.stringify(olEpisodes));}
+      else{const saved=localStorage.getItem('ol_episodes');if(saved)olEpisodes=JSON.parse(saved);}
+    }catch(e){const saved=localStorage.getItem('ol_episodes');if(saved)olEpisodes=JSON.parse(saved);}
+  } else {
+    const saved=localStorage.getItem('ol_episodes');if(saved)olEpisodes=JSON.parse(saved);
+  }
   renderOlProj();
   renderEpList();
   drawTensionGraph();
@@ -1422,7 +1430,17 @@ function openOlProjSelect(){
   projs.forEach(p=>{
     const el=document.createElement('div');el.className='ol-proj-item';
     el.innerHTML=`<div><div class="opp-title">${p.title}</div><div class="opp-meta">${p.genre||'미분류'} · ${(p.answer_history||[]).length}단계</div></div>`;
-    el.onclick=()=>{olProjId=p.id;localStorage.setItem('ol_proj',p.id);renderOlProj();closeOlProjSelect();};
+    el.onclick=async()=>{
+      olProjId=p.id;localStorage.setItem('ol_proj',p.id);
+      // DB에 저장된 episodes 있으면 불러오기
+      if(user&&user.id!=='t001'){
+        try{
+          const{data}=await sb.from('projects').select('episodes').eq('id',p.id).eq('user_id',user.id).single();
+          if(data?.episodes?.length){olEpisodes=data.episodes;localStorage.setItem('ol_episodes',JSON.stringify(olEpisodes));}
+        }catch(e){}
+      }
+      renderOlProj();renderEpList();drawTensionGraph();closeOlProjSelect();
+    };
     list.appendChild(el);
   });
   // 연동 해제 버튼
@@ -1702,8 +1720,12 @@ function drawMiniTension(idx){
   ctx.strokeStyle='rgba(139,92,246,0.6)';ctx.lineWidth=1.5;ctx.stroke();
 }
 
-function saveOutlineData(){
+async function saveOutlineData(){
   localStorage.setItem('ol_episodes',JSON.stringify(olEpisodes));
+  if(user&&user.id!=='t001'&&olProjId){
+    try{await sb.from('projects').update({episodes:olEpisodes}).eq('id',olProjId).eq('user_id',user.id);}
+    catch(e){}
+  }
   flash('💾 개요 저장됨');
 }
 
