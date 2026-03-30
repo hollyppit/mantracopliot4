@@ -1306,14 +1306,19 @@ function addXMsg(role,text){
 }
 async function doXSend(){
   const b=$('xi');const v=b.value.trim();if(!v)return;
-  b.value='';addXMsg('user',v);xMsgs.push({role:'user',content:v});
+  b.value='';b.style.height='44px';
+  addXMsg('user',v);xMsgs.push({role:'user',content:v});
+  const aName=$('xct').textContent||'Mantra AI';
   const ld=document.createElement('div');ld.className='xm assistant';
-  ld.innerHTML='<div class="xmi"><div class="xr">Mantra AI</div><div class="xc thk">생각 중... <div class="td"><span>●</span><span>●</span><span>●</span></div></div></div>';
+  ld.innerHTML=`<div class="xm-name">${aName}</div><div class="xmi"><div class="xc">▋</div></div>`;
   $('xb').appendChild(ld);$('xb').scrollTop=$('xb').scrollHeight;
-  const reply=await ai([{role:'system',content:xPersona},...xMsgs]);
-  xMsgs.push({role:'assistant',content:reply});
-  ld.querySelector('.xc').innerHTML=md(reply);
-  $('xb').scrollTop=$('xb').scrollHeight;
+  const cEl=ld.querySelector('.xc');
+  const xs=$('xs');if(xs)xs.disabled=true;
+  await aiStream(
+    [{role:'system',content:xPersona},...xMsgs],
+    full=>{cEl.innerHTML=md(full)+'<span style="opacity:0.4;animation:flt 0.8s ease-in-out infinite">▋</span>';$('xb').scrollTop=$('xb').scrollHeight;},
+    full=>{xMsgs.push({role:'assistant',content:full});cEl.innerHTML=md(full);$('xb').scrollTop=$('xb').scrollHeight;if(xs)xs.disabled=false;}
+  );
 }
 // ── 인사이트 ──
 async function openInsight(){
@@ -1323,13 +1328,38 @@ function closeInsight(){$('ip').classList.remove('on');}
 // ── AI 호출 ──
 async function ai(messages){
   try{
-    const r=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages,model:'claude-sonnet-4-5',max_tokens:800})});
+    const r=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages})});
     if(!r.ok)throw new Error('fail');
     const d=await r.json();
     if(d.content?.[0]?.text)return d.content[0].text.trim();
     if(d.choices?.[0]?.message?.content)return d.choices[0].message.content.trim();
     throw new Error('empty');
   }catch(e){return'⚠️ AI 연결 오류. 잠시 후 다시 시도해주세요.';}
+}
+// ── AI 스트리밍 호출 ──
+async function aiStream(messages,onChunk,onDone){
+  try{
+    const r=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages,stream:true})});
+    if(!r.ok){onDone('⚠️ AI 연결 오류. 잠시 후 다시 시도해주세요.');return;}
+    const reader=r.body.getReader();const dec=new TextDecoder();
+    let buf='',full='';
+    while(true){
+      const{done,value}=await reader.read();if(done)break;
+      buf+=dec.decode(value,{stream:true});
+      const lines=buf.split('\n');buf=lines.pop();
+      for(const line of lines){
+        if(!line.startsWith('data: '))continue;
+        const data=line.slice(6).trim();
+        if(!data||data==='[DONE]')continue;
+        try{
+          const p=JSON.parse(data);
+          const delta=p.delta?.text||'';
+          if(delta){full+=delta;onChunk(full);}
+        }catch(e){}
+      }
+    }
+    onDone(full||'⚠️ 응답이 비어있습니다.');
+  }catch(e){onDone('⚠️ AI 연결 오류. 잠시 후 다시 시도해주세요.');}
 }
 // ── 페르소나 ──
 function buildPersona(){
