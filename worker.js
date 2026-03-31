@@ -123,22 +123,34 @@ async function handleDelete(request, env, userId, cors) {
 
 async function handleChat(request, env, cors) {
   const body = await request.json();
-  const model = body.model || 'claude-sonnet-4-5';
+  const model = body.model || 'claude-haiku-4-5-20251001';
   if (model.startsWith('claude-')) {
     const res = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'x-api-key': env.ANTHROPIC_API_KEY, 'anthropic-version': '2023-06-01' },
       body: JSON.stringify({ model, max_tokens: body.max_tokens || 1024, system: body.system || '당신은 유능한 AI 조수입니다.', messages: body.messages }),
     });
+    // Anthropic 과부하 시 OpenAI로 자동 폴백
+    if (res.status === 529 || res.status === 503 || res.status === 529) {
+      return callOpenAI(body, env, cors, 'gpt-4o-mini');
+    }
     return json(await res.json(), res.status, cors);
   } else {
-    const res = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${env.OPENAI_API_KEY}` },
-      body: JSON.stringify({ model: body.model || 'gpt-4o', messages: body.messages, temperature: body.temperature || 0.7, max_tokens: body.max_tokens || 1024 }),
-    });
-    return json(await res.json(), res.status, cors);
+    return callOpenAI(body, env, cors, body.model || 'gpt-4o-mini');
   }
+}
+
+async function callOpenAI(body, env, cors, model) {
+  // system 필드를 OpenAI 메시지 배열 맨 앞에 삽입
+  const messages = [];
+  if (body.system) messages.push({ role: 'system', content: body.system });
+  if (body.messages) messages.push(...body.messages);
+  const res = await fetch('https://api.openai.com/v1/chat/completions', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${env.OPENAI_API_KEY}` },
+    body: JSON.stringify({ model, messages, temperature: body.temperature || 0.7, max_tokens: body.max_tokens || 1024 }),
+  });
+  return json(await res.json(), res.status, cors);
 }
 
 function json(data, status = 200, extra = {}) {
