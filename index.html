@@ -1632,7 +1632,7 @@ async function autoFillCdSection(secIdx){
   CD_SECTIONS.forEach(s=>s.fields.forEach(f=>{if((d[f.id]||'').toString().trim())existingLines.push(`${f.label}: ${d[f.id]}`);}));
   const projInfo=pdProj?`작품명: ${pdProj.title}\n장르: ${pdProj.genre||'미설정'}\n시놉시스: ${pdProj.synopsis||'없음'}`:'없음';
   const charInfo=`이름: ${ch.name||'이름 없음'} / 역할: ${ch.role||'조연'}${ch.appearance?' / 외모: '+ch.appearance:''}${ch.personality?' / 성격: '+ch.personality:''}`;
-  const existingInfo=existingLines.length?`\n\n[이미 설정된 내용 (참고용)]\n${existingLines.slice(0,25).join('\n')}`:'';
+  const existingInfo=existingLines.length?`\n\n[이미 설정된 내용 — 반드시 이와 일관성을 유지할 것]\n${existingLines.slice(0,25).join('\n')}`:'';
   // 채울 필드 설명
   const fieldDescs=emptyFields.map(f=>{
     const opts=f.chips?` [선택지 중 하나만: ${f.chips.join(' / ')}]`:'';
@@ -1640,10 +1640,10 @@ async function autoFillCdSection(secIdx){
     const len=f.type==='area'?'[3~5문장]':'[1~2문장]';
     return `"${f.id}": ${f.label}${hint}${opts} ${len}`;
   }).join('\n');
-  const systemPrompt=`당신은 웹툰·웹소설 캐릭터 설정 전문가입니다. 주어진 캐릭터 정보를 바탕으로 각 필드에 매력적이고 구체적인 값을 만들어주세요. chips 선택지가 있는 필드는 반드시 그 중 하나를 그대로 출력하세요. 반드시 JSON 오브젝트만 출력하고 다른 텍스트는 쓰지 마세요.`;
-  const userPrompt=`[작품 정보]\n${projInfo}\n\n[캐릭터]\n${charInfo}${existingInfo}\n\n[섹션: ${sec.title}] — 빈 필드를 JSON으로 채워주세요:\n${fieldDescs}\n\n출력 형식 (JSON만):\n{\n  "field_id": "값",\n  ...\n}`;
+  const systemPrompt=`웹툰·웹소설 캐릭터 설정 전문가다. 이미 설정된 내용을 기반으로, 그 캐릭터답게 빈 필드를 채워라. chips 선택지가 있는 필드는 반드시 그 중 하나를 그대로 출력하라. JSON 오브젝트만 출력하고 다른 텍스트는 쓰지 마라.`;
+  const userPrompt=`[작품 정보]\n${projInfo}\n\n[캐릭터]\n${charInfo}${existingInfo}\n\n[섹션: ${sec.title}] — 아래 빈 필드만 JSON으로 채워라:\n${fieldDescs}\n\n출력 형식 (JSON만):\n{\n  "field_id": "값"\n}`;
   try{
-    const result=await ai([{role:'system',content:systemPrompt},{role:'user',content:userPrompt}],{model:'claude-haiku-4-5-20251001',max_tokens:512});
+    const result=await ai([{role:'system',content:systemPrompt},{role:'user',content:userPrompt}],{max_tokens:512});
     if(result.includes('⚠️'))throw new Error(result);
     // 마크다운 코드블록 또는 순수 JSON 모두 처리
     const codeBlock=result.match(/```(?:json)?\s*([\s\S]*?)```/);
