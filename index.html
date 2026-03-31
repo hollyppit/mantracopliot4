@@ -83,7 +83,7 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
 .cbody::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);border-radius:2px}
 /* 캐릭터 */
 .chara{display:flex;flex-direction:column;align-items:center;padding:20px 0 10px;flex-shrink:0}
-.ce{font-size:64px;animation:flt 4s ease-in-out infinite;filter:drop-shadow(0 10px 30px var(--purple-glow))}
+.ce{width:120px;height:120px;object-fit:contain;animation:flt 4s ease-in-out infinite;filter:drop-shadow(0 10px 30px var(--purple-glow))}
 @keyframes flt{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
 .cnp{font-size:12px;font-weight:700;letter-spacing:0.08em;color:var(--text-dim);background:var(--surface);border:1px solid var(--border);padding:5px 16px;border-radius:20px;margin-top:12px}
 /* 다이얼로그 */
@@ -733,10 +733,10 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
         <div class="sbar"><span class="slbl">Step <strong id="sn">1</strong>/<span id="st">22</span></span><div class="sdots" id="sdots"></div></div>
       </div>
       <div class="cbody" id="cbody">
-        <div class="chara"><div class="ce" id="ce">✦</div><div class="cnp" id="cnp">조수 어시스턴트</div></div>
+        <div class="chara"><img class="ce" id="ce" src="images/조수a.gif"><div class="cnp" id="cnp">조수 T형</div></div>
         <div class="dw">
           <div class="shint" id="shint" style="display:none"></div>
-          <div class="db"><div class="dsp" id="dsp">조수 어시스턴트</div><div class="dt" id="dt"></div></div>
+          <div class="db"><div class="dsp" id="dsp">조수 T형</div><div class="dt" id="dt"></div></div>
         </div>
         <div class="ia" id="ia" style="display:none">
           <button class="ibtn" id="ibt" onclick="openInsight()">✦ 이 질문의 스토리텔링 인사이트 보기</button>
@@ -937,7 +937,7 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
 <!-- 오버레이: 캐릭터 선택 -->
 <div class="ov" id="ov-char">
   <div class="chp">
-    <div class="chc" onclick="selChar('조수 어시스턴트')"><div class="cca">🤖</div><div class="ccn">조수 어시스턴트</div><div class="ccd">논리적이고 직관적인 기획 파트너.<br>허점을 날카롭게 짚어줍니다.</div></div>
+    <div class="chc" onclick="selChar('조수 T형')"><div class="cca"><img src="images/조수a.gif" style="width:100%;height:100%;object-fit:cover;border-radius:50%"></div><div class="ccn">조수 T형</div><div class="ccd">논리적이고 직관적인 기획 파트너.<br>허점을 날카롭게 짚어줍니다.</div></div>
     <div class="chc" onclick="selChar('조수 B')"><div class="cca">💜</div><div class="ccn">조수 B</div><div class="ccd">공감 능력이 뛰어난 감성형 파트너.<br>캐릭터 감정선을 깊이 분석합니다.</div></div>
   </div>
 </div>
@@ -947,7 +947,7 @@ const SB_URL='https://mvygorffhbshubqkerpo.supabase.co';
 const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im12eWdvcmZmaGJzaHVicWtlcnBvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2MzU3ODQsImV4cCI6MjA4OTIxMTc4NH0.p7usz-l53gmibWpswzTFvhzmR3UX7QkWb3oPsy3A50c';
 const sb=window.supabase.createClient(SB_URL,SB_KEY);
 // ── 상태 ──
-let user=null,projects=[],selProj=null,steps=[],step=0,hist=[],charName='조수 어시스턴트',xMsgs=[],xPersona='',xPersonaBase='',xLinkedProj=null;
+let user=null,projects=[],selProj=null,steps=[],step=0,hist=[],charName='조수 T형',xMsgs=[],xPersona='',xPersonaBase='',xLinkedProj=null;
 // ── 루틴 데이터 ──
 const LONG=[
   {id:'l-1',v:'🎯',h:'끌리게 된 키워드와 사람들의 반응 요소를 결합해 보길 제안합니다.',k:'아이디어',q:'어떤 이야기를 만들고 싶으세요?'},
