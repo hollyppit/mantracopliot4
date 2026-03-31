@@ -938,7 +938,7 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
 <div class="ov" id="ov-char">
   <div class="chp">
     <div class="chc" onclick="selChar('조수 T형')"><div class="cca"><img src="images/조수a.gif" style="width:100%;height:100%;object-fit:cover;border-radius:50%"></div><div class="ccn">조수 T형</div><div class="ccd">논리적이고 직관적인 기획 파트너.<br>허점을 날카롭게 짚어줍니다.</div></div>
-    <div class="chc" onclick="selChar('조수 B')"><div class="cca">💜</div><div class="ccn">조수 B</div><div class="ccd">공감 능력이 뛰어난 감성형 파트너.<br>캐릭터 감정선을 깊이 분석합니다.</div></div>
+    <div class="chc" onclick="selChar('조수 F형')"><div class="cca"><img src="images/조수b.gif" style="width:100%;height:100%;object-fit:cover;border-radius:50%"></div><div class="ccn">조수 F형</div><div class="ccd">공감 능력이 뛰어난 감성형 파트너.<br>캐릭터 감정선을 깊이 분석합니다.</div></div>
   </div>
 </div>
 <script>
@@ -1953,7 +1953,7 @@ async function aiStream(messages,onChunk,onDone){
 }
 // ── 페르소나 ──
 function buildPersona(){
-  if(charName==='조수 B')return`당신은 웹소설 기획 조수 'B'입니다. 공감 능력이 뛰어나고 따뜻합니다. 유저의 답변을 한 줄로 요약하세요.`;
+  if(charName==='조수 F형')return`당신은 웹소설 기획 조수 'F형'입니다. 공감 능력이 뛰어나고 따뜻합니다. 유저의 답변을 한 줄로 요약하세요.`;
   return`당신은 작품 기획을 돕는 AI 조수입니다. 논리적이고 직관적입니다. 허점은 날카롭게 짚되 칭찬은 잘 된 경우에만 합니다. 유저의 답변을 한 줄로 요약하세요.`;
 }
 // ── 회차 개요 ──
