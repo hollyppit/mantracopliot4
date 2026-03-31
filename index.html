@@ -1885,8 +1885,8 @@ async function autoFillItemModal(){
   const ctx=planItems.filter(p=>p.value&&p.value.trim()).map(p=>`${p.k||p.q}: ${p.value}`).join('\n');
   try{
     const result=await ai([
-      {role:'system',content:'웹툰·웹소설 기획 질문에 대한 답변 텍스트만 출력하라. 질문에 직접 답하는 내용만. 되묻거나 설명하지 말 것. 기호·마크다운·이모지 없이 1~2문장.'},
-      {role:'user',content:`${ctx?`기획 내용: ${ctx}\n\n`:''}질문: ${item.q}${item.h?` (힌트: ${item.h})`:''}`}
+      {role:'system',content:'웹툰·웹소설 기획 AI다. 앞서 정해진 기획 내용을 바탕으로 현재 질문에 맞는 답변을 생성한다. 앞 내용과 세계관·장르·캐릭터가 일관되어야 한다. 답변 텍스트만 출력. 되묻거나 설명 금지. 기호·마크다운·이모지 없이 1~2문장.'},
+      {role:'user',content:`${ctx?`[앞서 정해진 기획]\n${ctx}\n\n`:''}[현재 질문] ${item.q}${item.h?` (힌트: ${item.h})`:''}\n\n위 기획과 일관된 답변:`}
     ],{max_tokens:150});
     const cleaned=result?result.replace(/^[\s\-\*\#\>\"\']+/,'').trim():'';
     if(cleaned&&!cleaned.includes('⚠️')){
@@ -2077,8 +2077,8 @@ async function autoFillBuildupStep(){
   const ctx=planItems.filter(p=>p.value).map(p=>`${p.k||p.q}: ${p.value}`).join('\n');
   try{
     const result=await ai([
-      {role:'system',content:'웹툰·웹소설 기획 질문에 대한 답변 텍스트만 출력하라. 질문에 직접 답하는 내용만. 되묻거나 설명하지 말 것. 기호·마크다운·이모지 없이 1~2문장.'},
-      {role:'user',content:`${ctx?`기획 내용: ${ctx}\n\n`:''}질문: ${s.q}${s.h?` (힌트: ${s.h})`:''}`}
+      {role:'system',content:'웹툰·웹소설 기획 AI다. 앞서 정해진 기획 내용을 바탕으로 현재 질문에 맞는 답변을 생성한다. 앞 내용과 세계관·장르·캐릭터가 일관되어야 한다. 답변 텍스트만 출력. 되묻거나 설명 금지. 기호·마크다운·이모지 없이 1~2문장.'},
+      {role:'user',content:`${ctx?`[앞서 정해진 기획]\n${ctx}\n\n`:''}[현재 질문] ${s.q}${s.h?` (힌트: ${s.h})`:''}\n\n위 기획과 일관된 답변:`}
     ],{max_tokens:150});
     const cleaned=result?result.replace(/^[\s\-\*\#\>\"\']+/,'').trim():'';
     if(cleaned&&!cleaned.includes('⚠️')){
