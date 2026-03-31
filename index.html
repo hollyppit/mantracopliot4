@@ -1885,11 +1885,12 @@ async function autoFillItemModal(){
   const ctx=planItems.filter(p=>p.value&&p.value.trim()).map(p=>`${p.k||p.q}: ${p.value}`).join('\n');
   try{
     const result=await ai([
-      {role:'system',content:'당신은 웹툰·웹소설 기획 전문가입니다. 작품 기획 질문에 대한 답변을 생성하세요. 앞선 기획 내용과 일관성을 유지하고 매력적이고 구체적으로 작성하세요. 답변 텍스트만 출력하고 설명은 쓰지 마세요. 1~3문장.'},
-      {role:'user',content:`[앞선 기획 내용]\n${ctx||'없음'}\n\n[현재 질문]\n키워드: ${item.k||''}\n질문: ${item.q}${item.h?'\n힌트: '+item.h:''}\n\n답변:`}
+      {role:'system',content:'당신은 웹툰·웹소설을 기획 중인 작가입니다. 아래 질문에 대해 작가 본인이 직접 자신의 작품 아이디어를 답하는 내용을 생성하세요. AI가 도움을 제안하거나 되묻는 내용이 아닌, 작가가 직접 쓴 기획 답변 자체를 출력하세요. 마크다운, 이모지, 설명 없이 순수 텍스트 1~3문장만 출력하세요.'},
+      {role:'user',content:`${ctx?`[앞선 기획 내용]\n${ctx}\n\n`:''}질문: ${item.q}${item.h?'\n(힌트: '+item.h+')':''}\n\n위 질문에 대한 작가 본인의 답변 (1~3문장, 구체적인 작품 내용으로):`}
     ],{model:'claude-haiku-4-5-20251001',max_tokens:256});
-    if(result&&!result.includes('⚠️')){
-      $('im-ta').value=result.trim();
+    const cleaned=result?result.replace(/^[-\s*#>]+/,'').trim():'';
+    if(cleaned&&!cleaned.includes('⚠️')){
+      $('im-ta').value=cleaned;
       $('im-ta').focus();
     }else{
       flash('AI 응답 오류. 다시 시도해주세요.');
@@ -2076,12 +2077,13 @@ async function autoFillBuildupStep(){
   const ctx=planItems.filter(p=>p.value).map(p=>`${p.k||p.q}: ${p.value}`).join('\n');
   try{
     const result=await ai([
-      {role:'system',content:'당신은 웹툰·웹소설 기획 전문가입니다. 작품 기획 질문에 대한 답변을 생성하세요. 앞선 기획 내용과 일관성을 유지하고 매력적으로 작성하세요. 답변 텍스트만 출력하고 다른 설명은 쓰지 마세요. 1~3문장으로 간결하게.'},
-      {role:'user',content:`[앞선 기획 내용]\n${ctx||'없음'}\n\n[현재 질문]\n키워드: ${s.k||''}\n질문: ${s.q}${s.h?'\n힌트: '+s.h:''}\n\n답변:`}
+      {role:'system',content:'당신은 웹툰·웹소설을 기획 중인 작가입니다. 아래 질문에 대해 작가 본인이 직접 자신의 작품 아이디어를 답하는 내용을 생성하세요. AI가 도움을 제안하거나 되묻는 내용이 아닌, 작가가 직접 쓴 기획 답변 자체를 출력하세요. 마크다운, 이모지, 설명 없이 순수 텍스트 1~3문장만 출력하세요.'},
+      {role:'user',content:`${ctx?`[앞선 기획 내용]\n${ctx}\n\n`:''}질문: ${s.q}${s.h?'\n(힌트: '+s.h+')':''}\n\n위 질문에 대한 작가 본인의 답변 (1~3문장, 구체적인 작품 내용으로):`}
     ],{model:'claude-haiku-4-5-20251001',max_tokens:256});
-    if(result&&!result.includes('⚠️')){
+    const cleaned=result?result.replace(/^[-\s*#>]+/,'').trim():'';
+    if(cleaned&&!cleaned.includes('⚠️')){
       const ci=$('ci');
-      ci.value=result.trim();
+      ci.value=cleaned;
       ci.style.height='44px';
       ci.style.height=Math.min(ci.scrollHeight,140)+'px';
       ci.focus();
