@@ -438,6 +438,9 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
 .cd-nav-btn:hover{border-color:var(--border2);color:var(--text)}
 .cd-nav-btn.next{background:rgba(139,92,246,0.1);border-color:rgba(139,92,246,0.3);color:var(--purple-light)}
 .cd-nav-btn.next:hover{background:rgba(139,92,246,0.2)}
+.buildup-autofill-btn{width:100%;padding:11px 20px;background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.25);border-radius:var(--rs);color:#6EE7B7;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:7px}
+.buildup-autofill-btn:hover{background:rgba(16,185,129,0.16);border-color:var(--green);box-shadow:0 4px 20px rgba(16,185,129,0.18)}
+.buildup-autofill-btn:disabled{opacity:0.5;cursor:not-allowed}
 .cd-autofill-row{margin-bottom:20px}
 .cd-autofill-btn{width:100%;padding:11px 20px;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.3);border-radius:12px;color:#6EE7B7;font-size:13px;font-weight:800;font-family:inherit;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:7px;letter-spacing:-0.01em}
 .cd-autofill-btn:hover{background:rgba(16,185,129,0.18);border-color:var(--green);box-shadow:0 4px 20px rgba(16,185,129,0.2)}
@@ -788,6 +791,7 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
         </div>
         <div class="ia" id="ia" style="display:none">
           <button class="ibtn" id="ibt" onclick="openInsight()">✦ 이 질문의 스토리텔링 인사이트 보기</button>
+          <button class="buildup-autofill-btn" id="buildup-autofill-btn" onclick="autoFillBuildupStep()">✨ AI가 대신 채우기 — 이 질문을 AI가 판단해서 작성합니다</button>
           <div class="cr" id="cr"></div>
           <div class="ibw">
             <textarea id="ci" placeholder="직접 입력하세요..." rows="1"
@@ -2006,6 +2010,7 @@ function renderBuildupStep(idx){
     +(s.value?`<div style="margin-top:14px;padding:12px 14px;background:rgba(139,92,246,0.06);border:1px solid rgba(139,92,246,0.15);border-radius:10px;font-size:13px;color:var(--text-dim)">이전 답변: ${s.value}</div>`:'');
   $('ia').style.display='flex';
   $('ibt').style.display='';
+  $('buildup-autofill-btn').style.display='';
   $('cr').innerHTML='';
   setTimeout(()=>{const b=$('cbody');b.scrollTop=b.scrollHeight;},100);
 }
@@ -2034,6 +2039,29 @@ async function submitBuildupAns(val){
   else{setTimeout(()=>finishBuildup(),500);}
 }
 
+async function autoFillBuildupStep(){
+  const s=planItems[chatStep];
+  if(!s)return;
+  const btn=$('buildup-autofill-btn');
+  if(btn){btn.disabled=true;btn.textContent='✨ 생각 중...';}
+  const ctx=planItems.filter(p=>p.value).map(p=>`${p.k||p.q}: ${p.value}`).join('\n');
+  try{
+    const result=await ai([
+      {role:'system',content:'당신은 웹툰·웹소설 기획 전문가입니다. 작품 기획 질문에 대한 답변을 생성하세요. 앞선 기획 내용과 일관성을 유지하고 매력적으로 작성하세요. 답변 텍스트만 출력하고 다른 설명은 쓰지 마세요. 1~3문장으로 간결하게.'},
+      {role:'user',content:`[앞선 기획 내용]\n${ctx||'없음'}\n\n[현재 질문]\n키워드: ${s.k||''}\n질문: ${s.q}${s.h?'\n힌트: '+s.h:''}\n\n답변:`}
+    ]);
+    if(result&&!result.includes('⚠️')){
+      await submitBuildupAns(result.trim());
+    }else{
+      flash('AI 응답 오류');
+      if(btn){btn.disabled=false;btn.textContent='✨ AI가 대신 채우기 — 이 질문을 AI가 판단해서 작성합니다';}
+    }
+  }catch(e){
+    flash('오류가 발생했습니다');
+    if(btn){btn.disabled=false;btn.textContent='✨ AI가 대신 채우기 — 이 질문을 AI가 판단해서 작성합니다';}
+  }
+}
+
 function findNextUnfilled(fromIdx){
   for(let i=fromIdx;i<planItems.length;i++){if(!planItems[i].value)return i;}
   return -1;
@@ -2044,6 +2072,7 @@ function finishBuildup(){
   $('shint').style.display='none';
   $('ia').style.display='flex';
   $('ibt').style.display='none';
+  $('buildup-autofill-btn').style.display='none';
   $('cr').innerHTML='';
   const remaining=planItems.filter(p=>!p.value).length;
   if(remaining>0){
