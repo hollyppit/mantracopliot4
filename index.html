@@ -791,7 +791,7 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
         </div>
         <div class="ia" id="ia" style="display:none">
           <button class="ibtn" id="ibt" onclick="openInsight()">✦ 이 질문의 스토리텔링 인사이트 보기</button>
-          <button class="buildup-autofill-btn" id="buildup-autofill-btn" onclick="autoFillBuildupStep()">✨ AI가 대신 채우기 — 이 질문을 AI가 판단해서 작성합니다</button>
+          <button class="buildup-autofill-btn" id="buildup-autofill-btn" onclick="autoFillBuildupStep()">✨ AI가 대신 채우기 — 이 질문을 AI가 작성하고 바로 다음으로 넘어갑니다</button>
           <div class="cr" id="cr"></div>
           <div class="ibw">
             <textarea id="ci" placeholder="직접 입력하세요..." rows="1"
@@ -930,6 +930,7 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
     <div class="im-q" id="im-q"></div>
     <div class="im-hint" id="im-hint" style="display:none"></div>
     <button class="ibtn" style="margin-bottom:4px" onclick="openInsightFromModal()">✦ 대화에서 스토리텔링 인사이트 보기</button>
+    <button class="buildup-autofill-btn" id="im-autofill-btn" onclick="autoFillItemModal()" style="margin-bottom:10px">✨ AI 답변 제안 — 클릭하면 텍스트가 채워집니다</button>
     <textarea class="im-ta" id="im-ta" placeholder="내용을 입력하세요..."></textarea>
     <div class="im-row">
       <button class="im-cancel" onclick="closeItemModal()">취소</button>
@@ -1876,6 +1877,29 @@ function openItemModal(idx){
   $('item-modal').classList.add('on');
   setTimeout(()=>$('im-ta').focus(),200);
 }
+async function autoFillItemModal(){
+  if(editingIdx<0)return;
+  const item=planItems[editingIdx];
+  const btn=$('im-autofill-btn');
+  if(btn){btn.disabled=true;btn.textContent='✨ 생각 중...';}
+  const ctx=planItems.filter(p=>p.value&&p.value.trim()).map(p=>`${p.k||p.q}: ${p.value}`).join('\n');
+  try{
+    const result=await ai([
+      {role:'system',content:'당신은 웹툰·웹소설 기획 전문가입니다. 작품 기획 질문에 대한 답변을 생성하세요. 앞선 기획 내용과 일관성을 유지하고 매력적이고 구체적으로 작성하세요. 답변 텍스트만 출력하고 설명은 쓰지 마세요. 1~3문장.'},
+      {role:'user',content:`[앞선 기획 내용]\n${ctx||'없음'}\n\n[현재 질문]\n키워드: ${item.k||''}\n질문: ${item.q}${item.h?'\n힌트: '+item.h:''}\n\n답변:`}
+    ]);
+    if(result&&!result.includes('⚠️')){
+      $('im-ta').value=result.trim();
+      $('im-ta').focus();
+    }else{
+      flash('AI 응답 오류. 다시 시도해주세요.');
+    }
+  }catch(e){
+    flash('오류가 발생했습니다.');
+  }
+  if(btn){btn.disabled=false;btn.textContent='✨ AI 답변 제안 — 클릭하면 텍스트가 채워집니다';}
+}
+
 function openInsightFromModal(){
   const idx=editingIdx;
   // 모달 닫기
