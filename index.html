@@ -58,10 +58,15 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
 .pc-add:hover{border-color:var(--purple);color:var(--purple-light);background:rgba(139,92,246,0.05)}
 .pc-add .plus{font-size:28px}
 /* 내 기획안 CTA */
-.myplan-cta{background:rgba(139,92,246,0.06);border:1px solid rgba(139,92,246,0.15);border-radius:var(--r);padding:32px 28px;cursor:pointer;transition:all 0.25s;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;min-height:160px}
-.myplan-cta:hover{transform:translateY(-3px);box-shadow:0 20px 40px rgba(139,92,246,0.2);border-color:var(--purple)}
-.myplan-cta-review{background:rgba(16,185,129,0.05);border-color:rgba(16,185,129,0.18)}
-.myplan-cta-review:hover{box-shadow:0 20px 40px rgba(16,185,129,0.15);border-color:var(--green)}
+.myplan-cta{border-radius:var(--r);padding:32px 28px;cursor:pointer;transition:all 0.3s;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;min-height:180px;border:1.5px solid transparent}
+.myplan-cta-new{background:linear-gradient(145deg,rgba(16,185,129,0.12),rgba(16,185,129,0.06));border-color:rgba(16,185,129,0.3);box-shadow:0 0 0 0 rgba(16,185,129,0)}
+.myplan-cta-new:hover{transform:translateY(-4px);border-color:var(--green);box-shadow:0 16px 40px rgba(16,185,129,0.22)}
+.myplan-cta-new .cta-icon{color:#6EE7B7;text-shadow:0 0 20px rgba(16,185,129,0.5)}
+.myplan-cta-new .cta-title{color:#6EE7B7}
+.myplan-cta-review{background:linear-gradient(145deg,rgba(139,92,246,0.14),rgba(139,92,246,0.06));border-color:rgba(139,92,246,0.3);box-shadow:0 0 0 0 rgba(139,92,246,0)}
+.myplan-cta-review:hover{transform:translateY(-4px);border-color:var(--purple);box-shadow:0 16px 40px rgba(139,92,246,0.25)}
+.myplan-cta-review .cta-icon{color:var(--purple-light);text-shadow:0 0 20px rgba(139,92,246,0.5)}
+.myplan-cta-review .cta-title{color:var(--purple-light)}
 .dash-mode-btn{border:none;font-size:12px;font-weight:700;padding:6px 18px;border-radius:16px;cursor:pointer;font-family:inherit;transition:all 0.2s;color:var(--text-dim);background:none}
 .dash-mode-btn:hover{color:var(--text)}
 .dash-mode-btn.on{background:var(--purple);color:#fff}
@@ -635,15 +640,15 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
     <div class="vb" style="display:flex;flex-direction:column;gap:28px">
       <!-- 두 CTA 버튼 -->
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:780px">
-        <div class="myplan-cta" onclick="openMode()">
-          <div style="font-size:2.4rem;margin-bottom:14px">✦</div>
-          <div style="font-size:18px;font-weight:900;margin-bottom:8px">새 작품 기획하기</div>
-          <div id="cta-new-sub" style="font-size:13px;color:var(--text-faint);line-height:1.6">새로운 이야기를 AI와 함께 설계합니다</div>
+        <div class="myplan-cta myplan-cta-new" onclick="openMode()">
+          <div class="cta-icon" style="font-size:2.6rem;margin-bottom:16px;line-height:1">✦</div>
+          <div class="cta-title" style="font-size:19px;font-weight:900;margin-bottom:8px;letter-spacing:-0.02em">새 작품 기획하기</div>
+          <div id="cta-new-sub" style="font-size:12px;color:var(--text-faint);line-height:1.6">새로운 이야기를 AI와 함께 설계합니다</div>
         </div>
         <div class="myplan-cta myplan-cta-review" onclick="openReviewPicker()">
-          <div style="font-size:2.4rem;margin-bottom:14px">🔍</div>
-          <div style="font-size:18px;font-weight:900;margin-bottom:8px">기존 작품 검토하기</div>
-          <div id="cta-review-sub" style="font-size:13px;color:var(--text-faint);line-height:1.6">시놉시스·캐릭터·개요를 통합 점검합니다</div>
+          <div class="cta-icon" style="font-size:2.6rem;margin-bottom:16px;line-height:1">🔍</div>
+          <div class="cta-title" style="font-size:19px;font-weight:900;margin-bottom:8px;letter-spacing:-0.02em">기존 작품 검토하기</div>
+          <div id="cta-review-sub" style="font-size:12px;color:var(--text-faint);line-height:1.6">시놉시스·캐릭터·개요를 통합 점검합니다</div>
         </div>
       </div>
       <!-- 작품 목록 -->
