@@ -222,6 +222,8 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
 .pn-input::placeholder{color:rgba(255,255,255,0.2)}
 .pn-next{width:100%;padding:16px;background:var(--purple);border:none;border-radius:var(--rs);color:#fff;font-size:15px;font-weight:800;font-family:inherit;cursor:pointer;box-shadow:0 8px 24px var(--purple-glow);transition:all 0.2s}
 .pn-next:hover{filter:brightness(1.1);transform:translateY(-1px)}
+.pn-temp{width:100%;padding:12px;background:none;border:1px solid var(--border);border-radius:var(--rs);color:var(--text-dim);font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;transition:all 0.2s}
+.pn-temp:hover{border-color:var(--border2);color:var(--text)}
 /* 인사이트 패널 */
 .ip{position:fixed;right:0;top:0;bottom:0;width:380px;z-index:300;background:rgba(10,10,20,0.97);border-left:1px solid rgba(214,183,90,0.2);display:flex;flex-direction:column;transform:translateX(100%);transition:transform 0.4s cubic-bezier(0.16,1,0.3,1);backdrop-filter:blur(60px);box-shadow:-20px 0 60px rgba(0,0,0,0.5)}
 .ip.on{transform:translateX(0)}
@@ -993,6 +995,7 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
     <input class="pn-input" id="pn-input" type="text" placeholder="예) 귀신들린 그래플러"
       onkeydown="if(event.key==='Enter')confirmProjName()">
     <button class="pn-next" onclick="confirmProjName()">다음 →</button>
+    <button class="pn-temp" onclick="startWithTempTitle()">임시 제목으로 시작하기</button>
   </div>
 </div>
 <!-- 오버레이: 모드 선택 -->
@@ -1799,6 +1802,13 @@ function confirmProjName(){
   const v=$('pn-input').value.trim();
   if(!v){flash('작품 이름을 입력해주세요');return;}
   newProjName=v;
+  closeOv('ov-projname');
+  $('pn-input').value='';
+  openOv('ov-char');
+}
+function startWithTempTitle(){
+  const num=String(Math.floor(Math.random()*999)+1).padStart(3,'0');
+  newProjName=`작품 ${num}`;
   closeOv('ov-projname');
   $('pn-input').value='';
   openOv('ov-char');
