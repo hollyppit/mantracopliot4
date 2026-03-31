@@ -469,6 +469,21 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
 .syn-editor:focus{outline:none;border-color:rgba(139,92,246,0.4)}
 .syn-save-btn{padding:11px 26px;background:var(--purple);border:none;border-radius:12px;color:#fff;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;transition:all 0.2s;box-shadow:0 6px 20px var(--purple-glow)}
 .syn-save-btn:hover{filter:brightness(1.1);transform:translateY(-1px)}
+/* plan structure view */
+.plan-struct-item{padding:18px 0;border-bottom:1px solid var(--border);display:flex;flex-direction:column;gap:8px}
+.plan-struct-item:last-child{border-bottom:none}
+.psi-meta{display:flex;align-items:center;gap:8px}
+.psi-num{width:22px;height:22px;background:rgba(139,92,246,0.15);border:1px solid rgba(139,92,246,0.3);border-radius:50%;font-size:10px;font-weight:800;color:var(--purple-light);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.psi-key{font-size:11px;font-weight:800;letter-spacing:0.08em;color:var(--purple-light);opacity:0.85;text-transform:uppercase}
+.psi-q{font-size:14px;font-weight:700;color:var(--text);line-height:1.5}
+.psi-val{font-size:14px;color:var(--text-dim);line-height:1.7;padding:10px 14px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:10px;cursor:pointer;position:relative;transition:border-color 0.2s}
+.psi-val:hover{border-color:rgba(139,92,246,0.35)}
+.psi-edit-hint{display:none;font-size:11px;color:var(--purple-light);margin-left:8px;opacity:0.7}
+.psi-val:hover .psi-edit-hint{display:inline}
+.psi-empty{font-size:13px;color:var(--text-faint);font-style:italic;padding:10px 14px;background:rgba(255,255,255,0.02);border:1px dashed rgba(255,255,255,0.08);border-radius:10px;cursor:pointer;transition:border-color 0.2s}
+.psi-empty:hover{border-color:rgba(139,92,246,0.35);color:var(--text-dim)}
+.proj-del-btn{padding:7px 14px;background:rgba(239,68,68,0.07);border:1px solid rgba(239,68,68,0.18);border-radius:10px;color:#fca5a5;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;transition:all 0.2s;white-space:nowrap}
+.proj-del-btn:hover{background:rgba(239,68,68,0.15);border-color:rgba(239,68,68,0.35)}
 /* character cards */
 .char-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-bottom:16px}
 .char-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:20px;display:flex;flex-direction:column;gap:10px;transition:border-color 0.2s}
@@ -534,51 +549,51 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
         <div style="font-size:13px;color:var(--text-dim)">스토리텔링을 위한 AI 기획·검증·루틴 시스템</div>
       </div>
 
-      <!-- 대화창 -->
-      <div id="home-chat-box" style="background:rgba(255,255,255,0.04);border:1px solid var(--border2);border-radius:20px;padding:20px 22px 18px;margin-bottom:24px;transition:border-color 0.3s">
-        <div style="font-size:11px;font-weight:700;letter-spacing:0.1em;color:var(--purple-light);text-transform:uppercase;margin-bottom:14px">✦ 창작 에이전트</div>
-        <!-- 핵심 기능 선택 바 -->
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px">
-          <button onclick="homeQuick('주인공 동기가 너무 약한 것 같아요')" style="background:var(--surface);border:1px solid var(--border);color:var(--text-dim);font-size:13px;font-weight:600;padding:10px 14px;border-radius:12px;cursor:pointer;font-family:inherit;transition:all 0.2s;text-align:left;display:flex;align-items:center;gap:8px" onmouseover="this.style.borderColor='var(--purple)';this.style.color='var(--text)';this.style.background='rgba(139,92,246,0.08)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-dim)';this.style.background='var(--surface)'"><span style="font-size:1rem;flex-shrink:0">✏️</span>주인공 동기가 약해요</button>
-          <button onclick="homeQuick('클라이막스 장면이 너무 평범해요')" style="background:var(--surface);border:1px solid var(--border);color:var(--text-dim);font-size:13px;font-weight:600;padding:10px 14px;border-radius:12px;cursor:pointer;font-family:inherit;transition:all 0.2s;text-align:left;display:flex;align-items:center;gap:8px" onmouseover="this.style.borderColor='var(--purple)';this.style.color='var(--text)';this.style.background='rgba(139,92,246,0.08)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-dim)';this.style.background='var(--surface)'"><span style="font-size:1rem;flex-shrink:0">🔥</span>클라이막스가 평범해요</button>
-          <button onclick="homeQuick('캐릭터 대사가 어색해요')" style="background:var(--surface);border:1px solid var(--border);color:var(--text-dim);font-size:13px;font-weight:600;padding:10px 14px;border-radius:12px;cursor:pointer;font-family:inherit;transition:all 0.2s;text-align:left;display:flex;align-items:center;gap:8px" onmouseover="this.style.borderColor='var(--purple)';this.style.color='var(--text)';this.style.background='rgba(139,92,246,0.08)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-dim)';this.style.background='var(--surface)'"><span style="font-size:1rem;flex-shrink:0">💬</span>대사가 어색해요</button>
-          <button onclick="homeQuick('복선 심는 법이 어려워요')" style="background:var(--surface);border:1px solid var(--border);color:var(--text-dim);font-size:13px;font-weight:600;padding:10px 14px;border-radius:12px;cursor:pointer;font-family:inherit;transition:all 0.2s;text-align:left;display:flex;align-items:center;gap:8px" onmouseover="this.style.borderColor='var(--purple)';this.style.color='var(--text)';this.style.background='rgba(139,92,246,0.08)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-dim)';this.style.background='var(--surface)'"><span style="font-size:1rem;flex-shrink:0">🔗</span>복선 심는 법</button>
-          <button onclick="homeQuick('독자 훅이 어떤 게 효과적인가요')" style="background:var(--surface);border:1px solid var(--border);color:var(--text-dim);font-size:13px;font-weight:600;padding:10px 14px;border-radius:12px;cursor:pointer;font-family:inherit;transition:all 0.2s;text-align:left;display:flex;align-items:center;gap:8px" onmouseover="this.style.borderColor='var(--purple)';this.style.color='var(--text)';this.style.background='rgba(139,92,246,0.08)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-dim)';this.style.background='var(--surface)'"><span style="font-size:1rem;flex-shrink:0">🎣</span>독자 훅</button>
-          <button onclick="homeQuick('장르물을 쓰고 싶어요. 어디서부터 시작하면 좋을까요')" style="background:var(--surface);border:1px solid var(--border);color:var(--text-dim);font-size:13px;font-weight:600;padding:10px 14px;border-radius:12px;cursor:pointer;font-family:inherit;transition:all 0.2s;text-align:left;display:flex;align-items:center;gap:8px" onmouseover="this.style.borderColor='var(--purple)';this.style.color='var(--text)';this.style.background='rgba(139,92,246,0.08)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-dim)';this.style.background='var(--surface)'"><span style="font-size:1rem;flex-shrink:0">🎭</span>장르물 쓰고 싶어요</button>
-        </div>
-        <!-- 직접 입력 바 -->
-        <div style="border-top:1px solid var(--border);padding-top:14px;display:flex;align-items:flex-end;gap:10px">
-          <textarea id="home-ta" rows="1"
-            style="flex:1;background:none;border:none;outline:none;font-family:inherit;font-size:15px;font-weight:500;color:var(--text);resize:none;height:48px;max-height:130px;line-height:1.65;padding:6px 0"
-            placeholder="막히는 장면, 캐릭터 설정, 플롯 문제 — 무엇이든 입력하세요..."
-            onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();homeChat();}"
-            oninput="this.style.height='48px';this.style.height=Math.min(this.scrollHeight,130)+'px'"></textarea>
-          <button onclick="homeChat()" style="width:42px;height:42px;border-radius:50%;background:var(--purple);border:none;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.2s;box-shadow:0 4px 14px var(--purple-glow)">
-            <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:currentColor;margin-left:2px"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
-          </button>
+      <!-- 모드 선택 바 (최상단, 크게) -->
+      <div style="margin-bottom:28px">
+        <div style="font-size:11px;font-weight:700;letter-spacing:0.1em;color:var(--text-faint);text-transform:uppercase;margin-bottom:14px">모드 선택</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+          <div onclick="openMode()" style="background:rgba(139,92,246,0.1);border:1.5px solid rgba(139,92,246,0.28);border-radius:20px;padding:24px 22px;cursor:pointer;display:flex;align-items:center;gap:16px;transition:all 0.25s;box-shadow:0 4px 24px rgba(139,92,246,0.1)" onmouseover="this.style.background='rgba(139,92,246,0.17)';this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 32px rgba(139,92,246,0.2)'" onmouseout="this.style.background='rgba(139,92,246,0.1)';this.style.transform='translateY(0)';this.style.boxShadow='0 4px 24px rgba(139,92,246,0.1)'">
+            <div style="font-size:2rem;flex-shrink:0">✍️</div>
+            <div style="flex:1;min-width:0">
+              <div style="font-size:16px;font-weight:900;color:var(--purple-light);margin-bottom:5px">창작자 모드</div>
+              <div style="font-size:12px;color:var(--text-dim);line-height:1.6">스토리 빌드업 · 회차 개요 · 작품 검증</div>
+            </div>
+            <div style="color:var(--purple-light);font-size:18px;font-weight:300">→</div>
+          </div>
+          <div onclick="selMode('seller')" style="background:rgba(16,185,129,0.07);border:1.5px solid rgba(16,185,129,0.18);border-radius:20px;padding:24px 22px;cursor:pointer;display:flex;align-items:center;gap:16px;transition:all 0.25s;box-shadow:0 4px 24px rgba(16,185,129,0.06)" onmouseover="this.style.background='rgba(16,185,129,0.13)';this.style.transform='translateY(-2px)'" onmouseout="this.style.background='rgba(16,185,129,0.07)';this.style.transform='translateY(0)'">
+            <div style="font-size:2rem;flex-shrink:0">🛍️</div>
+            <div style="flex:1;min-width:0">
+              <div style="font-size:16px;font-weight:900;color:#6EE7B7;margin-bottom:5px">판매자 모드</div>
+              <div style="font-size:12px;color:var(--text-dim);line-height:1.6">루틴 설계 · 마켓 등록 · 수익화</div>
+            </div>
+            <div style="font-size:10px;font-weight:700;color:var(--green);background:rgba(16,185,129,0.12);border:1px solid rgba(16,185,129,0.2);padding:3px 9px;border-radius:10px;white-space:nowrap;flex-shrink:0">준비 중</div>
+          </div>
         </div>
       </div>
 
-      <!-- 모드 선택 바 -->
-      <div style="margin-bottom:32px">
-        <div style="font-size:11px;font-weight:700;letter-spacing:0.1em;color:var(--text-faint);text-transform:uppercase;margin-bottom:12px">모드 선택</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-          <div onclick="openMode()" style="background:rgba(139,92,246,0.08);border:1px solid rgba(139,92,246,0.2);border-radius:16px;padding:18px 20px;cursor:pointer;display:flex;align-items:center;gap:14px;transition:all 0.25s" onmouseover="this.style.background='rgba(139,92,246,0.14)';this.style.transform='translateY(-2px)'" onmouseout="this.style.background='rgba(139,92,246,0.08)';this.style.transform='translateY(0)'">
-            <div style="font-size:1.6rem;flex-shrink:0">✍️</div>
-            <div style="flex:1;min-width:0">
-              <div style="font-size:14px;font-weight:800;color:var(--purple-light);margin-bottom:3px">창작자 모드</div>
-              <div style="font-size:12px;color:var(--text-faint);line-height:1.5">스토리 빌드업 · 회차 개요 · 작품 검증</div>
-            </div>
-            <div style="color:var(--text-faint);font-size:14px">→</div>
-          </div>
-          <div onclick="selMode('seller')" style="background:rgba(16,185,129,0.06);border:1px solid rgba(16,185,129,0.15);border-radius:16px;padding:18px 20px;cursor:pointer;display:flex;align-items:center;gap:14px;transition:all 0.25s" onmouseover="this.style.background='rgba(16,185,129,0.12)';this.style.transform='translateY(-2px)'" onmouseout="this.style.background='rgba(16,185,129,0.06)';this.style.transform='translateY(0)'">
-            <div style="font-size:1.6rem;flex-shrink:0">🛍️</div>
-            <div style="flex:1;min-width:0">
-              <div style="font-size:14px;font-weight:800;color:#6EE7B7;margin-bottom:3px">판매자 모드</div>
-              <div style="font-size:12px;color:var(--text-faint);line-height:1.5">루틴 설계 · 마켓 등록 · 수익화</div>
-            </div>
-            <div style="font-size:10px;font-weight:700;color:var(--green);background:rgba(16,185,129,0.12);border:1px solid rgba(16,185,129,0.2);padding:2px 8px;border-radius:10px;white-space:nowrap;flex-shrink:0">준비 중</div>
-          </div>
+      <!-- 창작 에이전트 대화창 -->
+      <div id="home-chat-box" style="background:rgba(255,255,255,0.03);border:1px solid var(--border2);border-radius:20px;padding:18px 20px 16px;margin-bottom:28px;transition:border-color 0.3s">
+        <div style="font-size:11px;font-weight:700;letter-spacing:0.1em;color:var(--purple-light);text-transform:uppercase;margin-bottom:12px">✦ 창작 에이전트</div>
+        <!-- 예시 문구 칩 (compact) -->
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px">
+          <button onclick="homeQuick('주인공 동기가 너무 약한 것 같아요')" style="background:var(--surface);border:1px solid var(--border);color:var(--text-dim);font-size:12px;font-weight:600;padding:5px 11px;border-radius:100px;cursor:pointer;font-family:inherit;transition:all 0.15s;white-space:nowrap" onmouseover="this.style.borderColor='var(--purple)';this.style.color='var(--text)';this.style.background='rgba(139,92,246,0.08)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-dim)';this.style.background='var(--surface)'">✏️ 주인공 동기가 약해요</button>
+          <button onclick="homeQuick('클라이막스 장면이 너무 평범해요')" style="background:var(--surface);border:1px solid var(--border);color:var(--text-dim);font-size:12px;font-weight:600;padding:5px 11px;border-radius:100px;cursor:pointer;font-family:inherit;transition:all 0.15s;white-space:nowrap" onmouseover="this.style.borderColor='var(--purple)';this.style.color='var(--text)';this.style.background='rgba(139,92,246,0.08)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-dim)';this.style.background='var(--surface)'">🔥 클라이막스가 평범해요</button>
+          <button onclick="homeQuick('캐릭터 대사가 어색해요')" style="background:var(--surface);border:1px solid var(--border);color:var(--text-dim);font-size:12px;font-weight:600;padding:5px 11px;border-radius:100px;cursor:pointer;font-family:inherit;transition:all 0.15s;white-space:nowrap" onmouseover="this.style.borderColor='var(--purple)';this.style.color='var(--text)';this.style.background='rgba(139,92,246,0.08)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-dim)';this.style.background='var(--surface)'">💬 대사가 어색해요</button>
+          <button onclick="homeQuick('복선 심는 법이 어려워요')" style="background:var(--surface);border:1px solid var(--border);color:var(--text-dim);font-size:12px;font-weight:600;padding:5px 11px;border-radius:100px;cursor:pointer;font-family:inherit;transition:all 0.15s;white-space:nowrap" onmouseover="this.style.borderColor='var(--purple)';this.style.color='var(--text)';this.style.background='rgba(139,92,246,0.08)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-dim)';this.style.background='var(--surface)'">🔗 복선 심는 법</button>
+          <button onclick="homeQuick('독자 훅이 어떤 게 효과적인가요')" style="background:var(--surface);border:1px solid var(--border);color:var(--text-dim);font-size:12px;font-weight:600;padding:5px 11px;border-radius:100px;cursor:pointer;font-family:inherit;transition:all 0.15s;white-space:nowrap" onmouseover="this.style.borderColor='var(--purple)';this.style.color='var(--text)';this.style.background='rgba(139,92,246,0.08)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-dim)';this.style.background='var(--surface)'">🎣 독자 훅</button>
+          <button onclick="homeQuick('장르물을 쓰고 싶어요. 어디서부터 시작하면 좋을까요')" style="background:var(--surface);border:1px solid var(--border);color:var(--text-dim);font-size:12px;font-weight:600;padding:5px 11px;border-radius:100px;cursor:pointer;font-family:inherit;transition:all 0.15s;white-space:nowrap" onmouseover="this.style.borderColor='var(--purple)';this.style.color='var(--text)';this.style.background='rgba(139,92,246,0.08)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-dim)';this.style.background='var(--surface)'">🎭 장르물 쓰고 싶어요</button>
+        </div>
+        <!-- 직접 입력 바 -->
+        <div style="border-top:1px solid var(--border);padding-top:12px;display:flex;align-items:flex-end;gap:10px">
+          <textarea id="home-ta" rows="1"
+            style="flex:1;background:none;border:none;outline:none;font-family:inherit;font-size:15px;font-weight:500;color:var(--text);resize:none;height:44px;max-height:130px;line-height:1.65;padding:5px 0"
+            placeholder="막히는 장면, 캐릭터 설정, 플롯 문제 — 무엇이든 입력하세요..."
+            onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();homeChat();}"
+            oninput="this.style.height='44px';this.style.height=Math.min(this.scrollHeight,130)+'px'"></textarea>
+          <button onclick="homeChat()" style="width:40px;height:40px;border-radius:50%;background:var(--purple);border:none;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.2s;box-shadow:0 4px 14px var(--purple-glow)">
+            <svg viewBox="0 0 24 24" style="width:17px;height:17px;fill:currentColor;margin-left:2px"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+          </button>
         </div>
       </div>
 
@@ -643,9 +658,11 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
   <section class="view" id="view-myplan">
     <div class="vh">
       <div class="vt">내 기획안</div>
-      <div style="display:flex;gap:2px;background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:3px">
-        <button class="dash-mode-btn on" id="mode-btn-creator" onclick="setDashMode('creator')">✍️ 창작자 모드</button>
-        <button class="dash-mode-btn" id="mode-btn-mentor" onclick="setDashMode('mentor')">🎓 멘토 모드</button>
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="display:flex;gap:2px;background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:3px">
+          <button class="dash-mode-btn on" id="mode-btn-creator" onclick="setDashMode('creator')">✍️ 창작자 모드</button>
+        </div>
+        <div style="font-size:11px;font-weight:700;color:var(--text-faint);background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:20px;padding:5px 12px;opacity:0.6">🎓 멘토 모드 — 준비 중</div>
       </div>
     </div>
     <div class="vb" style="display:flex;flex-direction:column;gap:28px">
@@ -873,7 +890,7 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
       </div>
     </div>
   </div>
-  <!-- 프로젝트 상세: 시놉시스 편집 + 캐릭터 설정 -->
+  <!-- 프로젝트 상세: 기획 구조 + 시놉시스 편집 + 캐릭터 설정 -->
   <section class="view" id="view-proj">
     <div class="proj-detail-wrap">
       <div class="proj-detail-header">
@@ -883,15 +900,21 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
           <div id="pd-genre" style="font-size:12px;color:var(--text-faint);margin-top:2px"></div>
         </div>
         <button onclick="linkToOutline()" style="padding:8px 16px;background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:10px;color:var(--text-dim);font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;white-space:nowrap;transition:all 0.2s" onmouseover="this.style.borderColor='var(--border2)';this.style.color='var(--text)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-dim)'">🎬 회차 개요</button>
+        <button class="proj-del-btn" onclick="deleteProject()">🗑 삭제</button>
       </div>
       <div class="proj-detail-tabs">
-        <button class="proj-tab on" id="ptab-synopsis" onclick="switchProjTab('synopsis')">📝 시놉시스</button>
+        <button class="proj-tab on" id="ptab-plan" onclick="switchProjTab('plan')">📋 기획 구조</button>
+        <button class="proj-tab" id="ptab-synopsis" onclick="switchProjTab('synopsis')">📝 시놉시스</button>
         <button class="proj-tab" id="ptab-chars" onclick="switchProjTab('chars')">👥 캐릭터</button>
       </div>
       <div class="proj-detail-body">
+        <!-- 기획 구조 탭 -->
+        <div class="tab-panel on" id="panel-plan">
+          <div id="plan-structure-list"></div>
+        </div>
         <!-- 시놉시스 탭 -->
-        <div class="tab-panel on" id="panel-synopsis">
-          <div class="syn-label">완성 시놉시스 — 자유롭게 수정하세요</div>
+        <div class="tab-panel" id="panel-synopsis">
+          <div class="syn-label">시놉시스 — 자유롭게 수정하세요</div>
           <textarea class="syn-editor" id="syn-textarea" placeholder="시놉시스를 입력하세요..."></textarea>
           <div style="display:flex;align-items:center;gap:14px;margin-top:14px">
             <button class="syn-save-btn" onclick="saveSynopsisEdit()">💾 저장하기</button>
@@ -1143,19 +1166,15 @@ document.addEventListener('DOMContentLoaded',()=>{
   const ta=$('im-ta');if(ta)ta.addEventListener('keydown',e=>{if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)){e.preventDefault();saveItemModal();}});
 });
 // ── 내 기획안 대쉬보드 ──
-let dashMode=localStorage.getItem('dash_mode')||'creator';
+let dashMode='creator';
 
 function setDashMode(mode){
-  dashMode=mode;
-  localStorage.setItem('dash_mode',mode);
-  const cb=$('mode-btn-creator'),mb=$('mode-btn-mentor');
-  if(cb){cb.classList.toggle('on',mode==='creator');}
-  if(mb){mb.classList.toggle('on',mode==='mentor');}
+  dashMode='creator'; // 멘토 모드 준비 중 — 항상 creator
+  localStorage.setItem('dash_mode','creator');
+  const cb=$('mode-btn-creator');
+  if(cb)cb.classList.add('on');
   const ns=$('cta-new-sub'),rs=$('cta-review-sub'),ll=$('myplan-list-label');
-  if(mode==='mentor'){
-    if(ns)ns.textContent='멘토와 함께 방향성을 설계합니다';
-    if(rs)rs.textContent='AI가 작품 전체를 분석하고 리포트를 드립니다';
-    if(ll)ll.textContent='검토할 작품';
+  if(false){ // 멘토 모드 준비 중
   }else{
     if(ns)ns.textContent='새로운 이야기를 AI와 함께 설계합니다';
     if(rs)rs.textContent='시놉시스·캐릭터·개요를 통합 점검합니다';
@@ -1165,10 +1184,9 @@ function setDashMode(mode){
 }
 
 async function loadMyPlan(){
-  dashMode=localStorage.getItem('dash_mode')||'creator';
-  const cb=$('mode-btn-creator'),mb=$('mode-btn-mentor');
-  if(cb)cb.classList.toggle('on',dashMode==='creator');
-  if(mb)mb.classList.toggle('on',dashMode==='mentor');
+  dashMode='creator';
+  const cb=$('mode-btn-creator');
+  if(cb)cb.classList.add('on');
   // 프로젝트 로드 (더미 없이)
   const local=JSON.parse(localStorage.getItem('mp')||'[]');
   if(!user||user.id==='t001'){
@@ -1200,7 +1218,8 @@ function renderMyPlanWorks(){
     const actionBtn=dashMode==='mentor'
       ?`<button onclick="event.stopPropagation();startWorkReview('${p.id}')" style="margin-top:10px;width:100%;background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.2);color:#6EE7B7;font-size:12px;font-weight:700;padding:8px;border-radius:10px;cursor:pointer;font-family:inherit;transition:all 0.2s" onmouseover="this.style.background='rgba(16,185,129,0.14)'" onmouseout="this.style.background='rgba(16,185,129,0.08)'">🔍 AI 통합 검토 시작</button>`
       :`<button onclick="event.stopPropagation();selectAndTask('${p.id}')" style="margin-top:10px;width:100%;background:rgba(139,92,246,0.08);border:1px solid rgba(139,92,246,0.2);color:var(--purple-light);font-size:12px;font-weight:700;padding:8px;border-radius:10px;cursor:pointer;font-family:inherit;transition:all 0.2s" onmouseover="this.style.background='rgba(139,92,246,0.14)'" onmouseout="this.style.background='rgba(139,92,246,0.08)'">⚡ 오늘의 작업 시작</button>`;
-    c.innerHTML=`<div><span class="pc-genre">${p.genre||'미분류'}</span></div><div class="pc-title">${p.title}</div><div class="pc-syn">${p.synopsis||'시놉시스가 없습니다.'}</div><div class="pc-foot"><span>${p.routine_type==='short'?'단편':'장편'}</span><span>${(p.answer_history||[]).length}단계 완료</span></div>${actionBtn}`;
+    const preview=p.synopsis||(p.answer_history&&p.answer_history.find(i=>i.value)?.value)||'기획 내용을 확인하세요.';
+    c.innerHTML=`<div><span class="pc-genre">${p.genre||'미분류'}</span></div><div class="pc-title">${p.title}</div><div class="pc-syn">${preview}</div><div class="pc-foot"><span>${p.routine_type==='short'?'단편':'장편'}</span><span>${(p.answer_history||[]).filter(i=>i.value).length}단계 완료</span></div>${actionBtn}`;
     c.onclick=()=>openProjDetail(p.id);
     g.appendChild(c);
   });
@@ -1286,7 +1305,8 @@ function renderProjects(){
   const g=$('pg');g.innerHTML='';
   projects.forEach(p=>{
     const c=document.createElement('div');c.className='pc';
-    c.innerHTML=`<div><span class="pc-genre">${p.genre||'미분류'}</span></div><div class="pc-title">${p.title}</div><div class="pc-syn">${p.synopsis||'시놉시스가 없습니다.'}</div><div class="pc-foot"><span>${p.routine_type==='short'?'단편':'장편'}</span><span>${(p.answer_history||[]).length}단계 완료</span></div>`;
+    const prev2=p.synopsis||(p.answer_history&&p.answer_history.find(i=>i.value)?.value)||'기획 내용을 확인하세요.';
+    c.innerHTML=`<div><span class="pc-genre">${p.genre||'미분류'}</span></div><div class="pc-title">${p.title}</div><div class="pc-syn">${prev2}</div><div class="pc-foot"><span>${p.routine_type==='short'?'단편':'장편'}</span><span>${(p.answer_history||[]).filter(i=>i.value).length}단계 완료</span></div>`;
     c.onclick=()=>openProjDetail(p.id);
     g.appendChild(c);
   });
@@ -1317,9 +1337,18 @@ async function openProjDetail(pid, isNew){
   $('syn-textarea').value=proj.synopsis||proj.synopsis_detail||'';
   $('syn-save-status').textContent='';
   // 캐릭터
+  // 구버전 answer_history 보강 (k,q 없는 경우 LONG/SHORT에서 조회)
+  if(proj.answer_history&&proj.answer_history.length){
+    const allItems=[...LONG,...SHORT];
+    proj.answer_history=proj.answer_history.map(item=>{
+      if(!item.k&&!item.q){const ref=allItems.find(s=>s.id===item.id);if(ref)return{...item,k:ref.k,q:ref.q,v:ref.v};}
+      return item;
+    });
+  }
   pdChars=Array.isArray(proj.characters)?[...proj.characters]:[];
   renderCharCards();
-  switchProjTab('synopsis');
+  renderPlanStructure();
+  switchProjTab((proj.answer_history&&proj.answer_history.some(i=>i.value))?'plan':'synopsis');
   // selProj도 업데이트 (오늘의 작업 연동)
   selProj=proj;
   navTo('proj');
@@ -1335,7 +1364,7 @@ function linkToOutline(){
 }
 
 function switchProjTab(tab){
-  ['synopsis','chars'].forEach(t=>{
+  ['plan','synopsis','chars'].forEach(t=>{
     $('ptab-'+t).classList.toggle('on',t===tab);
     $('panel-'+t).classList.toggle('on',t===tab);
   });
@@ -1355,6 +1384,74 @@ async function saveSynopsisEdit(){
   }
   $('syn-save-status').textContent='✓ 저장됐습니다';
   setTimeout(()=>{if($('syn-save-status'))$('syn-save-status').textContent='';},2500);
+}
+
+// ── 기획 구조 렌더링 / 편집 / 삭제 ──
+function renderPlanStructure(){
+  if(!pdProj)return;
+  const list=$('plan-structure-list');
+  if(!list)return;
+  const ah=pdProj.answer_history||[];
+  if(!ah.length){
+    list.innerHTML='<div style="color:var(--text-faint);font-size:14px;text-align:center;padding:60px 0">기획 내용이 없습니다.</div>';
+    return;
+  }
+  list.innerHTML=ah.map((item,i)=>`
+    <div class="plan-struct-item" id="psi-${i}">
+      <div class="psi-meta">
+        <div class="psi-num">${i+1}</div>
+        <span class="psi-key">${escH(item.k||'')}</span>
+      </div>
+      <div class="psi-q">${escH(item.q||'')}</div>
+      <div id="psi-val-${i}">
+        ${item.value
+          ?`<div class="psi-val" onclick="editPlanItem(${i})">${escH(item.value)}<span class="psi-edit-hint">✎ 수정</span></div>`
+          :`<div class="psi-empty" onclick="editPlanItem(${i})">미입력 — 클릭하여 작성</div>`}
+      </div>
+    </div>`).join('');
+}
+
+function editPlanItem(idx){
+  const ah=pdProj&&pdProj.answer_history;
+  if(!ah||!ah[idx])return;
+  const wrap=$('psi-val-'+idx);
+  const cur=ah[idx].value||'';
+  wrap.innerHTML=`<textarea id="psi-ta-${idx}" style="width:100%;min-height:72px;background:rgba(139,92,246,0.05);border:1px solid rgba(139,92,246,0.3);border-radius:10px;color:var(--text);font-size:14px;line-height:1.7;padding:10px 14px;font-family:inherit;resize:vertical;box-sizing:border-box">${escH(cur)}</textarea>
+  <div style="display:flex;gap:8px;margin-top:8px">
+    <button class="syn-save-btn" style="font-size:12px;padding:7px 18px" onclick="savePlanItem(${idx})">저장</button>
+    <button class="plan-btn" style="font-size:12px;padding:7px 14px" onclick="renderPlanStructure()">취소</button>
+  </div>`;
+  setTimeout(()=>{const ta=$('psi-ta-'+idx);if(ta){ta.focus();ta.selectionStart=ta.value.length;}},50);
+}
+
+async function savePlanItem(idx){
+  const ta=$('psi-ta-'+idx);
+  if(!ta||!pdProj)return;
+  pdProj.answer_history[idx].value=ta.value.trim();
+  const arr=JSON.parse(localStorage.getItem('mp')||'[]');
+  const i=arr.findIndex(p=>p.id===pdProj.id);
+  if(i>=0){arr[i].answer_history=pdProj.answer_history;localStorage.setItem('mp',JSON.stringify(arr));}
+  if(user&&user.id!=='t001'){
+    try{await sb.from('projects').update({answer_history:pdProj.answer_history}).eq('id',pdProj.id).eq('user_id',user.id);}catch(e){}
+  }
+  flash('✓ 저장됐습니다');
+  renderPlanStructure();
+}
+
+async function deleteProject(){
+  if(!pdProj)return;
+  if(!confirm(`'${pdProj.title}' 기획안을 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.`))return;
+  const arr=JSON.parse(localStorage.getItem('mp')||'[]');
+  localStorage.setItem('mp',JSON.stringify(arr.filter(p=>p.id!==pdProj.id)));
+  if(user&&user.id!=='t001'){
+    try{await sb.from('projects').delete().eq('id',pdProj.id).eq('user_id',user.id);}catch(e){}
+  }
+  const title=pdProj.title;
+  pdProj=null;
+  navTo('myplan');
+  await loadMyPlan();
+  renderProjGrid();
+  flash(`'${title}' 삭제됐습니다`);
 }
 
 function escH(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
@@ -1969,23 +2066,16 @@ function addPlanItem(){
 async function finishPlan(){
   const filled=planItems.filter(p=>p.value);
   if(filled.length<2){flash('최소 2개 이상 채워주세요');return;}
-  flash('✨ 시놉시스 작성 중...');
-  const ctx=filled.map(p=>`- ${p.q.split('\n').pop()}: ${p.value}`).join('\n');
-  const syn=await ai([
-    {role:'system',content:'당신은 시놉시스 전문 작가입니다. 웹소설/웹툰 시놉시스를 [로그라인], [주인공], [갈등], [주제]를 포함하여 200자 내외로 작성하세요.'},
-    {role:'user',content:`작품명: ${newProjName}\n스토리 기획:\n${ctx}\n\n시놉시스를 작성해주세요.`}
-  ]);
-  // 저장
+  flash('✨ 기획안 저장 중...');
   hist=filled.map(p=>({id:p.id,value:p.value}));
   steps=planItems;
-  const pid=await savePlanProject(syn);
-  // 시놉시스 편집 화면으로 이동
+  const pid=await savePlanProject();
   await openProjDetail(pid, true);
 }
 
-async function savePlanProject(synopsis){
+async function savePlanProject(){
   const pid='p_'+Date.now();
-  const proj={id:pid,title:newProjName,genre:planItems.find(p=>p.id.includes('2'))?.value?.slice(0,20)||'',synopsis,synopsis_detail:synopsis,characters:[],episodes:[],answer_history:planItems.map(p=>({id:p.id,value:p.value})),routine_type:pendingRoutineType};
+  const proj={id:pid,title:newProjName,genre:planItems.find(p=>p.id.includes('2'))?.value?.slice(0,20)||'',synopsis:'',synopsis_detail:'',characters:[],episodes:[],answer_history:planItems.map(p=>({id:p.id,k:p.k,q:p.q,v:p.v,value:p.value})),routine_type:pendingRoutineType};
   const arr=JSON.parse(localStorage.getItem('mp')||'[]');
   arr.unshift(proj);localStorage.setItem('mp',JSON.stringify(arr.slice(0,50)));
   if(user&&user.id!=='t001'){try{await sb.from('projects').insert({...proj,user_id:user.id,completed_at:new Date().toISOString()});}catch(e){}}
@@ -2054,6 +2144,12 @@ function renderBuildupStep(idx){
   $('ibt').style.display='';
   $('buildup-autofill-btn').style.display='';
   $('cr').innerHTML='';
+  if(idx>0){
+    const pb=document.createElement('button');pb.className='cbtn';pb.textContent='← 이전 질문으로';
+    pb.style.cssText='background:rgba(255,255,255,0.03);border-color:rgba(255,255,255,0.09);color:var(--text-dim);font-size:12px';
+    pb.onclick=()=>renderBuildupStep(idx-1);
+    $('cr').appendChild(pb);
+  }
   setTimeout(()=>{const b=$('cbody');b.scrollTop=b.scrollHeight;},100);
 }
 
@@ -2949,20 +3045,43 @@ const YT_QUERIES = [
 })();
 
 // ── 홈 유튜브 영상 로드 ──
+function pickUniqueQueries(n){
+  const pool=[...YT_QUERIES];
+  const picked=[];
+  while(picked.length<n&&pool.length){
+    const idx=Math.floor(Math.random()*pool.length);
+    picked.push(pool.splice(idx,1)[0]);
+  }
+  return picked;
+}
 async function loadHomeVideos(){
   const list = $('yt-list');
   if(!list) return;
+  list.innerHTML='<div style="font-size:13px;color:var(--text-faint);padding:16px 0;text-align:center">불러오는 중...</div>';
   try{
-    const q = encodeURIComponent(YT_QUERIES[Math.floor(Math.random()*YT_QUERIES.length)]);
-    const url = `/api/youtube?q=${q}`;
-    const res = await fetch(url); if(!res.ok) throw new Error();
-    const data = await res.json();
-    const items = (data.items||[]).map(i=>({
-      id: i.id.videoId,
-      title: i.snippet.title,
-      channel: i.snippet.channelTitle,
-      thumb: i.snippet.thumbnails.medium?.url || i.snippet.thumbnails.default?.url
-    }));
+    const qs=pickUniqueQueries(3);
+    const ts=Date.now();
+    const results=await Promise.allSettled(qs.map(q=>
+      fetch(`/api/youtube?q=${encodeURIComponent(q)}&_t=${ts}`).then(r=>r.ok?r.json():null)
+    ));
+    let items=[];
+    results.forEach(r=>{
+      if(r.status==='fulfilled'&&r.value){
+        (r.value.items||[]).forEach(i=>{
+          if(i.id?.videoId)items.push({
+            id:i.id.videoId,
+            title:i.snippet.title,
+            channel:i.snippet.channelTitle,
+            thumb:i.snippet.thumbnails.medium?.url||i.snippet.thumbnails.default?.url
+          });
+        });
+      }
+    });
+    // 중복 제거 후 셔플
+    const seen=new Set();
+    items=items.filter(v=>{if(seen.has(v.id))return false;seen.add(v.id);return true;});
+    for(let i=items.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[items[i],items[j]]=[items[j],items[i]];}
+    if(!items.length)throw new Error('no items');
     list.innerHTML = items.map(v=>`
       <div onclick="openYTModal('${v.id}','${v.title.replace(/'/g,"\'").replace(/"/g,'&quot;')}')"
         style="background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;display:flex;cursor:pointer;transition:all 0.25s"
@@ -3016,7 +3135,7 @@ document.addEventListener('click', e=>{ if(e.target===$('yt-modal')) closeYTModa
 function homeQuick(text){
   const ta = $('home-ta'); if(!ta) return;
   ta.value = text;
-  ta.style.height='48px';
+  ta.style.height='44px';
   ta.style.height = Math.min(ta.scrollHeight,130)+'px';
   ta.focus();
 }
