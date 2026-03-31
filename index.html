@@ -378,6 +378,92 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
 .intro-skip:hover{color:var(--text-dim)}
 @keyframes skipIn{to{opacity:1}}
 @media(max-width:768px){.sidebar{display:none}.pg{grid-template-columns:1fr}.mg{flex-direction:column}.mc{flex:none;width:100%}.chp{flex-direction:column}.ip{width:100%}.vh,.vb{padding-left:20px;padding-right:20px}}
+/* ── CHARACTER DEV OVERLAY ── */
+.cd-ov{position:fixed;inset:0;z-index:300;background:rgba(0,0,0,0.88);backdrop-filter:blur(24px);display:none;align-items:stretch}
+.cd-ov.on{display:flex}
+.cd-wrap{display:flex;width:100%;height:100%;overflow:hidden}
+.cd-sidebar{width:250px;min-width:250px;background:rgba(8,8,18,0.99);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden}
+.cd-sb-top{padding:20px 18px 16px;border-bottom:1px solid var(--border);flex-shrink:0}
+.cd-back-btn{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--text-dim);cursor:pointer;background:none;border:none;font-family:inherit;padding:0;margin-bottom:14px;transition:color 0.2s}
+.cd-back-btn:hover{color:var(--text)}
+.cd-char-name{font-size:18px;font-weight:900;letter-spacing:-0.02em;color:var(--text);margin-bottom:4px}
+.cd-char-role{font-size:11px;font-weight:700;letter-spacing:0.05em;color:var(--gold);background:rgba(214,183,90,0.1);border:1px solid rgba(214,183,90,0.2);padding:2px 10px;border-radius:100px;display:inline-block}
+.cd-prog-wrap{padding:14px 18px;border-bottom:1px solid var(--border);flex-shrink:0}
+.cd-prog-bar{height:4px;background:rgba(255,255,255,0.07);border-radius:2px;margin-bottom:6px;overflow:hidden}
+.cd-prog-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--purple),var(--gold));transition:width 0.5s cubic-bezier(0.16,1,0.3,1)}
+.cd-prog-txt{font-size:11px;color:var(--text-faint);font-weight:700}
+.cd-secs{flex:1;overflow-y:auto;padding:8px 10px}
+.cd-sec-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:10px;cursor:pointer;transition:all 0.2s;color:var(--text-dim);font-size:13px;font-weight:600;user-select:none}
+.cd-sec-item:hover{background:var(--surface);color:var(--text)}
+.cd-sec-item.on{background:rgba(139,92,246,0.12);color:var(--purple-light)}
+.cd-sec-icon{font-size:15px;width:20px;text-align:center;flex-shrink:0}
+.cd-sec-done{margin-left:auto;font-size:10px;color:var(--green);opacity:0;transition:opacity 0.2s}
+.cd-sec-done.vis{opacity:1}
+.cd-chat-area{padding:12px;flex-shrink:0;border-top:1px solid var(--border)}
+.cd-chat-btn{width:100%;padding:13px;background:linear-gradient(135deg,var(--purple),#5B21B6);border:none;border-radius:12px;color:#fff;font-size:13px;font-weight:800;font-family:inherit;cursor:pointer;transition:all 0.2s;box-shadow:0 6px 20px var(--purple-glow);display:flex;align-items:center;justify-content:center;gap:8px}
+.cd-chat-btn:hover{filter:brightness(1.12);transform:translateY(-1px)}
+/* content area */
+.cd-content{flex:1;overflow-y:auto;padding:40px 44px;scrollbar-width:thin;scrollbar-color:rgba(139,92,246,0.3) transparent}
+.cd-content::-webkit-scrollbar{width:4px}
+.cd-content::-webkit-scrollbar-thumb{background:rgba(139,92,246,0.25);border-radius:2px}
+.cd-sec-hd{display:flex;align-items:center;gap:10px;font-size:20px;font-weight:900;letter-spacing:-0.02em;margin-bottom:28px}
+.cd-fields-list{display:flex;flex-direction:column;gap:24px}
+.cd-field{display:flex;flex-direction:column;gap:8px}
+.cd-field-top{display:flex;align-items:baseline;gap:8px}
+.cd-fl{font-size:13px;font-weight:800;color:var(--text)}
+.cd-fh{font-size:11px;color:var(--text-faint);line-height:1.5;font-style:italic}
+.cd-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:4px}
+.cd-chip{padding:6px 14px;border-radius:100px;font-size:12px;font-weight:700;font-family:inherit;background:var(--surface);border:1px solid var(--border);color:var(--text-dim);cursor:pointer;transition:all 0.18s}
+.cd-chip:hover{border-color:var(--border2);color:var(--text)}
+.cd-chip.on{background:rgba(139,92,246,0.15);border-color:rgba(139,92,246,0.45);color:var(--purple-light)}
+.cd-inp{font-size:14px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-family:inherit;transition:border-color 0.2s;width:100%;line-height:1.5}
+.cd-inp:focus{outline:none;border-color:rgba(139,92,246,0.4)}
+.cd-ta{font-size:14px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-family:inherit;resize:none;transition:border-color 0.2s;width:100%;line-height:1.75}
+.cd-ta:focus{outline:none;border-color:rgba(139,92,246,0.4)}
+.cd-nav-row{display:flex;gap:10px;margin-top:36px;padding-top:24px;border-top:1px solid var(--border)}
+.cd-nav-btn{flex:1;padding:11px;border-radius:12px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;transition:all 0.2s;border:1px solid var(--border);background:var(--surface);color:var(--text-dim)}
+.cd-nav-btn:hover{border-color:var(--border2);color:var(--text)}
+.cd-nav-btn.next{background:rgba(139,92,246,0.1);border-color:rgba(139,92,246,0.3);color:var(--purple-light)}
+.cd-nav-btn.next:hover{background:rgba(139,92,246,0.2)}
+/* char card buttons */
+.char-dev-btns{display:flex;gap:6px;margin-top:6px}
+.char-dev-btn{flex:1;padding:8px 0;border-radius:8px;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;transition:all 0.2s;border:1px solid var(--border);background:var(--surface);color:var(--text-dim)}
+.char-dev-btn:hover{border-color:var(--border2);color:var(--text)}
+.char-dev-btn.chat{background:rgba(139,92,246,0.08);border-color:rgba(139,92,246,0.25);color:var(--purple-light)}
+.char-dev-btn.chat:hover{background:rgba(139,92,246,0.18)}
+/* ── PROJECT DETAIL ── */
+.proj-detail-wrap{display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.proj-detail-header{display:flex;align-items:center;gap:14px;padding:14px 24px;border-bottom:1px solid var(--border);flex-shrink:0;background:rgba(7,7,15,0.85);backdrop-filter:var(--blur)}
+.proj-detail-tabs{display:flex;gap:0;padding:0 24px;border-bottom:1px solid var(--border);flex-shrink:0;background:rgba(7,7,15,0.6)}
+.proj-tab{padding:14px 20px;font-size:13px;font-weight:700;color:var(--text-dim);cursor:pointer;border-bottom:2px solid transparent;transition:all 0.2s;background:none;border-top:none;border-left:none;border-right:none;font-family:inherit}
+.proj-tab.on{color:var(--purple-light);border-bottom-color:var(--purple)}.proj-tab:hover{color:var(--text)}
+.proj-detail-body{flex:1;overflow-y:auto;padding:32px 36px}
+.tab-panel{display:none}.tab-panel.on{display:block}
+/* synopsis editor */
+.syn-label{font-size:11px;font-weight:800;letter-spacing:0.08em;color:var(--text-faint);text-transform:uppercase;margin-bottom:12px}
+.syn-editor{width:100%;min-height:280px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:16px;padding:20px 24px;font-family:inherit;font-size:15px;line-height:1.9;color:var(--text);resize:vertical;transition:border-color 0.2s}
+.syn-editor:focus{outline:none;border-color:rgba(139,92,246,0.4)}
+.syn-save-btn{padding:11px 26px;background:var(--purple);border:none;border-radius:12px;color:#fff;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;transition:all 0.2s;box-shadow:0 6px 20px var(--purple-glow)}
+.syn-save-btn:hover{filter:brightness(1.1);transform:translateY(-1px)}
+/* character cards */
+.char-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-bottom:16px}
+.char-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:20px;display:flex;flex-direction:column;gap:10px;transition:border-color 0.2s}
+.char-card:hover{border-color:var(--border2)}
+.char-card-header{display:flex;align-items:center;gap:8px}
+.char-name-input{font-size:16px;font-weight:800;background:none;border:none;outline:none;color:var(--text);font-family:inherit;flex:1;min-width:0;border-bottom:1px solid transparent;transition:border-color 0.2s;padding:2px 0}
+.char-name-input:focus{border-bottom-color:var(--purple)}
+.char-role-sel{font-size:10px;font-weight:800;letter-spacing:0.05em;color:var(--gold);background:rgba(214,183,90,0.08);border:1px solid rgba(214,183,90,0.2);padding:3px 10px;border-radius:100px;font-family:inherit;cursor:pointer;appearance:none;-webkit-appearance:none}
+.char-del-btn{width:26px;height:26px;border-radius:50%;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.15);color:#fca5a5;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s;flex-shrink:0}
+.char-del-btn:hover{background:rgba(239,68,68,0.2)}
+.char-field{display:flex;flex-direction:column;gap:4px}
+.char-fl{font-size:10px;font-weight:800;letter-spacing:0.07em;color:var(--text-faint);text-transform:uppercase}
+.char-fi{font-size:13px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:8px;padding:7px 11px;color:var(--text);font-family:inherit;resize:none;transition:border-color 0.2s;line-height:1.6;width:100%}
+.char-fi:focus{outline:none;border-color:rgba(139,92,246,0.3)}
+.char-ai-btn{padding:10px 20px;background:rgba(139,92,246,0.1);border:1px solid rgba(139,92,246,0.3);border-radius:12px;color:var(--purple-light);font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;transition:all 0.25s;margin-bottom:18px;display:inline-flex;align-items:center;gap:6px}
+.char-ai-btn:hover:not(:disabled){background:rgba(139,92,246,0.2);border-color:rgba(139,92,246,0.5)}
+.char-ai-btn:disabled{opacity:0.5;cursor:default}
+.char-add-btn{background:var(--surface);border:1px dashed var(--border2);border-radius:var(--r);padding:16px;cursor:pointer;font-size:14px;font-weight:700;color:var(--text-dim);transition:all 0.2s;text-align:center;width:100%}
+.char-add-btn:hover{border-color:var(--purple);color:var(--purple-light);background:rgba(139,92,246,0.05)}
 </style>
 </head>
 <body>
@@ -669,6 +755,67 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
       </div>
     </div>
   </section>
+  <!-- 캐릭터 디벨롭 오버레이 -->
+  <div class="cd-ov" id="cd-ov">
+    <div class="cd-wrap">
+      <!-- 사이드바 -->
+      <div class="cd-sidebar">
+        <div class="cd-sb-top">
+          <button class="cd-back-btn" onclick="closeCharDev()">← 캐릭터 목록</button>
+          <div class="cd-char-name" id="cd-name">캐릭터 이름</div>
+          <div class="cd-char-role" id="cd-role">조연</div>
+        </div>
+        <div class="cd-prog-wrap">
+          <div class="cd-prog-bar"><div class="cd-prog-fill" id="cd-prog-fill" style="width:0%"></div></div>
+          <div class="cd-prog-txt" id="cd-prog-txt">0% 완성</div>
+        </div>
+        <div class="cd-secs" id="cd-secs"></div>
+        <div class="cd-chat-area">
+          <button class="cd-chat-btn" onclick="startCharChat()">💬 이 캐릭터와 대화하기</button>
+        </div>
+      </div>
+      <!-- 콘텐츠 -->
+      <div class="cd-content" id="cd-content">
+        <div class="cd-sec-hd" id="cd-sec-hd"></div>
+        <div class="cd-fields-list" id="cd-fields-list"></div>
+        <div class="cd-nav-row" id="cd-nav-row"></div>
+      </div>
+    </div>
+  </div>
+  <!-- 프로젝트 상세: 시놉시스 편집 + 캐릭터 설정 -->
+  <section class="view" id="view-proj">
+    <div class="proj-detail-wrap">
+      <div class="proj-detail-header">
+        <button class="cbk" onclick="navTo('works')" style="flex-shrink:0">←</button>
+        <div style="flex:1;min-width:0">
+          <div id="pd-title" style="font-size:17px;font-weight:900;line-height:1.3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></div>
+          <div id="pd-genre" style="font-size:12px;color:var(--text-faint);margin-top:2px"></div>
+        </div>
+        <button onclick="linkToOutline()" style="padding:8px 16px;background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:10px;color:var(--text-dim);font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;white-space:nowrap;transition:all 0.2s" onmouseover="this.style.borderColor='var(--border2)';this.style.color='var(--text)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-dim)'">🎬 회차 개요</button>
+      </div>
+      <div class="proj-detail-tabs">
+        <button class="proj-tab on" id="ptab-synopsis" onclick="switchProjTab('synopsis')">📝 시놉시스</button>
+        <button class="proj-tab" id="ptab-chars" onclick="switchProjTab('chars')">👥 캐릭터</button>
+      </div>
+      <div class="proj-detail-body">
+        <!-- 시놉시스 탭 -->
+        <div class="tab-panel on" id="panel-synopsis">
+          <div class="syn-label">완성 시놉시스 — 자유롭게 수정하세요</div>
+          <textarea class="syn-editor" id="syn-textarea" placeholder="시놉시스를 입력하세요..."></textarea>
+          <div style="display:flex;align-items:center;gap:14px;margin-top:14px">
+            <button class="syn-save-btn" onclick="saveSynopsisEdit()">💾 저장하기</button>
+            <span id="syn-save-status" style="font-size:12px;color:var(--green)"></span>
+          </div>
+        </div>
+        <!-- 캐릭터 탭 -->
+        <div class="tab-panel" id="panel-chars">
+          <button class="char-ai-btn" id="char-ai-btn" onclick="draftCharacters()">✦ AI로 캐릭터 초안 생성</button>
+          <div class="char-grid" id="char-grid"></div>
+          <button class="char-add-btn" onclick="addCharCard()">+ 캐릭터 직접 추가</button>
+        </div>
+      </div>
+    </div>
+  </section>
   <section class="view" id="view-plan">
     <div class="plan-header">
       <div class="plan-title-wrap">
@@ -914,12 +1061,384 @@ function renderProjects(){
   projects.forEach(p=>{
     const c=document.createElement('div');c.className='pc';
     c.innerHTML=`<div><span class="pc-genre">${p.genre||'미분류'}</span></div><div class="pc-title">${p.title}</div><div class="pc-syn">${p.synopsis||'시놉시스가 없습니다.'}</div><div class="pc-foot"><span>${p.routine_type==='short'?'단편':'장편'}</span><span>${(p.answer_history||[]).length}단계 완료</span></div>`;
-    c.onclick=()=>{selProj=p;flash(`'${p.title}' 선택됨`);};
+    c.onclick=()=>openProjDetail(p.id);
     g.appendChild(c);
   });
   const a=document.createElement('div');a.className='pc-add';
   a.innerHTML='<div class="plus">+</div><span>새 작품 기획하기</span>';a.onclick=openMode;g.appendChild(a);
 }
+// ── 프로젝트 상세 (시놉시스 편집 + 캐릭터) ──
+let pdProj=null;
+let pdChars=[];
+
+async function openProjDetail(pid, isNew){
+  // localStorage에서 먼저 찾기
+  const arr=JSON.parse(localStorage.getItem('mp')||'[]');
+  let proj=arr.find(p=>p.id===pid)||null;
+  // Supabase에서 최신 데이터로 덮어쓰기
+  if(user&&user.id!=='t001'){
+    try{
+      const{data}=await sb.from('projects').select('*').eq('id',pid).eq('user_id',user.id).single();
+      if(data)proj=data;
+    }catch(e){}
+  }
+  if(!proj){flash('작품을 찾을 수 없습니다');return;}
+  pdProj=proj;
+  // 헤더
+  $('pd-title').textContent=proj.title||'제목 없는 작품';
+  $('pd-genre').textContent=proj.genre||'';
+  // 시놉시스
+  $('syn-textarea').value=proj.synopsis||proj.synopsis_detail||'';
+  $('syn-save-status').textContent='';
+  // 캐릭터
+  pdChars=Array.isArray(proj.characters)?[...proj.characters]:[];
+  renderCharCards();
+  switchProjTab('synopsis');
+  // selProj도 업데이트 (오늘의 작업 연동)
+  selProj=proj;
+  navTo('proj');
+  if(isNew)flash(`'${proj.title}' 저장됐습니다 💾`);
+}
+
+function linkToOutline(){
+  if(!pdProj)return;
+  olProjId=pdProj.id;
+  localStorage.setItem('ol_proj',olProjId);
+  renderOlProj();renderEpList();drawTensionGraph();
+  navTo('outline');
+}
+
+function switchProjTab(tab){
+  ['synopsis','chars'].forEach(t=>{
+    $('ptab-'+t).classList.toggle('on',t===tab);
+    $('panel-'+t).classList.toggle('on',t===tab);
+  });
+}
+
+async function saveSynopsisEdit(){
+  if(!pdProj)return;
+  const text=$('syn-textarea').value.trim();
+  pdProj.synopsis=text;
+  // localStorage 업데이트
+  const arr=JSON.parse(localStorage.getItem('mp')||'[]');
+  const idx=arr.findIndex(p=>p.id===pdProj.id);
+  if(idx>=0){arr[idx].synopsis=text;localStorage.setItem('mp',JSON.stringify(arr));}
+  // Supabase 업데이트
+  if(user&&user.id!=='t001'){
+    try{await sb.from('projects').update({synopsis:text}).eq('id',pdProj.id).eq('user_id',user.id);}catch(e){}
+  }
+  $('syn-save-status').textContent='✓ 저장됐습니다';
+  setTimeout(()=>{if($('syn-save-status'))$('syn-save-status').textContent='';},2500);
+}
+
+function escH(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+function renderCharCards(){
+  const grid=$('char-grid');if(!grid)return;
+  grid.innerHTML='';
+  const ROLES=['주인공','히로인','조력자','악당','빌런','조연'];
+  pdChars.forEach((ch,i)=>{
+    const card=document.createElement('div');card.className='char-card';
+    card.innerHTML=`
+      <div class="char-card-header">
+        <input class="char-name-input" placeholder="이름" value="${escH(ch.name)}"
+          oninput="pdChars[${i}].name=this.value;debounceSaveChars()">
+        <select class="char-role-sel" onchange="pdChars[${i}].role=this.value;debounceSaveChars()">
+          ${ROLES.map(r=>`<option value="${r}" ${ch.role===r?'selected':''}>${r}</option>`).join('')}
+        </select>
+        <button class="char-del-btn" onclick="deleteChar(${i})">✕</button>
+      </div>
+      <div class="char-field">
+        <div class="char-fl">외모</div>
+        <input class="char-fi" placeholder="외모 특징..." value="${escH(ch.appearance)}"
+          oninput="pdChars[${i}].appearance=this.value;debounceSaveChars()">
+      </div>
+      <div class="char-field">
+        <div class="char-fl">성격</div>
+        <input class="char-fi" placeholder="성격 / 기질..." value="${escH(ch.personality)}"
+          oninput="pdChars[${i}].personality=this.value;debounceSaveChars()">
+      </div>
+      <div class="char-field">
+        <div class="char-fl">역할 / 목표</div>
+        <input class="char-fi" placeholder="이야기 속 역할과 목표..." value="${escH(ch.goal)}"
+          oninput="pdChars[${i}].goal=this.value;debounceSaveChars()">
+      </div>
+      <div class="char-field">
+        <div class="char-fl">관계</div>
+        <textarea class="char-fi" rows="2" placeholder="주인공과의 관계..."
+          oninput="pdChars[${i}].relation=this.value;debounceSaveChars()">${escH(ch.relation)}</textarea>
+      </div>
+      <div class="char-dev-btns">
+        <button class="char-dev-btn" onclick="openCharDev(${i})">✏️ 디벨롭 가이드</button>
+        <button class="char-dev-btn chat" onclick="quickCharChat(${i})">💬 대화하기</button>
+      </div>`;
+    grid.appendChild(card);
+  });
+}
+
+function addCharCard(){
+  pdChars.push({name:'',role:'조연',appearance:'',personality:'',goal:'',relation:''});
+  renderCharCards();
+  saveChars();
+}
+
+function deleteChar(i){
+  pdChars.splice(i,1);
+  renderCharCards();
+  saveChars();
+}
+
+let _charSaveTimer=null;
+function debounceSaveChars(){clearTimeout(_charSaveTimer);_charSaveTimer=setTimeout(saveChars,800);}
+
+async function saveChars(){
+  if(!pdProj)return;
+  pdProj.characters=[...pdChars];
+  const arr=JSON.parse(localStorage.getItem('mp')||'[]');
+  const idx=arr.findIndex(p=>p.id===pdProj.id);
+  if(idx>=0){arr[idx].characters=pdChars;localStorage.setItem('mp',JSON.stringify(arr));}
+  if(user&&user.id!=='t001'){
+    try{await sb.from('projects').update({characters:pdChars}).eq('id',pdProj.id).eq('user_id',user.id);}catch(e){}
+  }
+}
+
+// ── 캐릭터 디벨롭 가이드 ──
+const CD_SECTIONS=[
+  {id:'pos',icon:'🎭',title:'포지션 & 첫인상',fields:[
+    {id:'position',label:'이야기 속 포지션',hint:'이 사건/갈등에서 어떤 편에 서있는가',type:'chips',chips:['주인공 편','중립','대립 세력','관찰자','변동 가능'],text:true,ph:''},
+    {id:'oneLiner',label:'한 줄 표현',hint:'이 사람을 단번에 정의하는 멋지고 간결한 한 문장',type:'input',ph:'예) 웃음 뒤에 칼을 숨기는 배신자'},
+    {id:'firstAppearance',label:'첫 등장 방식',hint:'독자 마음속에서 인상이 결정되는 중요한 순간',type:'area',ph:'어떤 장면에서, 어떤 모습으로 처음 나타나는가?'},
+  ]},
+  {id:'basic',icon:'📋',title:'신상 & 환경',fields:[
+    {id:'nameMeaning',label:'이름의 계기',hint:'그 사람의 개성이 잘 드러나는 이름을 정한 이유',type:'input',ph:'예) 한자 의미, 발음 느낌, 작명 스토리'},
+    {id:'age',label:'나이',hint:'이 나이로 정한 이유',type:'chips',chips:['10대','20대 초반','20대 후반','30대','40대 이상','나이 불명'],text:true,ph:'직접 입력...'},
+    {id:'birthday',label:'생일 & 별자리',type:'input',ph:'예) 11월 30일 / 사수자리'},
+    {id:'hometown',label:'거주지',hint:'어디서 살며, 그곳에 사는 이유는?',type:'input',ph:''},
+    {id:'living',label:'주거 형태',hint:'혼자 사는가, 누군가와 함께 사는가?',type:'chips',chips:['혼자','가족과 함께','룸메이트','기숙사/숙소','유랑/이동'],text:true,ph:''},
+    {id:'transport',label:'이동수단',hint:'없다면 그 이유는?',type:'chips',chips:['자가용','오토바이','대중교통','도보','없음'],text:true,ph:''},
+    {id:'socialStatus',label:'사회경제적 지위',type:'chips',chips:['상류층','중산층','서민층','빈곤층','불명'],text:false,ph:''},
+  ]},
+  {id:'desire',icon:'🔥',title:'욕망 & 목표',fields:[
+    {id:'desire',label:'갈망하는 것 / 왜 싸우는가',hint:'욕구가 생긴 원인, 캐릭터를 움직이게 만드는 힘',type:'area',ph:'무엇을 원하고, 왜 원하는가?'},
+    {id:'obstacle',label:'가질 수 없는 이유',hint:'목표를 가로막는 장벽',type:'input',ph:'어떤 장벽이 있는가?'},
+    {id:'planA',label:'플랜 A — 긍정적 목표',hint:'올바른 방법의 접근',type:'area',ph:'정정당당하게 목표를 이루려는 방법'},
+    {id:'planB',label:'플랜 B — 부정적 목표',hint:'극단적/비윤리적 대안, 최후의 선택',type:'area',ph:'최악의 경우 어떤 방법을 택하는가?'},
+    {id:'afterSuccess',label:'목표 달성 후 미래',type:'input',ph:'성공하면 어떤 상태가 되는가?'},
+    {id:'afterFailure',label:'목표 실패 시 결과',type:'input',ph:'실패하면 어떤 결과가 초래되는가?'},
+  ]},
+  {id:'trait',icon:'🧠',title:'성격 & 특성',fields:[
+    {id:'fear',label:'가장 두려워하는 것',hint:'트라우마의 원인, 그의 약점이 된다',type:'input',ph:''},
+    {id:'habit',label:'특이한 습관 / 몸짓 언어',hint:'몸은 감정을 그대로 반영하는 신뢰할 만한 장치다',type:'input',ph:''},
+    {id:'ability',label:'특화된 능력',hint:'능력이 부각될 만한 상황도 같이 서술',type:'area',ph:''},
+    {id:'physique',label:'신체적 특징',hint:'독자가 캐릭터를 구별할 수 있는 핵심',type:'input',ph:''},
+    {id:'charm',label:'성격의 호감 가는 면',type:'input',ph:''},
+    {id:'flaw',label:'성격의 결함',hint:'문제를 일으키는 면, 극복해야 할 것',type:'input',ph:''},
+    {id:'fashion',label:'패션 컨셉',hint:'주로 어떤 옷을 즐겨 입나?',type:'chips',chips:['캐주얼','포멀','스트리트','클래식','히피/자유','다크/엣지','스포티','한복/전통'],text:true,ph:''},
+  ]},
+  {id:'life',icon:'🌟',title:'라이프스타일',fields:[
+    {id:'job',label:'직업',hint:'단순한 직업인가, 장기적으로 계속하려는 일인가?',type:'input',ph:''},
+    {id:'jobReason',label:'직업을 택한 이유',type:'input',ph:'그 직업을 택했거나 가지지 않는 이유'},
+    {id:'dailyRoutine',label:'평소 일과',type:'area',ph:'아침부터 밤까지 어떻게 보내는가?'},
+    {id:'favoritePlace',label:'주로 가는 장소',type:'input',ph:''},
+    {id:'favoriteActivity',label:'가장 재밌어하는 일',hint:'인물이 재미있게 노는 장면은 읽는 것 자체로 재미있다',type:'input',ph:''},
+    {id:'hobby',label:'취미',type:'chips',chips:['독서','운동/격투','악기연주','게임','여행','요리','그림/예술','수집'],text:true,ph:''},
+    {id:'music',label:'좋아하는 음악',type:'chips',chips:['클래식','재즈','록/메탈','팝','힙합/R&B','인디','트로트/민요','음악 안 듣는다'],text:true,ph:''},
+    {id:'food',label:'좋아하는 음식 & 술',type:'input',ph:''},
+    {id:'possession',label:'중요하게 여기는 소유물',hint:'없을 수 없는 소품, 없다면 그 이유를 써라',type:'input',ph:''},
+  ]},
+  {id:'rel',icon:'🤝',title:'관계',fields:[
+    {id:'ally',label:'죽이 잘 맞는 조력자',hint:'액션과 리액션, 비슷한 부류이면서도 성향이 다른',type:'input',ph:''},
+    {id:'rival',label:'상극인 라이벌',hint:'가치관의 대립, 사사건건 방해하지만 어딘가 비슷하기도 해',type:'input',ph:''},
+    {id:'family',label:'부모 & 가족',type:'area',ph:'부모는 어떤 사람인가? 형제 자매가 있는가?'},
+    {id:'loveHistory',label:'이전에 사랑하던 사람',type:'input',ph:'전 애인은 이 사람을 어떻게 기억하는가?'},
+    {id:'loveAttraction',label:'상대 주인공에게 끌리는 면',type:'input',ph:'어떤 점에 가장 매력을 느끼는가?'},
+    {id:'friends',label:'친구들 눈에 비친 모습',type:'input',ph:'친구들은 그를 어떻게 생각하나?'},
+  ]},
+  {id:'inner',icon:'💭',title:'내면 & 서사',fields:[
+    {id:'selfImage',label:'자기 자신에 대한 생각',type:'area',ph:'자신을 어떻게 바라보는가?'},
+    {id:'secret',label:'감추고 싶은 부분',type:'input',ph:'자신의 특징 중에 숨기고 싶어하는 것'},
+    {id:'innerThought',label:'평소 어떤 생각을 하는가',hint:'속마음을 간접적으로 표현할 만한 장면도 같이',type:'area',ph:''},
+    {id:'problem',label:'이야기 시작 시 지닌 문제',type:'input',ph:''},
+    {id:'worsening',label:'어떤 행동이 문제를 악화시키는가',type:'input',ph:''},
+    {id:'protect',label:'목숨을 걸고 지키는 것',type:'input',ph:''},
+    {id:'happyEnd',label:'이상적인 해피엔드',type:'input',ph:'이 인물이 상상하는 가장 행복한 결말'},
+    {id:'diary',label:'사건을 겪었을 때 일기',hint:'당신이 이 캐릭터라면 그 상황에서 어떻게 느꼈을지. 진심은 믿을 수 없는 상황에서도 신뢰를 준다',type:'area',ph:'오늘 그 일이 일어났다. 나는...'},
+  ]},
+];
+
+let cdCharIdx=-1;
+let cdCurSec=0;
+
+function openCharDev(i){
+  cdCharIdx=i;
+  cdCurSec=0;
+  const ch=pdChars[i]||{};
+  if(!ch.detail)ch.detail={};
+  $('cd-name').textContent=ch.name||'이름 없는 캐릭터';
+  $('cd-role').textContent=ch.role||'조연';
+  renderCdSidebar();
+  renderCdSection(0);
+  updateCdProgress();
+  $('cd-ov').classList.add('on');
+}
+
+function closeCharDev(){$('cd-ov').classList.remove('on');}
+
+function renderCdSidebar(){
+  const el=$('cd-secs');el.innerHTML='';
+  CD_SECTIONS.forEach((sec,i)=>{
+    const ch=pdChars[cdCharIdx]||{};
+    const filled=sec.fields.filter(f=>(ch.detail||{})[f.id]?.toString().trim()).length;
+    const total=sec.fields.length;
+    const d=document.createElement('div');
+    d.className='cd-sec-item'+(cdCurSec===i?' on':'');
+    d.innerHTML=`<span class="cd-sec-icon">${sec.icon}</span>${sec.title}<span class="cd-sec-done${filled===total&&total>0?' vis':''}">✓</span>`;
+    d.onclick=()=>{cdCurSec=i;renderCdSidebar();renderCdSection(i);};
+    el.appendChild(d);
+  });
+}
+
+function renderCdSection(secIdx){
+  const sec=CD_SECTIONS[secIdx];
+  const ch=pdChars[cdCharIdx]||{};
+  if(!ch.detail)ch.detail={};
+  const d=ch.detail;
+  $('cd-sec-hd').innerHTML=`<span>${sec.icon}</span>${sec.title}`;
+  $('cd-content').scrollTop=0;
+  const list=$('cd-fields-list');list.innerHTML='';
+  sec.fields.forEach(f=>{
+    const wrap=document.createElement('div');wrap.className='cd-field';
+    let html=`<div class="cd-field-top"><div class="cd-fl">${f.label}</div></div>`;
+    if(f.hint)html+=`<div class="cd-fh">${f.hint}</div>`;
+    // 칩
+    if(f.chips){
+      html+=`<div class="cd-chips" id="chips-${f.id}">`;
+      f.chips.forEach(c=>{
+        const isOn=(d[f.id]||'')===c;
+        html+=`<button class="cd-chip${isOn?' on':''}" onclick="setCdChip('${f.id}','${c}',this)">${c}</button>`;
+      });
+      html+='</div>';
+    }
+    // 직접 입력 (chips가 있으면 작은 placeholder 텍스트 + 선택 아닌 값)
+    if(f.type==='input'||f.chips){
+      const curVal=(d[f.id]||'');
+      const showVal=f.chips&&f.chips.includes(curVal)?'':curVal;
+      const phText=f.ph||(f.chips?'또는 직접 입력...':'');
+      html+=`<input class="cd-inp" id="inp-${f.id}" placeholder="${phText}" value="${escH(showVal)}"
+        oninput="setCdVal('${f.id}',this.value)">`;
+    } else if(f.type==='area'){
+      html+=`<textarea class="cd-ta" id="inp-${f.id}" rows="3" placeholder="${f.ph||''}"
+        oninput="setCdVal('${f.id}',this.value)">${escH(d[f.id]||'')}</textarea>`;
+    }
+    wrap.innerHTML=html;
+    list.appendChild(wrap);
+  });
+  // 이전/다음 내비
+  const nav=$('cd-nav-row');nav.innerHTML='';
+  if(secIdx>0){const b=document.createElement('button');b.className='cd-nav-btn';b.textContent='← 이전';b.onclick=()=>{cdCurSec=secIdx-1;renderCdSidebar();renderCdSection(cdCurSec);};nav.appendChild(b);}
+  if(secIdx<CD_SECTIONS.length-1){const b=document.createElement('button');b.className='cd-nav-btn next';b.textContent='다음 →';b.onclick=()=>{cdCurSec=secIdx+1;renderCdSidebar();renderCdSection(cdCurSec);};nav.appendChild(b);}
+}
+
+function setCdChip(field,val,btn){
+  const ch=pdChars[cdCharIdx];if(!ch)return;if(!ch.detail)ch.detail={};
+  const prev=ch.detail[field]||'';
+  if(prev===val){
+    // 토글 off
+    ch.detail[field]='';
+    btn.classList.remove('on');
+    const inp=document.getElementById('inp-'+field);if(inp)inp.value='';
+  } else {
+    ch.detail[field]=val;
+    // 칩 UI 업데이트
+    const row=document.getElementById('chips-'+field);
+    if(row)row.querySelectorAll('.cd-chip').forEach(b=>b.classList.toggle('on',b.textContent===val));
+    // 텍스트 입력란 비우기
+    const inp=document.getElementById('inp-'+field);if(inp)inp.value='';
+  }
+  debounceSaveCd();updateCdProgress();
+}
+
+function setCdVal(field,val){
+  const ch=pdChars[cdCharIdx];if(!ch)return;if(!ch.detail)ch.detail={};
+  ch.detail[field]=val;
+  // 칩 이 있는 필드라면 선택 해제
+  const sec=CD_SECTIONS.find(s=>s.fields.find(f=>f.id===field));
+  const fDef=sec?.fields.find(f=>f.id===field);
+  if(fDef?.chips&&val){
+    const row=document.getElementById('chips-'+field);
+    if(row)row.querySelectorAll('.cd-chip').forEach(b=>b.classList.remove('on'));
+  }
+  debounceSaveCd();updateCdProgress();
+}
+
+function updateCdProgress(){
+  const ch=pdChars[cdCharIdx];if(!ch)return;
+  const d=ch.detail||{};
+  const total=CD_SECTIONS.reduce((s,sec)=>s+sec.fields.length,0);
+  const filled=CD_SECTIONS.reduce((s,sec)=>s+sec.fields.filter(f=>(d[f.id]||'').toString().trim()).length,0);
+  const pct=total?Math.round(filled/total*100):0;
+  $('cd-prog-fill').style.width=pct+'%';
+  $('cd-prog-txt').textContent=pct+'% 완성 ('+filled+'/'+total+')';
+}
+
+let _cdTimer=null;
+function debounceSaveCd(){clearTimeout(_cdTimer);_cdTimer=setTimeout(saveChars,600);}
+
+function buildCharPersona(ch){
+  const d=ch.detail||{};
+  const lines=[];
+  const add=(key,label)=>{if((d[key]||'').trim())lines.push(`- ${label}: ${d[key]}`);};
+  add('oneLiner','한 줄 표현');add('position','포지션');add('age','나이');add('birthday','생일/별자리');
+  add('hometown','거주지');add('living','주거형태');add('socialStatus','사회경제적 지위');
+  add('desire','갈망/목표');add('obstacle','목표 장벽');add('planA','플랜 A');add('planB','플랜 B');
+  add('fear','두려워하는 것');add('habit','습관');add('ability','특화된 능력');add('physique','신체 특징');
+  add('charm','성격 장점');add('flaw','성격 결함');add('fashion','패션');
+  add('job','직업');add('dailyRoutine','일과');add('favoritePlace','자주 가는 곳');add('favoriteActivity','좋아하는 일');add('hobby','취미');add('music','음악 취향');add('food','음식');add('possession','소중한 소유물');
+  add('ally','조력자');add('rival','라이벌');add('family','가족');add('loveHistory','연애 이력');add('loveAttraction','상대에게 끌리는 점');add('friends','친구들의 시각');
+  add('selfImage','자아상');add('secret','비밀');add('innerThought','내면의 생각');add('problem','현재 문제');add('protect','목숨 걸고 지키는 것');add('happyEnd','이상적 해피엔드');
+  const name=ch.name||'이름 없는 캐릭터';
+  const role=ch.role||'조연';
+  return `당신은 웹소설/웹툰 속 캐릭터 "${name}" (역할: ${role})입니다.\n\n[캐릭터 상세 설정]\n${lines.length?lines.join('\n'):'(상세 설정 없음 — 기본 설정으로만 대화)'}\n\n이 캐릭터로 완전히 몰입하여 1인칭으로, 이 캐릭터의 성격과 말투로 자연스럽게 대화하세요. 캐릭터에서 절대 벗어나지 마세요. 작가에게 도움되는 진심 어린 반응을 보여주세요.`;
+}
+
+function startCharChat(){
+  const ch=pdChars[cdCharIdx];if(!ch)return;
+  closeCharDev();
+  xMsgs=[];xLinkedProj=pdProj||null;
+  xPersonaBase=buildCharPersona(ch);xPersona=xPersonaBase;
+  const name=ch.name||'캐릭터';
+  openXChat(`저는 **${name}**입니다. 작가님과 자연스럽게 대화하겠습니다. 제 설정에 대해 물어보셔도 좋고, 장면 속 상황에 반응하게 해보셔도 좋아요.`,name);
+}
+
+function quickCharChat(i){
+  cdCharIdx=i;
+  startCharChat();
+}
+
+async function draftCharacters(){
+  const btn=$('char-ai-btn');
+  if(btn.disabled)return;
+  btn.disabled=true;btn.textContent='⏳ AI 분석 중...';
+  const synopsis=pdProj?.synopsis||pdProj?.synopsis_detail||'';
+  const title=pdProj?.title||'';
+  const result=await ai([
+    {role:'system',content:'당신은 웹소설/웹툰 캐릭터 전문 분석가입니다. 시놉시스를 읽고 등장인물을 JSON 배열로 추출하세요. 각 캐릭터는 다음 필드를 포함합니다: name(이름), role(주인공/히로인/조력자/악당/빌런/조연 중 하나), appearance(외모 특징 1줄), personality(성격 2-3가지), goal(역할과 목표 1줄), relation(주인공과의 관계 1줄). 반드시 JSON 배열만 반환하세요.'},
+    {role:'user',content:`작품명: ${title}\n시놉시스: ${synopsis}\n\n등장인물 JSON 배열을 반환해주세요.`}
+  ]);
+  btn.disabled=false;btn.innerHTML='✦ AI로 캐릭터 초안 생성';
+  try{
+    const match=result.match(/\[[\s\S]*\]/);
+    if(!match)throw new Error('no JSON');
+    const chars=JSON.parse(match[0]);
+    pdChars=chars.map(c=>({name:c.name||'',role:c.role||'조연',appearance:c.appearance||'',personality:c.personality||'',goal:c.goal||'',relation:c.relation||''}));
+    renderCharCards();
+    saveChars();
+    flash('✨ 캐릭터 초안이 생성됐습니다');
+  }catch(e){
+    flash('AI 응답을 파싱할 수 없어요. 다시 시도해주세요.');
+  }
+}
+
 // ── 모드/루틴/캐릭터/이름 선택 ──
 let pendingRoutineType='';
 let newProjName='';
@@ -1080,9 +1599,9 @@ async function finishPlan(){
   // 저장
   hist=filled.map(p=>({id:p.id,value:p.value}));
   steps=planItems;
-  await savePlanProject(syn);
-  navTo('works');
-  flash(`'${newProjName}' 저장됐습니다 💾`);
+  const pid=await savePlanProject(syn);
+  // 시놉시스 편집 화면으로 이동
+  await openProjDetail(pid, true);
 }
 
 async function savePlanProject(synopsis){
@@ -1091,6 +1610,7 @@ async function savePlanProject(synopsis){
   const arr=JSON.parse(localStorage.getItem('mp')||'[]');
   arr.unshift(proj);localStorage.setItem('mp',JSON.stringify(arr.slice(0,50)));
   if(user&&user.id!=='t001'){try{await sb.from('projects').insert({...proj,user_id:user.id,completed_at:new Date().toISOString()});}catch(e){}}
+  return pid;
 }
 // ── 빌드업 챗 (목차 연동) ──
 let chatStep=0;       // planItems 기준 현재 인덱스
