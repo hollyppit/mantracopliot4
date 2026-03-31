@@ -438,9 +438,10 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
 .cd-nav-btn:hover{border-color:var(--border2);color:var(--text)}
 .cd-nav-btn.next{background:rgba(139,92,246,0.1);border-color:rgba(139,92,246,0.3);color:var(--purple-light)}
 .cd-nav-btn.next:hover{background:rgba(139,92,246,0.2)}
-.cd-autofill-btn{margin-left:auto;padding:7px 16px;background:rgba(139,92,246,0.1);border:1px solid rgba(139,92,246,0.3);border-radius:20px;color:var(--purple-light);font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;transition:all 0.2s;white-space:nowrap;flex-shrink:0}
-.cd-autofill-btn:hover{background:rgba(139,92,246,0.2);border-color:var(--purple)}
-.cd-autofill-btn:disabled{opacity:0.5;cursor:not-allowed}
+.cd-autofill-row{margin-bottom:20px}
+.cd-autofill-btn{width:100%;padding:11px 20px;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.3);border-radius:12px;color:#6EE7B7;font-size:13px;font-weight:800;font-family:inherit;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:7px;letter-spacing:-0.01em}
+.cd-autofill-btn:hover{background:rgba(16,185,129,0.18);border-color:var(--green);box-shadow:0 4px 20px rgba(16,185,129,0.2)}
+.cd-autofill-btn:disabled{opacity:0.5;cursor:not-allowed;box-shadow:none}
 /* char card buttons */
 .char-dev-btns{display:flex;flex-direction:column;gap:8px;margin-top:10px}
 .char-dev-btn{width:100%;padding:10px 0;border-radius:10px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;transition:all 0.2s;border:1px solid var(--border);background:var(--surface);color:var(--text-dim);display:flex;align-items:center;justify-content:center;gap:6px}
@@ -858,6 +859,7 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
       <!-- 콘텐츠 -->
       <div class="cd-content" id="cd-content">
         <div class="cd-sec-hd" id="cd-sec-hd"></div>
+        <div class="cd-autofill-row" id="cd-autofill-row"></div>
         <div class="cd-fields-list" id="cd-fields-list"></div>
         <div class="cd-nav-row" id="cd-nav-row"></div>
       </div>
@@ -1568,7 +1570,8 @@ function renderCdSection(secIdx){
   const ch=pdChars[cdCharIdx]||{};
   if(!ch.detail)ch.detail={};
   const d=ch.detail;
-  $('cd-sec-hd').innerHTML=`<span>${sec.icon}</span><span style="flex:1">${sec.title}</span><button id="cd-autofill-btn" class="cd-autofill-btn" onclick="autoFillCdSection(${secIdx})">✨ AI 채우기</button>`;
+  $('cd-sec-hd').innerHTML=`<span>${sec.icon}</span>${sec.title}`;
+  $('cd-autofill-row').innerHTML=`<button id="cd-autofill-btn" class="cd-autofill-btn" onclick="autoFillCdSection(${secIdx})"><span style="font-size:15px">✨</span> AI 자동 채우기 — 빈 항목을 AI가 채웁니다</button>`;
   $('cd-content').scrollTop=0;
   const list=$('cd-fields-list');list.innerHTML='';
   sec.fields.forEach(f=>{
