@@ -1151,10 +1151,9 @@ async function saveSynopsisEdit(){
 function escH(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 
 function renderCharCards(){
-  const grid=$('char-grid');
-  const gridS=$('char-grid-standalone');
-  if(!grid && !gridS) return;
-  const target = grid || gridS;
+  const isStandalone = $('view-chara').classList.contains('on');
+  const target = isStandalone ? $('char-grid-standalone') : $('char-grid');
+  if(!target) return;
   target.innerHTML='';
   const ROLES=['주인공','히로인','조력자','악당','빌런','조연'];
   pdChars.forEach((ch,i)=>{
@@ -1485,8 +1484,9 @@ function quickCharChat(i){
 }
 
 async function draftCharacters(){
-  const btn=$('char-ai-btn') || $('char-ai-btn-standalone');
-  if(!btn || btn.disabled)return;
+  const isStandalone = $('view-chara').classList.contains('on');
+  const btn = isStandalone ? $('char-ai-btn-standalone') : $('char-ai-btn');
+  if(!btn || btn.disabled) return;
   btn.disabled=true; const oldText=btn.innerHTML; btn.textContent='⏳ AI 분석 중...';
   const synopsis=pdProj?.synopsis||pdProj?.synopsis_detail||'';
   const title=pdProj?.title||'';
