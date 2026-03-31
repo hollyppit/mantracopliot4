@@ -426,11 +426,11 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
 .cd-nav-btn.next{background:rgba(139,92,246,0.1);border-color:rgba(139,92,246,0.3);color:var(--purple-light)}
 .cd-nav-btn.next:hover{background:rgba(139,92,246,0.2)}
 /* char card buttons */
-.char-dev-btns{display:flex;gap:6px;margin-top:6px}
-.char-dev-btn{flex:1;padding:8px 0;border-radius:8px;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;transition:all 0.2s;border:1px solid var(--border);background:var(--surface);color:var(--text-dim)}
-.char-dev-btn:hover{border-color:var(--border2);color:var(--text)}
-.char-dev-btn.chat{background:rgba(139,92,246,0.08);border-color:rgba(139,92,246,0.25);color:var(--purple-light)}
-.char-dev-btn.chat:hover{background:rgba(139,92,246,0.18)}
+.char-dev-btns{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+.char-dev-btn{width:100%;padding:10px 0;border-radius:10px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;transition:all 0.2s;border:1px solid var(--border);background:var(--surface);color:var(--text-dim);display:flex;align-items:center;justify-content:center;gap:6px}
+.char-dev-btn:hover{border-color:var(--border2);color:var(--text);background:rgba(255,255,255,0.02)}
+.char-dev-btn.chat{background:rgba(139,92,246,0.12);border-color:rgba(139,92,246,0.3);color:var(--purple-light)}
+.char-dev-btn.chat:hover{background:rgba(139,92,246,0.22);border-color:rgba(139,92,246,0.5)}
 /* ── PROJECT DETAIL ── */
 .proj-detail-wrap{display:flex;flex-direction:column;height:100vh;overflow:hidden}
 .proj-detail-header{display:flex;align-items:center;gap:14px;padding:14px 24px;border-bottom:1px solid var(--border);flex-shrink:0;background:rgba(7,7,15,0.85);backdrop-filter:var(--blur)}
@@ -1188,8 +1188,8 @@ function renderCharCards(){
           oninput="pdChars[${i}].relation=this.value;debounceSaveChars()">${escH(ch.relation)}</textarea>
       </div>
       <div class="char-dev-btns">
-        <button class="char-dev-btn" onclick="openCharDev(${i})">✏️ 디벨롭 가이드</button>
-        <button class="char-dev-btn chat" onclick="quickCharChat(${i})">💬 대화하기</button>
+        <button class="char-dev-btn" onclick="openCharDev(${i})">✨ 대화하며 디벨롭하기</button>
+        <button class="char-dev-btn chat" onclick="quickCharChat(${i})">💬 생성된 캐릭터와 대화하기</button>
       </div>`;
     target.appendChild(card);
   });
