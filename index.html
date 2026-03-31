@@ -1643,7 +1643,11 @@ async function autoFillCdSection(secIdx){
   const userPrompt=`[작품 정보]\n${projInfo}\n\n[캐릭터]\n${charInfo}${existingInfo}\n\n[섹션: ${sec.title}] — 빈 필드를 JSON으로 채워주세요:\n${fieldDescs}\n\n출력 형식 (JSON만):\n{\n  "field_id": "값",\n  ...\n}`;
   try{
     const result=await ai([{role:'system',content:systemPrompt},{role:'user',content:userPrompt}]);
-    const jsonMatch=result.match(/\{[\s\S]*\}/);
+    if(result.includes('⚠️'))throw new Error(result);
+    // 마크다운 코드블록 또는 순수 JSON 모두 처리
+    const codeBlock=result.match(/```(?:json)?\s*([\s\S]*?)```/);
+    const jsonStr=codeBlock?codeBlock[1]:result;
+    const jsonMatch=jsonStr.match(/\{[\s\S]*\}/);
     if(!jsonMatch)throw new Error('no json');
     const data=JSON.parse(jsonMatch[0]);
     let filled=0;
@@ -1666,9 +1670,10 @@ async function autoFillCdSection(secIdx){
     debounceSaveCd();updateCdProgress();renderCdSidebar();
     flash(`✨ ${filled}개 항목을 AI가 채웠습니다`);
   }catch(e){
-    flash('AI 응답 처리 중 오류가 발생했습니다');
+    const msg=String(e.message||e);
+    flash(msg.includes('연결 오류')?'AI 서버에 연결할 수 없습니다. 잠시 후 다시 시도해주세요.':'AI 응답을 처리하지 못했습니다. 다시 시도해주세요.');
   }
-  if(btn){btn.disabled=false;btn.textContent='✨ AI 채우기';}
+  if(btn){btn.disabled=false;btn.textContent='✨ AI 자동 채우기 — 빈 항목을 AI가 채웁니다';}
 }
 
 function setCdChip(field,val,btn){
@@ -2235,7 +2240,12 @@ function closeInsight(){$('ip').classList.remove('on');}
 // ── AI 호출 ──
 async function ai(messages){
   try{
-    const r=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages})});
+    // role:'system' 메시지를 Anthropic API 규격에 맞게 별도 system 필드로 분리
+    const sysMsg=messages.find(m=>m.role==='system');
+    const filteredMsgs=messages.filter(m=>m.role!=='system');
+    const payload={messages:filteredMsgs};
+    if(sysMsg)payload.system=sysMsg.content;
+    const r=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
     if(!r.ok)throw new Error('fail');
     const d=await r.json();
     if(d.content?.[0]?.text)return d.content[0].text.trim();
