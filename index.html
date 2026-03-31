@@ -2042,7 +2042,8 @@ function startVerify(name){
   // 전문가 아바타 패널 표시
   const ap=$('xc-avatar-panel');
   if(ap){
-    $('xc-avatar-img').src='images/\uc804\ubb38\uac00 \ud398\ub974\uc18c\ub098f(\uc6c0\uc9c1\uc784).gif';
+    const tExperts=['수사 전문가','법률 전문가','역사 전문가','군사 전문가','냉정한 편집자'];
+    $('xc-avatar-img').src=tExperts.includes(name)?'images/전문가 페르소나t(움직임).gif':'images/전문가 페르소나f(움직임).gif';
     $('xc-avatar-name').textContent=name;
     $('xc-avatar-desc').textContent=DESC[name]||'';
     ap.style.display='flex';
