@@ -791,7 +791,7 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
         </div>
         <div class="ia" id="ia" style="display:none">
           <button class="ibtn" id="ibt" onclick="openInsight()">✦ 이 질문의 스토리텔링 인사이트 보기</button>
-          <button class="buildup-autofill-btn" id="buildup-autofill-btn" onclick="autoFillBuildupStep()">✨ AI 답변 제안 — 클릭하면 입력창에 채워집니다 (수정 후 전송하세요)</button>
+          <button class="buildup-autofill-btn" id="buildup-autofill-btn" onclick="autoFillBuildupStep()">✨ AI 자동 채우기</button>
           <div class="cr" id="cr"></div>
           <div class="ibw">
             <textarea id="ci" placeholder="직접 입력하세요..." rows="1"
@@ -930,7 +930,7 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
     <div class="im-q" id="im-q"></div>
     <div class="im-hint" id="im-hint" style="display:none"></div>
     <button class="ibtn" style="margin-bottom:4px" onclick="openInsightFromModal()">✦ 대화에서 스토리텔링 인사이트 보기</button>
-    <button class="buildup-autofill-btn" id="im-autofill-btn" onclick="autoFillItemModal()" style="margin-bottom:10px">✨ AI 답변 제안 — 클릭하면 텍스트가 채워집니다</button>
+    <button class="buildup-autofill-btn" id="im-autofill-btn" onclick="autoFillItemModal()" style="margin-bottom:10px">✨ AI 자동 채우기</button>
     <textarea class="im-ta" id="im-ta" placeholder="내용을 입력하세요..."></textarea>
     <div class="im-row">
       <button class="im-cancel" onclick="closeItemModal()">취소</button>
@@ -1885,10 +1885,10 @@ async function autoFillItemModal(){
   const ctx=planItems.filter(p=>p.value&&p.value.trim()).map(p=>`${p.k||p.q}: ${p.value}`).join('\n');
   try{
     const result=await ai([
-      {role:'system',content:'당신은 웹툰·웹소설을 기획 중인 작가입니다. 아래 질문에 대해 작가 본인이 직접 자신의 작품 아이디어를 답하는 내용을 생성하세요. AI가 도움을 제안하거나 되묻는 내용이 아닌, 작가가 직접 쓴 기획 답변 자체를 출력하세요. 마크다운, 이모지, 설명 없이 순수 텍스트 1~3문장만 출력하세요.'},
-      {role:'user',content:`${ctx?`[앞선 기획 내용]\n${ctx}\n\n`:''}질문: ${item.q}${item.h?'\n(힌트: '+item.h+')':''}\n\n위 질문에 대한 작가 본인의 답변 (1~3문장, 구체적인 작품 내용으로):`}
-    ],{model:'claude-haiku-4-5-20251001',max_tokens:256});
-    const cleaned=result?result.replace(/^[-\s*#>]+/,'').trim():'';
+      {role:'system',content:'웹툰·웹소설 기획 질문에 대한 답변 텍스트만 출력하라. 질문에 직접 답하는 내용만. 되묻거나 설명하지 말 것. 기호·마크다운·이모지 없이 1~2문장.'},
+      {role:'user',content:`${ctx?`기획 내용: ${ctx}\n\n`:''}질문: ${item.q}${item.h?` (힌트: ${item.h})`:''}`}
+    ],{max_tokens:150});
+    const cleaned=result?result.replace(/^[\s\-\*\#\>\"\']+/,'').trim():'';
     if(cleaned&&!cleaned.includes('⚠️')){
       $('im-ta').value=cleaned;
       $('im-ta').focus();
@@ -1898,7 +1898,7 @@ async function autoFillItemModal(){
   }catch(e){
     flash('오류가 발생했습니다.');
   }
-  if(btn){btn.disabled=false;btn.textContent='✨ AI 답변 제안 — 클릭하면 텍스트가 채워집니다';}
+  if(btn){btn.disabled=false;btn.textContent='✨ AI 자동 채우기';}
 }
 
 function openInsightFromModal(){
@@ -2077,10 +2077,10 @@ async function autoFillBuildupStep(){
   const ctx=planItems.filter(p=>p.value).map(p=>`${p.k||p.q}: ${p.value}`).join('\n');
   try{
     const result=await ai([
-      {role:'system',content:'당신은 웹툰·웹소설을 기획 중인 작가입니다. 아래 질문에 대해 작가 본인이 직접 자신의 작품 아이디어를 답하는 내용을 생성하세요. AI가 도움을 제안하거나 되묻는 내용이 아닌, 작가가 직접 쓴 기획 답변 자체를 출력하세요. 마크다운, 이모지, 설명 없이 순수 텍스트 1~3문장만 출력하세요.'},
-      {role:'user',content:`${ctx?`[앞선 기획 내용]\n${ctx}\n\n`:''}질문: ${s.q}${s.h?'\n(힌트: '+s.h+')':''}\n\n위 질문에 대한 작가 본인의 답변 (1~3문장, 구체적인 작품 내용으로):`}
-    ],{model:'claude-haiku-4-5-20251001',max_tokens:256});
-    const cleaned=result?result.replace(/^[-\s*#>]+/,'').trim():'';
+      {role:'system',content:'웹툰·웹소설 기획 질문에 대한 답변 텍스트만 출력하라. 질문에 직접 답하는 내용만. 되묻거나 설명하지 말 것. 기호·마크다운·이모지 없이 1~2문장.'},
+      {role:'user',content:`${ctx?`기획 내용: ${ctx}\n\n`:''}질문: ${s.q}${s.h?` (힌트: ${s.h})`:''}`}
+    ],{max_tokens:150});
+    const cleaned=result?result.replace(/^[\s\-\*\#\>\"\']+/,'').trim():'';
     if(cleaned&&!cleaned.includes('⚠️')){
       const ci=$('ci');
       ci.value=cleaned;
@@ -2093,7 +2093,7 @@ async function autoFillBuildupStep(){
   }catch(e){
     flash('오류가 발생했습니다.');
   }
-  if(btn){btn.disabled=false;btn.textContent='✨ AI 답변 제안 — 클릭하면 입력창에 채워집니다 (수정 후 전송하세요)';}
+  if(btn){btn.disabled=false;btn.textContent='✨ AI 자동 채우기';}
 }
 
 function findNextUnfilled(fromIdx){
@@ -2268,30 +2268,22 @@ async function openInsight(){
 function closeInsight(){$('ip').classList.remove('on');}
 // ── AI 호출 ──
 async function ai(messages,opts={}){
+  const model=opts.model||'gpt-4o-mini';
   const sysMsg=messages.find(m=>m.role==='system');
-  const filteredMsgs=messages.filter(m=>m.role!=='system');
-  // 1차: Claude Haiku 시도
+  const userMsgs=messages.filter(m=>m.role!=='system');
+  let payload;
+  if(model.startsWith('claude-')){
+    payload={model,messages:userMsgs,max_tokens:opts.max_tokens||512};
+    if(sysMsg)payload.system=sysMsg.content;
+  }else{
+    payload={model,messages:sysMsg?[sysMsg,...userMsgs]:userMsgs,max_tokens:opts.max_tokens||512};
+  }
   try{
-    const claudePayload={messages:filteredMsgs,max_tokens:opts.max_tokens||512};
-    if(sysMsg)claudePayload.system=sysMsg.content;
-    claudePayload.model=opts.model||'claude-haiku-4-5-20251001';
-    const r=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(claudePayload)});
-    if(r.status!==529&&r.status!==503&&r.ok){
-      const d=await r.json();
-      if(d.content?.[0]?.text)return d.content[0].text.trim();
-      if(d.choices?.[0]?.message?.content)return d.choices[0].message.content.trim();
-    }
-  }catch(e){}
-  // 2차: OpenAI gpt-4o-mini 폴백 (529/오류 시 자동 전환)
-  try{
-    // OpenAI는 messages 배열에 system role 직접 포함 가능
-    const oaiMsgs=sysMsg?[sysMsg,...filteredMsgs]:filteredMsgs;
-    const oaiPayload={model:'gpt-4o-mini',messages:oaiMsgs,max_tokens:opts.max_tokens||512};
-    const r2=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(oaiPayload)});
-    if(!r2.ok)return'⚠️ AI 연결 오류. 잠시 후 다시 시도해주세요.';
-    const d2=await r2.json();
-    if(d2.choices?.[0]?.message?.content)return d2.choices[0].message.content.trim();
-    if(d2.content?.[0]?.text)return d2.content[0].text.trim();
+    const r=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+    if(!r.ok)return'⚠️ AI 연결 오류. 잠시 후 다시 시도해주세요.';
+    const d=await r.json();
+    if(d.choices?.[0]?.message?.content)return d.choices[0].message.content.trim();
+    if(d.content?.[0]?.text)return d.content[0].text.trim();
     return'⚠️ AI 응답이 비어있습니다.';
   }catch(e){return'⚠️ AI 연결 오류. 잠시 후 다시 시도해주세요.';}
 }
