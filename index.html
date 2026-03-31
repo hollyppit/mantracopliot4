@@ -83,7 +83,7 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
 .cbody::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);border-radius:2px}
 /* 캐릭터 */
 .chara{display:flex;flex-direction:column;align-items:center;padding:20px 0 10px;flex-shrink:0}
-.ce{width:120px;height:120px;object-fit:contain;animation:flt 4s ease-in-out infinite;filter:drop-shadow(0 10px 30px var(--purple-glow))}
+.ce{width:160px;height:160px;object-fit:cover;border-radius:50%;border:2px solid rgba(139,92,246,0.35);box-shadow:0 0 32px rgba(139,92,246,0.25);animation:flt 4s ease-in-out infinite;filter:drop-shadow(0 10px 30px var(--purple-glow))}
 @keyframes flt{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
 .cnp{font-size:12px;font-weight:700;letter-spacing:0.08em;color:var(--text-dim);background:var(--surface);border:1px solid var(--border);padding:5px 16px;border-radius:20px;margin-top:12px}
 /* 다이얼로그 */
@@ -141,7 +141,7 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
 .chp{display:flex;gap:20px;flex-wrap:wrap;justify-content:center;max-width:680px}
 .chc{flex:1;min-width:220px;max-width:280px;background:rgba(12,12,24,0.97);border:1px solid var(--border2);border-radius:24px;padding:36px 28px;text-align:center;cursor:pointer;transition:all 0.3s;box-shadow:0 20px 50px rgba(0,0,0,0.5)}
 .chc:hover{transform:translateY(-10px);border-color:var(--purple-light);box-shadow:0 30px 70px var(--purple-glow)}
-.cca{width:80px;height:80px;border-radius:50%;background:var(--surface2);margin:0 auto 18px;display:flex;align-items:center;justify-content:center;font-size:40px}
+.cca{width:100px;height:100px;border-radius:50%;background:var(--surface2);margin:0 auto 18px;display:flex;align-items:center;justify-content:center;font-size:40px;overflow:hidden;border:2px solid rgba(139,92,246,0.3);box-shadow:0 0 20px rgba(139,92,246,0.15)}
 .ccn{font-size:20px;font-weight:900;margin-bottom:10px}
 .ccd{font-size:13px;color:var(--text-dim);line-height:1.7}
 /* 작품 검증 */
