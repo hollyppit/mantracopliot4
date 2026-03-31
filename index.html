@@ -438,6 +438,9 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
 .cd-nav-btn:hover{border-color:var(--border2);color:var(--text)}
 .cd-nav-btn.next{background:rgba(139,92,246,0.1);border-color:rgba(139,92,246,0.3);color:var(--purple-light)}
 .cd-nav-btn.next:hover{background:rgba(139,92,246,0.2)}
+.cd-autofill-btn{margin-left:auto;padding:7px 16px;background:rgba(139,92,246,0.1);border:1px solid rgba(139,92,246,0.3);border-radius:20px;color:var(--purple-light);font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;transition:all 0.2s;white-space:nowrap;flex-shrink:0}
+.cd-autofill-btn:hover{background:rgba(139,92,246,0.2);border-color:var(--purple)}
+.cd-autofill-btn:disabled{opacity:0.5;cursor:not-allowed}
 /* char card buttons */
 .char-dev-btns{display:flex;flex-direction:column;gap:8px;margin-top:10px}
 .char-dev-btn{width:100%;padding:10px 0;border-radius:10px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;transition:all 0.2s;border:1px solid var(--border);background:var(--surface);color:var(--text-dim);display:flex;align-items:center;justify-content:center;gap:6px}
@@ -1565,7 +1568,7 @@ function renderCdSection(secIdx){
   const ch=pdChars[cdCharIdx]||{};
   if(!ch.detail)ch.detail={};
   const d=ch.detail;
-  $('cd-sec-hd').innerHTML=`<span>${sec.icon}</span>${sec.title}`;
+  $('cd-sec-hd').innerHTML=`<span>${sec.icon}</span><span style="flex:1">${sec.title}</span><button id="cd-autofill-btn" class="cd-autofill-btn" onclick="autoFillCdSection(${secIdx})">✨ AI 채우기</button>`;
   $('cd-content').scrollTop=0;
   const list=$('cd-fields-list');list.innerHTML='';
   sec.fields.forEach(f=>{
@@ -1599,6 +1602,66 @@ function renderCdSection(secIdx){
   const nav=$('cd-nav-row');nav.innerHTML='';
   if(secIdx>0){const b=document.createElement('button');b.className='cd-nav-btn';b.textContent='← 이전';b.onclick=()=>{cdCurSec=secIdx-1;renderCdSidebar();renderCdSection(cdCurSec);};nav.appendChild(b);}
   if(secIdx<CD_SECTIONS.length-1){const b=document.createElement('button');b.className='cd-nav-btn next';b.textContent='다음 →';b.onclick=()=>{cdCurSec=secIdx+1;renderCdSidebar();renderCdSection(cdCurSec);};nav.appendChild(b);}
+}
+
+async function autoFillCdSection(secIdx){
+  const sec=CD_SECTIONS[secIdx];
+  const ch=pdChars[cdCharIdx];
+  if(!ch){flash('캐릭터를 먼저 선택해주세요');return;}
+  if(!ch.detail)ch.detail={};
+  const btn=$('cd-autofill-btn');
+  if(btn){btn.disabled=true;btn.textContent='✨ 채우는 중...';}
+  // 빈 필드만 대상
+  const emptyFields=sec.fields.filter(f=>!(ch.detail[f.id]||'').toString().trim());
+  if(!emptyFields.length){
+    flash('이 섹션은 이미 모두 채워져 있어요');
+    if(btn){btn.disabled=false;btn.textContent='✨ AI 채우기';}
+    return;
+  }
+  // 컨텍스트 수집
+  const d=ch.detail;
+  const existingLines=[];
+  CD_SECTIONS.forEach(s=>s.fields.forEach(f=>{if((d[f.id]||'').toString().trim())existingLines.push(`${f.label}: ${d[f.id]}`);}));
+  const projInfo=pdProj?`작품명: ${pdProj.title}\n장르: ${pdProj.genre||'미설정'}\n시놉시스: ${pdProj.synopsis||'없음'}`:'없음';
+  const charInfo=`이름: ${ch.name||'이름 없음'} / 역할: ${ch.role||'조연'}${ch.appearance?' / 외모: '+ch.appearance:''}${ch.personality?' / 성격: '+ch.personality:''}`;
+  const existingInfo=existingLines.length?`\n\n[이미 설정된 내용 (참고용)]\n${existingLines.slice(0,25).join('\n')}`:'';
+  // 채울 필드 설명
+  const fieldDescs=emptyFields.map(f=>{
+    const opts=f.chips?` [선택지 중 하나만: ${f.chips.join(' / ')}]`:'';
+    const hint=f.hint?` (힌트: ${f.hint})`:'';
+    const len=f.type==='area'?'[3~5문장]':'[1~2문장]';
+    return `"${f.id}": ${f.label}${hint}${opts} ${len}`;
+  }).join('\n');
+  const systemPrompt=`당신은 웹툰·웹소설 캐릭터 설정 전문가입니다. 주어진 캐릭터 정보를 바탕으로 각 필드에 매력적이고 구체적인 값을 만들어주세요. chips 선택지가 있는 필드는 반드시 그 중 하나를 그대로 출력하세요. 반드시 JSON 오브젝트만 출력하고 다른 텍스트는 쓰지 마세요.`;
+  const userPrompt=`[작품 정보]\n${projInfo}\n\n[캐릭터]\n${charInfo}${existingInfo}\n\n[섹션: ${sec.title}] — 빈 필드를 JSON으로 채워주세요:\n${fieldDescs}\n\n출력 형식 (JSON만):\n{\n  "field_id": "값",\n  ...\n}`;
+  try{
+    const result=await ai([{role:'system',content:systemPrompt},{role:'user',content:userPrompt}]);
+    const jsonMatch=result.match(/\{[\s\S]*\}/);
+    if(!jsonMatch)throw new Error('no json');
+    const data=JSON.parse(jsonMatch[0]);
+    let filled=0;
+    emptyFields.forEach(f=>{
+      const val=(data[f.id]||'').toString().trim();
+      if(!val)return;
+      ch.detail[f.id]=val;
+      filled++;
+      const inp=document.getElementById('inp-'+f.id);
+      if(!inp)return;
+      if(f.chips&&f.chips.includes(val)){
+        const row=document.getElementById('chips-'+f.id);
+        if(row)row.querySelectorAll('.cd-chip').forEach(b=>b.classList.toggle('on',b.textContent===val));
+        inp.value='';
+      }else{
+        inp.value=val;
+        if(f.chips){const row=document.getElementById('chips-'+f.id);if(row)row.querySelectorAll('.cd-chip').forEach(b=>b.classList.remove('on'));}
+      }
+    });
+    debounceSaveCd();updateCdProgress();renderCdSidebar();
+    flash(`✨ ${filled}개 항목을 AI가 채웠습니다`);
+  }catch(e){
+    flash('AI 응답 처리 중 오류가 발생했습니다');
+  }
+  if(btn){btn.disabled=false;btn.textContent='✨ AI 채우기';}
 }
 
 function setCdChip(field,val,btn){
