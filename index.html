@@ -57,6 +57,14 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
 .pc-add{background:var(--surface);border:1px dashed var(--border2);border-radius:var(--r);padding:22px;cursor:pointer;transition:all 0.25s;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;min-height:160px;color:var(--text-dim)}
 .pc-add:hover{border-color:var(--purple);color:var(--purple-light);background:rgba(139,92,246,0.05)}
 .pc-add .plus{font-size:28px}
+/* 내 기획안 CTA */
+.myplan-cta{background:rgba(139,92,246,0.06);border:1px solid rgba(139,92,246,0.15);border-radius:var(--r);padding:32px 28px;cursor:pointer;transition:all 0.25s;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;min-height:160px}
+.myplan-cta:hover{transform:translateY(-3px);box-shadow:0 20px 40px rgba(139,92,246,0.2);border-color:var(--purple)}
+.myplan-cta-review{background:rgba(16,185,129,0.05);border-color:rgba(16,185,129,0.18)}
+.myplan-cta-review:hover{box-shadow:0 20px 40px rgba(16,185,129,0.15);border-color:var(--green)}
+.dash-mode-btn{border:none;font-size:12px;font-weight:700;padding:6px 18px;border-radius:16px;cursor:pointer;font-family:inherit;transition:all 0.2s;color:var(--text-dim);background:none}
+.dash-mode-btn:hover{color:var(--text)}
+.dash-mode-btn.on{background:var(--purple);color:#fff}
 /* 작업 카드 */
 .tg{display:flex;gap:16px;flex-wrap:wrap}
 .tc{flex:1;min-width:220px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:28px;cursor:pointer;transition:all 0.25s}
@@ -491,10 +499,9 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
   <nav class="sb-nav">
     <div class="ni on" id="n-home" onclick="navTo('home')"><span class="ic">🏠</span>홈</div>
     <div class="ni" id="n-gonmin" onclick="navTo('gonmin')"><span class="ic">🤖</span>창작 에이전트</div>
-    <div class="ni" id="n-works" onclick="navTo('works')"><span class="ic">📚</span>내 작품</div>
+    <div class="ni" id="n-myplan" onclick="navTo('myplan')"><span class="ic">📋</span>내 기획안</div>
     <div class="ni" id="n-outline" onclick="navTo('outline')"><span class="ic">🎬</span>회차 개요</div>
     <div class="ni" id="n-chara" onclick="navTo('chara')"><span class="ic">👤</span>캐릭터 만들기</div>
-    <div class="ni" id="n-tasks" onclick="navTo('tasks')"><span class="ic">⚡</span>오늘의 작업</div>
     <div class="ni" id="n-verify" onclick="navTo('verify')"><span class="ic">🔍</span>작품 검증</div>
     <div class="ni" id="n-market" onclick="navTo('market')"><span class="ic">🛍️</span>루틴 마켓<span class="nb">준비 중</span></div>
   </nav>
@@ -616,6 +623,37 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
   </section>
 
   <!-- 내 작품 -->
+  <!-- 내 기획안 대쉬보드 -->
+  <section class="view" id="view-myplan">
+    <div class="vh">
+      <div class="vt">내 기획안</div>
+      <div style="display:flex;gap:2px;background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:3px">
+        <button class="dash-mode-btn on" id="mode-btn-creator" onclick="setDashMode('creator')">✍️ 창작자 모드</button>
+        <button class="dash-mode-btn" id="mode-btn-mentor" onclick="setDashMode('mentor')">🎓 멘토 모드</button>
+      </div>
+    </div>
+    <div class="vb" style="display:flex;flex-direction:column;gap:28px">
+      <!-- 두 CTA 버튼 -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:780px">
+        <div class="myplan-cta" onclick="openMode()">
+          <div style="font-size:2.4rem;margin-bottom:14px">✦</div>
+          <div style="font-size:18px;font-weight:900;margin-bottom:8px">새 작품 기획하기</div>
+          <div id="cta-new-sub" style="font-size:13px;color:var(--text-faint);line-height:1.6">새로운 이야기를 AI와 함께 설계합니다</div>
+        </div>
+        <div class="myplan-cta myplan-cta-review" onclick="openReviewPicker()">
+          <div style="font-size:2.4rem;margin-bottom:14px">🔍</div>
+          <div style="font-size:18px;font-weight:900;margin-bottom:8px">기존 작품 검토하기</div>
+          <div id="cta-review-sub" style="font-size:13px;color:var(--text-faint);line-height:1.6">시놉시스·캐릭터·개요를 통합 점검합니다</div>
+        </div>
+      </div>
+      <!-- 작품 목록 -->
+      <div style="max-width:780px;width:100%">
+        <div style="font-size:11px;font-weight:700;letter-spacing:0.1em;color:var(--text-faint);text-transform:uppercase;margin-bottom:16px" id="myplan-list-label">내 작품</div>
+        <div id="myplan-grid" class="pg"></div>
+      </div>
+    </div>
+  </section>
+  <!-- 기존 view-works (내부 참조용, 숨김) -->
   <section class="view" id="view-works">
     <div class="vh"><div class="vt">내 작품</div></div>
     <div class="vb"><div class="pg" id="pg"></div></div>
@@ -772,6 +810,15 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
       </div>
     </div>
   </section>
+  <!-- 기존 작품 검토 픽커 오버레이 -->
+  <div class="ov" id="ov-review-picker">
+    <div style="background:rgba(12,12,24,0.97);border:1px solid var(--border2);border-radius:24px;padding:32px;max-width:460px;width:100%;box-shadow:0 30px 80px rgba(0,0,0,0.6)">
+      <div style="font-size:18px;font-weight:900;margin-bottom:6px">검토할 작품 선택</div>
+      <div style="font-size:13px;color:var(--text-dim);margin-bottom:24px">AI가 시놉시스·캐릭터·개요를 통합 분석합니다</div>
+      <div id="review-picker-list" style="display:flex;flex-direction:column;gap:10px;max-height:340px;overflow-y:auto"></div>
+      <button onclick="closeOv('ov-review-picker')" style="margin-top:18px;width:100%;padding:12px;background:var(--surface);border:1px solid var(--border);border-radius:12px;color:var(--text-dim);font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;transition:all 0.2s" onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color='var(--text-dim)'">취소</button>
+    </div>
+  </div>
   <!-- 캐릭터 디벨롭 오버레이 -->
   <div class="cd-ov" id="cd-ov">
     <div class="cd-wrap">
@@ -803,7 +850,7 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
   <section class="view" id="view-proj">
     <div class="proj-detail-wrap">
       <div class="proj-detail-header">
-        <button class="cbk" onclick="navTo('works')" style="flex-shrink:0">←</button>
+        <button class="cbk" onclick="navTo('myplan')" style="flex-shrink:0">←</button>
         <div style="flex:1;min-width:0">
           <div id="pd-title" style="font-size:17px;font-weight:900;line-height:1.3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></div>
           <div id="pd-genre" style="font-size:12px;color:var(--text-faint);margin-top:2px"></div>
@@ -1051,12 +1098,12 @@ function navTo(v){
   if(ve)ve.classList.add('on');
   if(ne)ne.classList.add('on');
   if(v==='home')loadHomeVideos();
+  if(v==='myplan')loadMyPlan();
   if(v==='works')loadProjects();
   if(v==='outline'){initOutline();setTimeout(drawTensionGraph,100);}
   if(v==='chara'){initCharaView();}
   if(v==='tasks'){
-    if(!selProj){flash('먼저 작품을 선택해주세요');navTo('works');return;}
-    $('tpn').textContent=selProj.title;
+    if(selProj)$('tpn').textContent=selProj.title;
   }
 }
 // ── 오버레이 ──
@@ -1066,6 +1113,134 @@ function goHome(){navTo('home');}
 document.addEventListener('DOMContentLoaded',()=>{
   const ta=$('im-ta');if(ta)ta.addEventListener('keydown',e=>{if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)){e.preventDefault();saveItemModal();}});
 });
+// ── 내 기획안 대쉬보드 ──
+let dashMode=localStorage.getItem('dash_mode')||'creator';
+
+function setDashMode(mode){
+  dashMode=mode;
+  localStorage.setItem('dash_mode',mode);
+  const cb=$('mode-btn-creator'),mb=$('mode-btn-mentor');
+  if(cb){cb.classList.toggle('on',mode==='creator');}
+  if(mb){mb.classList.toggle('on',mode==='mentor');}
+  const ns=$('cta-new-sub'),rs=$('cta-review-sub'),ll=$('myplan-list-label');
+  if(mode==='mentor'){
+    if(ns)ns.textContent='멘토와 함께 방향성을 설계합니다';
+    if(rs)rs.textContent='AI가 작품 전체를 분석하고 리포트를 드립니다';
+    if(ll)ll.textContent='검토할 작품';
+  }else{
+    if(ns)ns.textContent='새로운 이야기를 AI와 함께 설계합니다';
+    if(rs)rs.textContent='시놉시스·캐릭터·개요를 통합 점검합니다';
+    if(ll)ll.textContent='내 작품';
+  }
+  renderMyPlanWorks();
+}
+
+async function loadMyPlan(){
+  dashMode=localStorage.getItem('dash_mode')||'creator';
+  const cb=$('mode-btn-creator'),mb=$('mode-btn-mentor');
+  if(cb)cb.classList.toggle('on',dashMode==='creator');
+  if(mb)mb.classList.toggle('on',dashMode==='mentor');
+  // 프로젝트 로드 (더미 없이)
+  const local=JSON.parse(localStorage.getItem('mp')||'[]');
+  if(!user||user.id==='t001'){
+    projects=local;
+  }else{
+    try{
+      const{data,error}=await sb.from('projects').select('*').eq('user_id',user.id).order('completed_at',{ascending:false});
+      if(error)throw error;
+      projects=data||[];
+    }catch(e){projects=local;}
+  }
+  setDashMode(dashMode);
+}
+
+function renderMyPlanWorks(){
+  const g=$('myplan-grid');
+  if(!g)return;
+  g.innerHTML='';
+  if(!projects||!projects.length){
+    const empty=document.createElement('div');
+    empty.style.cssText='color:var(--text-faint);font-size:14px;padding:20px 0;grid-column:1/-1';
+    empty.textContent='아직 기획안이 없어요. 위 버튼으로 첫 작품을 시작해보세요!';
+    g.appendChild(empty);
+    return;
+  }
+  projects.forEach(p=>{
+    const c=document.createElement('div');
+    c.className='pc';
+    const actionBtn=dashMode==='mentor'
+      ?`<button onclick="event.stopPropagation();startWorkReview('${p.id}')" style="margin-top:10px;width:100%;background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.2);color:#6EE7B7;font-size:12px;font-weight:700;padding:8px;border-radius:10px;cursor:pointer;font-family:inherit;transition:all 0.2s" onmouseover="this.style.background='rgba(16,185,129,0.14)'" onmouseout="this.style.background='rgba(16,185,129,0.08)'">🔍 AI 통합 검토 시작</button>`
+      :`<button onclick="event.stopPropagation();selectAndTask('${p.id}')" style="margin-top:10px;width:100%;background:rgba(139,92,246,0.08);border:1px solid rgba(139,92,246,0.2);color:var(--purple-light);font-size:12px;font-weight:700;padding:8px;border-radius:10px;cursor:pointer;font-family:inherit;transition:all 0.2s" onmouseover="this.style.background='rgba(139,92,246,0.14)'" onmouseout="this.style.background='rgba(139,92,246,0.08)'">⚡ 오늘의 작업 시작</button>`;
+    c.innerHTML=`<div><span class="pc-genre">${p.genre||'미분류'}</span></div><div class="pc-title">${p.title}</div><div class="pc-syn">${p.synopsis||'시놉시스가 없습니다.'}</div><div class="pc-foot"><span>${p.routine_type==='short'?'단편':'장편'}</span><span>${(p.answer_history||[]).length}단계 완료</span></div>${actionBtn}`;
+    c.onclick=()=>openProjDetail(p.id);
+    g.appendChild(c);
+  });
+}
+
+function selectAndTask(pid){
+  const p=projects.find(pr=>pr.id===pid);
+  if(!p)return;
+  selProj=p;
+  $('tpn').textContent=p.title;
+  navTo('tasks');
+}
+
+function openReviewPicker(){
+  if(!projects||!projects.length){flash('먼저 작품을 기획해주세요');return;}
+  if(projects.length===1){startWorkReview(projects[0].id);return;}
+  const list=$('review-picker-list');
+  list.innerHTML='';
+  projects.forEach(p=>{
+    const btn=document.createElement('button');
+    btn.style.cssText='width:100%;text-align:left;padding:14px 18px;background:var(--surface);border:1px solid var(--border);border-radius:12px;color:var(--text);font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;transition:all 0.2s;display:block';
+    btn.innerHTML=`<div>${p.title}</div><div style="font-size:12px;color:var(--text-dim);margin-top:3px;font-weight:500">${p.genre||'장르 미설정'}</div>`;
+    btn.onmouseover=()=>btn.style.borderColor='var(--border2)';
+    btn.onmouseout=()=>btn.style.borderColor='var(--border)';
+    btn.onclick=()=>{closeOv('ov-review-picker');startWorkReview(p.id);};
+    list.appendChild(btn);
+  });
+  openOv('ov-review-picker');
+}
+
+async function startWorkReview(pid){
+  const p=projects.find(pr=>pr.id===pid);
+  if(!p){flash('작품을 찾을 수 없습니다');return;}
+  selProj=p;
+  const synopsis=p.synopsis||'(시놉시스 없음)';
+  const chars=Array.isArray(p.characters)&&p.characters.length
+    ?p.characters.map(c=>`- ${c.name||'이름없음'}: ${c.desc||c.description||c.role||''}`).join('\n')
+    :'(캐릭터 설정 없음)';
+  const savedEps=JSON.parse(localStorage.getItem('ol_episodes')||'[]');
+  const epList=Array.isArray(savedEps)?savedEps:[];
+  const epSummary=epList.length
+    ?epList.slice(0,12).map((e,i)=>`${i+1}화: ${e.title||''} — ${e.synopsis||e.content||e.summary||''}`).join('\n')
+    :'(회차 개요 없음)';
+  const persona=`당신은 만트라 코파일럿의 작품 통합 검토 AI입니다. 웹툰·웹소설 전문 편집자 관점에서 아래 작품을 체계적으로 분석합니다.\n\n【검토 작품】\n제목: ${p.title}\n장르: ${p.genre||'미분류'}\n\n【시놉시스】\n${synopsis}\n\n【캐릭터 설정】\n${chars}\n\n【회차 개요】\n${epSummary}\n\n검토 시 ① 시놉시스 내부 논리 일관성 ② 캐릭터 설정과 시놉시스 충돌 여부 ③ 회차 개요와 캐릭터/시놉시스 모순을 항목별로 분석하고, 각 항목의 오류와 개선 제안을 명확하게 제시하세요.`;
+  xMsgs=[];
+  xLinkedProj=p;
+  xPersonaBase=persona;
+  xPersona=persona;
+  navTo('xc');
+  $('xct').textContent=`${p.title} — 통합 검토`;
+  $('xcs').textContent='분석 중...';
+  $('xb').innerHTML='';
+  renderXLinkButtons();
+  const triggerMsg='시놉시스 → 캐릭터 설정 → 회차 개요 순서로 작품 전체를 검토해주세요. 각 항목별로 발견된 오류와 개선 제안을 구체적으로 정리해주세요.';
+  xMsgs=[{role:'user',content:triggerMsg}];
+  addXMsg('user',triggerMsg);
+  const aName=`${p.title} — 통합 검토`;
+  const ld=document.createElement('div');
+  ld.className='xm assistant';
+  ld.innerHTML=`<div class="xm-name">${aName}</div><div class="xmi"><div class="xc">분석 중...▋</div></div>`;
+  $('xb').appendChild(ld);$('xb').scrollTop=$('xb').scrollHeight;
+  const cEl=ld.querySelector('.xc');
+  await aiStream(
+    [{role:'system',content:xPersona},...xMsgs],
+    full=>{cEl.innerHTML=md(full)+'<span style="opacity:0.4;animation:flt 0.8s ease-in-out infinite">▋</span>';$('xb').scrollTop=$('xb').scrollHeight;},
+    full=>{xMsgs.push({role:'assistant',content:full});cEl.innerHTML=md(full);$('xb').scrollTop=$('xb').scrollHeight;$('xcs').textContent='검토 완료';}
+  );
+}
+
 // ── 프로젝트 ──
 async function loadProjects(){
   const local=JSON.parse(localStorage.getItem('mp')||'[]');
@@ -1805,7 +1980,7 @@ function finishBuildup(){
 }
 
 function startTask(type){
-  if(!selProj){flash('먼저 작품을 선택해주세요');navTo('works');return;}
+  if(!selProj){flash('먼저 작품을 선택해주세요');navTo('myplan');return;}
   const PM={
     outline:'당신은 드라마/웹소설 작가 에이전트입니다. 이번 화 개요를 함께 짜줍니다.',
     tone:'당신은 대사 스페셜리스트입니다. 캐릭터 성격과 말투가 설정에 부합하는지 분석합니다.',
