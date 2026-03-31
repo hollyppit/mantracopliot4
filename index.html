@@ -1958,11 +1958,16 @@ function buildPersona(){
 }
 // ── 회차 개요 ──
 const EP_TYPES=[
-  {id:'curiosity', label:'호기심/트러블', color:'#60A5FA', bg:'rgba(96,165,250,0.12)'},
-  {id:'conflict',  label:'갈등/딜레마',  color:'#F472B6', bg:'rgba(244,114,182,0.12)'},
-  {id:'suspense',  label:'아슬/서스펜스',color:'#FBBF24', bg:'rgba(251,191,36,0.12)'},
-  {id:'climax',    label:'폭발/쾌감',   color:'#F87171', bg:'rgba(248,113,113,0.12)'},
-  {id:'relief',    label:'이완/코믹',   color:'#34D399', bg:'rgba(52,211,153,0.12)'},
+  {id:'curiosity', label:'호기심/트러블', color:'#60A5FA', bg:'rgba(96,165,250,0.12)',
+    ph:{keyword:'예) 의혹, 첫만남, 비밀의 실마리', title:'예) 수상한 편지를 발견한다', synopsis:'일상 속 작은 균열이 시작된다. 독자가 "왜?"를 품게 만드는 화.', funPoint:'예) 떡밥 투하, 설레는 첫 만남, 수수께끼 등장인물', lastPanel:'예) 뒤돌아보는 시선, 정체불명 인물의 등장'}},
+  {id:'conflict',  label:'갈등/딜레마',  color:'#F472B6', bg:'rgba(244,114,182,0.12)',
+    ph:{keyword:'예) 배신, 대립, 선택의 기로', title:'예) 두 가지 길 사이에서 선택을 강요받는다', synopsis:'주인공이 도저히 양립할 수 없는 두 가치 사이에서 흔들린다.', funPoint:'예) 캐릭터의 내면 갈등, 선택의 무게감, 관계의 균열', lastPanel:'예) 결정을 내린 굳은 표정, 예상치 못한 반전 한마디'}},
+  {id:'suspense',  label:'아슬/서스펜스',color:'#FBBF24', bg:'rgba(251,191,36,0.12)',
+    ph:{keyword:'예) 긴장, 위기, 들킬 뻔한 순간', title:'예) 비밀이 탄로날 위기에 처한다', synopsis:'언제 터질지 모르는 긴장감이 화 전체를 감싼다. 독자가 숨을 멈추게 만드는 화.', funPoint:'예) 아슬아슬한 탈출, 들키기 직전의 심장박동', lastPanel:'예) 문 뒤 발소리, 핵심 증거가 사라진 빈 서랍'}},
+  {id:'climax',    label:'폭발/쾌감',   color:'#F87171', bg:'rgba(248,113,113,0.12)',
+    ph:{keyword:'예) 각성, 폭발, 복수, 반격', title:'예) 마침내 주인공이 반격을 선언한다', synopsis:'쌓여온 감정과 사건이 한꺼번에 터지는 화. 독자의 카타르시스를 극대화.', funPoint:'예) 주인공의 통쾌한 한마디, 오랜 떡밥 회수', lastPanel:'예) 압도적인 장면 전환, 충격적인 사실 폭로'}},
+  {id:'relief',    label:'이완/코믹',   color:'#34D399', bg:'rgba(52,211,153,0.12)',
+    ph:{keyword:'예) 유머, 치유, 달콤한 순간', title:'예) 오해가 풀리고 잠깐의 평화가 찾아온다', synopsis:'긴장을 풀고 캐릭터의 일상과 감정을 회복하는 화. 다음 갈등을 위한 숨고르기.', funPoint:'예) 캐릭터들의 케미, 귀엽고 웃긴 상황', lastPanel:'예) 달달한 한 장면, 슬쩍 심어두는 다음 화 복선'}},
 ];
 const ACT_COLORS=['#8B5CF6','#3B82F6','#F59E0B','#EF4444'];
 const ACT_RANGES=[[1,12],[13,35],[36,55],[56,100]]; // 막별 화수 기본 범위 (조정 가능)
@@ -2124,25 +2129,25 @@ function renderEpList(){
         <div class="ep-field-row">
           <div class="ep-field">
             <div class="ep-fl">감정 키워드</div>
-            <input class="ep-input" placeholder="예) 배신, 각성" value="${ep.keyword||''}" oninput="updateEp(${realIdx},'keyword',this.value)">
+            <input class="ep-input" placeholder="${typeInfo.ph?.keyword||'예) 배신, 각성'}" value="${ep.keyword||''}" oninput="updateEp(${realIdx},'keyword',this.value)">
           </div>
           <div class="ep-field">
             <div class="ep-fl">제목 / 핵심 사건</div>
-            <input class="ep-input" placeholder="이번 화 핵심 사건" value="${ep.title||''}" oninput="updateEp(${realIdx},'title',this.value)">
+            <input class="ep-input" placeholder="${typeInfo.ph?.title||'이번 화 핵심 사건'}" value="${ep.title||''}" oninput="updateEp(${realIdx},'title',this.value)">
           </div>
         </div>
         <div class="ep-field full">
           <div class="ep-fl">개요 / 시놉시스</div>
-          <textarea class="ep-input" rows="3" placeholder="이번 화 줄거리를 간략히..." oninput="updateEp(${realIdx},'synopsis',this.value)">${ep.synopsis||''}</textarea>
+          <textarea class="ep-input" rows="3" placeholder="${typeInfo.ph?.synopsis||'이번 화 줄거리를 간략히...'}" oninput="updateEp(${realIdx},'synopsis',this.value)">${ep.synopsis||''}</textarea>
         </div>
         <div class="ep-field-row">
           <div class="ep-field">
             <div class="ep-fl">재미 포인트 / 레퍼런스</div>
-            <textarea class="ep-input" rows="2" placeholder="독자가 재미를 느낄 포인트" oninput="updateEp(${realIdx},'funPoint',this.value)">${ep.funPoint||''}</textarea>
+            <textarea class="ep-input" rows="2" placeholder="${typeInfo.ph?.funPoint||'독자가 재미를 느낄 포인트'}" oninput="updateEp(${realIdx},'funPoint',this.value)">${ep.funPoint||''}</textarea>
           </div>
           <div class="ep-field">
             <div class="ep-fl">막컷 임팩트</div>
-            <textarea class="ep-input" rows="2" placeholder="마지막 컷, 독자를 잡아두는 장치" oninput="updateEp(${realIdx},'lastPanel',this.value)">${ep.lastPanel||''}</textarea>
+            <textarea class="ep-input" rows="2" placeholder="${typeInfo.ph?.lastPanel||'마지막 컷, 독자를 잡아두는 장치'}" oninput="updateEp(${realIdx},'lastPanel',this.value)">${ep.lastPanel||''}</textarea>
           </div>
         </div>
         <div class="ep-field full">
@@ -2205,9 +2210,9 @@ function updateEpTension(idx,input){
 
 function setEpType(idx,type){
   olEpisodes[idx].type=type;
-  // 칩 active 상태 갱신
   const card=document.querySelectorAll('.ep-card')[getCardVisIdx(idx)];
   if(!card)return;
+  // 칩 active 상태 갱신
   card.querySelectorAll('.ep-type-chip').forEach(b=>{
     const t=EP_TYPES.find(t=>t.label===b.textContent);
     if(!t)return;
@@ -2218,6 +2223,17 @@ function setEpType(idx,type){
   const typeInfo=EP_TYPES.find(t=>t.id===type)||EP_TYPES[0];
   const badge=card.querySelector('.ep-type-badge');
   if(badge){badge.textContent=typeInfo.label;badge.style.color=typeInfo.color;badge.style.background=typeInfo.bg;}
+  // placeholder 갱신
+  const ph=typeInfo.ph||{};
+  const inputs=card.querySelectorAll('.ep-input');
+  const map=[
+    {sel:'input[oninput*="keyword"]', ph:ph.keyword},
+    {sel:'input[oninput*="title"]',   ph:ph.title},
+    {sel:'textarea[oninput*="synopsis"]', ph:ph.synopsis},
+    {sel:'textarea[oninput*="funPoint"]', ph:ph.funPoint},
+    {sel:'textarea[oninput*="lastPanel"]',ph:ph.lastPanel},
+  ];
+  map.forEach(({sel,ph:p})=>{if(p){const el=card.querySelector(sel);if(el)el.placeholder=p;}});
 }
 
 function getCardVisIdx(realIdx){
