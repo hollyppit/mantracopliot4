@@ -17,6 +17,7 @@ export default {
 
     // API 라우팅
     if (path === '/api/chat' && request.method === 'POST') return handleChat(request, env, cors);
+    if (path === '/api/youtube' && request.method === 'GET') return handleYoutube(url, env, cors);
 
     if (path.startsWith('/api/')) {
       const userId = await verifyJWT(request, env);
@@ -43,6 +44,19 @@ export default {
     return env.ASSETS.fetch(request);
   },
 };
+
+async function handleYoutube(url, env, cors) {
+  const q = url.searchParams.get('q');
+  if (!q) return json({ items: [] }, 200, cors);
+  const apiUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(q)}&maxResults=5&type=video&key=${env.YOUTUBE_API_KEY}`;
+  try {
+    const res = await fetch(apiUrl);
+    const data = await res.json();
+    return json(data, res.status, cors);
+  } catch (e) {
+    return json({ items: [] }, 200, cors);
+  }
+}
 
 async function handleChat(request, env, cors) {
   const body = await request.json();
