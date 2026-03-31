@@ -2106,7 +2106,7 @@ function renderEpList(){
       list.appendChild(div);
     }
     const typeInfo=EP_TYPES.find(t=>t.id===ep.type)||EP_TYPES[0];
-    const card=document.createElement('div');card.className='ep-card';
+    const card=document.createElement('div');card.className='ep-card';card.dataset.epIdx=realIdx;
     card.innerHTML=`
       <div class="ep-row">
         <div class="ep-num">${ep.num}</div>
@@ -2210,7 +2210,7 @@ function updateEpTension(idx,input){
 
 function setEpType(idx,type){
   olEpisodes[idx].type=type;
-  const card=document.querySelectorAll('.ep-card')[getCardVisIdx(idx)];
+  const card=document.querySelector(`.ep-card[data-ep-idx="${idx}"]`);
   if(!card)return;
   // 칩 active 상태 갱신
   card.querySelectorAll('.ep-type-chip').forEach(b=>{
