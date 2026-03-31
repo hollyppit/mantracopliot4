@@ -1535,6 +1535,10 @@ function confirmProjName(){
 function selChar(name){
   closeOv('ov-char');
   charName=name;
+  const ceEl=$('ce');
+  if(ceEl) ceEl.src=name==='조수 F형'?'images/조수b.gif':'images/조수a.gif';
+  const cnpEl=$('cnp'); if(cnpEl) cnpEl.textContent=name;
+  const dspEl=$('dsp'); if(dspEl) dspEl.textContent=name;
   initPlanView(pendingRoutineType);
 }
 // ── 기획 목차 ──
