@@ -491,6 +491,7 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
     <div class="ni" id="n-gonmin" onclick="navTo('gonmin')"><span class="ic">🤖</span>창작 에이전트</div>
     <div class="ni" id="n-works" onclick="navTo('works')"><span class="ic">📚</span>내 작품</div>
     <div class="ni" id="n-outline" onclick="navTo('outline')"><span class="ic">🎬</span>회차 개요</div>
+    <div class="ni" id="n-chara" onclick="navTo('chara')"><span class="ic">👤</span>캐릭터 만들기</div>
     <div class="ni" id="n-tasks" onclick="navTo('tasks')"><span class="ic">⚡</span>오늘의 작업</div>
     <div class="ni" id="n-verify" onclick="navTo('verify')"><span class="ic">🔍</span>작품 검증</div>
     <div class="ni" id="n-market" onclick="navTo('market')"><span class="ic">🛍️</span>루틴 마켓<span class="nb">준비 중</span></div>
@@ -617,7 +618,22 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
     <div class="vh"><div class="vt">내 작품</div></div>
     <div class="vb"><div class="pg" id="pg"></div></div>
   </section>
-  <!-- 회차 개요 -->
+  <!-- 캐릭터 만들기 단독 뷰 -->
+  <section class="view" id="view-chara">
+    <div class="proj-detail-wrap">
+      <div class="proj-detail-header">
+        <div style="font-size:20px;font-weight:900;margin-right:12px">캐릭터 만들기</div>
+        <button class="ol-proj-badge none" id="ch-proj-badge" onclick="openChProjSelect()">작품 선택</button>
+        <div style="flex:1"></div>
+        <button class="ol-btn primary" onclick="saveChars()">저장</button>
+      </div>
+      <div class="proj-detail-body">
+        <button class="char-ai-btn" id="char-ai-btn-standalone" onclick="draftCharacters()">✦ AI로 캐릭터 초안 생성</button>
+        <div class="char-grid" id="char-grid-standalone"></div>
+        <button class="char-add-btn" onclick="addCharCard()">+ 캐릭터 직접 추가</button>
+      </div>
+    </div>
+  </section>
   <section class="view" id="view-outline">
     <div class="ol-wrap">
       <div class="ol-header">
@@ -1032,6 +1048,7 @@ function navTo(v){
   if(v==='home')loadHomeVideos();
   if(v==='works')loadProjects();
   if(v==='outline'){initOutline();setTimeout(drawTensionGraph,100);}
+  if(v==='chara'){initCharaView();}
   if(v==='tasks'){
     if(!selProj){flash('먼저 작품을 선택해주세요');navTo('works');return;}
     $('tpn').textContent=selProj.title;
@@ -1134,8 +1151,11 @@ async function saveSynopsisEdit(){
 function escH(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 
 function renderCharCards(){
-  const grid=$('char-grid');if(!grid)return;
-  grid.innerHTML='';
+  const grid=$('char-grid');
+  const gridS=$('char-grid-standalone');
+  if(!grid && !gridS) return;
+  const target = grid || gridS;
+  target.innerHTML='';
   const ROLES=['주인공','히로인','조력자','악당','빌런','조연'];
   pdChars.forEach((ch,i)=>{
     const card=document.createElement('div');card.className='char-card';
@@ -1172,7 +1192,7 @@ function renderCharCards(){
         <button class="char-dev-btn" onclick="openCharDev(${i})">✏️ 디벨롭 가이드</button>
         <button class="char-dev-btn chat" onclick="quickCharChat(${i})">💬 대화하기</button>
       </div>`;
-    grid.appendChild(card);
+    target.appendChild(card);
   });
 }
 
@@ -1186,6 +1206,45 @@ function deleteChar(i){
   pdChars.splice(i,1);
   renderCharCards();
   saveChars();
+}
+
+// ── 캐릭터 만들기 (단독 뷰 전용) ──
+function initCharaView(){
+  const savedProj=localStorage.getItem('ch_proj')||localStorage.getItem('ol_proj');
+  if(savedProj){
+    const projs=JSON.parse(localStorage.getItem('mp')||'[]');
+    const p=projs.find(pj=>pj.id===savedProj);
+    if(p){
+      pdProj=p;
+      pdChars=Array.isArray(p.characters)?[...p.characters]:[];
+      selProj=p;
+    }
+  }
+  renderChProjBadge();
+  renderCharCards();
+}
+
+function renderChProjBadge(){
+  const b=$('ch-proj-badge'); if(!b)return;
+  if(pdProj){ b.textContent='📚 '+pdProj.title; b.className='ol-proj-badge'; }
+  else { b.textContent='작품 선택'; b.className='ol-proj-badge none'; }
+}
+
+function openChProjSelect(){
+  const projs=JSON.parse(localStorage.getItem('mp')||'[]');
+  const list=$('ol-proj-list'); list.innerHTML='';
+  projs.forEach(p=>{
+    const el=document.createElement('div'); el.className='ol-proj-item';
+    el.innerHTML=`<div><div class="opp-title">${p.title}</div><div class="opp-meta">${p.genre||'미분류'}</div></div>`;
+    el.onclick=()=>{
+      pdProj=p; selProj=p;
+      pdChars=Array.isArray(p.characters)?[...p.characters]:[];
+      localStorage.setItem('ch_proj',p.id);
+      renderChProjBadge(); renderCharCards(); closeOlProjSelect();
+    };
+    list.appendChild(el);
+  });
+  $('ol-proj-ov').classList.add('on');
 }
 
 let _charSaveTimer=null;
@@ -1206,63 +1265,73 @@ async function saveChars(){
 const CD_SECTIONS=[
   {id:'pos',icon:'🎭',title:'포지션 & 첫인상',fields:[
     {id:'position',label:'이야기 속 포지션',hint:'이 사건/갈등에서 어떤 편에 서있는가',type:'chips',chips:['주인공 편','중립','대립 세력','관찰자','변동 가능'],text:true,ph:''},
-    {id:'oneLiner',label:'한 줄 표현',hint:'이 사람을 단번에 정의하는 멋지고 간결한 한 문장',type:'input',ph:'예) 웃음 뒤에 칼을 숨기는 배신자'},
+    {id:'narrative_role',label:'서사적 역할',hint:'이야기 진행에 어떤 도움을 주는가?',type:'chips',chips:['통찰력 제공','사건 단서 제공','주의 분산','기분 전환/익살','지역적 색채'],text:true,ph:''},
+    {id:'oneLiner',label:'한 줄 표현',hint:'이 사람을 단번에 정의하는 멋진 한 문장',type:'input',ph:'예) 웃음 뒤에 칼을 숨기는 배신자'},
     {id:'firstAppearance',label:'첫 등장 방식',hint:'독자 마음속에서 인상이 결정되는 중요한 순간',type:'area',ph:'어떤 장면에서, 어떤 모습으로 처음 나타나는가?'},
+    {id:'nameMeaning',label:'이름의 의미 & 작명 계기',hint:'개성이 잘 드러나는 이름을 정한 이유',type:'input',ph:''},
   ]},
   {id:'basic',icon:'📋',title:'신상 & 환경',fields:[
-    {id:'nameMeaning',label:'이름의 계기',hint:'그 사람의 개성이 잘 드러나는 이름을 정한 이유',type:'input',ph:'예) 한자 의미, 발음 느낌, 작명 스토리'},
-    {id:'age',label:'나이',hint:'이 나이로 정한 이유',type:'chips',chips:['10대','20대 초반','20대 후반','30대','40대 이상','나이 불명'],text:true,ph:'직접 입력...'},
+    {id:'age_reason',label:'나이 & 정한 이유',type:'input',ph:'예) 27세 / 사회 초년생의 불안함을 표현하기 위해'},
     {id:'birthday',label:'생일 & 별자리',type:'input',ph:'예) 11월 30일 / 사수자리'},
-    {id:'hometown',label:'거주지',hint:'어디서 살며, 그곳에 사는 이유는?',type:'input',ph:''},
-    {id:'living',label:'주거 형태',hint:'혼자 사는가, 누군가와 함께 사는가?',type:'chips',chips:['혼자','가족과 함께','룸메이트','기숙사/숙소','유랑/이동'],text:true,ph:''},
-    {id:'transport',label:'이동수단',hint:'없다면 그 이유는?',type:'chips',chips:['자가용','오토바이','대중교통','도보','없음'],text:true,ph:''},
+    {id:'hometown_why',label:'거주지 & 사는 이유',type:'input',ph:''},
+    {id:'birthplace',label:'태어나고 자란 곳',type:'input',ph:''},
+    {id:'living',label:'주거 형태',hint:'개인적인 안식처이자 비밀스러운 공간',type:'chips',chips:['혼자','가족과 함께','룸메이트','기숙사/숙소','유랑/이동'],text:true,ph:''},
+    {id:'transport',label:'이동수단 & 이유',type:'input',ph:'예) 오토바이 / 빠른 도주를 위해'},
     {id:'socialStatus',label:'사회경제적 지위',type:'chips',chips:['상류층','중산층','서민층','빈곤층','불명'],text:false,ph:''},
+    {id:'id_card',label:'신상명세 (공식 기록)',hint:'공식 시스템에 어떻게 기록되어 있는가?',type:'area',ph:''},
   ]},
   {id:'desire',icon:'🔥',title:'욕망 & 목표',fields:[
     {id:'desire',label:'갈망하는 것 / 왜 싸우는가',hint:'욕구가 생긴 원인, 캐릭터를 움직이게 만드는 힘',type:'area',ph:'무엇을 원하고, 왜 원하는가?'},
-    {id:'obstacle',label:'가질 수 없는 이유',hint:'목표를 가로막는 장벽',type:'input',ph:'어떤 장벽이 있는가?'},
-    {id:'planA',label:'플랜 A — 긍정적 목표',hint:'올바른 방법의 접근',type:'area',ph:'정정당당하게 목표를 이루려는 방법'},
-    {id:'planB',label:'플랜 B — 부정적 목표',hint:'극단적/비윤리적 대안, 최후의 선택',type:'area',ph:'최악의 경우 어떤 방법을 택하는가?'},
-    {id:'afterSuccess',label:'목표 달성 후 미래',type:'input',ph:'성공하면 어떤 상태가 되는가?'},
-    {id:'afterFailure',label:'목표 실패 시 결과',type:'input',ph:'실패하면 어떤 결과가 초래되는가?'},
+    {id:'obstacle',label:'가질 수 없는 이유 (장벽)',hint:'목표를 가로막는 결정적인 방해물',type:'input',ph:''},
+    {id:'planA',label:'플랜 A — 긍정적 목표',hint:'정공법으로 목표를 이루려는 방법',type:'area',ph:''},
+    {id:'planB',label:'플랜 B — 부정적 목표',hint:'극단적/최후의 수단 (부정적 접근)',type:'area',ph:''},
+    {id:'afterSuccess',label:'목표 달성 후 미래',type:'input',ph:'성공하면 어떻게 변하는가?'},
+    {id:'afterFailure',label:'목표 실패 시 결과',type:'input',ph:'실패하면 어떤 미래가 기다리는가?'},
   ]},
   {id:'trait',icon:'🧠',title:'성격 & 특성',fields:[
-    {id:'fear',label:'가장 두려워하는 것',hint:'트라우마의 원인, 그의 약점이 된다',type:'input',ph:''},
-    {id:'habit',label:'특이한 습관 / 몸짓 언어',hint:'몸은 감정을 그대로 반영하는 신뢰할 만한 장치다',type:'input',ph:''},
-    {id:'ability',label:'특화된 능력',hint:'능력이 부각될 만한 상황도 같이 서술',type:'area',ph:''},
-    {id:'physique',label:'신체적 특징',hint:'독자가 캐릭터를 구별할 수 있는 핵심',type:'input',ph:''},
-    {id:'charm',label:'성격의 호감 가는 면',type:'input',ph:''},
-    {id:'flaw',label:'성격의 결함',hint:'문제를 일으키는 면, 극복해야 할 것',type:'input',ph:''},
-    {id:'fashion',label:'패션 컨셉',hint:'주로 어떤 옷을 즐겨 입나?',type:'chips',chips:['캐주얼','포멀','스트리트','클래식','히피/자유','다크/엣지','스포티','한복/전통'],text:true,ph:''},
+    {id:'fear',label:'가장 두려워하는 것 (트라우마)',hint:'그의 치명적인 약점이 된다',type:'input',ph:''},
+    {id:'habit',label:'특이한 습관 / 몸짓 언어',hint:'몸은 감정을 반영하는 신뢰할 만한 장치',type:'input',ph:''},
+    {id:'ability',label:'특화된 능력 & 부각 상황',type:'area',ph:''},
+    {id:'physique',label:'신체적 특징 (분별 핵심)',type:'input',ph:''},
+    {id:'charm',label:'호감 가는 면',type:'input',ph:''},
+    {id:'flaw',label:'성격 결함 (문제를 일으키는 면)',type:'input',ph:''},
+    {id:'fashion',label:'패션 컨셉',type:'chips',chips:['캐주얼','포멀','스트리트','클래식','히피/자유','다크/엣지','스포티','전통'],text:true,ph:''},
+    {id:'possession',label:'중요하게 여기는 소유물 (소품)',hint:'인물에게 없을 수 없는 소중한 물건',type:'input',ph:''},
   ]},
   {id:'life',icon:'🌟',title:'라이프스타일',fields:[
-    {id:'job',label:'직업',hint:'단순한 직업인가, 장기적으로 계속하려는 일인가?',type:'input',ph:''},
-    {id:'jobReason',label:'직업을 택한 이유',type:'input',ph:'그 직업을 택했거나 가지지 않는 이유'},
-    {id:'dailyRoutine',label:'평소 일과',type:'area',ph:'아침부터 밤까지 어떻게 보내는가?'},
-    {id:'favoritePlace',label:'주로 가는 장소',type:'input',ph:''},
-    {id:'favoriteActivity',label:'가장 재밌어하는 일',hint:'인물이 재미있게 노는 장면은 읽는 것 자체로 재미있다',type:'input',ph:''},
-    {id:'hobby',label:'취미',type:'chips',chips:['독서','운동/격투','악기연주','게임','여행','요리','그림/예술','수집'],text:true,ph:''},
-    {id:'music',label:'좋아하는 음악',type:'chips',chips:['클래식','재즈','록/메탈','팝','힙합/R&B','인디','트로트/민요','음악 안 듣는다'],text:true,ph:''},
+    {id:'job_goal',label:'직업 & 장기적 목표',type:'input',ph:''},
+    {id:'jobReason',label:'직업을 택한 (혹은 없는) 이유',type:'input',ph:''},
+    {id:'dailyRoutine',label:'평소 일과',type:'area',ph:''},
+    {id:'favoritePlace',label:'주로 갈 법한 장소',type:'input',ph:''},
+    {id:'favoriteActivity',label:'가장 재밌어하는 일',hint:'인물이 재미있게 노는 장면은 자체로 매력적',type:'input',ph:''},
+    {id:'hobby',label:'취미',type:'chips',chips:['독서','운동','악기','게임','여행','요리','예술','수집'],text:true,ph:''},
+    {id:'music',label:'음악 취향',type:'chips',chips:['클래식','재즈','록','팝','힙합','인디','트로트','전통'],text:true,ph:''},
     {id:'food',label:'좋아하는 음식 & 술',type:'input',ph:''},
-    {id:'possession',label:'중요하게 여기는 소유물',hint:'없을 수 없는 소품, 없다면 그 이유를 써라',type:'input',ph:''},
+    {id:'pet',label:'애완동물 여부',type:'input',ph:''},
+    {id:'rest_plan',label:'뜻밖의 휴식이 생기면?',type:'input',ph:''},
   ]},
   {id:'rel',icon:'🤝',title:'관계',fields:[
-    {id:'ally',label:'죽이 잘 맞는 조력자',hint:'액션과 리액션, 비슷한 부류이면서도 성향이 다른',type:'input',ph:''},
-    {id:'rival',label:'상극인 라이벌',hint:'가치관의 대립, 사사건건 방해하지만 어딘가 비슷하기도 해',type:'input',ph:''},
-    {id:'family',label:'부모 & 가족',type:'area',ph:'부모는 어떤 사람인가? 형제 자매가 있는가?'},
-    {id:'loveHistory',label:'이전에 사랑하던 사람',type:'input',ph:'전 애인은 이 사람을 어떻게 기억하는가?'},
-    {id:'loveAttraction',label:'상대 주인공에게 끌리는 면',type:'input',ph:'어떤 점에 가장 매력을 느끼는가?'},
-    {id:'friends',label:'친구들 눈에 비친 모습',type:'input',ph:'친구들은 그를 어떻게 생각하나?'},
+    {id:'ally',label:'죽이 잘 맞는 조력자',hint:'대사를 주고받으며 서사를 전개하는 인물',type:'input',ph:''},
+    {id:'rival',label:'상극인 라이벌',hint:'가치관 대립, 사사건건 방해하는 존재',type:'area',ph:''},
+    {id:'family_importance',label:'부모/가족 & 주인공에의 중요도',type:'area',ph:''},
+    {id:'loveHistory',label:'이전 사랑 & 전 애인의 기억',type:'input',ph:''},
+    {id:'loveAttraction',label:'상대 주인공에게 끌리는 면',type:'input',ph:''},
+    {id:'sex_marriage',label:'사랑/결혼에 대한 생각',type:'input',ph:''},
+    {id:'friends_view',label:'친구들 눈에 비친 모습',type:'input',ph:''},
+    {id:'enemy_why',label:'가장 큰 적 & 멀어진 이유',type:'input',ph:''},
   ]},
   {id:'inner',icon:'💭',title:'내면 & 서사',fields:[
-    {id:'selfImage',label:'자기 자신에 대한 생각',type:'area',ph:'자신을 어떻게 바라보는가?'},
-    {id:'secret',label:'감추고 싶은 부분',type:'input',ph:'자신의 특징 중에 숨기고 싶어하는 것'},
-    {id:'innerThought',label:'평소 어떤 생각을 하는가',hint:'속마음을 간접적으로 표현할 만한 장면도 같이',type:'area',ph:''},
+    {id:'selfImage',label:'자기 자신에 대한 생각',type:'area',ph:''},
+    {id:'secret',label:'감추고 싶은 부분 (비밀)',type:'input',ph:''},
+    {id:'defining_event',label:'현재 모습에 결정적 영향을 준 사건',type:'area',ph:''},
+    {id:'protag_link',label:'인생의 전환점과 주인공의 연관성',type:'input',ph:''},
+    {id:'innerThought',label:'평소 속마음 (표현 장면)',type:'area',ph:''},
     {id:'problem',label:'이야기 시작 시 지닌 문제',type:'input',ph:''},
     {id:'worsening',label:'어떤 행동이 문제를 악화시키는가',type:'input',ph:''},
     {id:'protect',label:'목숨을 걸고 지키는 것',type:'input',ph:''},
-    {id:'happyEnd',label:'이상적인 해피엔드',type:'input',ph:'이 인물이 상상하는 가장 행복한 결말'},
-    {id:'diary',label:'사건을 겪었을 때 일기',hint:'당신이 이 캐릭터라면 그 상황에서 어떻게 느꼈을지. 진심은 믿을 수 없는 상황에서도 신뢰를 준다',type:'area',ph:'오늘 그 일이 일어났다. 나는...'},
+    {id:'happyEnd',label:'이상적인 해피엔드',type:'input',ph:''},
+    {id:'change_world',label:'세상에서 바꾸고 싶은 한 가지',type:'input',ph:''},
+    {id:'diary',label:'인물의 심정 일기 (POV)',hint:'캐릭터에 몰입하여 쓴 진심 어린 일기',type:'area',ph:''},
   ]},
 ];
 
@@ -1416,21 +1485,21 @@ function quickCharChat(i){
 }
 
 async function draftCharacters(){
-  const btn=$('char-ai-btn');
-  if(btn.disabled)return;
-  btn.disabled=true;btn.textContent='⏳ AI 분석 중...';
+  const btn=$('char-ai-btn') || $('char-ai-btn-standalone');
+  if(!btn || btn.disabled)return;
+  btn.disabled=true; const oldText=btn.innerHTML; btn.textContent='⏳ AI 분석 중...';
   const synopsis=pdProj?.synopsis||pdProj?.synopsis_detail||'';
   const title=pdProj?.title||'';
   const result=await ai([
     {role:'system',content:'당신은 웹소설/웹툰 캐릭터 전문 분석가입니다. 시놉시스를 읽고 등장인물을 JSON 배열로 추출하세요. 각 캐릭터는 다음 필드를 포함합니다: name(이름), role(주인공/히로인/조력자/악당/빌런/조연 중 하나), appearance(외모 특징 1줄), personality(성격 2-3가지), goal(역할과 목표 1줄), relation(주인공과의 관계 1줄). 반드시 JSON 배열만 반환하세요.'},
     {role:'user',content:`작품명: ${title}\n시놉시스: ${synopsis}\n\n등장인물 JSON 배열을 반환해주세요.`}
   ]);
-  btn.disabled=false;btn.innerHTML='✦ AI로 캐릭터 초안 생성';
+  btn.disabled=false; btn.innerHTML=oldText;
   try{
     const match=result.match(/\[[\s\S]*\]/);
     if(!match)throw new Error('no JSON');
     const chars=JSON.parse(match[0]);
-    pdChars=chars.map(c=>({name:c.name||'',role:c.role||'조연',appearance:c.appearance||'',personality:c.personality||'',goal:c.goal||'',relation:c.relation||''}));
+    pdChars=chars.map(c=>({name:c.name||'',role:c.role||'조연',appearance:c.appearance||'',personality:c.personality||'',goal:c.goal||'',relation:''}));
     renderCharCards();
     saveChars();
     flash('✨ 캐릭터 초안이 생성됐습니다');
