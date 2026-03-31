@@ -840,11 +840,15 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
       </div>
       <div class="plan-actions">
         <button class="plan-btn" onclick="addPlanItem()">+ 항목 추가</button>
-        <button class="plan-btn chat-start" id="plan-chat-btn" onclick="startBuildup()">💬 빌드업 대화 시작하기</button>
         <button class="plan-btn primary" onclick="finishPlan()">완성하기</button>
       </div>
     </div>
     <div class="plan-body">
+      <button id="plan-chat-btn" onclick="startBuildup()" style="display:flex;align-items:center;justify-content:center;gap:12px;width:100%;max-width:760px;padding:18px 24px;margin-bottom:20px;background:linear-gradient(135deg,rgba(139,92,246,0.25),rgba(99,102,241,0.2));border:1.5px solid rgba(139,92,246,0.5);border-radius:16px;color:#fff;font-size:16px;font-weight:800;cursor:pointer;transition:all 0.2s;letter-spacing:-0.01em;box-shadow:0 4px 20px rgba(139,92,246,0.18)">
+        <span style="font-size:22px">💬</span>
+        <span>빌드업 대화 시작하기</span>
+        <span style="font-size:12px;font-weight:600;color:var(--purple-light);background:rgba(139,92,246,0.2);padding:4px 10px;border-radius:20px;border:1px solid rgba(139,92,246,0.3)">AI와 순서대로</span>
+      </button>
       <div class="plan-list" id="plan-list"></div>
     </div>
   </section>
@@ -1711,11 +1715,12 @@ function backToPlan(){
   const btn=$('plan-chat-btn');
   const nextUnfilled=planItems.findIndex(p=>!p.value);
   if(nextUnfilled>=0){
-    btn.textContent='💬 대화 이어하기';
+    btn.innerHTML='<span style="font-size:22px">💬</span><span>빌드업 대화 이어하기</span><span style="font-size:12px;font-weight:600;color:var(--purple-light);background:rgba(139,92,246,0.2);padding:4px 10px;border-radius:20px;border:1px solid rgba(139,92,246,0.3)">AI와 순서대로</span>';
     btn.onclick=()=>startBuildup();
+    btn.style.opacity='1';btn.style.pointerEvents='auto';
   } else {
-    btn.textContent='✅ 모두 채워졌어요';
-    btn.onclick=null;
+    btn.innerHTML='<span style="font-size:22px">✅</span><span>모든 항목을 채웠어요!</span>';
+    btn.style.opacity='0.5';btn.style.pointerEvents='none';
   }
   navTo('plan');
 }
