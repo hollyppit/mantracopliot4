@@ -502,7 +502,7 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
     <div class="ni" id="n-myplan" onclick="navTo('myplan')"><span class="ic">📋</span>내 기획안</div>
     <div class="ni" id="n-outline" onclick="navTo('outline')"><span class="ic">🎬</span>회차 개요</div>
     <div class="ni" id="n-chara" onclick="navTo('chara')"><span class="ic">👤</span>캐릭터 만들기</div>
-    <div class="ni" id="n-verify" onclick="navTo('verify')"><span class="ic">🔍</span>작품 검증</div>
+    <div class="ni" id="n-verify" onclick="navTo('verify')"><span class="ic">🔍</span>전문가 고증</div>
     <div class="ni" id="n-market" onclick="navTo('market')"><span class="ic">🛍️</span>루틴 마켓<span class="nb">준비 중</span></div>
   </nav>
   <div class="sb-foot"><button class="nbtn" onclick="openMode()">+ 새 작품 기획하기</button></div>
@@ -728,9 +728,9 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
       </div>
     </div>
   </section>
-  <!-- 작품 검증 -->
+  <!-- 전문가 고증 -->
   <section class="view" id="view-verify">
-    <div class="vh"><div class="vt">작품 검증</div></div>
+    <div class="vh"><div class="vt">전문가 고증</div></div>
     <div class="vb">
       <div class="vg">
         <div>
@@ -795,6 +795,14 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
       <div class="chud">
         <button class="cbk" onclick="goHome()">←</button>
         <div class="chi"><div class="cht" id="xct">AI 편집자</div><div class="chs" id="xcs"></div></div>
+      </div>
+      <!-- 전문가 아바타 패널 (verify 세션에서만 표시) -->
+      <div id="xc-avatar-panel" style="display:none;flex-shrink:0;padding:24px 28px 0;display:none;align-items:center;gap:20px;background:rgba(139,92,246,0.04);border-bottom:1px solid var(--border)">
+        <img id="xc-avatar-img" src="" style="width:96px;height:96px;object-fit:cover;border-radius:50%;border:2px solid rgba(139,92,246,0.35);box-shadow:0 0 28px rgba(139,92,246,0.2);animation:flt 4s ease-in-out infinite;flex-shrink:0">
+        <div>
+          <div id="xc-avatar-name" style="font-size:15px;font-weight:800;margin-bottom:4px"></div>
+          <div id="xc-avatar-desc" style="font-size:12px;color:var(--text-dim);line-height:1.6;max-width:420px"></div>
+        </div>
       </div>
       <div class="xb" id="xb"></div>
       <div class="xiw">
@@ -2013,11 +2021,31 @@ function startVerify(name){
     '로판 편집자':'당신은 로맨스 판타지 등 장르 문법에 정통한 편집자입니다. 트렌디한 장르물로 다듬기 위한 맞춤형 조언을 제공하세요.',
     '10년차 평론가':'당신은 10년 경력의 장르 소설 평론가입니다. 냉정하고 직접적으로 강점 2가지 / 논리적 약점 2가지 / 개선 전략 3가지 형식으로 피드백하세요.',
   };
+  const DESC={
+    '의학 전문가':'의학·법의학 타당성 검토 · 의료 절차 오류 지적',
+    '수사 전문가':'경찰 절차·증거 수집 현실성 검토',
+    '법률 전문가':'재판 과정·법적 절차 맹점 분석',
+    '심리학 전문가':'캐릭터 심리 현실성·심리학적 근거 검토',
+    '역사 전문가':'복식·문화·제도 고증 오류 검증',
+    '군사 전문가':'무기·전술·전투씬 현실성 검토',
+    '냉정한 편집자':'개연성 오류·독자 이탈 포인트 직격 피드백',
+    '공감형 편집자':'감정선·캐릭터 매력 극대화 피드백',
+    '로판 편집자':'장르 문법·트렌드 맞춤 조언',
+    '10년차 평론가':'강점 2 · 약점 2 · 개선 전략 3 구조 피드백',
+  };
   xMsgs=[];
   xLinkedProj=selProj||null;
   xPersonaBase=PM[name]||'당신은 전문 검증 에이전트입니다.';
   xPersona=xPersonaBase+(xLinkedProj?projCtxOf(xLinkedProj):'');
   openXChat(`저는 **${name}**입니다.\n\n지금 작업 중인 원고 일부를 보내주시거나, 평가받고 싶은 설정을 알려주세요.\n\n날카롭고 정확한 피드백을 드리겠습니다.`,name);
+  // 전문가 아바타 패널 표시
+  const ap=$('xc-avatar-panel');
+  if(ap){
+    $('xc-avatar-img').src='images/\uc804\ubb38\uac00 \ud398\ub974\uc18c\ub098f(\uc6c0\uc9c1\uc784).gif';
+    $('xc-avatar-name').textContent=name;
+    $('xc-avatar-desc').textContent=DESC[name]||'';
+    ap.style.display='flex';
+  }
 }
 function projCtx(){
   if(!selProj)return'';
@@ -2029,6 +2057,9 @@ function openXChat(greeting,sub){
   $('xct').textContent=sub||'AI 편집자';
   $('xcs').textContent='';
   $('xb').innerHTML='';
+  // 아바타 패널 기본 숨김 (startVerify에서만 표시)
+  const ap=$('xc-avatar-panel');
+  if(ap)ap.style.display='none';
   renderXLinkButtons();
   addXMsg('assistant',greeting);
   setTimeout(()=>$('xi').focus(),300);
