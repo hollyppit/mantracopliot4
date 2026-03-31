@@ -791,7 +791,7 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
         </div>
         <div class="ia" id="ia" style="display:none">
           <button class="ibtn" id="ibt" onclick="openInsight()">✦ 이 질문의 스토리텔링 인사이트 보기</button>
-          <button class="buildup-autofill-btn" id="buildup-autofill-btn" onclick="autoFillBuildupStep()">✨ AI가 대신 채우기 — 이 질문을 AI가 작성하고 바로 다음으로 넘어갑니다</button>
+          <button class="buildup-autofill-btn" id="buildup-autofill-btn" onclick="autoFillBuildupStep()">✨ AI 답변 제안 — 클릭하면 입력창에 채워집니다 (수정 후 전송하세요)</button>
           <div class="cr" id="cr"></div>
           <div class="ibw">
             <textarea id="ci" placeholder="직접 입력하세요..." rows="1"
@@ -2080,15 +2080,18 @@ async function autoFillBuildupStep(){
       {role:'user',content:`[앞선 기획 내용]\n${ctx||'없음'}\n\n[현재 질문]\n키워드: ${s.k||''}\n질문: ${s.q}${s.h?'\n힌트: '+s.h:''}\n\n답변:`}
     ],{model:'claude-haiku-4-5-20251001',max_tokens:256});
     if(result&&!result.includes('⚠️')){
-      await submitBuildupAns(result.trim());
+      const ci=$('ci');
+      ci.value=result.trim();
+      ci.style.height='44px';
+      ci.style.height=Math.min(ci.scrollHeight,140)+'px';
+      ci.focus();
     }else{
-      flash('AI 응답 오류');
-      if(btn){btn.disabled=false;btn.textContent='✨ AI가 대신 채우기 — 이 질문을 AI가 판단해서 작성합니다';}
+      flash('AI 응답 오류. 다시 시도해주세요.');
     }
   }catch(e){
-    flash('오류가 발생했습니다');
-    if(btn){btn.disabled=false;btn.textContent='✨ AI가 대신 채우기 — 이 질문을 AI가 판단해서 작성합니다';}
+    flash('오류가 발생했습니다.');
   }
+  if(btn){btn.disabled=false;btn.textContent='✨ AI 답변 제안 — 클릭하면 입력창에 채워집니다 (수정 후 전송하세요)';}
 }
 
 function findNextUnfilled(fromIdx){
