@@ -1237,8 +1237,13 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
   <div class="chp">
     <div class="chc" onclick="selChar('조수 T형')"><div class="cca"><img src="images/조수a.gif" style="width:100%;height:100%;object-fit:cover;border-radius:50%"></div><div class="ccn">조수 T형</div><div class="ccd">논리적이고 직관적인 기획 파트너.<br>허점을 날카롭게 짚어줍니다.</div></div>
     <div class="chc" onclick="selChar('조수 F형')"><div class="cca"><img src="images/조수b.gif" style="width:100%;height:100%;object-fit:cover;border-radius:50%"></div><div class="ccn">조수 F형</div><div class="ccd">공감 능력이 뛰어난 감성형 파트너.<br>캐릭터 감정선을 깊이 분석합니다.</div></div>
-  </div>
-</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script>
+  // pdf.js worker setup
+  if (window.pdfjsLib) {
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  }
+</script>
 <script>
 // ── 상수 ──
 const SB_URL='https://mvygorffhbshubqkerpo.supabase.co';
@@ -1381,32 +1386,75 @@ function saveOlTextInput(){
   _applyOlLinkedText(ctx);
 }
 
-function handleOlPdfUpload(input){
-  const file=input.files[0];if(!file)return;
-  const status=$('ol-pdf-status');
-  status.textContent='파일 읽는 중...';status.className='ol-pdf-status on';
-  const reader=new FileReader();
-  reader.onload=e=>{
-    let text='';
-    if(file.name.toLowerCase().endsWith('.pdf')){
-      const bytes=new Uint8Array(e.target.result);
-      const raw=new TextDecoder('utf-8',{fatal:false}).decode(bytes);
-      const matches=raw.match(/\(((?:[^()\\]|\\.){1,300})\)/g)||[];
-      text=matches.map(m=>m.slice(1,-1)).filter(s=>s.trim().length>2&&/[\uAC00-\uD7A3a-zA-Z]/.test(s)).join(' ');
-      if(text.length<30){
-        status.textContent='❗ PDF 텍스트 자동 추출 실패. "텍스트 입력" 탭에서 직접 붙여넣기 해주세요.';
-        return;
-      }
-    } else {
-      text=e.target.result;
+async function extractTextFromFile(file) {
+  const maxSize = 5 * 1024 * 1024; // 5MB
+  if (file.size > maxSize) throw new Error('5MB 이하의 파일만 업로드 가능합니다.');
+
+  const extension = file.name.split('.').pop().toLowerCase();
+  if (extension === 'pdf') {
+    const arrayBuffer = await file.arrayBuffer();
+    const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+    let fullText = '';
+    for (let i = 1; i <= pdf.numPages; i++) {
+        const page = await pdf.getPage(i);
+        const textContent = await page.getTextContent();
+        const pageText = textContent.items.map(item => item.str).join(' ');
+        fullText += pageText + '\n';
     }
-    _olPdfText=text.slice(0,8000);
-    const ctx={title:file.name,text:_olPdfText};
-    status.textContent=`✓ "${file.name}" 읽기 완료 (${text.length.toLocaleString()}자)`;
-    setTimeout(()=>{_applyOlLinkedText(ctx);},900);
+    return fullText.trim();
+  } else if (extension === 'txt' || extension === 'md') {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = e => resolve(e.target.result);
+      reader.onerror = e => reject(new Error('파일을 읽는 중 오류가 발생했습니다.'));
+      reader.readAsText(file);
+    });
+  } else {
+    throw new Error('지원하지 않는 파일 형식입니다. (.pdf, .txt, .md)');
+  }
+}
+
+function storeProjectContext(pid, text) {
+  if (!pid) return;
+  const data = {
+    text: text,
+    updatedAt: Date.now()
   };
-  if(file.name.toLowerCase().endsWith('.pdf'))reader.readAsArrayBuffer(file);
-  else reader.readAsText(file,'utf-8');
+  localStorage.setItem(`project_context_${pid}`, JSON.stringify(data));
+}
+
+function getStoredContext(pid) {
+  if (!pid) return '';
+  const stored = localStorage.getItem(`project_context_${pid}`);
+  if (!stored) return '';
+  try {
+    const data = JSON.parse(stored);
+    return (data.text || '').slice(0, 3000);
+  } catch (e) { return ''; }
+}
+
+async function handleOlPdfUpload(input) {
+  const file = input.files[0]; if (!file) return;
+  const status = $('ol-pdf-status');
+  status.textContent = '분석 중...'; status.className = 'ol-pdf-status on';
+
+  try {
+    const text = await extractTextFromFile(file);
+    if (text.length < 10) throw new Error('추출된 텍스트가 너무 적습니다.');
+    
+    const pid = olProjId || (selProj ? selProj.id : null) || (pdProj ? pdProj.id : null);
+    if (pid) storeProjectContext(pid, text);
+
+    _olPdfText = text;
+    const ctx = { title: file.name, text: text };
+    status.textContent = `✓ 작품 연동 완료: "${file.name}"`;
+    setTimeout(() => { _applyOlLinkedText(ctx); }, 900);
+  } catch (err) {
+    status.textContent = `❌ ${err.message}`;
+    console.error(err);
+  } finally {
+    input.value = '';
+  }
 }
 
 function _applyOlLinkedText(ctx){
@@ -1480,29 +1528,26 @@ async function saveSynModal(){
   closeSynModal();renderMyPlanWorks();flash('시놉시스 저장됐습니다');
 }
 
-function handleSynPdfUpload(input){
-  const file=input.files[0];if(!file)return;
-  const status=$('syn-pdf-status');
-  status.textContent='파일 읽는 중...';status.className='ol-pdf-status on';
-  const reader=new FileReader();
-  reader.onload=e=>{
-    let text='';
-    if(file.name.toLowerCase().endsWith('.pdf')){
-      const bytes=new Uint8Array(e.target.result);
-      const raw=new TextDecoder('utf-8',{fatal:false}).decode(bytes);
-      const matches=raw.match(/\(((?:[^()\\]|\\.){1,300})\)/g)||[];
-      text=matches.map(m=>m.slice(1,-1)).filter(s=>s.trim().length>2&&/[\uAC00-\uD7A3a-zA-Z]/.test(s)).join(' ');
-      if(text.length<30){
-        status.textContent='❗ PDF 텍스트 추출 실패. "직접 입력" 탭에서 붙여넣기 해주세요.';return;
-      }
-    } else {
-      text=e.target.result;
-    }
-    synPdfText=text.slice(0,8000);
-    status.textContent=`✓ "${file.name}" 준비됨 (${synPdfText.length.toLocaleString()}자) — 저장하기를 눌러주세요`;
-  };
-  if(file.name.toLowerCase().endsWith('.pdf'))reader.readAsArrayBuffer(file);
-  else reader.readAsText(file,'utf-8');
+async function handleSynPdfUpload(input) {
+  const file = input.files[0]; if (!file) return;
+  const status = $('syn-pdf-status');
+  status.textContent = '분석 중...'; status.className = 'ol-pdf-status on';
+
+  try {
+    const text = await extractTextFromFile(file);
+    if (text.length < 10) throw new Error('추출된 텍스트가 너무 적습니다.');
+
+    const pid = synEditProjId || (selProj ? selProj.id : null) || (pdProj ? pdProj.id : null);
+    if (pid) storeProjectContext(pid, text);
+
+    synPdfText = text;
+    status.textContent = `✓ 작품 연동 완료: "${file.name}" — 저장하기를 눌러주세요`;
+  } catch (err) {
+    status.textContent = `❌ ${err.message}`;
+    console.error(err);
+  } finally {
+    input.value = '';
+  }
 }
 // ── 오버레이 ──
 const openOv=id=>$(id).classList.add('on');
@@ -1611,7 +1656,8 @@ async function startWorkReview(pid){
   const epSummary=epList.length
     ?epList.slice(0,12).map((e,i)=>`${i+1}화: ${e.title||''} — ${e.synopsis||e.content||e.summary||''}`).join('\n')
     :'(회차 개요 없음)';
-  const persona=`당신은 만트라 코파일럿의 작품 통합 검토 AI입니다. 웹툰·웹소설 전문 편집자 관점에서 아래 작품을 체계적으로 분석합니다.\n\n【검토 작품】\n제목: ${p.title}\n장르: ${p.genre||'미분류'}\n\n【시놉시스】\n${synopsis}\n\n【캐릭터 설정】\n${chars}\n\n【회차 개요】\n${epSummary}\n\n검토 시 ① 시놉시스 내부 논리 일관성 ② 캐릭터 설정과 시놉시스 충돌 여부 ③ 회차 개요와 캐릭터/시놉시스 모순을 항목별로 분석하고, 각 항목의 오류와 개선 제안을 명확하게 제시하세요.`;
+  const externalCtx = getStoredContext(p.id);
+  const persona=`당신은 만트라 코파일럿의 작품 통합 검토 AI입니다. 웹툰·웹소설 전문 편집자 관점에서 아래 작품을 체계적으로 분석합니다.\n\n【검토 작품】\n제목: ${p.title}\n장르: ${p.genre||'미분류'}${externalCtx ? `\n\n【참고 문헌】\n${externalCtx}` : ''}\n\n【시놉시스】\n${synopsis}\n\n【캐릭터 설정】\n${chars}\n\n【회차 개요】\n${epSummary}\n\n검토 시 ① 시놉시스 내부 논리 일관성 ② 캐릭터 설정과 시놉시스 충돌 여부 ③ 회차 개요와 캐릭터/시놉시스 모순을 항목별로 분석하고, 각 항목의 오류와 개선 제안을 명확하게 제시하세요.`;
   xMsgs=[];
   xLinkedProj=p;
   xPersonaBase=persona;
@@ -2427,11 +2473,22 @@ async function autoFillItemModal(){
   const item=planItems[editingIdx];
   const btn=$('im-autofill-btn');
   if(btn){btn.disabled=true;btn.textContent='✨ 생각 중...';}
-  const ctx=planItems.filter(p=>p.value&&p.value.trim()).map(p=>`${p.k||p.q}: ${p.value}`).join('\n');
+  
+  const pid = (selProj ? selProj.id : null) || (pdProj ? pdProj.id : null);
+  const externalCtx = getStoredContext(pid);
+  const internalCtx=planItems.filter(p=>p.value&&p.value.trim()).map(p=>`${p.k||p.q}: ${p.value}`).join('\n');
+  
   try{
+    const prompt = `웹툰·웹소설 기획 AI다. 앞서 정해진 기획 내용 및 제공된 참고 문헌을 바탕으로 현재 질문에 맞는 답변을 생성한다. 앞 내용과 세계관·장르·캐릭터가 일관되어야 한다. 답변 텍스트만 출력. 되묻거나 설명 금지. 기호·마크다운·이모지 없이 1~2문장.
+${externalCtx ? `\n[참고 문헌]\n${externalCtx}\n` : ''}
+${internalCtx ? `\n[앞서 정해진 기획]\n${internalCtx}\n` : ''}
+[현재 질문] ${item.q}${item.h ? ` (힌트: ${item.h})` : ''}
+
+위 내용을 참고한 답변:`;
+
     const result=await ai([
-      {role:'system',content:'웹툰·웹소설 기획 AI다. 앞서 정해진 기획 내용을 바탕으로 현재 질문에 맞는 답변을 생성한다. 앞 내용과 세계관·장르·캐릭터가 일관되어야 한다. 답변 텍스트만 출력. 되묻거나 설명 금지. 기호·마크다운·이모지 없이 1~2문장.'},
-      {role:'user',content:`${ctx?`[앞서 정해진 기획]\n${ctx}\n\n`:''}[현재 질문] ${item.q}${item.h?` (힌트: ${item.h})`:''}\n\n위 기획과 일관된 답변:`}
+      {role:'system',content:'웹툰·웹소설 기획 조각을 작성하는 기획 전문가입니다.'},
+      {role:'user',content:prompt}
     ],{max_tokens:150});
     const cleaned=result?result.replace(/^[\s\-\*\#\>\"\']+/,'').trim():'';
     if(cleaned&&!cleaned.includes('⚠️')){
@@ -2614,30 +2671,41 @@ async function submitBuildupAns(val){
 }
 
 async function autoFillBuildupStep(){
-  const s=planItems[chatStep];
-  if(!s)return;
-  const btn=$('buildup-autofill-btn');
-  if(btn){btn.disabled=true;btn.textContent='✨ 생각 중...';}
-  const ctx=planItems.filter(p=>p.value).map(p=>`${p.k||p.q}: ${p.value}`).join('\n');
-  try{
-    const result=await ai([
-      {role:'system',content:'웹툰·웹소설 기획 AI다. 앞서 정해진 기획 내용을 바탕으로 현재 질문에 맞는 답변을 생성한다. 앞 내용과 세계관·장르·캐릭터가 일관되어야 한다. 답변 텍스트만 출력. 되묻거나 설명 금지. 기호·마크다운·이모지 없이 1~2문장.'},
-      {role:'user',content:`${ctx?`[앞서 정해진 기획]\n${ctx}\n\n`:''}[현재 질문] ${s.q}${s.h?` (힌트: ${s.h})`:''}\n\n위 기획과 일관된 답변:`}
-    ],{max_tokens:150});
-    const cleaned=result?result.replace(/^[\s\-\*\#\>\"\']+/,'').trim():'';
-    if(cleaned&&!cleaned.includes('⚠️')){
-      const ci=$('ci');
-      ci.value=cleaned;
-      ci.style.height='44px';
-      ci.style.height=Math.min(ci.scrollHeight,140)+'px';
+  const s = planItems[chatStep];
+  if (!s) return;
+  const btn = $('buildup-autofill-btn');
+  if (btn) { btn.disabled = true; btn.textContent = '✨ 생각 중...'; }
+
+  const pid = (selProj ? selProj.id : null) || (pdProj ? pdProj.id : null);
+  const externalCtx = getStoredContext(pid);
+  const internalCtx = planItems.filter(p => p.value).map(p => `${p.k || p.q}: ${p.value}`).join('\n');
+
+  try {
+    const prompt = `웹툰·웹소설 기획 AI다. 앞서 정해진 기획 내용 및 제공된 참고 문헌을 바탕으로 현재 질문에 맞는 답변을 생성한다. 앞 내용과 세계관·장르·캐릭터가 일관되어야 한다. 답변 텍스트만 출력. 되묻거나 설명 금지. 기호·마크다운·이모지 없이 1~2문장.
+${externalCtx ? `\n[참고 문헌]\n${externalCtx}\n` : ''}
+${internalCtx ? `\n[앞서 정해진 기획]\n${internalCtx}\n` : ''}
+[현재 질문] ${s.q}${s.h ? ` (힌트: ${s.h})` : ''}
+
+위 내용을 참고한 답변:`;
+
+    const result = await ai([
+      { role: 'system', content: '작가의 기획을 돕는 유능한 조수입니다.' },
+      { role: 'user', content: prompt }
+    ], { max_tokens: 150 });
+    const cleaned = result ? result.replace(/^[\s\-\*\#\>\"\']+/,'').trim() : '';
+    if (cleaned && !cleaned.includes('⚠️')) {
+      const ci = $('ci');
+      ci.value = cleaned;
+      ci.style.height = '44px';
+      ci.style.height = Math.min(ci.scrollHeight, 140) + 'px';
       ci.focus();
-    }else{
+    } else {
       flash('AI 응답 오류. 다시 시도해주세요.');
     }
-  }catch(e){
+  } catch (e) {
     flash('오류가 발생했습니다.');
   }
-  if(btn){btn.disabled=false;btn.textContent='✨ AI 자동 채우기';}
+  if (btn) { btn.disabled = false; btn.textContent = '✨ AI 자동 채우기'; }
 }
 
 function findNextUnfilled(fromIdx){
@@ -2788,8 +2856,9 @@ function renderXLinkButtons(){
 
 function projCtxOf(p){
   if(!p)return'';
+  const externalCtx = getStoredContext(p.id);
   const h=(p.answer_history||[]).slice(0,10).map(e=>`- ${e.id}: ${e.value}`).join('\n');
-  return`\n\n[작품 정보]\n제목: ${p.title}\n장르: ${p.genre||''}\n시놉시스: ${p.synopsis||''}${h?'\n[기획 내용]\n'+h:''}`;
+  return`\n\n[작품 정보]\n제목: ${p.title}\n장르: ${p.genre||''}\n시놉시스: ${p.synopsis||''}${externalCtx ? '\n[참고 문헌]\n'+externalCtx : ''}${h?'\n[기획 내용]\n'+h:''}`;
 }
 
 function addXMsg(role,text){
@@ -3286,9 +3355,22 @@ async function autoFillEpisode(idx){
   const typeIds=EP_TYPES.map(t=>t.id).join('|');
 
   try{
+    const pid = (selProj ? selProj.id : null) || (pdProj ? pdProj.id : null);
+    const externalCtx = getStoredContext(pid);
+
+    const prompt = `웹툰·웹소설 회차 기획 AI다. 작품 정보, 앞 회차 흐름, 이미 입력된 내용, 그리고 제공된 참고 문헌을 모두 참고해 ${ep.num}화(전체 ${total}화, ${ep.act}막)의 빈 항목만 채워라. 이미 입력된 내용과 일관성을 유지하라. JSON만 출력. 형식: {"type":"${typeIds}","keyword":"","title":"","synopsis":"","funPoint":"","lastPanel":"","tension":숫자}
+${externalCtx ? `\n[참고 문헌]\n${externalCtx}\n` : ''}
+[작품 정보]
+${projInfo}${planCtx ? `\n\n[기획 내용]\n${planCtx}` : ''}${prevEps ? `\n\n[앞 회차 흐름]\n${prevEps}` : ''}
+
+[이미 입력된 내용]
+${alreadyCtx || '없음'}
+
+빈 항목(${emptyFields.join(', ') || 'tension'})을 채운 JSON:`;
+
     const result=await ai([
-      {role:'system',content:`웹툰·웹소설 회차 기획 AI다. 작품 정보, 앞 회차 흐름, 이미 입력된 내용을 모두 참고해 ${ep.num}화(전체 ${total}화, ${ep.act}막)의 빈 항목만 채워라. 이미 입력된 내용과 일관성을 유지하라. JSON만 출력. 형식: {"type":"${typeIds}","keyword":"","title":"","synopsis":"","funPoint":"","lastPanel":"","tension":숫자}`},
-      {role:'user',content:`[작품 정보]\n${projInfo}${planCtx?`\n\n[기획 내용]\n${planCtx}`:''}${prevEps?`\n\n[앞 회차 흐름]\n${prevEps}`:''}\n\n[이미 입력된 내용]\n${alreadyCtx||'없음'}\n\n빈 항목(${emptyFields.join(', ')||'tension'})을 채운 JSON:`}
+      {role:'system',content:`회차별 개요를 짜는 전문 편집자입니다.`},
+      {role:'user',content:prompt}
     ],{max_tokens:400});
 
     if(result.includes('⚠️'))throw new Error(result);
