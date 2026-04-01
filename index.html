@@ -777,7 +777,10 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
     <div class="proj-detail-wrap">
       <div class="proj-detail-header">
         <div style="font-size:20px;font-weight:900;margin-right:12px">캐릭터 만들기</div>
-        <button class="link-proj-btn" id="ch-proj-badge" onclick="openChProjSelect()">🔗 작품 연동하기</button>
+        <div style="display:flex;align-items:center;gap:6px">
+          <button class="link-proj-btn" id="ch-proj-badge" onclick="openChProjSelect()">🔗 작품 연동하기</button>
+          <button id="ch-proj-del-btn" onclick="deleteLinkedProj('ch')" style="display:none;background:rgba(211,47,47,0.1);border:1px solid rgba(211,47,47,0.3);color:#f44336;padding:4px 8px;border-radius:12px;font-size:11px;font-weight:700;cursor:pointer">삭제</button>
+        </div>
         <div style="flex:1"></div>
         <button class="ol-btn primary" onclick="saveChars()">저장</button>
       </div>
@@ -793,7 +796,10 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
         <div class="ol-top">
           <div class="ol-title-row">
             <div style="font-size:20px;font-weight:900">회차 개요</div>
-            <button class="link-proj-btn" id="ol-proj-badge" onclick="openOlProjSelect()">🔗 작품 연동하기</button>
+            <div style="display:flex;align-items:center;gap:6px">
+              <button class="link-proj-btn" id="ol-proj-badge" onclick="openOlProjSelect()">🔗 작품 연동하기</button>
+              <button id="ol-proj-del-btn" onclick="deleteLinkedProj('ol')" style="display:none;background:rgba(211,47,47,0.1);border:1px solid rgba(211,47,47,0.3);color:#f44336;padding:4px 8px;border-radius:12px;font-size:11px;font-weight:700;cursor:pointer">삭제</button>
+            </div>
           </div>
           <div class="ol-actions">
             <button class="ol-btn" onclick="openEpCountModal()">+ 회차 일괄 추가</button>
@@ -1645,7 +1651,7 @@ function renderProjects(){
   projects.forEach(p=>{
     const c=document.createElement('div');c.className='pc';
     const prev2=p.synopsis||(p.answer_history&&p.answer_history.find(i=>i.value)?.value)||'기획 내용을 확인하세요.';
-    c.innerHTML=`<div><span class="pc-genre">${p.genre||'미분류'}</span></div><div class="pc-title">${p.title}</div><div class="pc-syn">${prev2}</div><div class="pc-foot"><span>${p.routine_type==='short'?'단편':'장편'}</span><span>${(p.answer_history||[]).filter(i=>i.value).length}단계 완료</span></div>`;
+    c.innerHTML=`<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px"><span class="pc-genre">${p.genre||'미분류'}</span><div style="display:flex;gap:6px" onclick="event.stopPropagation()"><button onclick="openEditProjModal('${p.id}')" style="padding:3px 8px;background:rgba(255,255,255,0.06);border:1px solid var(--border);border-radius:7px;color:var(--text-dim);font-size:11px;font-weight:700;font-family:inherit;cursor:pointer">✏️</button><button onclick="quickDeleteProj('${p.id}','${p.title.replace(/'/g,"\\'")}')" style="padding:3px 8px;background:rgba(255,255,255,0.06);border:1px solid var(--border);border-radius:7px;color:var(--text-dim);font-size:11px;font-weight:700;font-family:inherit;cursor:pointer">🗑</button></div></div><div class="pc-title">${p.title}</div><div class="pc-syn">${prev2}</div><div class="pc-foot"><span>${p.routine_type==='short'?'단편':'장편'}</span><span>${(p.answer_history||[]).filter(i=>i.value).length}단계 완료</span></div>`;
     c.onclick=()=>openProjDetail(p.id);
     g.appendChild(c);
   });
@@ -1793,6 +1799,41 @@ async function deleteProject(){
   flash(`'${title}' 삭제됐습니다`);
 }
 
+function quickDeleteProj(pid,title){
+  if(!confirm(`'${title}' 기획안을 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.`))return;
+  const arr=JSON.parse(localStorage.getItem('mp')||'[]');
+  localStorage.setItem('mp',JSON.stringify(arr.filter(p=>p.id!==pid)));
+  if(user){
+    sb.from('projects').delete().eq('id',pid).eq('user_id',user.id).then();
+  }
+  loadMyPlan();
+  flash(`'${title}' 삭제됐습니다`);
+}
+
+function openEditProjModal(pid){
+  const p=projects.find(item=>item.id===pid);
+  if(!p)return;
+  const newT=prompt('변경할 제목을 입력하세요:', p.title);
+  if(newT && newT.trim()){
+    p.title=newT.trim();
+    const arr=JSON.parse(localStorage.getItem('mp')||'[]');
+    const i=arr.findIndex(item=>item.id===pid);
+    if(i>=0){arr[i].title=newT.trim();localStorage.setItem('mp',JSON.stringify(arr));}
+    if(user){
+      sb.from('projects').update({title:newT.trim()}).eq('id',pid).eq('user_id',user.id).then();
+    }
+    loadMyPlan();
+  }
+}
+
+function deleteLinkedProj(type){
+  if(type==='ol'){
+    olProjId=null; olLinkedText=null; localStorage.removeItem('ol_proj'); renderOlProj();
+  }else{
+    pdProj=null; chLinkedText=null; renderChProjBadge(); renderCharCards();
+  }
+}
+
 function escH(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 
 function renderCharCards(){
@@ -1873,6 +1914,8 @@ function renderChProjBadge(){
   if(pdProj){ b.innerHTML='📚 '+pdProj.title; b.className='link-proj-btn linked'; }
   else if(chLinkedText){ b.innerHTML='✓ '+chLinkedText.title; b.className='link-proj-btn linked'; }
   else { b.innerHTML='🔗 작품 연동하기'; b.className='link-proj-btn'; }
+  const delBtn=$('ch-proj-del-btn');
+  if(delBtn) delBtn.style.display=(pdProj||chLinkedText)?'block':'none';
 }
 
 function openChProjSelect(){
@@ -2846,6 +2889,8 @@ function renderOlProj(){
   if(proj){ badge.innerHTML='📚 '+proj.title; badge.className='link-proj-btn linked'; }
   else if(olLinkedText){ badge.innerHTML='✓ '+olLinkedText.title; badge.className='link-proj-btn linked'; }
   else { badge.innerHTML='🔗 작품 연동하기'; badge.className='link-proj-btn'; }
+  const delBtn=$('ol-proj-del-btn');
+  if(delBtn) delBtn.style.display=(proj||olLinkedText)?'block':'none';
 }
 
 function openOlProjSelect(){
