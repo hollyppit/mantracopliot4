@@ -782,6 +782,7 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
           <button id="ch-proj-del-btn" onclick="deleteLinkedProj('ch')" style="display:none;background:rgba(211,47,47,0.1);border:1px solid rgba(211,47,47,0.3);color:#f44336;padding:4px 8px;border-radius:12px;font-size:11px;font-weight:700;cursor:pointer">삭제</button>
         </div>
         <div style="flex:1"></div>
+        <button class="ol-btn" onclick="resetChars()" style="color:#fde68a;border-color:rgba(251,191,36,0.3)">🔄 초기화</button>
         <button class="ol-btn primary" onclick="saveChars()">저장</button>
       </div>
       <div class="proj-detail-body">
@@ -803,6 +804,7 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
           </div>
           <div class="ol-actions">
             <button class="ol-btn" onclick="openEpCountModal()">+ 회차 일괄 추가</button>
+            <button class="ol-btn" onclick="resetOutlineData()" style="color:#fde68a;border-color:rgba(251,191,36,0.3)">🔄 초기화</button>
             <button class="ol-btn primary" onclick="saveOutlineData()">저장</button>
           </div>
         </div>
@@ -987,6 +989,7 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
           <div id="pd-genre" style="font-size:12px;color:var(--text-faint);margin-top:2px"></div>
         </div>
         <button onclick="linkToOutline()" style="padding:8px 16px;background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:10px;color:var(--text-dim);font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;white-space:nowrap;transition:all 0.2s" onmouseover="this.style.borderColor='var(--border2)';this.style.color='var(--text)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-dim)'">🎬 회차 개요</button>
+        <button class="proj-del-btn" onclick="resetProjPlan()" style="margin-right:4px;background:rgba(251,191,36,0.07);border-color:rgba(251,191,36,0.2);color:#fde68a">🔄 초기화</button>
         <button class="proj-del-btn" onclick="deleteProject()">🗑 삭제</button>
       </div>
       <div class="proj-detail-tabs">
@@ -1832,6 +1835,45 @@ function deleteLinkedProj(type){
   }else{
     pdProj=null; chLinkedText=null; renderChProjBadge(); renderCharCards();
   }
+}
+
+async function resetProjPlan() {
+  if(!pdProj) return;
+  if(!confirm(`'${pdProj.title}' 기획 내용을 전부 초기화할까요?\n시놉시스와 단계별 답변이 모두 삭제됩니다.`)) return;
+  pdProj.answer_history = [];
+  pdProj.synopsis = '';
+  $('syn-textarea').value = '';
+  const arr = JSON.parse(localStorage.getItem('mp')||'[]');
+  const idx = arr.findIndex(p=>p.id===pdProj.id);
+  if(idx>=0){ arr[idx].answer_history=[]; arr[idx].synopsis=''; localStorage.setItem('mp',JSON.stringify(arr)); }
+  if(user){ try{ await sb.from('projects').update({answer_history:[],synopsis:''}).eq('id',pdProj.id).eq('user_id',user.id); }catch(e){} }
+  renderPlanStructure();
+  switchProjTab('synopsis');
+  flash('기획 내용이 초기화됐습니다 🔄');
+}
+
+async function resetOutlineData() {
+  if(!confirm('회차 개요를 전부 초기화할까요?\n모든 회차 데이터가 삭제됩니다.')) return;
+  olEpisodes = [];
+  localStorage.removeItem('ol_episodes');
+  if(user && olProjId){ try{ await sb.from('projects').update({episodes:[]}).eq('id',olProjId).eq('user_id',user.id); }catch(e){} }
+  renderEpList();
+  flash('회차 개요가 초기화됐습니다 🔄');
+}
+
+async function resetChars() {
+  if(!confirm('캐릭터를 전부 초기화할까요?\n모든 캐릭터 데이터가 삭제됩니다.')) return;
+  pdChars = [];
+  const isStandalone = $('view-chara').classList.contains('on');
+  if(isStandalone){ renderCharCards(); } else { renderCharCards(); }
+  if(pdProj){
+    pdProj.characters = [];
+    const arr = JSON.parse(localStorage.getItem('mp')||'[]');
+    const idx = arr.findIndex(p=>p.id===pdProj.id);
+    if(idx>=0){ arr[idx].characters=[]; localStorage.setItem('mp',JSON.stringify(arr)); }
+    if(user){ try{ await sb.from('projects').update({characters:[]}).eq('id',pdProj.id).eq('user_id',user.id); }catch(e){} }
+  }
+  flash('캐릭터가 초기화됐습니다 🔄');
 }
 
 function escH(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
