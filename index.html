@@ -392,6 +392,26 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
 .intro-skip{position:absolute;bottom:32px;right:36px;font-size:11px;color:var(--text-faint);cursor:pointer;border:none;background:none;font-family:inherit;letter-spacing:0.08em;transition:color 0.2s;opacity:0;animation:skipIn 0.5s ease 0.8s forwards;z-index:4}
 .intro-skip:hover{color:var(--text-dim)}
 @keyframes skipIn{to{opacity:1}}
+/* ── 작품 연동 버튼 ── */
+.link-proj-btn{display:inline-flex;align-items:center;gap:7px;padding:8px 16px;border-radius:14px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;transition:all 0.22s;border:1.5px dashed var(--border2);background:transparent;color:var(--text-dim);white-space:nowrap}
+.link-proj-btn:hover{border-color:var(--purple);color:var(--purple-light);background:rgba(139,92,246,0.07);border-style:solid}
+.link-proj-btn.linked{border-style:solid;border-color:rgba(139,92,246,0.45);background:rgba(139,92,246,0.1);color:var(--purple-light)}
+/* ── 연동 모달 탭 ── */
+.ol-tabs{display:flex;gap:3px;margin:14px 0 6px;background:var(--surface);border-radius:12px;padding:4px;flex-shrink:0}
+.ol-tab{flex:1;padding:8px 6px;border-radius:9px;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;border:none;background:none;color:var(--text-faint);transition:all 0.2s}
+.ol-tab.on{background:rgba(139,92,246,0.18);color:var(--purple-light)}
+.ol-panel{display:none}
+.ol-panel.on{display:block}
+.ol-text-ta{width:100%;min-height:130px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:12px;padding:12px 14px;font-size:13px;font-family:inherit;color:var(--text);resize:vertical;line-height:1.75;margin-top:8px}
+.ol-text-ta:focus{outline:none;border-color:rgba(139,92,246,0.4)}
+.ol-pdf-drop{border:2px dashed var(--border2);border-radius:14px;padding:24px 16px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:10px;margin-top:10px;cursor:pointer;transition:all 0.2s;color:var(--text-dim)}
+.ol-pdf-drop:hover{border-color:var(--purple-light);color:var(--text)}
+.ol-pdf-status{font-size:12px;color:#6EE7B7;margin-top:8px;padding:8px 14px;background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.2);border-radius:10px;display:none;word-break:break-word;line-height:1.5}
+.ol-pdf-status.on{display:block}
+/* ── 시놉시스 입력 모달 ── */
+.syn-modal-ov{position:fixed;inset:0;z-index:650;background:rgba(4,4,12,0.88);backdrop-filter:blur(20px);display:none;align-items:center;justify-content:center;padding:20px}
+.syn-modal-ov.on{display:flex}
+.syn-modal-box{background:rgba(12,12,24,0.98);border:1px solid var(--border2);border-radius:20px;padding:28px;width:100%;max-width:520px;box-shadow:0 30px 80px rgba(0,0,0,0.7)}
 /* ── MOBILE NAV ELEMENTS ── */
 .mob-hdr{display:none;background:rgba(7,7,15,0.97);border-bottom:1px solid var(--border);align-items:center;justify-content:space-between;padding:0 16px;height:52px;flex-shrink:0;backdrop-filter:var(--blur);z-index:10;gap:12px}
 .mob-hdr-logo{font-size:14px;font-weight:900;display:flex;align-items:center;gap:6px;flex:1}
@@ -749,7 +769,7 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
     <div class="proj-detail-wrap">
       <div class="proj-detail-header">
         <div style="font-size:20px;font-weight:900;margin-right:12px">캐릭터 만들기</div>
-        <button class="ol-proj-badge none" id="ch-proj-badge" onclick="openChProjSelect()">작품 선택</button>
+        <button class="link-proj-btn" id="ch-proj-badge" onclick="openChProjSelect()">🔗 작품 연동하기</button>
         <div style="flex:1"></div>
         <button class="ol-btn primary" onclick="saveChars()">저장</button>
       </div>
@@ -765,7 +785,7 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
         <div class="ol-top">
           <div class="ol-title-row">
             <div style="font-size:20px;font-weight:900">회차 개요</div>
-            <button class="ol-proj-badge none" id="ol-proj-badge" onclick="openOlProjSelect()">작품 선택</button>
+            <button class="link-proj-btn" id="ol-proj-badge" onclick="openOlProjSelect()">🔗 작품 연동하기</button>
           </div>
           <div class="ol-actions">
             <button class="ol-btn" onclick="openEpCountModal()">+ 회차 일괄 추가</button>
@@ -1058,10 +1078,57 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
 <!-- 회차 개요: 프로젝트 선택 -->
 <div class="ol-proj-ov" id="ol-proj-ov">
   <div class="ol-proj-box">
-    <div style="font-size:17px;font-weight:900">연동할 작품 선택</div>
-    <div style="font-size:13px;color:var(--text-dim);margin-top:4px">작품 기획 데이터를 함께 참조합니다</div>
-    <div class="ol-proj-list" id="ol-proj-list"></div>
+    <div style="font-size:17px;font-weight:900">작품 연동하기</div>
+    <div style="font-size:13px;color:var(--text-dim);margin-top:3px">기획 데이터를 AI와 함께 참조합니다</div>
+    <div class="ol-tabs">
+      <button class="ol-tab on" id="ol-tab-plan" onclick="switchOlTab('plan')">📋 내 기획안</button>
+      <button class="ol-tab" id="ol-tab-text" onclick="switchOlTab('text')">✍️ 텍스트 입력</button>
+      <button class="ol-tab" id="ol-tab-pdf" onclick="switchOlTab('pdf')">📄 PDF·파일</button>
+    </div>
+    <div class="ol-panel on" id="ol-panel-plan">
+      <div class="ol-proj-list" id="ol-proj-list"></div>
+    </div>
+    <div class="ol-panel" id="ol-panel-text">
+      <textarea class="ol-text-ta" id="ol-text-input" placeholder="시놉시스, 세계관 설정, 등장인물 등을 자유롭게 입력하세요..."></textarea>
+      <button onclick="saveOlTextInput()" style="width:100%;margin-top:10px;padding:11px;background:var(--purple);color:#fff;border:none;border-radius:12px;font-size:13px;font-weight:800;cursor:pointer;font-family:inherit;box-shadow:0 4px 14px var(--purple-glow)">연동하기</button>
+    </div>
+    <div class="ol-panel" id="ol-panel-pdf">
+      <input type="file" id="ol-pdf-input" accept=".pdf,.txt,.md" style="display:none" onchange="handleOlPdfUpload(this)">
+      <div class="ol-pdf-drop" onclick="$('ol-pdf-input').click()">
+        <div style="font-size:36px">📄</div>
+        <div style="font-size:13px;font-weight:700">PDF, TXT, MD 파일 선택</div>
+        <div style="font-size:11px;color:var(--text-faint)">클릭하여 파일 선택</div>
+      </div>
+      <div class="ol-pdf-status" id="ol-pdf-status"></div>
+    </div>
     <button class="ol-btn" style="width:100%;margin-top:12px;text-align:center" onclick="closeOlProjSelect()">취소</button>
+  </div>
+</div>
+<!-- 시놉시스 입력 모달 (내 기획안) -->
+<div class="syn-modal-ov" id="syn-modal-ov">
+  <div class="syn-modal-box">
+    <div style="font-size:17px;font-weight:900;margin-bottom:4px">시놉시스 입력/편집</div>
+    <div id="syn-modal-proj-name" style="font-size:12px;color:var(--purple-light);font-weight:700;margin-bottom:14px"></div>
+    <div class="ol-tabs">
+      <button class="ol-tab on" id="syn-tab-text" onclick="switchSynTab('text')">✍️ 직접 입력</button>
+      <button class="ol-tab" id="syn-tab-pdf" onclick="switchSynTab('pdf')">📄 PDF·파일</button>
+    </div>
+    <div class="ol-panel on" id="syn-panel-text">
+      <textarea class="ol-text-ta" id="syn-text-input" placeholder="작품 시놉시스를 입력하세요. 장르, 주인공, 핵심 갈등, 결말 방향 등을 자유롭게 써주세요..."></textarea>
+    </div>
+    <div class="ol-panel" id="syn-panel-pdf">
+      <input type="file" id="syn-pdf-input" accept=".pdf,.txt,.md" style="display:none" onchange="handleSynPdfUpload(this)">
+      <div class="ol-pdf-drop" onclick="$('syn-pdf-input').click()">
+        <div style="font-size:36px">📄</div>
+        <div style="font-size:13px;font-weight:700">PDF, TXT, MD 파일 선택</div>
+        <div style="font-size:11px;color:var(--text-faint)">클릭하여 파일 선택</div>
+      </div>
+      <div class="ol-pdf-status" id="syn-pdf-status"></div>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:16px">
+      <button onclick="closeSynModal()" class="ol-btn" style="flex:1;text-align:center">취소</button>
+      <button onclick="saveSynModal()" style="flex:2;padding:11px;background:var(--purple);color:#fff;border:none;border-radius:12px;font-size:13px;font-weight:800;cursor:pointer;font-family:inherit;box-shadow:0 4px 14px var(--purple-glow)">저장하기</button>
+    </div>
   </div>
 </div>
 <!-- 회차 수 설정 모달 -->
@@ -1251,6 +1318,150 @@ function closeMobMore(){
   $('mob-more').classList.remove('on');
   $('mob-more-backdrop').classList.remove('on');
 }
+// ── 작품 연동 모달 탭/기능 ──
+let olSelectSource='ol'; // 'ol'|'ch'|'xc'
+let olLinkedText=null;   // {title,text} 회차 개요용 수동 컨텍스트
+let chLinkedText=null;   // {title,text} 캐릭터용 수동 컨텍스트
+let _olPdfText='';
+
+function switchOlTab(tab){
+  ['plan','text','pdf'].forEach(t=>{
+    const btn=$('ol-tab-'+t),panel=$('ol-panel-'+t);
+    if(btn)btn.className='ol-tab'+(t===tab?' on':'');
+    if(panel)panel.className='ol-panel'+(t===tab?' on':'');
+  });
+}
+
+function saveOlTextInput(){
+  const text=($('ol-text-input').value||'').trim();
+  if(!text){flash('텍스트를 입력해주세요');return;}
+  const ctx={title:'직접 입력',text};
+  _applyOlLinkedText(ctx);
+}
+
+function handleOlPdfUpload(input){
+  const file=input.files[0];if(!file)return;
+  const status=$('ol-pdf-status');
+  status.textContent='파일 읽는 중...';status.className='ol-pdf-status on';
+  const reader=new FileReader();
+  reader.onload=e=>{
+    let text='';
+    if(file.name.toLowerCase().endsWith('.pdf')){
+      const bytes=new Uint8Array(e.target.result);
+      const raw=new TextDecoder('utf-8',{fatal:false}).decode(bytes);
+      const matches=raw.match(/\(((?:[^()\\]|\\.){1,300})\)/g)||[];
+      text=matches.map(m=>m.slice(1,-1)).filter(s=>s.trim().length>2&&/[\uAC00-\uD7A3a-zA-Z]/.test(s)).join(' ');
+      if(text.length<30){
+        status.textContent='❗ PDF 텍스트 자동 추출 실패. "텍스트 입력" 탭에서 직접 붙여넣기 해주세요.';
+        return;
+      }
+    } else {
+      text=e.target.result;
+    }
+    _olPdfText=text.slice(0,8000);
+    const ctx={title:file.name,text:_olPdfText};
+    status.textContent=`✓ "${file.name}" 읽기 완료 (${text.length.toLocaleString()}자)`;
+    setTimeout(()=>{_applyOlLinkedText(ctx);},900);
+  };
+  if(file.name.toLowerCase().endsWith('.pdf'))reader.readAsArrayBuffer(file);
+  else reader.readAsText(file,'utf-8');
+}
+
+function _applyOlLinkedText(ctx){
+  if(olSelectSource==='ch'){
+    chLinkedText=ctx; pdProj=null;
+    renderChProjBadge();
+    closeOlProjSelect(); flash('✓ '+ctx.title+' 연동됨');
+  } else if(olSelectSource==='xc'){
+    xLinkedProj={id:'manual',title:ctx.title,synopsis:ctx.text,genre:'',characters:[],answer_history:[]};
+    xPersona=xPersonaBase+'\n\n[작품 설정 직접 입력]\n'+ctx.text;
+    renderXLinkButtons();
+    closeOlProjSelect();
+    addXMsg('assistant','작품 설정이 연동됐어요. 이 내용을 기준으로 검토해 드릴게요.');
+  } else {
+    olLinkedText=ctx; olProjId=null; localStorage.removeItem('ol_proj');
+    renderOlProj();
+    closeOlProjSelect(); flash('✓ '+ctx.title+' 연동됨');
+  }
+}
+
+// ── 시놉시스 입력 모달 (내 기획안) ──
+let synEditProjId=null;
+let synTabMode='text';
+let synPdfText='';
+
+function openSynModal(pid){
+  synEditProjId=pid;
+  const projs=JSON.parse(localStorage.getItem('mp')||'[]');
+  const p=projs.find(pr=>pr.id===pid);if(!p)return;
+  const nm=$('syn-modal-proj-name');if(nm)nm.textContent='📚 '+p.title;
+  const ta=$('syn-text-input');if(ta)ta.value=p.synopsis||'';
+  synPdfText='';
+  const ps=$('syn-pdf-status');if(ps){ps.textContent='';ps.className='ol-pdf-status';}
+  switchSynTab('text');
+  $('syn-modal-ov').classList.add('on');
+}
+
+function closeSynModal(){
+  $('syn-modal-ov').classList.remove('on');
+  synEditProjId=null;
+}
+
+function switchSynTab(tab){
+  synTabMode=tab;
+  ['text','pdf'].forEach(t=>{
+    const btn=$('syn-tab-'+t),panel=$('syn-panel-'+t);
+    if(btn)btn.className='ol-tab'+(t===tab?' on':'');
+    if(panel)panel.className='ol-panel'+(t===tab?' on':'');
+  });
+}
+
+async function saveSynModal(){
+  if(!synEditProjId)return;
+  let text='';
+  if(synTabMode==='text'){
+    text=($('syn-text-input').value||'').trim();
+  } else {
+    if(!synPdfText){flash('파일을 먼저 업로드해주세요');return;}
+    text=synPdfText;
+  }
+  if(!text){flash('내용을 입력해주세요');return;}
+  const arr=JSON.parse(localStorage.getItem('mp')||'[]');
+  const idx=arr.findIndex(p=>p.id===synEditProjId);
+  if(idx<0){flash('작품을 찾을 수 없습니다');return;}
+  arr[idx].synopsis=text;
+  localStorage.setItem('mp',JSON.stringify(arr));
+  if(projects){const pi=projects.findIndex(p=>p.id===synEditProjId);if(pi>=0)projects[pi].synopsis=text;}
+  if(user&&user.id!=='t001'){
+    try{await sb.from('projects').update({synopsis:text}).eq('id',synEditProjId).eq('user_id',user.id);}catch(e){}
+  }
+  closeSynModal();renderMyPlanWorks();flash('시놉시스 저장됐습니다');
+}
+
+function handleSynPdfUpload(input){
+  const file=input.files[0];if(!file)return;
+  const status=$('syn-pdf-status');
+  status.textContent='파일 읽는 중...';status.className='ol-pdf-status on';
+  const reader=new FileReader();
+  reader.onload=e=>{
+    let text='';
+    if(file.name.toLowerCase().endsWith('.pdf')){
+      const bytes=new Uint8Array(e.target.result);
+      const raw=new TextDecoder('utf-8',{fatal:false}).decode(bytes);
+      const matches=raw.match(/\(((?:[^()\\]|\\.){1,300})\)/g)||[];
+      text=matches.map(m=>m.slice(1,-1)).filter(s=>s.trim().length>2&&/[\uAC00-\uD7A3a-zA-Z]/.test(s)).join(' ');
+      if(text.length<30){
+        status.textContent='❗ PDF 텍스트 추출 실패. "직접 입력" 탭에서 붙여넣기 해주세요.';return;
+      }
+    } else {
+      text=e.target.result;
+    }
+    synPdfText=text.slice(0,8000);
+    status.textContent=`✓ "${file.name}" 준비됨 (${synPdfText.length.toLocaleString()}자) — 저장하기를 눌러주세요`;
+  };
+  if(file.name.toLowerCase().endsWith('.pdf'))reader.readAsArrayBuffer(file);
+  else reader.readAsText(file,'utf-8');
+}
 // ── 오버레이 ──
 const openOv=id=>$(id).classList.add('on');
 const closeOv=id=>$(id).classList.remove('on');
@@ -1312,7 +1523,9 @@ function renderMyPlanWorks(){
       ?`<button onclick="event.stopPropagation();startWorkReview('${p.id}')" style="margin-top:10px;width:100%;background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.2);color:#6EE7B7;font-size:12px;font-weight:700;padding:8px;border-radius:10px;cursor:pointer;font-family:inherit;transition:all 0.2s" onmouseover="this.style.background='rgba(16,185,129,0.14)'" onmouseout="this.style.background='rgba(16,185,129,0.08)'">🔍 AI 통합 검토 시작</button>`
       :`<button onclick="event.stopPropagation();selectAndTask('${p.id}')" style="margin-top:10px;width:100%;background:rgba(139,92,246,0.08);border:1px solid rgba(139,92,246,0.2);color:var(--purple-light);font-size:12px;font-weight:700;padding:8px;border-radius:10px;cursor:pointer;font-family:inherit;transition:all 0.2s" onmouseover="this.style.background='rgba(139,92,246,0.14)'" onmouseout="this.style.background='rgba(139,92,246,0.08)'">⚡ 오늘의 작업 시작</button>`;
     const preview=p.synopsis||(p.answer_history&&p.answer_history.find(i=>i.value)?.value)||'기획 내용을 확인하세요.';
-    c.innerHTML=`<div><span class="pc-genre">${p.genre||'미분류'}</span></div><div class="pc-title">${p.title}</div><div class="pc-syn">${preview}</div><div class="pc-foot"><span>${p.routine_type==='short'?'단편':'장편'}</span><span>${(p.answer_history||[]).filter(i=>i.value).length}단계 완료</span></div>${actionBtn}`;
+    const hasSyn=!!(p.synopsis&&p.synopsis.length>10);
+    const synBtn=`<button onclick="event.stopPropagation();openSynModal('${p.id}')" style="margin-top:6px;width:100%;background:${hasSyn?'rgba(16,185,129,0.06)':'rgba(255,255,255,0.03)'};border:1px ${hasSyn?'solid rgba(16,185,129,0.2)':'dashed var(--border2)'};color:${hasSyn?'#6EE7B7':'var(--text-faint)'};font-size:12px;font-weight:700;padding:8px;border-radius:10px;cursor:pointer;font-family:inherit;transition:all 0.2s" onmouseover="this.style.background='rgba(16,185,129,0.12)';this.style.borderColor='rgba(16,185,129,0.3)';this.style.color='#6EE7B7'" onmouseout="this.style.background='${hasSyn?'rgba(16,185,129,0.06)':'rgba(255,255,255,0.03)'}';this.style.borderColor='${hasSyn?'rgba(16,185,129,0.2)':'var(--border2)'}';this.style.color='${hasSyn?'#6EE7B7':'var(--text-faint)'}'">📝 ${hasSyn?'시놉시스 편집':'시놉시스 입력'}</button>`;
+    c.innerHTML=`<div><span class="pc-genre">${p.genre||'미분류'}</span></div><div class="pc-title">${p.title}</div><div class="pc-syn">${preview}</div><div class="pc-foot"><span>${p.routine_type==='short'?'단편':'장편'}</span><span>${(p.answer_history||[]).filter(i=>i.value).length}단계 완료</span></div>${actionBtn}${synBtn}`;
     c.onclick=()=>openProjDetail(p.id);
     g.appendChild(c);
   });
@@ -1624,24 +1837,36 @@ function initCharaView(){
 
 function renderChProjBadge(){
   const b=$('ch-proj-badge'); if(!b)return;
-  if(pdProj){ b.textContent='📚 '+pdProj.title; b.className='ol-proj-badge'; }
-  else { b.textContent='작품 선택'; b.className='ol-proj-badge none'; }
+  if(pdProj){ b.innerHTML='📚 '+pdProj.title; b.className='link-proj-btn linked'; }
+  else if(chLinkedText){ b.innerHTML='✓ '+chLinkedText.title; b.className='link-proj-btn linked'; }
+  else { b.innerHTML='🔗 작품 연동하기'; b.className='link-proj-btn'; }
 }
 
 function openChProjSelect(){
+  olSelectSource='ch'; switchOlTab('plan');
+  const ta=$('ol-text-input');if(ta)ta.value='';
+  const ps=$('ol-pdf-status');if(ps){ps.textContent='';ps.className='ol-pdf-status';}
   const projs=JSON.parse(localStorage.getItem('mp')||'[]');
   const list=$('ol-proj-list'); list.innerHTML='';
+  if(!projs.length){list.innerHTML='<div style="color:var(--text-faint);font-size:13px;padding:12px">저장된 작품이 없어요.<br>아래 탭에서 직접 입력해 보세요.</div>';}
   projs.forEach(p=>{
     const el=document.createElement('div'); el.className='ol-proj-item';
     el.innerHTML=`<div><div class="opp-title">${p.title}</div><div class="opp-meta">${p.genre||'미분류'}</div></div>`;
     el.onclick=()=>{
-      pdProj=p; selProj=p;
+      pdProj=p; selProj=p; chLinkedText=null;
       pdChars=Array.isArray(p.characters)?[...p.characters]:[];
       localStorage.setItem('ch_proj',p.id);
       renderChProjBadge(); renderCharCards(); closeOlProjSelect();
     };
     list.appendChild(el);
   });
+  if(pdProj||chLinkedText){
+    const el=document.createElement('div');el.className='ol-proj-item';
+    el.style.borderColor='rgba(252,165,165,0.2)';
+    el.innerHTML=`<div style="color:#fca5a5;font-size:13px;font-weight:700">✕ 연동 해제</div>`;
+    el.onclick=()=>{pdProj=null;chLinkedText=null;renderChProjBadge();renderCharCards();closeOlProjSelect();};
+    list.appendChild(el);
+  }
   $('ol-proj-ov').classList.add('on');
 }
 
@@ -2417,7 +2642,7 @@ function renderXLinkButtons(){
   }
   // 내 작품 목록 버튼들
   const projs=JSON.parse(localStorage.getItem('mp')||'[]');
-  projs.slice(0,4).forEach(p=>{
+  projs.slice(0,3).forEach(p=>{
     if(linked&&linked.id===p.id)return;
     const b=document.createElement('button');
     b.className='xlink-btn';
@@ -2430,6 +2655,17 @@ function renderXLinkButtons(){
     };
     row.appendChild(b);
   });
+  // 텍스트 입력 버튼
+  if(!linked){
+    const tb=document.createElement('button');
+    tb.className='xlink-btn';tb.textContent='✍️ 직접 입력';
+    tb.onclick=()=>{olSelectSource='xc';switchOlTab('text');$('ol-text-input').value='';$('ol-proj-ov').classList.add('on');};
+    row.appendChild(tb);
+    const pb=document.createElement('button');
+    pb.className='xlink-btn';pb.textContent='📄 PDF';
+    pb.onclick=()=>{olSelectSource='xc';switchOlTab('pdf');const ps=$('ol-pdf-status');if(ps){ps.textContent='';ps.className='ol-pdf-status';}$('ol-proj-ov').classList.add('on');};
+    row.appendChild(pb);
+  }
 }
 
 function projCtxOf(p){
@@ -2574,26 +2810,24 @@ function renderOlProj(){
   const projs=JSON.parse(localStorage.getItem('mp')||'[]');
   const proj=projs.find(p=>p.id===olProjId);
   const badge=$('ol-proj-badge');
-  if(proj){
-    badge.textContent='📚 '+proj.title;
-    badge.className='ol-proj-badge';
-  } else {
-    badge.textContent='작품 선택';
-    badge.className='ol-proj-badge none';
-  }
+  if(proj){ badge.innerHTML='📚 '+proj.title; badge.className='link-proj-btn linked'; }
+  else if(olLinkedText){ badge.innerHTML='✓ '+olLinkedText.title; badge.className='link-proj-btn linked'; }
+  else { badge.innerHTML='🔗 작품 연동하기'; badge.className='link-proj-btn'; }
 }
 
 function openOlProjSelect(){
+  olSelectSource='ol'; switchOlTab('plan');
+  const ta=$('ol-text-input');if(ta)ta.value='';
+  const ps=$('ol-pdf-status');if(ps){ps.textContent='';ps.className='ol-pdf-status';}
   const projs=JSON.parse(localStorage.getItem('mp')||'[]');
   const list=$('ol-proj-list');
   list.innerHTML='';
-  if(!projs.length){list.innerHTML='<div style="color:var(--text-faint);font-size:13px;padding:12px">저장된 작품이 없어요</div>';} 
+  if(!projs.length){list.innerHTML='<div style="color:var(--text-faint);font-size:13px;padding:12px">저장된 작품이 없어요.<br>아래 탭에서 직접 입력해 보세요.</div>';}
   projs.forEach(p=>{
     const el=document.createElement('div');el.className='ol-proj-item';
     el.innerHTML=`<div><div class="opp-title">${p.title}</div><div class="opp-meta">${p.genre||'미분류'} · ${(p.answer_history||[]).length}단계</div></div>`;
     el.onclick=async()=>{
-      olProjId=p.id;localStorage.setItem('ol_proj',p.id);
-      // DB에 저장된 episodes 있으면 불러오기
+      olProjId=p.id; olLinkedText=null; localStorage.setItem('ol_proj',p.id);
       if(user&&user.id!=='t001'){
         try{
           const{data}=await sb.from('projects').select('episodes').eq('id',p.id).eq('user_id',user.id).single();
@@ -2604,12 +2838,11 @@ function openOlProjSelect(){
     };
     list.appendChild(el);
   });
-  // 연동 해제 버튼
-  if(olProjId){
+  if(olProjId||olLinkedText){
     const el=document.createElement('div');el.className='ol-proj-item';
     el.style.borderColor='rgba(252,165,165,0.2)';
     el.innerHTML='<div style="color:#fca5a5;font-size:13px;font-weight:700">✕ 연동 해제</div>';
-    el.onclick=()=>{olProjId=null;localStorage.removeItem('ol_proj');renderOlProj();closeOlProjSelect();};
+    el.onclick=()=>{olProjId=null;olLinkedText=null;localStorage.removeItem('ol_proj');renderOlProj();closeOlProjSelect();};
     list.appendChild(el);
   }
   $('ol-proj-ov').classList.add('on');
