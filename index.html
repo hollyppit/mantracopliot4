@@ -417,25 +417,31 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
 .mob-hdr-logo{font-size:14px;font-weight:900;display:flex;align-items:center;gap:6px;flex:1}
 .mob-hdr-logo em{color:var(--purple-light);font-style:normal}
 .mob-hdr-action{font-size:12px;font-weight:800;color:var(--purple-light);background:rgba(139,92,246,0.12);border:1px solid rgba(139,92,246,0.25);border-radius:20px;padding:6px 14px;cursor:pointer;font-family:inherit;transition:all 0.2s;white-space:nowrap;-webkit-tap-highlight-color:transparent}
-.mob-nav{display:none;background:rgba(7,7,15,0.98);border-top:1px solid var(--border);flex-shrink:0;backdrop-filter:var(--blur);height:var(--mob-nav-h);padding-bottom:env(safe-area-inset-bottom,0px)}
-.mob-nav-inner{display:flex;height:100%;align-items:stretch;padding:0 4px}
-.mni{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;cursor:pointer;color:var(--text-faint);font-size:11px;font-weight:700;padding:8px 4px;background:none;border:none;font-family:inherit;transition:color 0.2s;-webkit-tap-highlight-color:transparent;line-height:1;position:relative}
-.mni .mnic{font-size:26px;line-height:1.1;transition:transform 0.2s}
-.mni:active .mnic{transform:scale(0.88)}
+.mob-nav{display:none;background:rgba(10,10,20,0.85);border-top:1px solid var(--border);flex-shrink:0;backdrop-filter:blur(20px);height:var(--mob-nav-h);padding-bottom:env(safe-area-inset-bottom,0px);box-shadow:0 -10px 30px rgba(0,0,0,0.5)}
+.mob-nav-inner{display:flex;height:100%;align-items:stretch;padding:0 8px}
+.mni{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;color:var(--text-faint);font-size:10px;font-weight:700;padding:6px 2px;background:none;border:none;font-family:inherit;transition:all 0.3s;-webkit-tap-highlight-color:transparent;line-height:1.2;position:relative}
+.mni .mnic{font-size:24px;line-height:1;transition:all 0.3s;margin-bottom:2px}
+.mni:active .mnic{transform:scale(0.85)}
 .mni.on{color:var(--purple-light)}
-.mni.on .mnic{filter:drop-shadow(0 0 8px var(--purple-glow))}
-.mni.on::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:32px;height:3px;background:var(--purple);border-radius:0 0 4px 4px}
-.mob-more-backdrop{display:none;position:fixed;inset:0;z-index:298;background:rgba(0,0,0,0.55);opacity:0;pointer-events:none;transition:opacity 0.3s}
-.mob-more-backdrop.on{opacity:1;pointer-events:auto}
-.mob-more{display:none;position:fixed;bottom:var(--mob-nav-h);left:0;right:0;z-index:299;background:rgba(10,10,20,0.98);backdrop-filter:var(--blur);border:1px solid var(--border);border-top:1px solid var(--border2);border-radius:24px 24px 0 0;padding:10px 20px 20px;transform:translateY(110%);transition:transform 0.35s cubic-bezier(0.16,1,0.3,1)}
-.mob-more.on{transform:translateY(0)}
-.mob-more-handle{width:36px;height:4px;background:var(--border2);border-radius:2px;margin:0 auto 14px}
-.mob-more-item{display:flex;align-items:center;gap:12px;padding:13px 14px;border-radius:14px;cursor:pointer;color:var(--text-dim);font-size:14px;font-weight:600;transition:background 0.15s;-webkit-tap-highlight-color:transparent}
-.mob-more-item:active{background:var(--surface)}
-.mob-more-item.on{background:rgba(139,92,246,0.12);color:var(--purple-light)}
-.mmic{font-size:18px;width:24px;text-align:center;flex-shrink:0}
-.mob-more-new{width:100%;padding:15px;background:var(--purple);color:#fff;border:none;border-radius:14px;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;margin-top:10px;box-shadow:0 6px 20px var(--purple-glow);-webkit-tap-highlight-color:transparent;transition:filter 0.2s}
-.mob-more-new:active{filter:brightness(0.88)}
+.mni.on .mnic{transform:translateY(-2px);filter:drop-shadow(0 0 10px var(--purple-glow))}
+.mni.on::after{content:'';position:absolute;bottom:10px;width:4px;height:4px;background:var(--purple);border-radius:50%;box-shadow:0 0 8px var(--purple-glow)}
+/* 허브 뷰 스타일 */
+.hub-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:24px 20px;animation:hubIn 0.5s ease-out}
+@keyframes hubIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.hub-item{background:var(--surface);border:1px solid var(--border);border-radius:24px;padding:24px 16px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:12px;transition:all 0.3s;cursor:pointer}
+.hub-item:active{transform:scale(0.96);background:var(--surface2);border-color:var(--purple-light)}
+.hub-icon{font-size:32px;width:60px;height:60px;background:linear-gradient(135deg,rgba(139,92,246,0.15),rgba(139,92,246,0.05));border:1px solid rgba(139,92,246,0.2);border-radius:18px;display:flex;align-items:center;justify-content:center;margin-bottom:4px;box-shadow:0 10px 20px rgba(0,0,0,0.2);transition:all 0.3s}
+.hub-item:active .hub-icon{transform:translateY(-2px);box-shadow:0 15px 25px rgba(139,92,246,0.2)}
+.hub-name{font-size:15px;font-weight:800;color:var(--text)}
+.hub-desc{font-size:11px;color:var(--text-dim);line-height:1.4;word-break:keep-all}
+.hub-item.large{grid-column:1/-1;flex-direction:row;text-align:left;padding:20px 24px}
+.hub-item.large .hub-icon{margin-bottom:0;margin-right:16px;width:52px;height:52px;font-size:26px}
+.hub-item.large .hub-info{flex:1}
+.hub-item.agent .hub-icon{background:linear-gradient(135deg,rgba(139,92,246,0.2),rgba(139,92,246,0.1))}
+.hub-item.plan .hub-icon{background:linear-gradient(135deg,rgba(16,185,129,0.2),rgba(16,185,129,0.1))}
+.hub-item.outline .hub-icon{background:linear-gradient(135deg,rgba(214,183,90,0.2),rgba(214,183,90,0.1))}
+.hub-item.chara .hub-icon{background:linear-gradient(135deg,rgba(139,92,246,0.2),rgba(99,102,241,0.1))}
+.hub-item.verify .hub-icon{background:linear-gradient(135deg,rgba(99,102,241,0.2),rgba(139,92,246,0.1))}
 @media(max-width:768px){
   :root{--sw:0px}
   body{flex-direction:column;height:100dvh;height:100vh;min-height:unset}
@@ -1024,26 +1030,65 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
       <div class="plan-list" id="plan-list"></div>
     </div>
   </section>
+  <!-- 메뉴(허브) 뷰 -->
+  <section class="view" id="view-hub">
+    <div class="vh">
+      <div class="vt">메뉴</div>
+      <button class="mob-hdr-action" onclick="openMode()">+ 새 작품</button>
+    </div>
+    <div class="vb" style="padding-top:10px">
+      <div class="hub-grid">
+        <div class="hub-item agent" onclick="navTo('gonmin')">
+          <div class="hub-icon">🤖</div>
+          <div class="hub-name">창작 에이전트</div>
+          <div class="hub-desc">아이디어와 설정을 AI와 함께 빌드업</div>
+        </div>
+        <div class="hub-item plan" onclick="navTo('myplan')">
+          <div class="hub-icon">📋</div>
+          <div class="hub-name">내 기획안</div>
+          <div class="hub-desc">진행 중인 작품의 상세 설정 및 목록</div>
+        </div>
+        <div class="hub-item outline" onclick="navTo('outline')">
+          <div class="hub-icon">🎬</div>
+          <div class="hub-name">회차별 개요</div>
+          <div class="hub-desc">스토리의 흐름과 긴장감 그래프 설계</div>
+        </div>
+        <div class="hub-item chara" onclick="navTo('chara')">
+          <div class="hub-icon">👤</div>
+          <div class="hub-name">캐릭터 만들기</div>
+          <div class="hub-desc">매력적인 캐릭터 설정과 AI 대화</div>
+        </div>
+        <div class="hub-item verify large" onclick="navTo('verify')">
+          <div class="hub-icon">🔍</div>
+          <div class="hub-info">
+            <div class="hub-name">작품 검증 (전문가 고증)</div>
+            <div class="hub-desc">법률, 의학, 심리 등 실제 분야별 검증</div>
+          </div>
+        </div>
+        <div class="hub-item large" style="opacity:0.6">
+          <div class="hub-icon" style="background:var(--surface2)">🛍️</div>
+          <div class="hub-info">
+            <div class="hub-name">루틴 마켓 <span class="nb" style="margin-left:4px;background:var(--border);padding:2px 6px;border-radius:4px;font-size:9px">준비 중</span></div>
+            <div class="hub-desc">다른 창작자의 노하우를 담은 템플릿 탐색</div>
+          </div>
+        </div>
+      </div>
+      <div style="padding:0 20px 40px">
+        <button class="nbtn" onclick="openMode()">+ 새 작품 기획하기</button>
+      </div>
+    </div>
+  </section>
 </main>
 <!-- 모바일 하단 네비 -->
 <nav class="mob-nav" id="mob-nav">
   <div class="mob-nav-inner">
     <button class="mni on" id="mn-home" onclick="navTo('home')"><span class="mnic">🏠</span>홈</button>
     <button class="mni" id="mn-gonmin" onclick="navTo('gonmin')"><span class="mnic">🤖</span>에이전트</button>
+    <button class="mni" id="mn-hub" onclick="navTo('hub')"><span class="mnic">📁</span>메뉴</button>
     <button class="mni" id="mn-myplan" onclick="navTo('myplan')"><span class="mnic">📋</span>기획안</button>
     <button class="mni" id="mn-outline" onclick="navTo('outline')"><span class="mnic">🎬</span>회차</button>
-    <button class="mni" id="mn-more" onclick="toggleMobMore()"><span class="mnic">☰</span>더보기</button>
   </div>
 </nav>
-<!-- 모바일 더보기 시트 -->
-<div class="mob-more-backdrop" id="mob-more-backdrop" onclick="closeMobMore()"></div>
-<div class="mob-more" id="mob-more">
-  <div class="mob-more-handle"></div>
-  <div class="mob-more-item" id="mm-chara" onclick="navTo('chara');closeMobMore()"><span class="mmic">👤</span>캐릭터 만들기</div>
-  <div class="mob-more-item" id="mm-verify" onclick="navTo('verify');closeMobMore()"><span class="mmic">🔍</span>전문가 고증</div>
-  <div class="mob-more-item" id="mm-market" onclick="navTo('market');closeMobMore()"><span class="mmic">🛍️</span>루틴 마켓<span style="font-size:10px;color:var(--text-faint);margin-left:auto;font-weight:600">준비 중</span></div>
-  <button class="mob-more-new" onclick="openMode();closeMobMore()">+ 새 작품 기획하기</button>
-</div>
 <!-- 항목 입력 모달 -->
 <div class="item-modal" id="item-modal">
   <div class="im-box">
@@ -1295,8 +1340,7 @@ function navTo(v){
   if(mne)mne.classList.add('on');
   // 더보기 탭 뷰 활성화 시 더보기 버튼 하이라이트
   if(['chara','verify','market'].includes(v)){
-    const mm=$('mn-more');if(mm)mm.classList.add('on');
-    const mmItem=$('mm-'+v);if(mmItem)mmItem.classList.add('on');
+    const mm=$('mn-hub');if(mm)mm.classList.add('on');
   }
   if(v==='home')loadHomeVideos();
   if(v==='myplan')loadMyPlan();
@@ -1306,19 +1350,6 @@ function navTo(v){
   if(v==='tasks'){
     if(selProj)$('tpn').textContent=selProj.title;
   }
-}
-// ── 모바일 더보기 시트 ──
-function toggleMobMore(){
-  const m=$('mob-more');
-  if(m.classList.contains('on'))closeMobMore();else openMobMore();
-}
-function openMobMore(){
-  $('mob-more').classList.add('on');
-  $('mob-more-backdrop').classList.add('on');
-}
-function closeMobMore(){
-  $('mob-more').classList.remove('on');
-  $('mob-more-backdrop').classList.remove('on');
 }
 // ── 작품 연동 모달 탭/기능 ──
 let olSelectSource='ol'; // 'ol'|'ch'|'xc'
