@@ -15,7 +15,7 @@
   --green:#10B981;--green-glow:rgba(16,185,129,0.3);
   --gold:#D6B75A;--gold-light:#FDE68A;
   --text:#F1F5F9;--text-dim:#94A3B8;--text-faint:#475569;
-  --sw:220px;--mob-nav-h:88px;--blur:blur(40px);--r:18px;--rs:12px;
+  --sw:220px;--mob-nav-h:96px;--blur:blur(40px);--r:18px;--rs:12px;
 }
 body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;overflow:hidden;letter-spacing:-0.02em}
 .orb{position:fixed;border-radius:50%;filter:blur(80px);pointer-events:none;z-index:0}
@@ -116,7 +116,7 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
 .ibtn:hover{background:rgba(214,183,90,0.12);border-color:rgba(214,183,90,0.5)}
 .ibw{background:rgba(15,15,28,0.6);border:1px solid var(--border);border-radius:24px;padding:12px 12px 12px 20px;display:flex;gap:12px;align-items:flex-end;backdrop-filter:blur(40px);transition:border-color 0.3s}
 .ibw:focus-within{border-color:var(--purple-light)}
-.ibw textarea{flex:1;background:none;border:none;color:var(--text);font-family:inherit;font-size:15px;font-weight:500;line-height:1.6;resize:none;outline:none;height:44px;max-height:140px;padding:6px 0}
+.ibw textarea{flex:1;background:none;border:none;color:var(--text);font-family:inherit;font-size:16px;font-weight:500;line-height:1.6;resize:none;outline:none;height:44px;max-height:140px;padding:6px 0}
 .ibw textarea::placeholder{color:rgba(255,255,255,0.25)}
 .sb2{width:44px;height:44px;border-radius:50%;background:var(--purple);border:none;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s;flex-shrink:0}
 .sb2:hover{filter:brightness(1.15);transform:scale(1.05)}
@@ -206,7 +206,7 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
 .im-label{font-size:11px;font-weight:800;letter-spacing:0.1em;color:var(--purple-light);text-transform:uppercase}
 .im-q{font-size:18px;font-weight:600;line-height:1.6;color:var(--text);word-break:keep-all}
 .im-hint{font-size:13px;color:var(--text-dim);line-height:1.6;background:rgba(139,92,246,0.06);border:1px solid rgba(139,92,246,0.12);border-radius:var(--rs);padding:12px 16px}
-.im-ta{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:var(--rs);color:var(--text);font-family:inherit;font-size:15px;line-height:1.6;padding:14px 16px;resize:none;outline:none;min-height:120px;transition:border-color 0.2s}
+.im-ta{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:var(--rs);color:var(--text);font-family:inherit;font-size:16px;line-height:1.6;padding:14px 16px;resize:none;outline:none;min-height:120px;transition:border-color 0.2s}
 .im-ta:focus{border-color:var(--purple-light)}
 .im-row{display:flex;gap:10px;justify-content:flex-end}
 .im-cancel{padding:10px 20px;border-radius:var(--rs);font-size:14px;font-weight:600;font-family:inherit;cursor:pointer;background:none;border:1px solid var(--border);color:var(--text-dim);transition:all 0.2s}
@@ -413,14 +413,14 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
 .syn-modal-ov.on{display:flex}
 .syn-modal-box{background:rgba(12,12,24,0.98);border:1px solid var(--border2);border-radius:20px;padding:28px;width:100%;max-width:520px;box-shadow:0 30px 80px rgba(0,0,0,0.7)}
 /* ── MOBILE NAV ELEMENTS ── */
-.mob-hdr{display:none;background:rgba(7,7,15,0.97);border-bottom:1px solid var(--border);align-items:center;justify-content:space-between;padding:0 16px;height:52px;flex-shrink:0;backdrop-filter:var(--blur);z-index:10;gap:12px}
+.mob-hdr{display:none;background:rgba(7,7,15,0.97);border-bottom:1px solid var(--border);align-items:center;justify-content:space-between;padding:0 16px;height:56px;flex-shrink:0;backdrop-filter:var(--blur);z-index:10;gap:12px}
 .mob-hdr-logo{font-size:14px;font-weight:900;display:flex;align-items:center;gap:6px;flex:1}
 .mob-hdr-logo em{color:var(--purple-light);font-style:normal}
-.mob-hdr-action{font-size:12px;font-weight:800;color:var(--purple-light);background:rgba(139,92,246,0.12);border:1px solid rgba(139,92,246,0.25);border-radius:20px;padding:6px 14px;cursor:pointer;font-family:inherit;transition:all 0.2s;white-space:nowrap;-webkit-tap-highlight-color:transparent}
+.mob-hdr-action{font-size:13px;font-weight:800;color:var(--purple-light);background:rgba(139,92,246,0.12);border:1px solid rgba(139,92,246,0.25);border-radius:20px;padding:9px 16px;cursor:pointer;font-family:inherit;transition:all 0.2s;white-space:nowrap;-webkit-tap-highlight-color:transparent}
 .mob-nav{display:none;background:rgba(10,10,20,0.92);border-top:1px solid var(--border);flex-shrink:0;backdrop-filter:blur(20px);height:var(--mob-nav-h);padding-bottom:env(safe-area-inset-bottom,0px);box-shadow:0 -10px 30px rgba(0,0,0,0.5)}
-.mob-nav-inner{display:flex;height:100%;align-items:stretch;padding:0 4px}
-.mni{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;cursor:pointer;color:var(--text-faint);font-size:11px;font-weight:700;padding:8px 2px;background:none;border:none;font-family:inherit;transition:all 0.3s;-webkit-tap-highlight-color:transparent;line-height:1.2;position:relative;min-height:100%}
-.mni .mnic{font-size:30px;line-height:1;transition:all 0.3s;margin-bottom:2px}
+.mob-nav-inner{display:flex;height:100%;align-items:stretch;padding:0 8px}
+.mni{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;color:var(--text-faint);font-size:12px;font-weight:700;padding:10px 6px;background:none;border:none;font-family:inherit;transition:all 0.3s;-webkit-tap-highlight-color:transparent;line-height:1.2;position:relative;min-height:100%}
+.mni .mnic{font-size:26px;line-height:1;transition:all 0.3s;margin-bottom:2px}
 .mni:active .mnic{transform:scale(0.82)}
 .mni.on{color:var(--purple-light)}
 .mni.on .mnic{transform:translateY(-3px);filter:drop-shadow(0 0 12px var(--purple-glow))}
@@ -468,6 +468,23 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
   .home-mode-grid{grid-template-columns:1fr!important;gap:10px!important}
   .dw{padding:0}
   .ia{padding-left:16px;padding-right:16px;padding-bottom:12px}
+  /* 항목 입력 모달 */
+  .im-box{padding:24px 20px;border-radius:20px}
+  .im-q{font-size:16px}
+  /* 목차 패딩 */
+  .plan-body{padding:16px 18px 24px}
+  /* 삭제 버튼 — 터치에서 항상 표시 */
+  .pi-del{opacity:0.5;width:36px;height:36px}
+  /* 허브 그리드 */
+  .hub-grid{gap:12px;padding:16px 14px}
+  .hub-item{padding:16px 12px}
+  .hub-icon{width:48px;height:48px;font-size:24px}
+  .hub-name{font-size:14px}
+  .hub-desc{font-size:12px}
+  /* 기획안 CTA 카드 */
+  .myplan-cta{min-height:120px;padding:20px}
+  /* 연동 탭 */
+  .ol-tab{padding:11px 8px;font-size:13px}
 }
 /* ── CHARACTER DEV OVERLAY ── */
 .cd-ov{position:fixed;left:var(--sw);right:0;top:0;bottom:0;z-index:300;background:rgba(0,0,0,0.88);backdrop-filter:blur(24px);display:none;align-items:stretch}
@@ -608,7 +625,7 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
 .pb-empty-text{font-size:13px;color:var(--text-faint)}
 .pb-empty-btn{padding:8px 16px;border-radius:10px;background:rgba(139,92,246,0.1);border:1px solid rgba(139,92,246,0.25);color:var(--purple-light);font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;transition:all 0.2s;white-space:nowrap}
 .pb-empty-btn:hover{background:rgba(139,92,246,0.2);border-color:rgba(139,92,246,0.45)}
-@media(max-width:640px){.pb-btn{font-size:12px;padding:8px 13px}.pb-actions{gap:7px}}
+@media(max-width:640px){.pb-btn{font-size:13px;padding:11px 16px}.pb-actions{gap:8px}}
 </style>
 </head>
 <body>
@@ -693,17 +710,17 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
         <div style="font-size:11px;font-weight:700;letter-spacing:0.1em;color:var(--purple-light);text-transform:uppercase;margin-bottom:12px">✦ 창작 에이전트</div>
         <!-- 예시 문구 칩 (compact) -->
         <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px">
-          <button onclick="homeQuick('주인공 동기가 너무 약한 것 같아요')" style="background:var(--surface);border:1px solid var(--border);color:var(--text-dim);font-size:12px;font-weight:600;padding:5px 11px;border-radius:100px;cursor:pointer;font-family:inherit;transition:all 0.15s;white-space:nowrap" onmouseover="this.style.borderColor='var(--purple)';this.style.color='var(--text)';this.style.background='rgba(139,92,246,0.08)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-dim)';this.style.background='var(--surface)'">✏️ 주인공 동기가 약해요</button>
-          <button onclick="homeQuick('클라이막스 장면이 너무 평범해요')" style="background:var(--surface);border:1px solid var(--border);color:var(--text-dim);font-size:12px;font-weight:600;padding:5px 11px;border-radius:100px;cursor:pointer;font-family:inherit;transition:all 0.15s;white-space:nowrap" onmouseover="this.style.borderColor='var(--purple)';this.style.color='var(--text)';this.style.background='rgba(139,92,246,0.08)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-dim)';this.style.background='var(--surface)'">🔥 클라이막스가 평범해요</button>
-          <button onclick="homeQuick('캐릭터 대사가 어색해요')" style="background:var(--surface);border:1px solid var(--border);color:var(--text-dim);font-size:12px;font-weight:600;padding:5px 11px;border-radius:100px;cursor:pointer;font-family:inherit;transition:all 0.15s;white-space:nowrap" onmouseover="this.style.borderColor='var(--purple)';this.style.color='var(--text)';this.style.background='rgba(139,92,246,0.08)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-dim)';this.style.background='var(--surface)'">💬 대사가 어색해요</button>
-          <button onclick="homeQuick('복선 심는 법이 어려워요')" style="background:var(--surface);border:1px solid var(--border);color:var(--text-dim);font-size:12px;font-weight:600;padding:5px 11px;border-radius:100px;cursor:pointer;font-family:inherit;transition:all 0.15s;white-space:nowrap" onmouseover="this.style.borderColor='var(--purple)';this.style.color='var(--text)';this.style.background='rgba(139,92,246,0.08)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-dim)';this.style.background='var(--surface)'">🔗 복선 심는 법</button>
-          <button onclick="homeQuick('독자 훅이 어떤 게 효과적인가요')" style="background:var(--surface);border:1px solid var(--border);color:var(--text-dim);font-size:12px;font-weight:600;padding:5px 11px;border-radius:100px;cursor:pointer;font-family:inherit;transition:all 0.15s;white-space:nowrap" onmouseover="this.style.borderColor='var(--purple)';this.style.color='var(--text)';this.style.background='rgba(139,92,246,0.08)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-dim)';this.style.background='var(--surface)'">🎣 독자 훅</button>
-          <button onclick="homeQuick('장르물을 쓰고 싶어요. 어디서부터 시작하면 좋을까요')" style="background:var(--surface);border:1px solid var(--border);color:var(--text-dim);font-size:12px;font-weight:600;padding:5px 11px;border-radius:100px;cursor:pointer;font-family:inherit;transition:all 0.15s;white-space:nowrap" onmouseover="this.style.borderColor='var(--purple)';this.style.color='var(--text)';this.style.background='rgba(139,92,246,0.08)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-dim)';this.style.background='var(--surface)'">🎭 장르물 쓰고 싶어요</button>
+          <button onclick="homeQuick('주인공 동기가 너무 약한 것 같아요')" style="background:var(--surface);border:1px solid var(--border);color:var(--text-dim);font-size:13px;font-weight:600;padding:8px 14px;border-radius:100px;cursor:pointer;font-family:inherit;transition:all 0.15s;white-space:nowrap" onmouseover="this.style.borderColor='var(--purple)';this.style.color='var(--text)';this.style.background='rgba(139,92,246,0.08)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-dim)';this.style.background='var(--surface)'">✏️ 주인공 동기가 약해요</button>
+          <button onclick="homeQuick('클라이막스 장면이 너무 평범해요')" style="background:var(--surface);border:1px solid var(--border);color:var(--text-dim);font-size:13px;font-weight:600;padding:8px 14px;border-radius:100px;cursor:pointer;font-family:inherit;transition:all 0.15s;white-space:nowrap" onmouseover="this.style.borderColor='var(--purple)';this.style.color='var(--text)';this.style.background='rgba(139,92,246,0.08)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-dim)';this.style.background='var(--surface)'">🔥 클라이막스가 평범해요</button>
+          <button onclick="homeQuick('캐릭터 대사가 어색해요')" style="background:var(--surface);border:1px solid var(--border);color:var(--text-dim);font-size:13px;font-weight:600;padding:8px 14px;border-radius:100px;cursor:pointer;font-family:inherit;transition:all 0.15s;white-space:nowrap" onmouseover="this.style.borderColor='var(--purple)';this.style.color='var(--text)';this.style.background='rgba(139,92,246,0.08)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-dim)';this.style.background='var(--surface)'">💬 대사가 어색해요</button>
+          <button onclick="homeQuick('복선 심는 법이 어려워요')" style="background:var(--surface);border:1px solid var(--border);color:var(--text-dim);font-size:13px;font-weight:600;padding:8px 14px;border-radius:100px;cursor:pointer;font-family:inherit;transition:all 0.15s;white-space:nowrap" onmouseover="this.style.borderColor='var(--purple)';this.style.color='var(--text)';this.style.background='rgba(139,92,246,0.08)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-dim)';this.style.background='var(--surface)'">🔗 복선 심는 법</button>
+          <button onclick="homeQuick('독자 훅이 어떤 게 효과적인가요')" style="background:var(--surface);border:1px solid var(--border);color:var(--text-dim);font-size:13px;font-weight:600;padding:8px 14px;border-radius:100px;cursor:pointer;font-family:inherit;transition:all 0.15s;white-space:nowrap" onmouseover="this.style.borderColor='var(--purple)';this.style.color='var(--text)';this.style.background='rgba(139,92,246,0.08)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-dim)';this.style.background='var(--surface)'">🎣 독자 훅</button>
+          <button onclick="homeQuick('장르물을 쓰고 싶어요. 어디서부터 시작하면 좋을까요')" style="background:var(--surface);border:1px solid var(--border);color:var(--text-dim);font-size:13px;font-weight:600;padding:8px 14px;border-radius:100px;cursor:pointer;font-family:inherit;transition:all 0.15s;white-space:nowrap" onmouseover="this.style.borderColor='var(--purple)';this.style.color='var(--text)';this.style.background='rgba(139,92,246,0.08)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-dim)';this.style.background='var(--surface)'">🎭 장르물 쓰고 싶어요</button>
         </div>
         <!-- 직접 입력 바 -->
         <div style="border-top:1px solid var(--border);padding-top:12px;display:flex;align-items:flex-end;gap:10px">
           <textarea id="home-ta" rows="1"
-            style="flex:1;background:none;border:none;outline:none;font-family:inherit;font-size:15px;font-weight:500;color:var(--text);resize:none;height:44px;max-height:130px;line-height:1.65;padding:5px 0"
+            style="flex:1;background:none;border:none;outline:none;font-family:inherit;font-size:16px;font-weight:500;color:var(--text);resize:none;height:44px;max-height:130px;line-height:1.65;padding:5px 0"
             placeholder="막히는 장면, 캐릭터 설정, 플롯 문제 — 무엇이든 입력하세요..."
             onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();homeChat();}"
             oninput="this.style.height='44px';this.style.height=Math.min(this.scrollHeight,130)+'px'"></textarea>
