@@ -424,18 +424,25 @@ export function buildContext(project) {
     .map(c => c.name)
     .join(", ");
 
+  // ── 파일 업로드 사건 흐름 ──
+  const textTl = (project.memory && project.memory.textTimeline) || [];
+  const textTlText = textTl.slice(0, 10)
+    .map(t => `${t.seq}. ${t.text}`)
+    .join("\n");
+
   const summary = (project.memory && project.memory.summary) || "";
 
   // 모두 비어있으면 컨텍스트 없음
-  if (!world && !characters && !tl.length && !summary && !srcChars) return "";
+  if (!world && !characters && !tl.length && !summary && !srcChars && !textTlText) return "";
 
   const lines = [];
-  if (world)      lines.push(`[세계관]\n${world}`);
-  if (characters) lines.push(`[캐릭터 현재 상태]\n${characters}`);
-  if (arcLines)   lines.push(`[캐릭터 감정 변화 이력]\n${arcLines}`);
-  if (srcChars)   lines.push(`[등장인물 (파일 추출)]\n${srcChars}`);
-  if (tlText)     lines.push(`[최근 회차 흐름]\n${tlText}`);
-  if (summary)    lines.push(`[서사 흐름 요약]\n${summary}`);
+  if (world)        lines.push(`[세계관]\n${world}`);
+  if (characters)   lines.push(`[캐릭터 현재 상태]\n${characters}`);
+  if (arcLines)     lines.push(`[캐릭터 감정 변화 이력]\n${arcLines}`);
+  if (srcChars)     lines.push(`[등장인물 (파일 추출)]\n${srcChars}`);
+  if (textTlText)   lines.push(`[사건 흐름 (파일 추출)]\n${textTlText}`);
+  if (tlText)       lines.push(`[최근 회차 흐름]\n${tlText}`);
+  if (summary)      lines.push(`[서사 흐름 요약]\n${summary}`);
 
   return lines.join("\n\n");
 }

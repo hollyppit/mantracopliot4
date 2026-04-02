@@ -1605,8 +1605,8 @@ async function handleOlPdfUpload(input) {
     const ctx = { title: file.name, text };
 
     // ── 5. UI 상태 표시 ──
-    const charCount = memory.characters.length;
-    const tlCount = memory.timeline.length;
+    const charCount = (memory.sourceCharacters || []).length;
+    const tlCount = (memory.textTimeline || []).length;
     status.innerHTML =
       `✓ <strong>작품 연동 완료</strong>: "${file.name}"<br>` +
       `<span style="font-size:11px;opacity:0.85">` +
@@ -1710,11 +1710,26 @@ async function handleSynPdfUpload(input) {
     const text = await extractTextFromFile(file);
     if (text.length < 10) throw new Error('추출된 텍스트가 너무 적습니다.');
 
+    // ── memory 구조화 ──
+    const memory = (window.PS && window.PS.structureMemory)
+      ? window.PS.structureMemory(text)
+      : { rawText: text, summary: text.slice(0, 300), sourceCharacters: [], textTimeline: [] };
+
+    if (window.currentProject && window.PS && window.PS.saveMemory) {
+      window.PS.saveMemory(window.currentProject, memory);
+    }
+
     const pid = synEditProjId || (selProj ? selProj.id : null) || (pdProj ? pdProj.id : null);
     if (pid) storeProjectContext(pid, text);
 
     synPdfText = text;
-    status.textContent = `✓ 작품 연동 완료: "${file.name}" — 저장하기를 눌러주세요`;
+    const charCount = (memory.sourceCharacters || []).length;
+    const tlCount = (memory.textTimeline || []).length;
+    status.innerHTML =
+      `✓ <strong>작품 연동 완료</strong>: "${file.name}" — 저장하기를 눌러주세요<br>` +
+      `<span style="font-size:11px;opacity:0.85">` +
+        `요약 ${memory.summary.length}자 · 등장인물 ${charCount}명 추출 · 사건 흐름 ${tlCount}개` +
+      `</span>`;
   } catch (err) {
     status.textContent = `❌ ${err.message}`;
     console.error(err);
@@ -1889,6 +1904,23 @@ function pbOpenLinkModal() {
   setTimeout(() => openOlProjSelect(), 150);
 }
 
+// ── 프로젝트 기본 문제 감지 ──
+function detectIssues(project) {
+  if (!project) return [];
+  const issues = [];
+  if (!(project.characters || []).length)
+    issues.push({ code: 'no_chars',    label: '캐릭터 없음',   desc: '주인공/조연 설정이 비어있어요' });
+  if (!(project.episodes   || []).length)
+    issues.push({ code: 'no_eps',      label: '회차 없음',     desc: '아직 작성된 회차가 없어요' });
+  if (((project.memory && project.memory.timeline) || []).length < 2)
+    issues.push({ code: 'thin_story',  label: '스토리 부족',   desc: '서사 흐름이 2개 미만이에요' });
+  if (!((project.memory && project.memory.rawText) || '').trim())
+    issues.push({ code: 'no_link',     label: '작품 미연동',   desc: '원고/시놉시스 파일을 연동해보세요' });
+  if (!(project.world || '').trim())
+    issues.push({ code: 'no_world',    label: '세계관 없음',   desc: '세계관 설정이 입력되지 않았어요' });
+  return issues;
+}
+
 // ── ActionBoard: 작업 유도 보드 (블록 2–4) ──
 function renderActionBoard() {
   const el = document.getElementById('action-board');
@@ -1900,26 +1932,78 @@ function renderActionBoard() {
   // 블록 2: 다음 작업 추천 (활성 프로젝트 있을 때만)
   let block2 = '';
   if (hasActiveProject) {
-    const epCount = proj.episodes ? proj.episodes.length : 0;
+    const epCount   = (proj.episodes   || []).length;
+    const charCount = (proj.characters || []).length;
+    const tlCount   = (proj.memory && proj.memory.timeline || []).length;
+
+    // ── 추천 로직: 부족한 것부터 우선 안내 ──
+    const recs = [];
+
+    // 첫 번째 추천: 회차 상태 기반
+    if (epCount === 0) {
+      recs.push({ icon: '📝', label: '첫 회차 만들기', desc: '1화 개요 작성으로 시작해보세요',
+        action: `pbContinueWork()`, primary: true });
+    } else {
+      recs.push({ icon: '📝', label: `${epCount + 1}화 작성하기`, desc: `${epCount}화까지 완료 · 다음 회차 개요 추가`,
+        action: `pbContinueWork()`, primary: true });
+    }
+
+    // 두 번째 추천: 캐릭터 상태 기반
+    if (charCount === 0) {
+      recs.push({ icon: '👤', label: '캐릭터 생성하기', desc: '주인공과 조연 설정이 비어있어요',
+        action: `navTo('chara')`, primary: false });
+    } else {
+      recs.push({ icon: '👤', label: '캐릭터 보완하기', desc: `현재 ${charCount}명 · 설정 · 관계도 정비`,
+        action: `navTo('chara')`, primary: false });
+    }
+
+    // 세 번째 추천: 서사 흐름 기반
+    if (tlCount < 3) {
+      recs.push({ icon: '⚡', label: '스토리 확장하기', desc: '서사 흐름이 부족해요 · AI로 보강',
+        action: `abSendToAgent('스토리를 확장하고 싶어요. 현재 흐름에서 자연스럽게 이어지는 사건을 추가하는 방법을 알려주세요')`,
+        primary: false });
+    } else {
+      recs.push({ icon: '⚡', label: '갈등 추가하기', desc: 'AI가 긴장감 높이는 갈등 구조 설계',
+        action: `abSendToAgent('갈등 구조를 추가하고 싶어요. 현재 스토리에서 긴장감을 높이는 방법을 구체적으로 알려주세요')`,
+        primary: false });
+    }
+
+    const recBtns = recs.map(r => {
+      const bg     = r.primary ? 'rgba(139,92,246,0.08)' : 'rgba(255,255,255,0.03)';
+      const border = r.primary ? 'rgba(139,92,246,0.2)'  : 'var(--border)';
+      const bgHov  = r.primary ? 'rgba(139,92,246,0.16)' : 'rgba(255,255,255,0.06)';
+      const bdHov  = r.primary ? 'rgba(139,92,246,0.4)'  : 'var(--border2)';
+      const arrowC = r.primary ? 'var(--purple-light)'   : 'var(--text-faint)';
+      return `<button onclick="${r.action}"
+        style="background:${bg};border:1px solid ${border};border-radius:12px;padding:12px 16px;cursor:pointer;font-family:inherit;text-align:left;transition:all 0.2s;display:flex;align-items:center;gap:12px"
+        onmouseover="this.style.background='${bgHov}';this.style.borderColor='${bdHov}'"
+        onmouseout="this.style.background='${bg}';this.style.borderColor='${border}'">
+        <span style="font-size:1.3rem">${r.icon}</span>
+        <div>
+          <div style="font-size:13px;font-weight:700;color:var(--text)">${r.label}</div>
+          <div style="font-size:11px;color:var(--text-faint);margin-top:2px">${r.desc}</div>
+        </div>
+        <div style="margin-left:auto;font-size:12px;color:${arrowC};font-weight:700">→</div>
+      </button>`;
+    }).join('');
+
+    // ── 문제 감지 블록 ──
+    const issues = detectIssues(proj);
+    const issueBlock = issues.length ? `
+      <div style="background:rgba(255,180,0,0.05);border:1px solid rgba(255,180,0,0.2);border-radius:12px;padding:12px 16px;margin-bottom:8px">
+        <div style="font-size:10px;font-weight:800;letter-spacing:0.08em;color:rgba(255,180,0,0.9);text-transform:uppercase;margin-bottom:8px">⚠ 감지된 문제 ${issues.length}개</div>
+        <div style="display:flex;flex-direction:column;gap:4px">
+          ${issues.map(i => `<div style="display:flex;align-items:baseline;gap:6px;font-size:12px">
+            <span style="color:rgba(255,180,0,0.8);font-weight:700;white-space:nowrap">· ${i.label}</span>
+            <span style="color:var(--text-faint)">${i.desc}</span>
+          </div>`).join('')}
+        </div>
+      </div>` : '';
+
     block2 = `<div style="background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:16px;padding:18px 20px;margin-bottom:12px">
       <div style="font-size:10px;font-weight:800;letter-spacing:0.1em;color:var(--purple-light);text-transform:uppercase;margin-bottom:14px">✦ 다음 작업 추천</div>
-      <div style="display:flex;flex-direction:column;gap:8px">
-        <button onclick="pbContinueWork()" style="background:rgba(139,92,246,0.08);border:1px solid rgba(139,92,246,0.2);border-radius:12px;padding:12px 16px;cursor:pointer;font-family:inherit;text-align:left;transition:all 0.2s;display:flex;align-items:center;gap:12px" onmouseover="this.style.background='rgba(139,92,246,0.16)';this.style.borderColor='rgba(139,92,246,0.4)'" onmouseout="this.style.background='rgba(139,92,246,0.08)';this.style.borderColor='rgba(139,92,246,0.2)'">
-          <span style="font-size:1.3rem">📝</span>
-          <div><div style="font-size:13px;font-weight:700;color:var(--text)">다음 회차 작성하기</div><div style="font-size:11px;color:var(--text-faint);margin-top:2px">${epCount}화 이후 새 회차 개요 작성</div></div>
-          <div style="margin-left:auto;font-size:12px;color:var(--purple-light);font-weight:700">→</div>
-        </button>
-        <button onclick="navTo('chara')" style="background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:12px;padding:12px 16px;cursor:pointer;font-family:inherit;text-align:left;transition:all 0.2s;display:flex;align-items:center;gap:12px" onmouseover="this.style.background='rgba(255,255,255,0.06)';this.style.borderColor='var(--border2)'" onmouseout="this.style.background='rgba(255,255,255,0.03)';this.style.borderColor='var(--border)'">
-          <span style="font-size:1.3rem">👤</span>
-          <div><div style="font-size:13px;font-weight:700;color:var(--text)">캐릭터 보완하기</div><div style="font-size:11px;color:var(--text-faint);margin-top:2px">인물 설정 · 관계도 정비</div></div>
-          <div style="margin-left:auto;font-size:12px;color:var(--text-faint);font-weight:700">→</div>
-        </button>
-        <button onclick="abSendToAgent('갈등 구조를 추가하고 싶어요. 현재 스토리에서 긴장감을 높이는 방법을 구체적으로 알려주세요')" style="background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:12px;padding:12px 16px;cursor:pointer;font-family:inherit;text-align:left;transition:all 0.2s;display:flex;align-items:center;gap:12px" onmouseover="this.style.background='rgba(255,255,255,0.06)';this.style.borderColor='var(--border2)'" onmouseout="this.style.background='rgba(255,255,255,0.03)';this.style.borderColor='var(--border)'">
-          <span style="font-size:1.3rem">⚡</span>
-          <div><div style="font-size:13px;font-weight:700;color:var(--text)">갈등 추가하기</div><div style="font-size:11px;color:var(--text-faint);margin-top:2px">AI가 갈등 구조 설계 도움</div></div>
-          <div style="margin-left:auto;font-size:12px;color:var(--text-faint);font-weight:700">→</div>
-        </button>
-      </div>
+      ${issueBlock}
+      <div style="display:flex;flex-direction:column;gap:8px">${recBtns}</div>
     </div>`;
   }
 
