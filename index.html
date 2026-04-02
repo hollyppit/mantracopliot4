@@ -1576,26 +1576,24 @@ async function getEmbedding(text) {
   return data.embedding;
 }
 
-async function runExpert(type) {
-  const text = getProjectText();
-
-  const embedding = await getEmbedding(text);
-
-  const { data, error } = await supabase.rpc('match_cases', {
-    query_embedding: embedding,
-    match_count: 3
-  });
-
-  const resultBox = document.getElementById('expert-result');
-
-  if (error) {
-    resultBox.innerText = "에러 발생";
-    console.error(error);
-    return;
+async function getRAG(input) {
+  try {
+    const embedding = await getEmbedding(input);
+    const { data, error } = await sb.rpc('match_cases', {
+      query_embedding: embedding,
+      match_count: 3
+    });
+    if (error || !data || data.length === 0) return null;
+    return data;
+  } catch (e) {
+    console.error('getRAG error:', e);
+    return null;
   }
+}
 
-  resultBox.innerText = `
-[전문가 분석]
+function generateFromRAG(ragResults, type, text) {
+  const problems = ragResults.map(c => "- " + (c.description || c.pattern || '패턴 없음')).join("\n");
+  return `[전문가 분석 — RAG 기반]
 
 분야: ${type}
 
@@ -1606,12 +1604,72 @@ ${text}
 이 기획안은 유사 사례 기반으로 다음 문제 가능성이 있습니다.
 
 문제:
-${data.map(c => "- " + c.description).join("\n")}
+${problems}
 
 수정 방향:
 - 초반 갈등을 빠르게 제시하세요
-- 설명을 줄이고 행동 중심으로 전개하세요
-`;
+- 설명을 줄이고 행동 중심으로 전개하세요`;
+}
+
+async function generateFromAI(type, text) {
+  try {
+    const res = await fetch("/api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        messages: [{
+          role: "user",
+          content: `당신은 ${type} 분야 전문가입니다.\n\n아래 기획안을 분석하고 문제점과 수정 방향을 알려주세요.\n\n기획안:\n${text}`
+        }]
+      })
+    });
+    const data = await res.json();
+    const aiText = data.content || data.message || data.choices?.[0]?.message?.content || '분석 결과를 가져올 수 없습니다.';
+    return `[전문가 분석 — AI 기반]
+
+분야: ${type}
+
+입력 기획안:
+${text}
+
+${aiText}`;
+  } catch (e) {
+    console.error('generateFromAI error:', e);
+    return `[전문가 분석]
+
+분야: ${type}
+
+입력 기획안:
+${text}
+
+AI 분석을 불러오는 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.`;
+  }
+}
+
+async function runExpert(type) {
+  const text = getProjectText();
+  const resultBox = document.getElementById('expert-result');
+  resultBox.innerText = '분석 중...';
+
+  try {
+    const ragResults = await getRAG(text);
+
+    let result;
+    if (ragResults && ragResults.length > 0) {
+      console.log('RAG HIT', ragResults.length + '건');
+      result = generateFromRAG(ragResults, type, text);
+    } else {
+      console.log('RAG MISS — AI fallback 사용');
+      result = await generateFromAI(type, text);
+    }
+
+    resultBox.innerText = result;
+  } catch (e) {
+    console.error('runExpert error:', e);
+    console.log('RAG MISS — 에러로 인한 AI fallback');
+    const result = await generateFromAI(type, text);
+    resultBox.innerText = result;
+  }
 }
 
 // ── 상태 ──
