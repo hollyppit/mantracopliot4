@@ -3666,8 +3666,14 @@ async function deleteProject(){
   if(user){
     try{await sb.from('projects').delete().eq('id',pdProj.id).eq('user_id',user.id);}catch(e){}
   }
+  const deletedId=pdProj.id;
   const title=pdProj.title;
   pdProj=null;
+  // 연동 중인 작품이면 연동 해제
+  if(window.currentProject&&window.currentProject.id===deletedId){
+    window.currentProject=null;olProjId=null;olEpisodes=[];
+    renderOlProj();renderProjBadge();renderEpList();drawTensionGraph();
+  }
   navTo('myplan');
   await loadMyPlan();
   renderProjGrid();
@@ -3680,6 +3686,11 @@ function quickDeleteProj(pid,title){
   localStorage.setItem('mp',JSON.stringify(arr.filter(p=>p.id!==pid)));
   if(user){
     sb.from('projects').delete().eq('id',pid).eq('user_id',user.id).then();
+  }
+  // 연동 중인 작품이면 연동 해제
+  if(window.currentProject&&window.currentProject.id===pid){
+    window.currentProject=null;olProjId=null;olEpisodes=[];
+    renderOlProj();renderProjBadge();renderEpList();drawTensionGraph();
   }
   loadMyPlan();
   flash(`'${title}' 삭제됐습니다`);
@@ -5385,11 +5396,18 @@ function renderOlProj(){
 
 // ── 프로젝트 배지: 현재 작품명 표시 + 전환 버튼 ──
 function getCurrentProjTitle(){
-  if(window.currentProject && window.currentProject.title) return window.currentProject.title;
+  const mp=JSON.parse(localStorage.getItem('mp')||'[]');
+  if(window.currentProject && window.currentProject.id){
+    const exists=mp.find(pj=>pj.id===window.currentProject.id);
+    if(!exists){window.currentProject=null;olProjId=null;}
+    else return window.currentProject.title;
+  }
   const pid=olProjId||localStorage.getItem('ol_proj');
   if(pid){
-    const p=(JSON.parse(localStorage.getItem('mp')||'[]')).find(pj=>pj.id===pid);
+    const p=mp.find(pj=>pj.id===pid);
     if(p) return p.title;
+    // 저장된 pid가 삭제된 작품이면 초기화
+    olProjId=null;localStorage.removeItem('ol_proj');
   }
   return null;
 }
