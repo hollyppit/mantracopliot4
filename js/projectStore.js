@@ -25,13 +25,55 @@ export function getActiveGuide(project, extraGuides = []) {
   return all.find(g => g.id === (project && project.activeGuide)) || all[0];
 }
 
-/** localStorage에서 커스텀 가이드 목록을 읽음 (브라우저 전용) */
-function _loadCustomGuides() {
-  try {
-    return JSON.parse(
-      (typeof localStorage !== "undefined" && localStorage.getItem("custom_guides")) || "[]"
-    );
-  } catch { return []; }
+// ── 세분화 스타일 옵션 ──
+export const guideDimensions = [
+  {
+    id: "tone",
+    label: "톤",
+    default: "neutral",
+    options: [
+      { id: "bright",  label: "밝음",   prompt: "밝고 희망적인 분위기로 작성한다" },
+      { id: "neutral", label: "중립",   prompt: "" },
+      { id: "dark",    label: "어두움", prompt: "어둡고 무거운 분위기로 작성한다" }
+    ]
+  },
+  {
+    id: "pace",
+    label: "전개 속도",
+    default: "medium",
+    options: [
+      { id: "fast",   label: "빠름",   prompt: "빠른 전개와 짧은 씬 전환으로 작성한다" },
+      { id: "medium", label: "보통",   prompt: "" },
+      { id: "slow",   label: "느림",   prompt: "천천히 쌓아가는 서사 전개로 작성한다" }
+    ]
+  },
+  {
+    id: "emotion",
+    label: "감정 깊이",
+    default: "medium",
+    options: [
+      { id: "light",  label: "가볍게", prompt: "감정보다 사건과 행동 중심으로 작성한다" },
+      { id: "medium", label: "보통",   prompt: "" },
+      { id: "deep",   label: "깊게",   prompt: "인물의 내면과 감정 변화를 깊게 묘사한다" }
+    ]
+  }
+];
+
+/**
+ * 프리셋 가이드 + 세분화 옵션을 조합해 최종 스타일 지시문 생성
+ * buildAIPrompt의 [스타일] 블록에 사용
+ */
+export function buildGuidePrompt(project, extraGuides = []) {
+  const parts = [];
+  const preset = getActiveGuide(project, extraGuides);
+  if (preset && preset.prompt) parts.push(preset.prompt);
+  const opts = (project && project.guideOptions) || {};
+  guideDimensions.forEach(dim => {
+    const selectedId = opts[dim.id] !== undefined ? opts[dim.id] : dim.default;
+    const opt = dim.options.find(o => o.id === selectedId);
+    if (opt && opt.prompt) parts.push(opt.prompt);
+  });
+  return parts.length > 0 ? parts.join(". ") : "일반적인 스토리 구조로 작성한다";
 }
 
 // 회차 타입별 기본 감정 매핑 (캐릭터 상태 추론용)
@@ -51,6 +93,7 @@ export function createEmptyProject(title = "새 프로젝트") {
     characters: [],
     episodes: [],
     activeGuide: "default",
+    guideOptions: { tone: "neutral", pace: "medium", emotion: "medium" },
     memory: {
       // ── 파일 업로드 기반 (structureMemory) ──
       rawText: "",
@@ -466,10 +509,7 @@ export function buildContext(project) {
 
   const summary = (project.memory && project.memory.summary) || "";
 
-  const guide = getActiveGuide(project, _loadCustomGuides());
-
   const lines = [];
-  lines.push(`[작성 스타일]\n${guide.prompt}`);
   if (world)        lines.push(`[세계관]\n${world}`);
   if (characters)   lines.push(`[캐릭터 현재 상태]\n${characters}`);
   if (arcLines)     lines.push(`[캐릭터 감정 변화 이력]\n${arcLines}`);

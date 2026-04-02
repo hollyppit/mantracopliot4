@@ -289,6 +289,13 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
 .guide-opt-del{font-size:11px;opacity:0;margin-left:auto;color:var(--text-faint);background:none;border:none;cursor:pointer;font-family:inherit;padding:0 2px;transition:all 0.15s;flex-shrink:0}
 .guide-opt:hover .guide-opt-del{opacity:1}
 .guide-opt-del:hover{color:#F87171}
+.guide-dims{padding:8px 8px 4px}
+.guide-dim-row{display:flex;align-items:center;gap:8px;margin-bottom:7px}
+.guide-dim-label{font-size:11px;color:var(--text-faint);white-space:nowrap;width:52px;flex-shrink:0}
+.guide-dim-chips{display:flex;gap:4px}
+.guide-dim-chip{font-size:11px;font-weight:700;padding:4px 10px;border-radius:12px;border:1px solid var(--border);background:none;color:var(--text-faint);cursor:pointer;font-family:inherit;transition:all 0.15s;white-space:nowrap}
+.guide-dim-chip:hover{border-color:var(--border2);color:var(--text-dim)}
+.guide-dim-chip.active{border-color:rgba(139,92,246,0.5);background:rgba(139,92,246,0.1);color:var(--purple-light)}
 .xi{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:11px 18px;color:var(--text);font-family:inherit;font-size:14px;resize:none;outline:none;height:44px;max-height:120px;line-height:1.5;transition:border-color 0.3s}
 .xi:focus{border-color:var(--purple-light)}
 .xi::placeholder{color:var(--text-faint)}
@@ -2965,10 +2972,9 @@ async function draftCharacters(){
   btn.disabled=true; const oldText=btn.innerHTML; btn.textContent='⏳ AI 분석 중...';
   const synopsis=pdProj?.synopsis||pdProj?.synopsis_detail||'';
   const title=pdProj?.title||'';
-  const psCtx = buildContext(window.currentProject);
   const result=await ai([
     {role:'system',content:'당신은 웹소설/웹툰 캐릭터 전문 분석가입니다. 제공된 프로젝트 데이터와 시놉시스를 종합해 등장인물을 JSON 배열로 추출하세요. 각 캐릭터는 다음 필드를 포함합니다: name(이름), role(주인공/히로인/조력자/악당/빌런/조연 중 하나), appearance(외모 특징 1줄), personality(성격 2-3가지), goal(역할과 목표 1줄), relation(주인공과의 관계 1줄). 반드시 JSON 배열만 반환하세요.'},
-    {role:'user',content:`${psCtx ? `[프로젝트 데이터]\n${psCtx}\n\n` : ''}작품명: ${title}\n시놉시스: ${synopsis}\n\n등장인물 JSON 배열을 반환해주세요.`}
+    {role:'user',content:buildAIPrompt(`작품명: ${title}\n시놉시스: ${synopsis}\n\n등장인물 JSON 배열을 반환해주세요.`)}
   ]);
   btn.disabled=false; btn.innerHTML=oldText;
   try{
@@ -3099,19 +3105,18 @@ async function autoFillItemModal(){
   const pid = (selProj ? selProj.id : null) || (pdProj ? pdProj.id : null);
   const externalCtx = getStoredContext(pid);
   const internalCtx=planItems.filter(p=>p.value&&p.value.trim()).map(p=>`${p.k||p.q}: ${p.value}`).join('\n');
-  const psCtx = buildContext(window.currentProject);
 
   try{
-    const prompt = `웹툰·웹소설 기획 AI다. 아래 제공된 모든 정보를 반드시 참고해 현재 질문에 맞는 답변을 생성한다. 세계관·캐릭터·기존 기획과 반드시 일관성을 유지하라. 답변 텍스트만 출력. 되묻거나 설명 금지. 기호·마크다운·이모지 없이 1~2문장.
-${psCtx ? `\n[프로젝트 데이터]\n${psCtx}\n` : ''}${externalCtx ? `\n[참고 문헌]\n${externalCtx}\n` : ''}
-${internalCtx ? `\n[앞서 정해진 기획]\n${internalCtx}\n` : ''}
-[현재 질문] ${item.q}${item.h ? ` (힌트: ${item.h})` : ''}
+    const extra = [
+      externalCtx && `[참고 문헌]\n${externalCtx}`,
+      internalCtx && `[앞서 정해진 기획]\n${internalCtx}`
+    ].filter(Boolean).join('\n\n');
 
-위 내용을 참고한 답변:`;
+    const request = `웹툰·웹소설 기획 AI다. 세계관·캐릭터·기존 기획과 반드시 일관성을 유지하라. 답변 텍스트만 출력. 되묻거나 설명 금지. 기호·마크다운·이모지 없이 1~2문장.\n[현재 질문] ${item.q}${item.h ? ` (힌트: ${item.h})` : ''}\n\n위 내용을 참고한 답변:`;
 
     const result=await ai([
       {role:'system',content:'웹툰·웹소설 기획 조각을 작성하는 기획 전문가입니다. 항상 제공된 프로젝트 데이터(세계관, 캐릭터, 작품 요약)를 기반으로 일관된 내용을 생성합니다.'},
-      {role:'user',content:prompt}
+      {role:'user',content:buildAIPrompt(request, { extra })}
     ],{max_tokens:150});
     const cleaned=result?result.replace(/^[\s\-\*\#\>\"\']+/,'').trim():'';
     if(cleaned&&!cleaned.includes('⚠️')){
@@ -3148,8 +3153,8 @@ async function openInsightAt(idx){
   const s=planItems[idx];
   if(!s){b.innerHTML='<div class="ips"><div class="iptx">항목을 찾을 수 없어요.</div></div>';return;}
   const ctx=planItems.filter(p=>p.value).slice(-3).map(p=>`${p.k||p.q}: ${p.value}`).join('\n');
-  const psCtx = buildContext(window.currentProject);
-  const raw=await ai([{role:'user',content:'당신은 스토리텔링 구조 전문가입니다.\n기획 단계 질문: "'+s.q+'"\n지금까지 쌓인 내용: '+(ctx||'없음')+(psCtx?'\n\n[프로젝트 메모리]\n'+psCtx:'')+'\n다음 JSON으로만 응답 (코드블록 없이):\n{"role":"이 단계의 서사적 역할 2~3문장","principle":"핵심 스토리텔링 원칙 2~3문장","tip":"이 단계에서 자주 실수하는 것과 해결책","reference":"이 단계에서 실제 작품들은 어떤 선택을 했는지 구체적인 레퍼런스 2~3개. 형식: \'작품명 — [어떤 선택]을 했고, [어떤 효과]가 생겼다.\' 웹툰·소설·드라마 등 장르 다양하게.","question":"답하기 전에 스스로 물어볼 질문 1개"}'}]);
+  const request = `당신은 스토리텔링 구조 전문가입니다.\n기획 단계 질문: "${s.q}"\n지금까지 쌓인 내용: ${ctx||'없음'}\n다음 JSON으로만 응답 (코드블록 없이):\n{"role":"이 단계의 서사적 역할 2~3문장","principle":"핵심 스토리텔링 원칙 2~3문장","tip":"이 단계에서 자주 실수하는 것과 해결책","reference":"이 단계에서 실제 작품들은 어떤 선택을 했는지 구체적인 레퍼런스 2~3개. 형식: '작품명 — [어떤 선택]을 했고, [어떤 효과]가 생겼다.' 웹툰·소설·드라마 등 장르 다양하게.","question":"답하기 전에 스스로 물어볼 질문 1개"}`;
+  const raw=await ai([{role:'user',content:buildAIPrompt(request)}]);
   try{
     const parsed=JSON.parse(raw.replace(/```json|```/g,'').trim());
     const refHtml=parsed.reference?`<div class="ips" style="background:rgba(16,185,129,0.04);border-radius:12px;padding:16px;border:1px solid rgba(16,185,129,0.15)"><div class="ipl">🎬 다른 작품들의 선택</div><div class="iptx" style="color:#A7F3D0;white-space:pre-line">${parsed.reference}</div></div>`:'';
@@ -3284,7 +3289,7 @@ async function submitBuildupAns(val){
   $('dt').innerHTML='<div class="thk">분석 중... <div class="td"><span>●</span><span>●</span><span>●</span></div></div>';
   const fb=await ai([
     {role:'system',content:buildPersona()},
-    {role:'user',content:`${_guidePrompt()}[기획 단계: ${s.k||s.q}]\n[작가 답변]: ${val}\n\n한 줄로 요약해주세요. (최대 60자)`}
+    {role:'user',content:buildAIPrompt(`[기획 단계: ${s.k||s.q}]\n[작가 답변]: ${val}\n\n한 줄로 요약해주세요. (최대 60자)`)}
   ]);
   flash('✓ '+(fb||'저장됨'));
   updateDots(chatStep);
@@ -3303,19 +3308,18 @@ async function autoFillBuildupStep(){
   const pid = (selProj ? selProj.id : null) || (pdProj ? pdProj.id : null);
   const externalCtx = getStoredContext(pid);
   const internalCtx = planItems.filter(p => p.value).map(p => `${p.k || p.q}: ${p.value}`).join('\n');
-  const psCtx = buildContext(window.currentProject);
 
   try {
-    const prompt = `웹툰·웹소설 기획 AI다. 아래 제공된 모든 정보를 반드시 참고해 현재 질문에 맞는 답변을 생성한다. 세계관·캐릭터·기존 기획과 반드시 일관성을 유지하라. 답변 텍스트만 출력. 되묻거나 설명 금지. 기호·마크다운·이모지 없이 1~2문장.
-${psCtx ? `\n[프로젝트 데이터]\n${psCtx}\n` : ''}${externalCtx ? `\n[참고 문헌]\n${externalCtx}\n` : ''}
-${internalCtx ? `\n[앞서 정해진 기획]\n${internalCtx}\n` : ''}
-[현재 질문] ${s.q}${s.h ? ` (힌트: ${s.h})` : ''}
+    const extra = [
+      externalCtx && `[참고 문헌]\n${externalCtx}`,
+      internalCtx && `[앞서 정해진 기획]\n${internalCtx}`
+    ].filter(Boolean).join('\n\n');
 
-위 내용을 참고한 답변:`;
+    const request = `웹툰·웹소설 기획 AI다. 세계관·캐릭터·기존 기획과 반드시 일관성을 유지하라. 답변 텍스트만 출력. 되묻거나 설명 금지. 기호·마크다운·이모지 없이 1~2문장.\n[현재 질문] ${s.q}${s.h ? ` (힌트: ${s.h})` : ''}\n\n위 내용을 참고한 답변:`;
 
     const result = await ai([
       { role: 'system', content: '작가의 기획을 돕는 유능한 조수입니다. 항상 제공된 프로젝트 데이터(세계관, 캐릭터, 작품 요약)를 기반으로 일관된 내용을 생성합니다.' },
-      { role: 'user', content: prompt }
+      { role: 'user', content: buildAIPrompt(request, { extra }) }
     ], { max_tokens: 150 });
     const cleaned = result ? result.replace(/^[\s\-\*\#\>\"\']+/,'').trim() : '';
     if (cleaned && !cleaned.includes('⚠️')) {
@@ -3587,11 +3591,56 @@ function buildContext(project) {
 
 // ── 작성 스타일 가이드 프리픽스 ──
 // 모든 AI 호출에서 buildContext를 경유하지 않는 경우에 사용
-function _guidePrompt() {
+// 프리셋 + 세분화 옵션을 조합한 최종 스타일 문자열
+function _getStylePrompt() {
   const proj = window.currentProject;
+  return window.PS?.buildGuidePrompt(proj, loadCustomGuides()) || '';
+}
+
+// 버튼 레이블: 프리셋명 + 비기본 옵션만 표시 (예: "기본 · 어두움 · 빠름")
+function _guideSelLabel() {
+  const proj = window.currentProject;
+  const allGuides = getAllGuides();
   const activeId = proj?.activeGuide || 'default';
-  const guide = getAllGuides().find(g => g.id === activeId) || getAllGuides()[0];
-  return guide ? `[작성 스타일]\n${guide.prompt}\n\n` : '';
+  const preset = allGuides.find(g => g.id === activeId) || allGuides[0];
+  const dims = window.PS?.guideDimensions || [];
+  const opts = proj?.guideOptions || {};
+  const parts = [preset?.name || '기본'];
+  dims.forEach(dim => {
+    const sel = opts[dim.id] !== undefined ? opts[dim.id] : dim.default;
+    if (sel !== dim.default) {
+      const opt = dim.options.find(o => o.id === sel);
+      if (opt) parts.push(opt.label);
+    }
+  });
+  return parts.join(' · ');
+}
+
+// doXSend (채팅) system 메시지 앞에 주입용
+function _guidePrompt() {
+  const style = _getStylePrompt();
+  return style ? `[스타일]\n${style}\n\n` : '';
+}
+
+/**
+ * 생성형 AI 호출의 user 메시지를 [스타일]/[기억]/[요청] 구조로 조립
+ * @param {string} requestText
+ * @param {object} [opts]  opts.project / opts.extra
+ */
+function buildAIPrompt(requestText, opts = {}) {
+  const proj   = opts.project || window.currentProject;
+  const style  = _getStylePrompt();
+  const memory = buildContext(proj);
+  const extra  = opts.extra || '';
+
+  const parts = [];
+  if (style)  parts.push(`[스타일]\n${style}`);
+
+  const memBlock = [memory, extra].filter(Boolean).join('\n\n');
+  if (memBlock) parts.push(`[기억]\n${memBlock}`);
+
+  parts.push(`[요청]\n${requestText}`);
+  return parts.join('\n\n');
 }
 
 // ── 커스텀 가이드 저장소 ──
@@ -3610,31 +3659,48 @@ function renderGuideSelector() {
   const proj = window.currentProject;
   const activeId = proj?.activeGuide || 'default';
   const allGuides = getAllGuides();
-  const active = allGuides.find(g => g.id === activeId) || allGuides[0];
+  const dims = window.PS?.guideDimensions || [];
+  const opts = proj?.guideOptions || {};
 
   const btn = $('guide-sel-btn');
   const label = $('guide-sel-label');
   const dd = $('guide-dropdown');
   if (!btn || !label || !dd) return;
 
-  if (active) label.textContent = active.name;
+  label.textContent = _guideSelLabel();
 
+  // ── 프리셋 목록 ──
   const defaultIds = new Set((window.PS?.guides || []).map(g => g.id));
-
-  const optHtml = allGuides.map(g => {
+  const presetHtml = allGuides.map(g => {
     const isCustom = !defaultIds.has(g.id);
     const delBtn = isCustom
       ? `<button class="guide-opt-del" onclick="event.stopPropagation();deleteCustomGuide('${g.id}')" title="삭제">✕</button>`
       : '';
     return `<div class="guide-opt${g.id === activeId ? ' active' : ''}" onclick="selectGuide('${g.id}')">
       <span class="go-dot"></span>${g.name}
-      <span style="font-size:11px;color:var(--text-faint);margin-left:auto;font-weight:400;margin-right:4px">${g.prompt.slice(0, 14)}…</span>
+      <span style="font-size:11px;color:var(--text-faint);margin-left:auto;font-weight:400;margin-right:4px">${(g.prompt||'').slice(0,14)}…</span>
       ${delBtn}
     </div>`;
   }).join('');
 
-  dd.innerHTML = optHtml +
+  // ── 세분화 옵션 ──
+  const dimHtml = dims.map(dim => {
+    const sel = opts[dim.id] !== undefined ? opts[dim.id] : dim.default;
+    const chips = dim.options.map(o =>
+      `<button class="guide-dim-chip${o.id === sel ? ' active' : ''}"
+        onclick="event.stopPropagation();selectGuideDim('${dim.id}','${o.id}')">${o.label}</button>`
+    ).join('');
+    return `<div class="guide-dim-row">
+      <span class="guide-dim-label">${dim.label}</span>
+      <div class="guide-dim-chips">${chips}</div>
+    </div>`;
+  }).join('');
+
+  dd.innerHTML =
+    presetHtml +
     `<div class="guide-dd-sep"></div>
+     <div class="guide-dims">${dimHtml}</div>
+     <div class="guide-dd-sep"></div>
      <button class="guide-add-btn" onclick="openGuideForm()">＋ 새 가이드 만들기</button>`;
 }
 
@@ -3702,6 +3768,15 @@ function deleteCustomGuide(id) {
   renderGuideSelector();
 }
 
+function selectGuideDim(dimId, optId) {
+  const proj = window.currentProject;
+  if (!proj || !window.PS) return;
+  if (!proj.guideOptions) proj.guideOptions = {};
+  proj.guideOptions[dimId] = optId;
+  window.PS.saveProject(proj);
+  renderGuideSelector();   // 드롭다운 유지 (닫지 않음 — 연속 조합 가능)
+}
+
 function selectGuide(id) {
   const proj = window.currentProject;
   if (!proj || !window.PS) return;
@@ -3712,8 +3787,7 @@ function selectGuide(id) {
   const btn = $('guide-sel-btn');
   if (dd) dd.classList.remove('open');
   if (btn) btn.classList.remove('open');
-  const guide = getAllGuides().find(g => g.id === id);
-  flash(`✦ 스타일: ${guide?.name || id}`);
+  flash(`✦ 스타일: ${_guideSelLabel()}`);
 }
 
 // ── 페르소나 ──
@@ -4196,18 +4270,18 @@ async function autoFillEpisode(idx){
   try{
     const pid = (selProj ? selProj.id : null) || (pdProj ? pdProj.id : null);
     const externalCtx = getStoredContext(pid);
-    // projectStore 컨텍스트 (세계관·캐릭터·memory 포함)
-    const psCtx = buildContext(window.currentProject);
 
-    const prompt = `웹툰·웹소설 회차 기획 AI다. 아래 제공된 모든 정보를 반드시 참고해 ${ep.num}화(전체 ${total}화, ${ep.act}막)의 빈 항목만 채워라. 이미 입력된 내용과 일관성을 유지하라. JSON만 출력. 형식: {"type":"${typeIds}","keyword":"","title":"","synopsis":"","funPoint":"","lastPanel":"","tension":숫자}
-${psCtx ? `\n[프로젝트 데이터]\n${psCtx}\n` : ''}${externalCtx ? `\n[참고 문헌]\n${externalCtx}\n` : ''}
-[작품 정보]
-${projInfo}${planCtx ? `\n\n[기획 내용]\n${planCtx}` : ''}${prevEps ? `\n\n[앞 회차 흐름]\n${prevEps}` : ''}
+    const extra = [
+      externalCtx && `[참고 문헌]\n${externalCtx}`,
+      `[작품 정보]\n${projInfo}`,
+      planCtx && `[기획 내용]\n${planCtx}`,
+      prevEps && `[앞 회차 흐름]\n${prevEps}`,
+      `[이미 입력된 내용]\n${alreadyCtx || '없음'}`
+    ].filter(Boolean).join('\n\n');
 
-[이미 입력된 내용]
-${alreadyCtx || '없음'}
+    const request = `웹툰·웹소설 회차 기획 AI다. ${ep.num}화(전체 ${total}화, ${ep.act}막)의 빈 항목만 채워라. 이미 입력된 내용과 일관성을 유지하라. JSON만 출력. 형식: {"type":"${typeIds}","keyword":"","title":"","synopsis":"","funPoint":"","lastPanel":"","tension":숫자}\n\n빈 항목(${emptyFields.join(', ') || 'tension'})을 채운 JSON:`;
 
-빈 항목(${emptyFields.join(', ') || 'tension'})을 채운 JSON:`;
+    const prompt = buildAIPrompt(request, { extra });
 
     const result=await ai([
       {role:'system',content:`회차별 개요를 짜는 전문 편집자입니다. 항상 제공된 프로젝트 데이터(세계관, 캐릭터, 작품 요약)를 기반으로 일관된 내용을 생성합니다.`},
