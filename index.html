@@ -1031,6 +1031,14 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
           </div>
         </div>
       </div>
+      <div id="expert-result" style="
+        white-space: pre-wrap;
+        padding: 16px;
+        margin-top: 20px;
+        background: rgba(255,255,255,0.05);
+        border-radius: 12px;
+        font-size: 14px;
+      "></div>
     </div>
   </section>
   <!-- 루틴 마켓 -->
@@ -1528,6 +1536,31 @@ window.currentProject = proj;
 const SB_URL='https://mvygorffhbshubqkerpo.supabase.co';
 const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im12eWdvcmZmaGJzaHVicWtlcnBvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2MzU3ODQsImV4cCI6MjA4OTIxMTc4NH0.p7usz-l53gmibWpswzTFvhzmR3UX7QkWb3oPsy3A50c';
 const sb=window.supabase.createClient(SB_URL,SB_KEY);
+
+async function runExpert(type) {
+  const { data, error } = await supabase
+    .from('story_cases')
+    .select('*')
+    .eq('type', type);
+
+  const resultBox = document.getElementById('expert-result');
+
+  if (error) {
+    resultBox.innerText = "에러 발생";
+    console.error(error);
+    return;
+  }
+
+  resultBox.innerText = `
+[전문가 분석]
+
+분야: ${type}
+
+유사 사례:
+${data.map(c => "- " + c.description).join("\n")}
+  `;
+}
+
 // ── 상태 ──
 let user=null,projects=[],selProj=null,steps=[],step=0,hist=[],charName='조수 T형',xMsgs=[],xPersona='',xPersonaBase='',xLinkedProj=null;
 // ── 루틴 데이터 ──

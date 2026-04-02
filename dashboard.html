@@ -484,6 +484,15 @@ body {
     </button>
     <div class="verify-result" id="verify-result"></div>
   </div>
+
+  <div id="expert-result" style="
+    white-space: pre-wrap;
+    padding: 16px;
+    margin-top: 20px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 12px;
+    font-size: 14px;
+  "></div>
 </main>
 
 <!-- DETAIL MODAL -->
@@ -505,6 +514,31 @@ window.location.href = 'index.html';
 const SUPABASE_URL = 'https://mvygorffhbshubqkerpo.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im12eWdvcmZmaGJzaHVicWtlcnBvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2MzU3ODQsImV4cCI6MjA4OTIxMTc4NH0.p7usz-l53gmibWpswzTFvhzmR3UX7QkWb3oPsy3A50c';
 const _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+async function runExpert(type) {
+  const { data, error } = await supabase
+    .from('story_cases')
+    .select('*')
+    .eq('type', type);
+
+  const resultBox = document.getElementById('expert-result');
+
+  if (error) {
+    resultBox.innerText = "에러 발생";
+    console.error(error);
+    return;
+  }
+
+  resultBox.innerText = `
+[전문가 분석]
+
+분야: ${type}
+
+유사 사례:
+${data.map(c => "- " + c.description).join("\n")}
+  `;
+}
+
 function $(id) { return document.getElementById(id); }
 
 // ── 전문가 검증 (RAG → 카드 UI) ──
