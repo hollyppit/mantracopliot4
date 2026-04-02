@@ -649,26 +649,28 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
       <!-- 헤더 -->
       <div style="margin-bottom:32px">
         <div style="font-size:11px;font-weight:700;letter-spacing:0.12em;color:var(--text-faint);text-transform:uppercase;margin-bottom:8px">✦ AI 창작 파트너</div>
-        <div style="font-size:26px;font-weight:900;color:var(--text);line-height:1.25;margin-bottom:6px">오늘의 창작,<br>어디서부터 시작할까요?</div>
-        <div style="font-size:13px;color:var(--text-dim)">스토리텔링을 위한 AI 기획·검증·루틴 시스템</div>
+        <div id="home-greeting-title" style="font-size:26px;font-weight:900;color:var(--text);line-height:1.25;margin-bottom:6px">오늘의 창작,<br>어디서부터 시작할까요?</div>
+        <div id="home-greeting-sub" style="font-size:13px;color:var(--text-dim)">스토리텔링을 위한 AI 기획·검증·루틴 시스템</div>
       </div>
 
-      <!-- 모드 선택 바 (최상단, 크게) -->
-      <div style="margin-bottom:28px">
-        <div style="font-size:11px;font-weight:700;letter-spacing:0.1em;color:var(--text-faint);text-transform:uppercase;margin-bottom:14px">모드 선택</div>
+      <!-- 새 작품 시작 -->
+      <div id="home-start-section" style="margin-bottom:28px">
+        <div style="font-size:11px;font-weight:700;letter-spacing:0.1em;color:var(--text-faint);text-transform:uppercase;margin-bottom:14px" id="home-start-label">새 작품 시작</div>
         <div class="home-mode-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
           <div onclick="openMode()" style="background:rgba(139,92,246,0.1);border:1.5px solid rgba(139,92,246,0.28);border-radius:20px;padding:24px 22px;cursor:pointer;display:flex;align-items:center;gap:16px;transition:all 0.25s;box-shadow:0 4px 24px rgba(139,92,246,0.1)" onmouseover="this.style.background='rgba(139,92,246,0.17)';this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 32px rgba(139,92,246,0.2)'" onmouseout="this.style.background='rgba(139,92,246,0.1)';this.style.transform='translateY(0)';this.style.boxShadow='0 4px 24px rgba(139,92,246,0.1)'">
             <div style="font-size:2rem;flex-shrink:0">✍️</div>
             <div style="flex:1;min-width:0">
-              <div style="font-size:16px;font-weight:900;color:var(--purple-light);margin-bottom:5px">창작자 모드</div>
-              <div style="font-size:12px;color:var(--text-dim);line-height:1.6">스토리 빌드업 · 회차 개요 · 작품 검증</div>
+              <div style="font-size:16px;font-weight:900;color:var(--purple-light);margin-bottom:4px">작품 기획 시작하기</div>
+              <div style="font-size:11px;font-weight:700;color:rgba(139,92,246,0.5);margin-bottom:5px;letter-spacing:0.03em">창작자 모드</div>
+              <div style="font-size:12px;color:var(--text-dim);line-height:1.6">시놉시스 · 캐릭터 · 회차 개요를 AI와 함께</div>
             </div>
-            <div style="color:var(--purple-light);font-size:18px;font-weight:300">→</div>
+            <div style="color:var(--purple-light);font-size:18px;font-weight:300;flex-shrink:0">→</div>
           </div>
           <div onclick="selMode('seller')" style="background:rgba(16,185,129,0.07);border:1.5px solid rgba(16,185,129,0.18);border-radius:20px;padding:24px 22px;cursor:pointer;display:flex;align-items:center;gap:16px;transition:all 0.25s;box-shadow:0 4px 24px rgba(16,185,129,0.06)" onmouseover="this.style.background='rgba(16,185,129,0.13)';this.style.transform='translateY(-2px)'" onmouseout="this.style.background='rgba(16,185,129,0.07)';this.style.transform='translateY(0)'">
             <div style="font-size:2rem;flex-shrink:0">🛍️</div>
             <div style="flex:1;min-width:0">
-              <div style="font-size:16px;font-weight:900;color:#6EE7B7;margin-bottom:5px">멘토 모드</div>
+              <div style="font-size:16px;font-weight:900;color:#6EE7B7;margin-bottom:4px">루틴 & 수익화</div>
+              <div style="font-size:11px;font-weight:700;color:rgba(16,185,129,0.45);margin-bottom:5px;letter-spacing:0.03em">멘토 모드</div>
               <div style="font-size:12px;color:var(--text-dim);line-height:1.6">루틴 설계 · 마켓 등록 · 수익화</div>
             </div>
             <div style="font-size:10px;font-weight:700;color:var(--green);background:rgba(16,185,129,0.12);border:1px solid rgba(16,185,129,0.2);padding:3px 9px;border-radius:10px;white-space:nowrap;flex-shrink:0">준비 중</div>
@@ -1670,6 +1672,36 @@ function goHome(){navTo('home');}
 document.addEventListener('DOMContentLoaded',()=>{
   const ta=$('im-ta');if(ta)ta.addEventListener('keydown',e=>{if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)){e.preventDefault();saveItemModal();}});
 });
+// ── 홈 헤더 컨텍스트 업데이트 ──
+function updateHomeContext() {
+  const titleEl = document.getElementById('home-greeting-title');
+  const subEl   = document.getElementById('home-greeting-sub');
+  const labelEl = document.getElementById('home-start-label');
+  if (!titleEl) return;
+
+  const proj = window.PS && window.PS.getCurrentProject();
+  const hasPastProjects = JSON.parse(localStorage.getItem('mp') || '[]').length > 0;
+  const hasActiveProject = proj && (proj.title || proj.episodes.length);
+
+  if (hasActiveProject) {
+    // 재방문 + 작업 중 작품 있음
+    const name = proj.title || '작품';
+    titleEl.innerHTML = `<em style="font-style:normal;color:var(--purple-light)">${name}</em>,<br>오늘도 이어서 작업할까요?`;
+    subEl.textContent = '아래 보드에서 바로 이어 작업하거나 새 작품을 시작하세요.';
+    if (labelEl) labelEl.textContent = '다른 작품 시작';
+  } else if (hasPastProjects) {
+    // 재방문 + 기획안은 있으나 선택 없음
+    titleEl.innerHTML = `다시 오셨군요!<br>오늘은 어떤 작품을 작업할까요?`;
+    subEl.textContent = '기존 작품을 이어가거나 새 작품을 시작하세요.';
+    if (labelEl) labelEl.textContent = '새 작품 시작';
+  } else {
+    // 신규 사용자
+    titleEl.innerHTML = `오늘의 창작,<br>어디서부터 시작할까요?`;
+    subEl.textContent = '스토리텔링을 위한 AI 기획·검증·루틴 시스템';
+    if (labelEl) labelEl.textContent = '새 작품 시작';
+  }
+}
+
 // ── ProjectBoard: 작업 트리거 보드 ──
 function renderProjectBoard() {
   const el = document.getElementById('project-board');
@@ -1790,15 +1822,16 @@ document.addEventListener('DOMContentLoaded', () => {
     };
   }
 
-  // navTo 래핑: 홈으로 돌아올 때 보드 갱신
+  // navTo 래핑: 홈으로 돌아올 때 보드 + 헤더 갱신
   const _origNavTo = navTo;
   window.navTo = function(v) {
     _origNavTo(v);
-    if (v === 'home') renderProjectBoard();
+    if (v === 'home') { renderProjectBoard(); updateHomeContext(); }
   };
 
   // 초기 렌더
   renderProjectBoard();
+  updateHomeContext();
 });
 
 // ── 내 기획안 대쉬보드 ──
