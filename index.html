@@ -1532,6 +1532,17 @@ window.currentProject = proj;
 })();
 </script>
 <script>
+// ── window.PS 폴백 ──
+if (!window.PS) {
+  window.PS = {};
+}
+
+if (typeof window.PS.buildGuidePrompt !== "function") {
+  window.PS.buildGuidePrompt = function () {
+    return "";
+  };
+}
+
 // ── 상수 ──
 const SB_URL='https://mvygorffhbshubqkerpo.supabase.co';
 const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im12eWdvcmZmaGJzaHVicWtlcnBvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2MzU3ODQsImV4cCI6MjA4OTIxMTc4NH0.p7usz-l53gmibWpswzTFvhzmR3UX7QkWb3oPsy3A50c';
@@ -4514,7 +4525,10 @@ function buildContext(project) {
 // 프리셋 + 세분화 옵션을 조합한 최종 스타일 문자열
 function _getStylePrompt() {
   const proj = window.currentProject;
-  return window.PS?.buildGuidePrompt(proj, loadCustomGuides()) || '';
+  if (window.PS && typeof window.PS.buildGuidePrompt === 'function') {
+    return window.PS.buildGuidePrompt(proj, loadCustomGuides());
+  }
+  return '';
 }
 
 // 버튼 레이블: 프리셋명 + 비기본 옵션만 표시 (예: "기본 · 어두움 · 빠름")
