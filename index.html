@@ -1340,6 +1340,37 @@ if (!proj) {
   setCurrentProject(proj);
 }
 window.currentProject = proj;
+
+// 마이그레이션: 구버전 ol_episodes / mp 캐릭터 데이터를 currentProject로 흡수
+(function migrateToCurrentProject() {
+  let dirty = false;
+  // episodes
+  if (!proj.episodes.length) {
+    const raw = localStorage.getItem('ol_episodes');
+    if (raw) { try { proj.episodes = JSON.parse(raw); dirty = true; } catch(e){} }
+  }
+  // characters (ch_proj 또는 ol_proj 연동된 mp 프로젝트에서)
+  if (!proj.characters.length) {
+    const pid = localStorage.getItem('ch_proj') || localStorage.getItem('ol_proj');
+    if (pid) {
+      try {
+        const mp = JSON.parse(localStorage.getItem('mp') || '[]');
+        const found = mp.find(p => p.id === pid);
+        if (found && Array.isArray(found.characters) && found.characters.length) {
+          proj.characters = found.characters.map(ch => ({
+            id: ch.id || Date.now().toString(),
+            name: ch.name || '', role: ch.role || '',
+            goal: ch.goal || '', emotion: ch.personality || ch.emotion || '',
+            appearance: ch.appearance || '', relation: ch.relation || '',
+            relationships: {}, arc: []
+          }));
+          dirty = true;
+        }
+      } catch(e) {}
+    }
+  }
+  if (dirty) saveProject(proj);
+})();
 </script>
 <script>
 // ── 상수 ──
@@ -2400,14 +2431,48 @@ function deleteChar(i){
 
 // ── 캐릭터 만들기 (단독 뷰 전용) ──
 function initCharaView(){
-  const savedProj=localStorage.getItem('ch_proj')||localStorage.getItem('ol_proj');
-  if(savedProj){
-    const projs=JSON.parse(localStorage.getItem('mp')||'[]');
-    const p=projs.find(pj=>pj.id===savedProj);
-    if(p){
-      pdProj=p;
-      pdChars=Array.isArray(p.characters)?[...p.characters]:[];
-      selProj=p;
+  // [1] PRIMARY: currentProject.characters가 있으면 우선 사용
+  const cpChars = window.currentProject && window.currentProject.characters;
+  if(cpChars && cpChars.length){
+    pdChars = cpChars.map(ch=>({
+      id: ch.id||'',
+      name: ch.name||'',
+      role: ch.role||'',
+      appearance: ch.appearance||'',
+      personality: ch.emotion||ch.personality||'',
+      goal: ch.goal||'',
+      relation: ch.relation||''
+    }));
+    // pdProj 복원 시도
+    if(!pdProj){
+      const savedProj=localStorage.getItem('ch_proj')||localStorage.getItem('ol_proj');
+      if(savedProj){
+        const p=(JSON.parse(localStorage.getItem('mp')||'[]')).find(pj=>pj.id===savedProj);
+        if(p){pdProj=p;selProj=p;}
+      }
+    }
+  } else {
+    // [2] Fallback: mp 배열에서 로드
+    const savedProj=localStorage.getItem('ch_proj')||localStorage.getItem('ol_proj');
+    if(savedProj){
+      const projs=JSON.parse(localStorage.getItem('mp')||'[]');
+      const p=projs.find(pj=>pj.id===savedProj);
+      if(p){
+        pdProj=p;
+        pdChars=Array.isArray(p.characters)?[...p.characters]:[];
+        selProj=p;
+        // 로드한 데이터를 currentProject에 반영
+        if(window.currentProject && window.PS && pdChars.length){
+          window.currentProject.characters = pdChars.map(ch=>({
+            id: ch.id||Date.now().toString(),
+            name: ch.name||'', role: ch.role||'',
+            goal: ch.goal||'', emotion: ch.personality||ch.emotion||'',
+            appearance: ch.appearance||'', relation: ch.relation||'',
+            relationships:{}, arc:[]
+          }));
+          window.PS.saveProject(window.currentProject);
+        }
+      }
     }
   }
   renderChProjBadge();
@@ -2455,24 +2520,23 @@ let _charSaveTimer=null;
 function debounceSaveChars(){clearTimeout(_charSaveTimer);_charSaveTimer=setTimeout(saveChars,800);}
 
 async function saveChars(){
+  // [1] currentProject에 항상 저장 (single source of truth)
+  if(window.currentProject && window.PS){
+    window.currentProject.characters = pdChars.map(ch=>({
+      id: ch.id||Date.now().toString(),
+      name: ch.name||'', role: ch.role||'',
+      goal: ch.goal||'', emotion: ch.personality||ch.emotion||'',
+      appearance: ch.appearance||'', relation: ch.relation||'',
+      relationships:{}, arc:[]
+    }));
+    window.PS.saveProject(window.currentProject);
+  }
+  // [2] pdProj 연동 시 mp 배열 및 Supabase 동기화
   if(!pdProj)return;
   pdProj.characters=[...pdChars];
   const arr=JSON.parse(localStorage.getItem('mp')||'[]');
   const idx=arr.findIndex(p=>p.id===pdProj.id);
   if(idx>=0){arr[idx].characters=pdChars;localStorage.setItem('mp',JSON.stringify(arr));}
-  // projectStore 동기화: characters 전체를 project 객체에 반영 후 저장
-  if(window.currentProject && window.PS) {
-    window.currentProject.characters = pdChars.map(ch => ({
-      id: ch.id || Date.now().toString(),
-      name: ch.name || '',
-      role: ch.role || '',
-      goal: ch.goal || '',
-      emotion: ch.personality || '',
-      relationships: {},
-      arc: []
-    }));
-    window.PS.saveProject(window.currentProject);
-  }
   if(user){
     try{await sb.from('projects').update({characters:pdChars}).eq('id',pdProj.id).eq('user_id',user.id);}catch(e){}
   }
@@ -3420,16 +3484,32 @@ let olFilter='all';
 async function initOutline(){
   const savedProj=localStorage.getItem('ol_proj');
   if(savedProj)olProjId=savedProj;
-  // DB에서 로드 (로그인 유저 + 프로젝트 연동 시)
-  if(user&&olProjId){
+
+  // [1] PRIMARY: currentProject.episodes가 있으면 우선 사용
+  const cpEps = window.currentProject && window.currentProject.episodes;
+  if(cpEps && cpEps.length){
+    olEpisodes = cpEps;
+  } else if(user&&olProjId){
+    // [2] DB에서 로드 (로그인 유저 + 프로젝트 연동 시)
     try{
       const{data}=await sb.from('projects').select('episodes').eq('id',olProjId).eq('user_id',user.id).single();
-      if(data?.episodes?.length){olEpisodes=data.episodes;localStorage.setItem('ol_episodes',JSON.stringify(olEpisodes));}
+      if(data?.episodes?.length){olEpisodes=data.episodes;}
       else{const saved=localStorage.getItem('ol_episodes');if(saved)olEpisodes=JSON.parse(saved);}
     }catch(e){const saved=localStorage.getItem('ol_episodes');if(saved)olEpisodes=JSON.parse(saved);}
+    // 로드한 데이터를 currentProject에 반영
+    if(window.currentProject && window.PS && olEpisodes.length){
+      window.currentProject.episodes = olEpisodes;
+      window.PS.saveProject(window.currentProject);
+    }
   } else {
+    // [3] localStorage fallback (마이그레이션)
     const saved=localStorage.getItem('ol_episodes');if(saved)olEpisodes=JSON.parse(saved);
+    if(window.currentProject && window.PS && olEpisodes.length && !(cpEps && cpEps.length)){
+      window.currentProject.episodes = olEpisodes;
+      window.PS.saveProject(window.currentProject);
+    }
   }
+
   renderOlProj();
   renderEpList();
   drawTensionGraph();
@@ -3906,17 +3986,18 @@ ${alreadyCtx || '없음'}
 }
 
 async function saveOutlineData(){
-  localStorage.setItem('ol_episodes',JSON.stringify(olEpisodes));
-  // projectStore 동기화: episodes 반영 → memory(timeline/characterStates/summary) 재구축
+  // [1] currentProject를 항상 먼저 업데이트 (single source of truth)
   if(window.currentProject && window.PS){
     window.currentProject.episodes = olEpisodes;
     if(window.PS.updateMemoryFromEpisodes){
-      // updateMemoryFromEpisodes 내부에서 saveProject까지 처리
       window.PS.updateMemoryFromEpisodes(window.currentProject);
     } else {
       window.PS.saveProject(window.currentProject);
     }
   }
+  // [2] localStorage 호환 저장
+  localStorage.setItem('ol_episodes',JSON.stringify(olEpisodes));
+  // [3] Supabase 동기화
   if(user&&olProjId){
     try{await sb.from('projects').update({episodes:olEpisodes}).eq('id',olProjId).eq('user_id',user.id);}
     catch(e){}
