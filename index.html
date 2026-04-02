@@ -874,8 +874,6 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
       <div id="progress-panel"></div>
       <!-- AI 트리거 카드 (idle/view 기반 자동 노출) -->
       <div id="ai-trigger-card"></div>
-      <!-- IssuePanel: 추천 카드 (항상 1개 이상 노출) -->
-      <div id="issue-panel"></div>
       <!-- ActionBoard: 작업 유도 보드 (블록 2–4) -->
       <div id="action-board"></div>
     </div>
@@ -958,6 +956,8 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
           <div style="font-size:12px;color:var(--text-faint);line-height:1.6">PDF / TXT / 텍스트를 불러와 작품으로 변환합니다</div>
         </div>
       </div>
+      <!-- IssuePanel: 점검 필요 카드 -->
+      <div id="issue-panel" style="max-width:780px;width:100%"></div>
       <!-- 작품 목록 -->
       <div style="max-width:780px;width:100%">
         <div style="font-size:11px;font-weight:700;letter-spacing:0.1em;color:var(--text-faint);text-transform:uppercase;margin-bottom:16px" id="myplan-list-label">내 작품</div>
@@ -1937,7 +1937,7 @@ function navTo(v){
     const mm=$('mn-hub');if(mm)mm.classList.add('on');
   }
   if(v==='home')renderActionBoard();
-  if(v==='myplan')loadMyPlan();
+  if(v==='myplan'){loadMyPlan();renderIssuePanel();}
   if(v==='works')loadProjects();
   if(v==='rl')renderRL();
   if(v==='outline'){initOutline();setTimeout(drawTensionGraph,100);}
@@ -3093,7 +3093,6 @@ document.addEventListener('DOMContentLoaded', () => {
   renderProjectBoard();
   renderProgressPanel();
   renderActionBoard();
-  renderIssuePanel();
   updateHomeContext();
   _AiTrigger.onEnterHome();
 });
