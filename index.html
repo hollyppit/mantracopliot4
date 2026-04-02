@@ -1042,14 +1042,24 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);colo
           <button class="ol-btn primary" onclick="saveOutlineData()">저장</button>
         </div>
       </div>
+      <!-- 긴장감 그래프 (풀 width) -->
+      <div class="tension-wrap" style="margin:0 24px 12px;flex-shrink:0">
+        <div class="tension-label">
+          <span>📈 극적 긴장감 흐름</span>
+          <span style="font-size:10px;color:var(--text-faint)">각 회차의 긴장도를 반영합니다</span>
+        </div>
+        <div class="tension-canvas-wrap">
+          <canvas id="tension-canvas"></canvas>
+        </div>
+      </div>
       <!-- 2컬럼 레이아웃 -->
       <div class="ol-layout">
         <!-- 왼쪽: 작품 사이드바 -->
         <div class="ol-sidebar" id="ol-sidebar"></div>
-        <!-- 오른쪽: 막 필터 + 그래프 + 회차 목록 -->
+        <!-- 오른쪽: 막 필터 + 회차 목록 -->
         <div class="ol-main">
           <!-- 막 필터 -->
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap;padding:16px 24px 0">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap;padding:12px 24px 0">
             <span style="font-size:11px;color:var(--text-faint)">막 보기:</span>
             <div class="ol-acts">
               <button class="ol-act-btn on" id="act-all" onclick="filterAct('all')">전체</button>
@@ -1057,16 +1067,6 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);colo
               <button class="ol-act-btn" id="act-2" onclick="filterAct(2)">2막</button>
               <button class="ol-act-btn" id="act-3" onclick="filterAct(3)">3막</button>
               <button class="ol-act-btn" id="act-4" onclick="filterAct(4)">4막</button>
-            </div>
-          </div>
-          <!-- 긴장감 그래프 -->
-          <div class="tension-wrap" style="margin:0 24px 0">
-            <div class="tension-label">
-              <span>📈 극적 긴장감 흐름</span>
-              <span style="font-size:10px;color:var(--text-faint)">각 회차의 긴장도를 반영합니다</span>
-            </div>
-            <div class="tension-canvas-wrap">
-              <canvas id="tension-canvas"></canvas>
             </div>
           </div>
           <!-- 회차 목록 -->
