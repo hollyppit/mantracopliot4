@@ -2703,6 +2703,12 @@ function renderProgressPanel() {
 // ── 인터랙티브 이슈 패널 (항상 1개 이상 카드 노출) ──
 let _issueCursor = 0;
 let _issueInputOpen = null; // null 또는 issue.type 문자열
+let _dismissedCards = new Set();
+
+function dismissRecCard(cardId) {
+  _dismissedCards.add(cardId);
+  renderIssuePanel();
+}
 
 function renderIssuePanel() {
   const el = document.getElementById('issue-panel');
@@ -2717,6 +2723,9 @@ function renderIssuePanel() {
   let html = '';
 
   recCards.forEach(card => {
+    const cardId = card.missingType || (card.kind + '_' + card.icon);
+    if (_dismissedCards.has(cardId)) return;
+
     const legacyIssue = card.issueType
       ? legacyIssues.find(i => i.type === card.issueType)
       : null;
@@ -2746,6 +2755,7 @@ function renderIssuePanel() {
         <div class="rec-card-header">
           <span>${card.icon}</span>
           <span>${card.kind === 'priority' ? '점검 필요' : '다음 단계'}</span>
+          <button onclick="dismissRecCard('${cardId}')" style="margin-left:auto;background:none;border:none;color:var(--text-faint);cursor:pointer;font-size:14px;padding:0 2px;line-height:1;opacity:0.5" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.5'">✕</button>
         </div>
         <div class="rec-card-msg">
           ${card.msg}
