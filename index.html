@@ -3414,6 +3414,46 @@ function filterAct(act){
 function renderEpList(){
   const list=$('ep-list');list.innerHTML='';
   const eps=olFilter==='all'?olEpisodes:olEpisodes.filter(ep=>ep.act===olFilter);
+
+  // ── 빈 상태 처리 ──
+  if(eps.length===0){
+    const es=document.createElement('div');
+    es.style.cssText='padding:32px 0;display:flex;flex-direction:column;align-items:center;gap:18px;max-width:880px;margin:0 auto';
+
+    if(olFilter!=='all'){
+      // 필터 결과 없음
+      es.innerHTML=`
+        <div style="font-size:2rem">🔍</div>
+        <div style="text-align:center">
+          <div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:6px">이 막에 해당하는 회차가 없어요</div>
+          <div style="font-size:13px;color:var(--text-faint)">필터를 '전체'로 바꾸거나 회차를 추가해보세요.</div>
+        </div>`;
+    } else if(olProjId){
+      // 회차 없음 + 프로젝트 연동됨
+      es.innerHTML=`
+        <div style="font-size:2.2rem">📋</div>
+        <div style="text-align:center">
+          <div style="font-size:15px;font-weight:900;color:var(--text);margin-bottom:6px">아직 회차가 없어요</div>
+          <div style="font-size:13px;color:var(--text-dim);line-height:1.7">첫 회차를 추가하면 긴장감 그래프와<br>AI 자동 채우기 기능을 사용할 수 있어요.</div>
+        </div>
+        <button onclick="addEpisode()" style="padding:11px 26px;background:var(--purple);border:none;border-radius:14px;color:#fff;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;box-shadow:0 4px 16px var(--purple-glow);transition:all 0.2s" onmouseover="this.style.filter='brightness(1.12)';this.style.transform='translateY(-1px)'" onmouseout="this.style.filter='';this.style.transform=''">+ 첫 회차 추가하기</button>`;
+    } else {
+      // 회차 없음 + 프로젝트 미연동
+      es.innerHTML=`
+        <div style="font-size:2.2rem">🔗</div>
+        <div style="text-align:center">
+          <div style="font-size:15px;font-weight:900;color:var(--text);margin-bottom:6px">작품을 연동하고 회차를 설계해보세요</div>
+          <div style="font-size:13px;color:var(--text-dim);line-height:1.7">기획안을 연동하면 AI가 맥락을 기억하고<br>각 회차를 자동으로 채워드립니다.</div>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center">
+          <button onclick="openOlProjSelect()" style="padding:11px 22px;background:var(--purple);border:none;border-radius:14px;color:#fff;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;box-shadow:0 4px 16px var(--purple-glow);transition:all 0.2s" onmouseover="this.style.filter='brightness(1.12)'" onmouseout="this.style.filter=''">🔗 작품 연동하기</button>
+          <button onclick="addEpisode()" style="padding:11px 22px;background:rgba(255,255,255,0.05);border:1px solid var(--border2);border-radius:14px;color:var(--text-dim);font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;transition:all 0.2s" onmouseover="this.style.borderColor='var(--purple)';this.style.color='var(--purple-light)'" onmouseout="this.style.borderColor='var(--border2)';this.style.color='var(--text-dim)'">+ 회차만 추가하기</button>
+        </div>`;
+    }
+    list.appendChild(es);
+    return;
+  }
+
   let lastAct=0;
   const ACT_NAMES=['','1막 — 모험의 시작','2막 — 활약의 순간','3막 — 방심과 대혼란','4막 — 각성과 최종 임무'];
   eps.forEach((ep,visIdx)=>{
