@@ -716,13 +716,8 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
       <!-- ProjectBoard: 작업 트리거 보드 -->
       <div id="project-board"></div>
 
-      <!-- 추천 영상 -->
-      <div id="home-videos">
-        <div style="font-size:11px;font-weight:700;letter-spacing:0.1em;color:var(--text-faint);text-transform:uppercase;margin-bottom:12px">창작 추천 영상</div>
-        <div id="yt-list" style="display:flex;flex-direction:column;gap:10px">
-          <div style="font-size:13px;color:var(--text-faint);padding:16px 0;text-align:center">불러오는 중...</div>
-        </div>
-      </div>
+      <!-- ActionBoard: 작업 유도 보드 (블록 2–4) -->
+      <div id="action-board"></div>
     </div>
   </section>
 
@@ -1441,7 +1436,7 @@ function navTo(v){
   if(['chara','verify','market'].includes(v)){
     const mm=$('mn-hub');if(mm)mm.classList.add('on');
   }
-  if(v==='home')loadHomeVideos();
+  if(v==='home')renderActionBoard();
   if(v==='myplan')loadMyPlan();
   if(v==='works')loadProjects();
   if(v==='outline'){initOutline();setTimeout(drawTensionGraph,100);}
@@ -1714,7 +1709,7 @@ function updateHomeContext() {
     setOrder('project-board',     '2');
     setOrder('home-chat-box',     '3');
     setOrder('home-start-section','4');
-    setOrder('home-videos',       '5');
+    setOrder('action-board',      '5');
 
     // 새 작품 섹션 compact 처리
     if (modeCards)  modeCards.style.display  = 'none';
@@ -1732,7 +1727,7 @@ function updateHomeContext() {
       if (labelEl) labelEl.textContent = '새 작품 시작';
     }
 
-    ['home-header','project-board','home-chat-box','home-start-section','home-videos']
+    ['home-header','project-board','home-chat-box','home-start-section','action-board']
       .forEach(id => setOrder(id, ''));
 
     // 카드 원복
@@ -1846,6 +1841,89 @@ function pbOpenLinkModal() {
   setTimeout(() => openOlProjSelect(), 150);
 }
 
+// ── ActionBoard: 작업 유도 보드 (블록 2–4) ──
+function renderActionBoard() {
+  const el = document.getElementById('action-board');
+  if (!el) return;
+
+  const proj = window.PS && window.PS.getCurrentProject();
+  const hasActiveProject = proj && (proj.title || (proj.episodes && proj.episodes.length));
+
+  // 블록 2: 다음 작업 추천 (활성 프로젝트 있을 때만)
+  let block2 = '';
+  if (hasActiveProject) {
+    const epCount = proj.episodes ? proj.episodes.length : 0;
+    block2 = `<div style="background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:16px;padding:18px 20px;margin-bottom:12px">
+      <div style="font-size:10px;font-weight:800;letter-spacing:0.1em;color:var(--purple-light);text-transform:uppercase;margin-bottom:14px">✦ 다음 작업 추천</div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <button onclick="pbContinueWork()" style="background:rgba(139,92,246,0.08);border:1px solid rgba(139,92,246,0.2);border-radius:12px;padding:12px 16px;cursor:pointer;font-family:inherit;text-align:left;transition:all 0.2s;display:flex;align-items:center;gap:12px" onmouseover="this.style.background='rgba(139,92,246,0.16)';this.style.borderColor='rgba(139,92,246,0.4)'" onmouseout="this.style.background='rgba(139,92,246,0.08)';this.style.borderColor='rgba(139,92,246,0.2)'">
+          <span style="font-size:1.3rem">📝</span>
+          <div><div style="font-size:13px;font-weight:700;color:var(--text)">다음 회차 작성하기</div><div style="font-size:11px;color:var(--text-faint);margin-top:2px">${epCount}화 이후 새 회차 개요 작성</div></div>
+          <div style="margin-left:auto;font-size:12px;color:var(--purple-light);font-weight:700">→</div>
+        </button>
+        <button onclick="navTo('chara')" style="background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:12px;padding:12px 16px;cursor:pointer;font-family:inherit;text-align:left;transition:all 0.2s;display:flex;align-items:center;gap:12px" onmouseover="this.style.background='rgba(255,255,255,0.06)';this.style.borderColor='var(--border2)'" onmouseout="this.style.background='rgba(255,255,255,0.03)';this.style.borderColor='var(--border)'">
+          <span style="font-size:1.3rem">👤</span>
+          <div><div style="font-size:13px;font-weight:700;color:var(--text)">캐릭터 보완하기</div><div style="font-size:11px;color:var(--text-faint);margin-top:2px">인물 설정 · 관계도 정비</div></div>
+          <div style="margin-left:auto;font-size:12px;color:var(--text-faint);font-weight:700">→</div>
+        </button>
+        <button onclick="abSendToAgent('갈등 구조를 추가하고 싶어요. 현재 스토리에서 긴장감을 높이는 방법을 구체적으로 알려주세요')" style="background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:12px;padding:12px 16px;cursor:pointer;font-family:inherit;text-align:left;transition:all 0.2s;display:flex;align-items:center;gap:12px" onmouseover="this.style.background='rgba(255,255,255,0.06)';this.style.borderColor='var(--border2)'" onmouseout="this.style.background='rgba(255,255,255,0.03)';this.style.borderColor='var(--border)'">
+          <span style="font-size:1.3rem">⚡</span>
+          <div><div style="font-size:13px;font-weight:700;color:var(--text)">갈등 추가하기</div><div style="font-size:11px;color:var(--text-faint);margin-top:2px">AI가 갈등 구조 설계 도움</div></div>
+          <div style="margin-left:auto;font-size:12px;color:var(--text-faint);font-weight:700">→</div>
+        </button>
+      </div>
+    </div>`;
+  }
+
+  // 블록 3: 빠른 시작 템플릿
+  const block3 = `<div style="background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:16px;padding:18px 20px;margin-bottom:12px">
+    <div style="font-size:10px;font-weight:800;letter-spacing:0.1em;color:var(--text-faint);text-transform:uppercase;margin-bottom:14px">⚡ 빠른 시작 템플릿</div>
+    <div style="display:flex;flex-wrap:wrap;gap:8px">
+      <button onclick="abStartTemplate('학원 액션')" style="background:rgba(255,100,50,0.08);border:1px solid rgba(255,100,50,0.2);border-radius:10px;padding:9px 16px;cursor:pointer;font-family:inherit;font-size:13px;font-weight:700;color:var(--text);transition:all 0.2s" onmouseover="this.style.background='rgba(255,100,50,0.18)';this.style.borderColor='rgba(255,100,50,0.5)'" onmouseout="this.style.background='rgba(255,100,50,0.08)';this.style.borderColor='rgba(255,100,50,0.2)'">🥋 학원 액션</button>
+      <button onclick="abStartTemplate('복수극')" style="background:rgba(220,50,100,0.08);border:1px solid rgba(220,50,100,0.2);border-radius:10px;padding:9px 16px;cursor:pointer;font-family:inherit;font-size:13px;font-weight:700;color:var(--text);transition:all 0.2s" onmouseover="this.style.background='rgba(220,50,100,0.18)';this.style.borderColor='rgba(220,50,100,0.5)'" onmouseout="this.style.background='rgba(220,50,100,0.08)';this.style.borderColor='rgba(220,50,100,0.2)'">🗡️ 복수극</button>
+      <button onclick="abStartTemplate('이세계 전생')" style="background:rgba(100,80,220,0.08);border:1px solid rgba(100,80,220,0.2);border-radius:10px;padding:9px 16px;cursor:pointer;font-family:inherit;font-size:13px;font-weight:700;color:var(--text);transition:all 0.2s" onmouseover="this.style.background='rgba(100,80,220,0.18)';this.style.borderColor='rgba(100,80,220,0.5)'" onmouseout="this.style.background='rgba(100,80,220,0.08)';this.style.borderColor='rgba(100,80,220,0.2)'">🌀 이세계 전생</button>
+      <button onclick="abStartTemplate('로맨스 판타지')" style="background:rgba(230,100,180,0.08);border:1px solid rgba(230,100,180,0.2);border-radius:10px;padding:9px 16px;cursor:pointer;font-family:inherit;font-size:13px;font-weight:700;color:var(--text);transition:all 0.2s" onmouseover="this.style.background='rgba(230,100,180,0.18)';this.style.borderColor='rgba(230,100,180,0.5)'" onmouseout="this.style.background='rgba(230,100,180,0.08)';this.style.borderColor='rgba(230,100,180,0.2)'">💗 로맨스 판타지</button>
+    </div>
+  </div>`;
+
+  // 블록 4: 문제 해결 버튼
+  const block4 = `<div style="background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:16px;padding:18px 20px">
+    <div style="font-size:10px;font-weight:800;letter-spacing:0.1em;color:var(--text-faint);text-transform:uppercase;margin-bottom:14px">🔧 문제 해결</div>
+    <div style="display:flex;flex-wrap:wrap;gap:8px">
+      <button onclick="abSendToAgent('주인공의 동기가 너무 약한 것 같아요. 동기를 더 강하게 만들 수 있는 방법을 구체적으로 알려주세요')" style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:8px 14px;cursor:pointer;font-family:inherit;font-size:12px;font-weight:600;color:var(--text-dim);transition:all 0.2s" onmouseover="this.style.borderColor='var(--purple)';this.style.color='var(--text)';this.style.background='rgba(139,92,246,0.08)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-dim)';this.style.background='var(--surface)'">✏️ 주인공 동기 강화</button>
+      <button onclick="abSendToAgent('클라이맥스 장면이 너무 평범해요. 더 강렬하고 기억에 남는 클라이맥스로 보완하는 방법을 알려주세요')" style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:8px 14px;cursor:pointer;font-family:inherit;font-size:12px;font-weight:600;color:var(--text-dim);transition:all 0.2s" onmouseover="this.style.borderColor='var(--purple)';this.style.color='var(--text)';this.style.background='rgba(139,92,246,0.08)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-dim)';this.style.background='var(--surface)'">🔥 클라이맥스 보완</button>
+      <button onclick="abSendToAgent('스토리에 반전을 추가하고 싶어요. 독자가 예상 못 할 자연스러운 반전 구조를 설계해주세요')" style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:8px 14px;cursor:pointer;font-family:inherit;font-size:12px;font-weight:600;color:var(--text-dim);transition:all 0.2s" onmouseover="this.style.borderColor='var(--purple)';this.style.color='var(--text)';this.style.background='rgba(139,92,246,0.08)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-dim)';this.style.background='var(--surface)'">🔀 반전 추가</button>
+      <button onclick="abSendToAgent('독자가 1화에서 이탈하지 않도록 강력한 훅을 설계하고 싶어요. 효과적인 방법을 알려주세요')" style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:8px 14px;cursor:pointer;font-family:inherit;font-size:12px;font-weight:600;color:var(--text-dim);transition:all 0.2s" onmouseover="this.style.borderColor='var(--purple)';this.style.color='var(--text)';this.style.background='rgba(139,92,246,0.08)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-dim)';this.style.background='var(--surface)'">🎣 독자 훅 설계</button>
+    </div>
+  </div>`;
+
+  el.innerHTML = block2 + block3 + block4;
+}
+
+// AI 에이전트에 바로 메시지 전송
+function abSendToAgent(text) {
+  navTo('gonmin');
+  setTimeout(() => {
+    const gt = $('gm-ta'); if (!gt) return;
+    gt.value = text;
+    gt.style.height = '44px';
+    gt.style.height = Math.min(gt.scrollHeight, 130) + 'px';
+    gmSend();
+  }, 80);
+}
+
+// 장르 템플릿으로 빠른 시작 — AI 에이전트에 기획 요청
+function abStartTemplate(genre) {
+  navTo('gonmin');
+  setTimeout(() => {
+    const gt = $('gm-ta'); if (!gt) return;
+    gt.value = `${genre} 장르로 새 웹툰 작품을 기획하고 싶어요. 매력적인 주인공 설정, 핵심 갈등 구조, 그리고 1화 시작 장면을 함께 잡아주세요.`;
+    gt.style.height = '44px';
+    gt.style.height = Math.min(gt.scrollHeight, 130) + 'px';
+    gmSend();
+  }, 80);
+}
+
 // 홈 진입 시 보드 갱신 + window.PS 패치를 DOMContentLoaded 이후 실행
 // (window.PS는 <script type="module">이 파싱 후 실행되므로 DOMContentLoaded 전에 완료됨)
 document.addEventListener('DOMContentLoaded', () => {
@@ -1870,6 +1948,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // 초기 렌더
   renderProjectBoard();
+  renderActionBoard();
   updateHomeContext();
 });
 
@@ -4186,29 +4265,42 @@ async function appendGmExtras(feature, ytKeyword) {
     wrap.appendChild(fc);
   }
 
-  // 유튜브 영상 추천
+  // VideoPanel: 맥락 기반 영상 추천
   const videos = await fetchGmYT(ytKeyword);
   if (videos.length > 0) {
     const ytWrap = document.createElement('div');
     ytWrap.style.cssText = 'display:flex;flex-direction:column;gap:7px';
-    ytWrap.innerHTML = `<div style="font-size:10px;font-weight:700;letter-spacing:0.08em;color:var(--text-faint);text-transform:uppercase;margin-bottom:2px">▶ 관련 영상</div>` +
-      videos.map(v => `
-        <div onclick="openYTModal('${v.id}','${v.title.replace(/'/g,"\\'")}')"
-          style="background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;display:flex;cursor:pointer;transition:all 0.2s"
-          onmouseover="this.style.borderColor='var(--border2)';this.style.background='var(--surface2)'"
-          onmouseout="this.style.borderColor='var(--border)';this.style.background='var(--surface)'">
-          <div style="width:100px;min-width:100px;position:relative;overflow:hidden;background:rgba(255,255,255,0.04)">
-            <img src="${v.thumb}" alt="" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block">
-          </div>
-          <div style="padding:10px 13px;flex:1;display:flex;flex-direction:column;justify-content:center;gap:3px">
-            <div style="font-size:12px;font-weight:600;color:var(--text);line-height:1.4">${escHtml(v.title)}</div>
-            <div style="font-size:10px;color:var(--text-faint)">${escHtml(v.channel)}</div>
-          </div>
-        </div>`).join('');
+    ytWrap.innerHTML = renderVideoPanel(feature ? 'problem' : 'result', videos);
     wrap.appendChild(ytWrap);
   }
 
   msgs.scrollTop = msgs.scrollHeight;
+}
+
+// ── VideoPanel: 맥락 기반 영상 패널 ──
+// contextType: 'result' (AI 결과 후) | 'problem' (문제 감지) | 'blocked' (막힘 상태)
+function renderVideoPanel(contextType, videos) {
+  const labels = {
+    result:  '▶ 이 구조 참고 영상',
+    problem: '▶ 문제 해결 참고 영상',
+    blocked: '▶ 막힘 해소 추천 영상',
+  };
+  const label = labels[contextType] || '▶ 관련 영상';
+  return `<div style="font-size:10px;font-weight:700;letter-spacing:0.08em;color:var(--text-faint);text-transform:uppercase;margin-bottom:4px">${label}</div>` +
+    videos.map(v => `
+      <div onclick="window.open('https://www.youtube.com/watch?v=${v.id}','_blank')"
+        style="background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;display:flex;cursor:pointer;transition:all 0.2s"
+        onmouseover="this.style.borderColor='var(--border2)';this.style.background='var(--surface2)'"
+        onmouseout="this.style.borderColor='var(--border)';this.style.background='var(--surface)'">
+        <div style="width:100px;min-width:100px;overflow:hidden;background:rgba(255,255,255,0.04)">
+          <img src="${v.thumb}" alt="" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block">
+        </div>
+        <div style="padding:10px 13px;flex:1;display:flex;flex-direction:column;justify-content:center;gap:3px">
+          <div style="font-size:12px;font-weight:600;color:var(--text);line-height:1.4">${escHtml(v.title)}</div>
+          <div style="font-size:10px;color:var(--text-faint)">${escHtml(v.channel)}</div>
+        </div>
+        <div style="padding:0 12px;display:flex;align-items:center;flex-shrink:0;color:var(--text-faint);font-size:11px">↗</div>
+      </div>`).join('');
 }
 
 async function fetchGmYT(keyword) {
