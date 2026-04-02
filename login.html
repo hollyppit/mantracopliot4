@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -8,8 +8,8 @@
 <style>
 :root {
   --bg: #030305;
-  --purple: #8B5CF6;
-  --purple-light: #C4B5FD;
+  --purple: #10B981;
+  --purple-light: #6EE7B7;
   --gold: #D6B75A;
   --gold-light: #FDE68A;
   --text: #F8FAFC;
@@ -31,7 +31,7 @@ body {
 .bg {
   position: fixed; inset: 0; pointer-events: none;
   background:
-    radial-gradient(circle at 30% 40%, rgba(139,92,246,0.15) 0%, transparent 55%),
+    radial-gradient(circle at 30% 40%, rgba(16,185,129,0.15) 0%, transparent 55%),
     radial-gradient(circle at 70% 70%, rgba(214,183,90,0.08) 0%, transparent 50%);
 }
 
@@ -70,9 +70,9 @@ body {
   background: transparent; transition: all .3s;
 }
 .tab-btn.active {
-  background: rgba(139,92,246,0.2);
+  background: rgba(16,185,129,0.2);
   color: var(--purple-light);
-  box-shadow: 0 2px 12px rgba(139,92,246,0.2);
+  box-shadow: 0 2px 12px rgba(16,185,129,0.2);
 }
 
 /* 폼 */
@@ -86,21 +86,21 @@ body {
   font-size: 15px; color: var(--text); font-family: inherit;
   outline: none; transition: all .3s;
 }
-.form-input:focus { border-color: var(--purple-light); background: rgba(139,92,246,0.06); box-shadow: 0 0 0 3px rgba(139,92,246,0.1); }
+.form-input:focus { border-color: var(--purple-light); background: rgba(16,185,129,0.06); box-shadow: 0 0 0 3px rgba(16,185,129,0.1); }
 .form-input::placeholder { color: var(--text-faint); }
 
 /* 버튼 */
 .btn-primary {
   width: 100%; padding: 15px;
-  background: linear-gradient(135deg, var(--purple), #6D28D9);
+  background: linear-gradient(135deg, var(--purple), #059669);
   border: none; color: #fff; border-radius: 14px;
   font-size: 15px; font-weight: 800; font-family: inherit;
   cursor: pointer; margin-top: 4px;
-  box-shadow: 0 4px 20px rgba(139,92,246,0.4);
+  box-shadow: 0 4px 20px rgba(16,185,129,0.4);
   transition: all .3s; letter-spacing: -0.01em;
   display: flex; align-items: center; justify-content: center; gap: 8px;
 }
-.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(139,92,246,0.5); }
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(16,185,129,0.5); }
 .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 
 /* 구분선 */
