@@ -1654,6 +1654,9 @@ async function runExpert(type) {
   try {
     const ragResults = await getRAG(text);
 
+    console.log("RAG results:", ragResults ? ragResults.length : 0);
+    console.log("MODE:", ragResults && ragResults.length > 0 ? "RAG" : "AI");
+
     let result;
     if (ragResults && ragResults.length > 0) {
       console.log('RAG HIT', ragResults.length + '건');
@@ -1666,6 +1669,8 @@ async function runExpert(type) {
     resultBox.innerText = result;
   } catch (e) {
     console.error('runExpert error:', e);
+    console.log("RAG results:", 0);
+    console.log("MODE:", "AI");
     console.log('RAG MISS — 에러로 인한 AI fallback');
     const result = await generateFromAI(type, text);
     resultBox.innerText = result;
