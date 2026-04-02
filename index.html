@@ -2520,7 +2520,7 @@ let _charSaveTimer=null;
 function debounceSaveChars(){clearTimeout(_charSaveTimer);_charSaveTimer=setTimeout(saveChars,800);}
 
 async function saveChars(){
-  // [1] currentProject에 항상 저장 (single source of truth)
+  // [1] currentProject에 항상 저장 + memory 갱신 (characterStates 포함)
   if(window.currentProject && window.PS){
     window.currentProject.characters = pdChars.map(ch=>({
       id: ch.id||Date.now().toString(),
@@ -2529,7 +2529,7 @@ async function saveChars(){
       appearance: ch.appearance||'', relation: ch.relation||'',
       relationships:{}, arc:[]
     }));
-    window.PS.saveProject(window.currentProject);
+    updateMemory(window.currentProject);
   }
   // [2] pdProj 연동 시 mp 배열 및 Supabase 동기화
   if(!pdProj)return;
@@ -3760,6 +3760,7 @@ function updateEp(idx,key,val){
       }
     }
   });
+  debounceUpdateMemory();
 }
 
 function updateEpTension(idx,input){
@@ -3771,6 +3772,7 @@ function updateEpTension(idx,input){
   if(label)label.innerHTML=`극적 긴장도 &nbsp;<span style="color:var(--purple-light);font-weight:800">${v}</span>`;
   drawTensionGraph();
   drawMiniTension(idx);
+  debounceUpdateMemory();
 }
 
 function setEpType(idx,type){
@@ -3799,6 +3801,7 @@ function setEpType(idx,type){
     {sel:'textarea[oninput*="lastPanel"]',ph:ph.lastPanel},
   ];
   map.forEach(({sel,ph:p})=>{if(p){const el=card.querySelector(sel);if(el)el.placeholder=p;}});
+  debounceUpdateMemory();
 }
 
 function getCardVisIdx(realIdx){
@@ -3986,14 +3989,10 @@ ${alreadyCtx || '없음'}
 }
 
 async function saveOutlineData(){
-  // [1] currentProject를 항상 먼저 업데이트 (single source of truth)
+  // [1] updateMemory가 currentProject 저장까지 처리
   if(window.currentProject && window.PS){
     window.currentProject.episodes = olEpisodes;
-    if(window.PS.updateMemoryFromEpisodes){
-      window.PS.updateMemoryFromEpisodes(window.currentProject);
-    } else {
-      window.PS.saveProject(window.currentProject);
-    }
+    updateMemory(window.currentProject);
   }
   // [2] localStorage 호환 저장
   localStorage.setItem('ol_episodes',JSON.stringify(olEpisodes));
@@ -4003,6 +4002,80 @@ async function saveOutlineData(){
     catch(e){}
   }
   flash('💾 개요 저장됨');
+}
+
+// ── 기억(memory) 자동 생성/갱신 ──
+// 회차·캐릭터 데이터를 기반으로 summary / timeline / characterStates를 재구축
+
+function updateMemory(project) {
+  if(!project || !window.PS) return;
+
+  // 1. 에피소드 기반 timeline / characterStates / summary 재구축 (projectStore)
+  if(window.PS.updateMemoryFromEpisodes) window.PS.updateMemoryFromEpisodes(project);
+
+  // 2. pdChars 데이터로 characterStates 보강
+  const mem = project.memory;
+  if(mem && pdChars && pdChars.length){
+    pdChars.forEach(ch=>{
+      if(!ch.name) return;
+      const s = mem.characterStates[ch.name] || {};
+      mem.characterStates[ch.name] = {
+        emotion:    s.emotion    || ch.personality || '',
+        goal:       s.goal       || ch.goal        || '',
+        lastSeen:   s.lastSeen   || 0,
+        arc:        s.arc        || [],
+        role:       ch.role      || s.role         || '',
+        appearance: ch.appearance|| s.appearance   || '',
+      };
+    });
+  }
+
+  // 3. summary 재생성 — 더 서술적인 전체 줄거리 요약
+  const eps  = project.episodes || [];
+  const chars= project.characters || [];
+  const charNames = [...new Set([
+    ...chars.filter(c=>c.name).map(c=>c.name),
+    ...(pdChars||[]).filter(c=>c.name).map(c=>c.name),
+  ])].slice(0,5);
+
+  if(eps.length > 0){
+    const totalEps = eps.length;
+    const charStr  = charNames.length ? `등장인물: ${charNames.join(', ')}.` : '';
+
+    // 막별 대표 이벤트 (act 필드 활용)
+    const actLabels = {1:'발단',2:'전개',3:'위기',4:'절정·결말'};
+    const actSummary = [1,2,3,4].map(act=>{
+      const actEps = eps.filter(ep=>(ep.act===act)&&(ep.title||ep.keyword||ep.synopsis));
+      if(!actEps.length) return null;
+      const peak = actEps.find(ep=>ep.type==='climax') || actEps[Math.floor(actEps.length/2)];
+      const text  = peak.title||peak.keyword||'';
+      return text ? `${actLabels[act]}: ${text}${peak.synopsis?` — ${peak.synopsis.slice(0,50)}`:''}`  : null;
+    }).filter(Boolean);
+
+    const recentFlow = eps.filter(ep=>ep.title||ep.keyword).slice(-5)
+      .map(ep=>`${ep.num||ep.ep}화 ${ep.title||ep.keyword}`).join(' → ');
+
+    mem.summary = [
+      `총 ${totalEps}화.`,
+      charStr,
+      actSummary.length ? actSummary.join(' / ') : recentFlow,
+    ].filter(Boolean).join(' ');
+  }
+
+  window.PS.saveProject(project);
+}
+
+// 필드 편집 시 debounce → updateMemory 자동 호출
+let _epMemTimer = null;
+function debounceUpdateMemory(){
+  clearTimeout(_epMemTimer);
+  _epMemTimer = setTimeout(()=>{
+    if(window.currentProject && window.PS){
+      window.currentProject.episodes = olEpisodes;
+      updateMemory(window.currentProject);
+      localStorage.setItem('ol_episodes', JSON.stringify(olEpisodes));
+    }
+  }, 1200);
 }
 
 // ── 인트로 ──
