@@ -3669,11 +3669,18 @@ async function deleteProject(){
   const deletedId=pdProj.id;
   const title=pdProj.title;
   pdProj=null;
+  // PS 스토어 정리
+  if(localStorage.getItem('current_project_id')===deletedId){
+    localStorage.removeItem('current_project_id');
+    localStorage.removeItem(`project_${deletedId}`);
+  }
   // 연동 중인 작품이면 연동 해제
   if(window.currentProject&&window.currentProject.id===deletedId){
     window.currentProject=null;olProjId=null;olEpisodes=[];
     renderOlProj();renderProjBadge();renderEpList();drawTensionGraph();
   }
+  if(typeof updateHomeContext==='function')updateHomeContext();
+  if(typeof renderProjectBoard==='function')renderProjectBoard();
   navTo('myplan');
   await loadMyPlan();
   renderProjGrid();
@@ -3687,11 +3694,18 @@ function quickDeleteProj(pid,title){
   if(user){
     sb.from('projects').delete().eq('id',pid).eq('user_id',user.id).then();
   }
+  // PS 스토어 정리
+  if(localStorage.getItem('current_project_id')===pid){
+    localStorage.removeItem('current_project_id');
+    localStorage.removeItem(`project_${pid}`);
+  }
   // 연동 중인 작품이면 연동 해제
   if(window.currentProject&&window.currentProject.id===pid){
     window.currentProject=null;olProjId=null;olEpisodes=[];
     renderOlProj();renderProjBadge();renderEpList();drawTensionGraph();
   }
+  if(typeof updateHomeContext==='function')updateHomeContext();
+  if(typeof renderProjectBoard==='function')renderProjectBoard();
   loadMyPlan();
   flash(`'${title}' 삭제됐습니다`);
 }

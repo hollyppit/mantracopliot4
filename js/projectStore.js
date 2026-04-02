@@ -120,6 +120,13 @@ export function loadProject(projectId) {
 export function getCurrentProject() {
   const id = localStorage.getItem("current_project_id");
   if (!id) return null;
+  // mp 목록에 존재하는지 검증 — 삭제된 작품이면 초기화
+  const mp = JSON.parse(localStorage.getItem('mp') || '[]');
+  if (!mp.find(p => p.id === id)) {
+    localStorage.removeItem("current_project_id");
+    localStorage.removeItem(`project_${id}`);
+    return null;
+  }
   return loadProject(id);
 }
 
