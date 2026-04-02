@@ -579,6 +579,13 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
 .char-ai-btn:disabled{opacity:0.5;cursor:default}
 .char-add-btn{background:var(--surface);border:1px dashed var(--border2);border-radius:var(--r);padding:16px;cursor:pointer;font-size:14px;font-weight:700;color:var(--text-dim);transition:all 0.2s;text-align:center;width:100%}
 .char-add-btn:hover{border-color:var(--purple);color:var(--purple-light);background:rgba(139,92,246,0.05)}
+/* ── ONBOARDING PROGRESS STEPS ── */
+.ob-steps{position:absolute;top:22px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:12px;white-space:nowrap;z-index:1;pointer-events:none}
+.ob-dots{display:flex;gap:8px;align-items:center}
+.ob-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,0.1);transition:all 0.35s}
+.ob-dot.done{background:rgba(139,92,246,0.45)}
+.ob-dot.on{background:var(--purple);box-shadow:0 0 10px rgba(139,92,246,0.7);transform:scale(1.2)}
+.ob-step-label{font-size:11px;font-weight:800;color:var(--text-faint);letter-spacing:0.1em;text-transform:uppercase}
 /* ── PROJECT BOARD ── */
 #project-board{margin-bottom:28px}
 .pb-card{background:rgba(139,92,246,0.07);border:1.5px solid rgba(139,92,246,0.22);border-radius:20px;padding:22px 24px;transition:border-color 0.3s}
@@ -1235,6 +1242,7 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
 </div>
 <!-- 오버레이: 프로젝트 이름 -->
 <div class="ov" id="ov-projname">
+  <div class="ob-steps"><div class="ob-dots"><span class="ob-dot done"></span><span class="ob-dot done"></span><span class="ob-dot on"></span><span class="ob-dot"></span></div><span class="ob-step-label">새 작품 기획 · 3 / 4</span></div>
   <div class="pn-box">
     <div class="pn-title">작품 이름을 정해볼까요?</div>
     <div class="pn-sub">나중에 언제든 바꿀 수 있어요.</div>
@@ -1246,6 +1254,7 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
 </div>
 <!-- 오버레이: 모드 선택 -->
 <div class="ov" id="ov-mode">
+  <div class="ob-steps"><div class="ob-dots"><span class="ob-dot on"></span><span class="ob-dot"></span><span class="ob-dot"></span><span class="ob-dot"></span></div><span class="ob-step-label">새 작품 기획 · 1 / 4</span></div>
   <div class="mg">
     <div class="mc cs" onclick="selMode('consumer')"><div class="mci">📖</div><div class="mct">스토리 빌드업</div><div class="mcd">선택된 루틴으로 AI와 함께<br>이야기를 기획합니다</div><div class="mcb">소비자 모드</div></div>
     <div class="mc sl" onclick="selMode('seller')"><div class="mci">🛍️</div><div class="mct">루틴 설계 &amp; 판매</div><div class="mcd">나만의 창작 템플릿을 만들어<br>마켓에 등록하고 판매합니다</div><div class="mcb">멘토 모드</div></div>
@@ -1253,6 +1262,7 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
 </div>
 <!-- 오버레이: 루틴 선택 -->
 <div class="ov" id="ov-routine">
+  <div class="ob-steps"><div class="ob-dots"><span class="ob-dot done"></span><span class="ob-dot on"></span><span class="ob-dot"></span><span class="ob-dot"></span></div><span class="ob-step-label">새 작품 기획 · 2 / 4</span></div>
   <div class="rp">
     <div class="rpt">어떤 루틴으로 시작할까요?</div>
     <div class="rps">기획하려는 작품 형태를 선택해주세요.</div>
@@ -1262,6 +1272,7 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
 </div>
 <!-- 오버레이: 캐릭터 선택 -->
 <div class="ov" id="ov-char">
+  <div class="ob-steps"><div class="ob-dots"><span class="ob-dot done"></span><span class="ob-dot done"></span><span class="ob-dot done"></span><span class="ob-dot on"></span></div><span class="ob-step-label">새 작품 기획 · 4 / 4</span></div>
   <div class="chp">
     <div class="chc" onclick="selChar('조수 T형')"><div class="cca"><img src="images/조수a.gif" style="width:100%;height:100%;object-fit:cover;border-radius:50%"></div><div class="ccn">조수 T형</div><div class="ccd">논리적이고 직관적인 기획 파트너.<br>허점을 날카롭게 짚어줍니다.</div></div>
     <div class="chc" onclick="selChar('조수 F형')"><div class="cca"><img src="images/조수b.gif" style="width:100%;height:100%;object-fit:cover;border-radius:50%"></div><div class="ccn">조수 F형</div><div class="ccd">공감 능력이 뛰어난 감성형 파트너.<br>캐릭터 감정선을 깊이 분석합니다.</div></div>
