@@ -5583,6 +5583,7 @@ function renderEpCards(container, episodes){
 
   filtered.forEach(ep=>{
     const realIdx=olEpisodes.indexOf(ep);
+    if(!ep.act)ep.act=getAct(ep.num||realIdx+1); // undefined 방어
     if(ep.act!==lastAct){
       lastAct=ep.act;
       const div=document.createElement('div');div.className='act-divider';
@@ -5856,8 +5857,13 @@ function getCardVisIdx(realIdx){
 // 긴장감 그래프
 function drawTensionGraph(){
   const canvas=$('tension-canvas');if(!canvas)return;
-  const wrap=canvas.parentElement;
-  canvas.width=wrap.offsetWidth||800;canvas.height=80;
+  // 레이아웃 완료 후 실제 너비로 그림
+  requestAnimationFrame(()=>{
+    const wrap=canvas.parentElement;
+    const w=wrap.getBoundingClientRect().width||wrap.offsetWidth||600;
+    canvas.width=Math.floor(w);canvas.height=80;
+    _drawTensionGraphInner(canvas);}); }
+function _drawTensionGraphInner(canvas){
   const ctx=canvas.getContext('2d');
   ctx.clearRect(0,0,canvas.width,canvas.height);
   if(!olEpisodes.length)return;
