@@ -1558,6 +1558,8 @@ if (typeof window.PS.buildGuidePrompt !== "function") {
 const SB_URL='https://mvygorffhbshubqkerpo.supabase.co';
 const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im12eWdvcmZmaGJzaHVicWtlcnBvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2MzU3ODQsImV4cCI6MjA4OTIxMTc4NH0.p7usz-l53gmibWpswzTFvhzmR3UX7QkWb3oPsy3A50c';
 const sb=window.supabase.createClient(SB_URL,SB_KEY);
+const ANTHROPIC_API_KEY = '';
+const OPENAI_API_KEY = '';
 
 function getProjectText() {
   if (!selProj) return '(선택된 기획안 없음)';
@@ -1611,34 +1613,92 @@ ${problems}
 - 설명을 줄이고 행동 중심으로 전개하세요`;
 }
 
-async function generateFromAI(type, text) {
+async function generateFromAI(input) {
+
+  // 🔵 1. Claude 시도
   try {
-    const res = await fetch("/api/chat", {
+    console.log("Claude 호출 시작");
+
+    const res = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": ANTHROPIC_API_KEY,
+        "anthropic-version": "2023-06-01"
+      },
       body: JSON.stringify({
-        messages: [{
-          role: "user",
-          content: `당신은 ${type} 분야 전문가입니다.\n\n아래 기획안을 분석하고 문제점과 수정 방향을 알려주세요.\n\n기획안:\n${text}`
-        }]
+        model: "claude-3-haiku-20240307",
+        max_tokens: 500,
+        messages: [
+          {
+            role: "user",
+            content: input
+          }
+        ]
       })
     });
-    if (!res.ok) throw new Error('API 응답 오류: ' + res.status);
+
     const data = await res.json();
-    const aiText = data.content || data.message || data.choices?.[0]?.message?.content || '';
-    if (!aiText) throw new Error('빈 응답');
-    return `[전문가 분석 — AI 기반]
 
-분야: ${type}
+    console.log("Claude RAW:", data);
 
-입력 기획안:
-${text}
+    const text = data?.content?.[0]?.text;
 
-${aiText}`;
+    if (text && text.trim() !== "") {
+      console.log("Claude 응답 성공");
+      return text;
+    }
+
+    console.log("Claude 응답 비어있음");
+
   } catch (e) {
-    console.error('generateFromAI error:', e);
-    return "AI 응답 생성 실패 - API 키 또는 네트워크 확인 필요";
+    console.error("Claude ERROR:", e);
   }
+
+  // 🟢 2. OpenAI fallback
+  try {
+    console.log("OpenAI fallback 시작");
+
+    const res = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${OPENAI_API_KEY}`
+      },
+      body: JSON.stringify({
+        model: "gpt-4o-mini",
+        messages: [
+          {
+            role: "system",
+            content: "너는 전문가다. 간결하고 정확하게 피드백한다."
+          },
+          {
+            role: "user",
+            content: input
+          }
+        ]
+      })
+    });
+
+    const data = await res.json();
+
+    console.log("OpenAI RAW:", data);
+
+    const text = data?.choices?.[0]?.message?.content;
+
+    if (text && text.trim() !== "") {
+      console.log("OpenAI 응답 성공");
+      return text;
+    }
+
+    console.log("OpenAI 응답 비어있음");
+
+  } catch (e) {
+    console.error("OpenAI ERROR:", e);
+  }
+
+  // 🔴 3. 최종 fallback (절대 실패 방지)
+  return "현재 AI 응답을 생성할 수 없습니다. API 키 또는 네트워크 상태를 확인하세요.";
 }
 
 async function runExpert(type) {
@@ -1658,12 +1718,12 @@ async function runExpert(type) {
     }
 
     console.log("MODE: AI fallback");
-    resultBox.innerText = await generateFromAI(type, text);
+    resultBox.innerText = await generateFromAI(`당신은 ${type} 분야 전문가입니다.\n\n아래 기획안을 분석하고 문제점과 수정 방향을 알려주세요.\n\n기획안:\n${text}`);
 
   } catch (e) {
     console.error("runExpert error:", e);
     console.log("FORCE AI fallback");
-    resultBox.innerText = await generateFromAI(type, text);
+    resultBox.innerText = await generateFromAI(`당신은 ${type} 분야 전문가입니다.\n\n아래 기획안을 분석하고 문제점과 수정 방향을 알려주세요.\n\n기획안:\n${text}`);
   }
 }
 
