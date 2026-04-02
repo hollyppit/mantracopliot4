@@ -579,6 +579,29 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
 .char-ai-btn:disabled{opacity:0.5;cursor:default}
 .char-add-btn{background:var(--surface);border:1px dashed var(--border2);border-radius:var(--r);padding:16px;cursor:pointer;font-size:14px;font-weight:700;color:var(--text-dim);transition:all 0.2s;text-align:center;width:100%}
 .char-add-btn:hover{border-color:var(--purple);color:var(--purple-light);background:rgba(139,92,246,0.05)}
+/* ── PROJECT BOARD ── */
+#project-board{margin-bottom:28px}
+.pb-card{background:rgba(139,92,246,0.07);border:1.5px solid rgba(139,92,246,0.22);border-radius:20px;padding:22px 24px;transition:border-color 0.3s}
+.pb-card:hover{border-color:rgba(139,92,246,0.4)}
+.pb-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.pb-label{font-size:10px;font-weight:800;letter-spacing:0.12em;color:var(--purple-light);text-transform:uppercase;opacity:0.75}
+.pb-title{font-size:19px;font-weight:900;color:var(--text);margin-bottom:14px;line-height:1.25}
+.pb-meta{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+.pb-badge{font-size:11px;font-weight:700;padding:4px 11px;border-radius:100px;background:rgba(255,255,255,0.05);border:1px solid var(--border);color:var(--text-dim);white-space:nowrap}
+.pb-badge.linked{background:rgba(16,185,129,0.1);border-color:rgba(16,185,129,0.28);color:#6EE7B7}
+.pb-badge.unlinked{background:rgba(239,68,68,0.07);border-color:rgba(239,68,68,0.2);color:#fca5a5}
+.pb-actions{display:flex;gap:9px;flex-wrap:wrap}
+.pb-btn{padding:9px 16px;border-radius:12px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;display:flex;align-items:center;gap:5px;transition:all 0.2s;border:none;white-space:nowrap}
+.pb-btn.primary{background:var(--purple);color:#fff;box-shadow:0 4px 16px var(--purple-glow)}
+.pb-btn.primary:hover{filter:brightness(1.12);transform:translateY(-1px);box-shadow:0 6px 20px var(--purple-glow)}
+.pb-btn.secondary{background:rgba(255,255,255,0.05);border:1px solid var(--border2);color:var(--text-dim)}
+.pb-btn.secondary:hover{background:rgba(139,92,246,0.1);border-color:rgba(139,92,246,0.35);color:var(--purple-light);transform:translateY(-1px)}
+.pb-btn:active{transform:translateY(0)!important}
+.pb-empty{background:rgba(255,255,255,0.02);border:1.5px dashed rgba(255,255,255,0.08);border-radius:20px;padding:22px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.pb-empty-text{font-size:13px;color:var(--text-faint)}
+.pb-empty-btn{padding:8px 16px;border-radius:10px;background:rgba(139,92,246,0.1);border:1px solid rgba(139,92,246,0.25);color:var(--purple-light);font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;transition:all 0.2s;white-space:nowrap}
+.pb-empty-btn:hover{background:rgba(139,92,246,0.2);border-color:rgba(139,92,246,0.45)}
+@media(max-width:640px){.pb-btn{font-size:12px;padding:8px 13px}.pb-actions{gap:7px}}
 </style>
 </head>
 <body>
@@ -645,7 +668,7 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
           <div onclick="selMode('seller')" style="background:rgba(16,185,129,0.07);border:1.5px solid rgba(16,185,129,0.18);border-radius:20px;padding:24px 22px;cursor:pointer;display:flex;align-items:center;gap:16px;transition:all 0.25s;box-shadow:0 4px 24px rgba(16,185,129,0.06)" onmouseover="this.style.background='rgba(16,185,129,0.13)';this.style.transform='translateY(-2px)'" onmouseout="this.style.background='rgba(16,185,129,0.07)';this.style.transform='translateY(0)'">
             <div style="font-size:2rem;flex-shrink:0">🛍️</div>
             <div style="flex:1;min-width:0">
-              <div style="font-size:16px;font-weight:900;color:#6EE7B7;margin-bottom:5px">판매자 모드</div>
+              <div style="font-size:16px;font-weight:900;color:#6EE7B7;margin-bottom:5px">멘토 모드</div>
               <div style="font-size:12px;color:var(--text-dim);line-height:1.6">루틴 설계 · 마켓 등록 · 수익화</div>
             </div>
             <div style="font-size:10px;font-weight:700;color:var(--green);background:rgba(16,185,129,0.12);border:1px solid rgba(16,185,129,0.2);padding:3px 9px;border-radius:10px;white-space:nowrap;flex-shrink:0">준비 중</div>
@@ -677,6 +700,9 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
           </button>
         </div>
       </div>
+
+      <!-- ProjectBoard: 작업 트리거 보드 -->
+      <div id="project-board"></div>
 
       <!-- 추천 영상 -->
       <div>
@@ -1220,7 +1246,7 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
 <div class="ov" id="ov-mode">
   <div class="mg">
     <div class="mc cs" onclick="selMode('consumer')"><div class="mci">📖</div><div class="mct">스토리 빌드업</div><div class="mcd">선택된 루틴으로 AI와 함께<br>이야기를 기획합니다</div><div class="mcb">소비자 모드</div></div>
-    <div class="mc sl" onclick="selMode('seller')"><div class="mci">🛍️</div><div class="mct">루틴 설계 &amp; 판매</div><div class="mcd">나만의 창작 템플릿을 만들어<br>마켓에 등록하고 판매합니다</div><div class="mcb">판매자 모드</div></div>
+    <div class="mc sl" onclick="selMode('seller')"><div class="mci">🛍️</div><div class="mct">루틴 설계 &amp; 판매</div><div class="mcd">나만의 창작 템플릿을 만들어<br>마켓에 등록하고 판매합니다</div><div class="mcb">멘토 모드</div></div>
   </div>
 </div>
 <!-- 오버레이: 루틴 선택 -->
@@ -1243,6 +1269,49 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
   if (window.pdfjsLib) {
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
   }
+</script>
+<!-- ── projectStore 초기화 (ES Module → 전역 노출) ── -->
+<script type="module">
+import {
+  createEmptyProject,
+  saveProject,
+  loadProject,
+  getCurrentProject,
+  setCurrentProject,
+  addEpisode as storeAddEpisode,
+  addCharacter as storeAddCharacter,
+  structureMemory,
+  saveMemory,
+  buildContext,
+  recordEpisodeEvent,
+  updateCharacterState,
+  updateMemoryFromEpisodes
+} from './js/projectStore.js';
+
+// 전역 접근용 네임스페이스
+window.PS = {
+  createEmptyProject,
+  saveProject,
+  loadProject,
+  getCurrentProject,
+  setCurrentProject,
+  addEpisode: storeAddEpisode,
+  addCharacter: storeAddCharacter,
+  structureMemory,
+  saveMemory,
+  buildContext,
+  recordEpisodeEvent,
+  updateCharacterState,
+  updateMemoryFromEpisodes
+};
+
+// 앱 시작 시 현재 프로젝트 초기화
+let proj = getCurrentProject();
+if (!proj) {
+  proj = createEmptyProject();
+  setCurrentProject(proj);
+}
+window.currentProject = proj;
 </script>
 <script>
 // ── 상수 ──
@@ -1382,6 +1451,13 @@ function switchOlTab(tab){
 function saveOlTextInput(){
   const text=($('ol-text-input').value||'').trim();
   if(!text){flash('텍스트를 입력해주세요');return;}
+
+  // 텍스트 구조화 → project.memory 저장
+  if(window.currentProject && window.PS && window.PS.structureMemory){
+    const memory = window.PS.structureMemory(text);
+    window.PS.saveMemory(window.currentProject, memory);
+  }
+
   const ctx={title:'직접 입력',text};
   _applyOlLinkedText(ctx);
 }
@@ -1436,28 +1512,66 @@ function getStoredContext(pid) {
 async function handleOlPdfUpload(input) {
   const file = input.files[0]; if (!file) return;
   const status = $('ol-pdf-status');
-  status.textContent = '분석 중...'; status.className = 'ol-pdf-status on';
+  status.textContent = '파일 분석 중...'; status.className = 'ol-pdf-status on';
+
+  // 파일 크기 제한: 5MB
+  if (file.size > 5 * 1024 * 1024) {
+    status.textContent = '❌ 5MB 이하의 파일만 업로드 가능합니다.';
+    input.value = '';
+    return;
+  }
 
   try {
+    // ── 1. 텍스트 추출 ──
     const text = await extractTextFromFile(file);
-    if (text.length < 10) throw new Error('추출된 텍스트가 너무 적습니다.');
-    
+    if (!text || text.trim().length < 10) throw new Error('텍스트를 추출할 수 없습니다. 파일 내용을 확인해주세요.');
+
+    status.textContent = '구조화 중...';
+
+    // ── 2. 텍스트 구조화 ──
+    const memory = (window.PS && window.PS.structureMemory)
+      ? window.PS.structureMemory(text)
+      : { rawText: text, summary: text.slice(0, 300), characters: [], timeline: [] };
+
+    // ── 3. project.memory에 저장 ──
+    if (window.currentProject && window.PS && window.PS.saveMemory) {
+      window.PS.saveMemory(window.currentProject, memory);
+    }
+
+    // ── 4. 기존 컨텍스트 저장 (AI 참조용) ──
     const pid = olProjId || (selProj ? selProj.id : null) || (pdProj ? pdProj.id : null);
     if (pid) storeProjectContext(pid, text);
 
     _olPdfText = text;
-    const ctx = { title: file.name, text: text };
-    status.textContent = `✓ 작품 연동 완료: "${file.name}"`;
-    setTimeout(() => { _applyOlLinkedText(ctx); }, 900);
+    const ctx = { title: file.name, text };
+
+    // ── 5. UI 상태 표시 ──
+    const charCount = memory.characters.length;
+    const tlCount = memory.timeline.length;
+    status.innerHTML =
+      `✓ <strong>작품 연동 완료</strong>: "${file.name}"<br>` +
+      `<span style="font-size:11px;opacity:0.85">` +
+        `요약 ${memory.summary.length}자 · 등장인물 ${charCount}명 추출 · 사건 흐름 ${tlCount}개` +
+      `</span>`;
+
+    setTimeout(() => { _applyOlLinkedText(ctx); }, 1000);
   } catch (err) {
     status.textContent = `❌ ${err.message}`;
-    console.error(err);
   } finally {
     input.value = '';
   }
 }
 
 function _applyOlLinkedText(ctx){
+  // 회차 개요 / 일반 연동: project.memory가 아직 비어 있을 경우에만 텍스트 기반으로 채움
+  if(olSelectSource==='ol' && ctx.text && window.currentProject && window.PS){
+    const existing = window.currentProject.memory;
+    if(!existing || !existing.rawText){
+      const memory = window.PS.structureMemory(ctx.text);
+      window.PS.saveMemory(window.currentProject, memory);
+    }
+  }
+
   if(olSelectSource==='ch'){
     chLinkedText=ctx; pdProj=null;
     renderChProjBadge();
@@ -1556,6 +1670,113 @@ function goHome(){navTo('home');}
 document.addEventListener('DOMContentLoaded',()=>{
   const ta=$('im-ta');if(ta)ta.addEventListener('keydown',e=>{if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)){e.preventDefault();saveItemModal();}});
 });
+// ── ProjectBoard: 작업 트리거 보드 ──
+function renderProjectBoard() {
+  const el = document.getElementById('project-board');
+  if (!el) return;
+
+  const proj = window.PS.getCurrentProject();
+
+  // 프로젝트 없거나 기본 빈 프로젝트(제목 없음)일 때
+  if (!proj || (!proj.title && !proj.episodes.length)) {
+    el.innerHTML = `<div class="pb-empty">
+      <span class="pb-empty-text">진행 중인 프로젝트가 없습니다. 내 기획안에서 작품을 선택하세요.</span>
+      <button class="pb-empty-btn" onclick="navTo('myplan')">내 기획안 열기</button>
+    </div>`;
+    return;
+  }
+
+  // 상태 계산
+  const epCount = proj.episodes ? proj.episodes.length : 0;
+  const isLinked = !!(proj.memory && proj.memory.rawText);
+  const linkedBadge = isLinked
+    ? '<span class="pb-badge linked">🔗 연동 완료</span>'
+    : '<span class="pb-badge unlinked">⚠ 미연동</span>';
+
+  let lastWorkText = '기록 없음';
+  if (proj.updatedAt) {
+    const diffMs = Date.now() - proj.updatedAt;
+    const diffMin = Math.floor(diffMs / 60000);
+    const diffHour = Math.floor(diffMs / 3600000);
+    const diffDay = Math.floor(diffMs / 86400000);
+    if (diffMin < 1) lastWorkText = '방금 전';
+    else if (diffMin < 60) lastWorkText = `${diffMin}분 전`;
+    else if (diffHour < 24) lastWorkText = `${diffHour}시간 전`;
+    else lastWorkText = `${diffDay}일 전`;
+  }
+
+  el.innerHTML = `<div class="pb-card">
+    <div class="pb-header">
+      <span class="pb-label">✦ 현재 작업 중</span>
+    </div>
+    <div class="pb-title">${proj.title || '제목 없는 작품'}</div>
+    <div class="pb-meta">
+      <span class="pb-badge">📖 ${epCount > 0 ? epCount + '화 진행 중' : '회차 없음'}</span>
+      <span class="pb-badge">🕐 마지막 작업: ${lastWorkText}</span>
+      ${linkedBadge}
+    </div>
+    <div class="pb-actions">
+      <button class="pb-btn primary" onclick="pbContinueWork()">▶ 이어 작업하기</button>
+      <button class="pb-btn secondary" onclick="pbOpenOutline()">📋 회차 개요 열기</button>
+      <button class="pb-btn secondary" onclick="pbOpenLinkModal()">${isLinked ? '🔄 연동 업데이트' : '🔗 작품 연동하기'}</button>
+    </div>
+  </div>`;
+}
+
+// 이어 작업하기: 회차 개요로 이동 후 마지막 회차 자동 펼침
+function pbContinueWork() {
+  navTo('outline');
+  setTimeout(() => {
+    const cards = document.querySelectorAll('.ep-card');
+    if (cards.length) {
+      const last = cards[cards.length - 1];
+      if (!last.classList.contains('expanded')) {
+        last.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        toggleEp(last, cards.length - 1);
+      } else {
+        last.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
+  }, 350);
+}
+
+// 회차 개요 열기
+function pbOpenOutline() {
+  navTo('outline');
+}
+
+// 작품 연동 모달 열기 (회차 개요 기반)
+function pbOpenLinkModal() {
+  navTo('outline');
+  setTimeout(() => openOlProjSelect(), 150);
+}
+
+// 홈 진입 시 보드 갱신 + window.PS 패치를 DOMContentLoaded 이후 실행
+// (window.PS는 <script type="module">이 파싱 후 실행되므로 DOMContentLoaded 전에 완료됨)
+document.addEventListener('DOMContentLoaded', () => {
+  // saveProject 패치: updatedAt 자동 스탬핑
+  if (window.PS && window.PS.saveProject) {
+    const _origSave = window.PS.saveProject;
+    window.PS.saveProject = function(project) {
+      project.updatedAt = Date.now();
+      _origSave(project);
+      if (document.getElementById('view-home')?.classList.contains('on')) {
+        renderProjectBoard();
+      }
+    };
+  }
+
+  // navTo 래핑: 홈으로 돌아올 때 보드 갱신
+  const _origNavTo = navTo;
+  window.navTo = function(v) {
+    _origNavTo(v);
+    if (v === 'home') renderProjectBoard();
+  };
+
+  // 초기 렌더
+  renderProjectBoard();
+});
+
 // ── 내 기획안 대쉬보드 ──
 let dashMode='creator';
 
@@ -1971,6 +2192,10 @@ function renderCharCards(){
 
 function addCharCard(){
   pdChars.push({name:'',role:'조연',appearance:'',personality:'',goal:'',relation:''});
+  // projectStore 동기화: project 객체 기반으로 character 추가
+  if(window.currentProject && window.PS) {
+    window.PS.addCharacter(window.currentProject, '');
+  }
   renderCharCards();
   saveChars();
 }
@@ -2043,6 +2268,19 @@ async function saveChars(){
   const arr=JSON.parse(localStorage.getItem('mp')||'[]');
   const idx=arr.findIndex(p=>p.id===pdProj.id);
   if(idx>=0){arr[idx].characters=pdChars;localStorage.setItem('mp',JSON.stringify(arr));}
+  // projectStore 동기화: characters 전체를 project 객체에 반영 후 저장
+  if(window.currentProject && window.PS) {
+    window.currentProject.characters = pdChars.map(ch => ({
+      id: ch.id || Date.now().toString(),
+      name: ch.name || '',
+      role: ch.role || '',
+      goal: ch.goal || '',
+      emotion: ch.personality || '',
+      relationships: {},
+      arc: []
+    }));
+    window.PS.saveProject(window.currentProject);
+  }
   if(user){
     try{await sb.from('projects').update({characters:pdChars}).eq('id',pdProj.id).eq('user_id',user.id);}catch(e){}
   }
@@ -2217,6 +2455,8 @@ async function autoFillCdSection(secIdx){
   const projInfo=pdProj?`작품명: ${pdProj.title}\n장르: ${pdProj.genre||'미설정'}\n시놉시스: ${pdProj.synopsis||'없음'}`:'없음';
   const charInfo=`이름: ${ch.name||'이름 없음'} / 역할: ${ch.role||'조연'}${ch.appearance?' / 외모: '+ch.appearance:''}${ch.personality?' / 성격: '+ch.personality:''}`;
   const existingInfo=existingLines.length?`\n\n[이미 설정된 내용 — 반드시 이와 일관성을 유지할 것]\n${existingLines.slice(0,25).join('\n')}`:'';
+  // projectStore 컨텍스트 (세계관·memory·회차 포함)
+  const psCtx = buildContext(window.currentProject);
   // 채울 필드 설명
   const fieldDescs=emptyFields.map(f=>{
     const opts=f.chips?` [선택지 중 하나만: ${f.chips.join(' / ')}]`:'';
@@ -2224,8 +2464,8 @@ async function autoFillCdSection(secIdx){
     const len=f.type==='area'?'[3~5문장]':'[1~2문장]';
     return `"${f.id}": ${f.label}${hint}${opts} ${len}`;
   }).join('\n');
-  const systemPrompt=`웹툰·웹소설 캐릭터 설정 전문가다. 이미 설정된 내용을 기반으로, 그 캐릭터답게 빈 필드를 채워라. chips 선택지가 있는 필드는 반드시 그 중 하나를 그대로 출력하라. JSON 오브젝트만 출력하고 다른 텍스트는 쓰지 마라.`;
-  const userPrompt=`[작품 정보]\n${projInfo}\n\n[캐릭터]\n${charInfo}${existingInfo}\n\n[섹션: ${sec.title}] — 아래 빈 필드만 JSON으로 채워라:\n${fieldDescs}\n\n출력 형식 (JSON만):\n{\n  "field_id": "값"\n}`;
+  const systemPrompt=`웹툰·웹소설 캐릭터 설정 전문가다. 이미 설정된 내용을 기반으로, 그 캐릭터답게 빈 필드를 채워라. 제공된 프로젝트 데이터(세계관, 작품 요약)와 반드시 일관성을 유지할 것. chips 선택지가 있는 필드는 반드시 그 중 하나를 그대로 출력하라. JSON 오브젝트만 출력하고 다른 텍스트는 쓰지 마라.`;
+  const userPrompt=`${psCtx ? `[프로젝트 데이터]\n${psCtx}\n\n` : ''}[작품 정보]\n${projInfo}\n\n[캐릭터]\n${charInfo}${existingInfo}\n\n[섹션: ${sec.title}] — 아래 빈 필드만 JSON으로 채워라:\n${fieldDescs}\n\n출력 형식 (JSON만):\n{\n  "field_id": "값"\n}`;
   try{
     const result=await ai([{role:'system',content:systemPrompt},{role:'user',content:userPrompt}],{max_tokens:512});
     if(result.includes('⚠️'))throw new Error(result);
@@ -2344,9 +2584,10 @@ async function draftCharacters(){
   btn.disabled=true; const oldText=btn.innerHTML; btn.textContent='⏳ AI 분석 중...';
   const synopsis=pdProj?.synopsis||pdProj?.synopsis_detail||'';
   const title=pdProj?.title||'';
+  const psCtx = buildContext(window.currentProject);
   const result=await ai([
-    {role:'system',content:'당신은 웹소설/웹툰 캐릭터 전문 분석가입니다. 시놉시스를 읽고 등장인물을 JSON 배열로 추출하세요. 각 캐릭터는 다음 필드를 포함합니다: name(이름), role(주인공/히로인/조력자/악당/빌런/조연 중 하나), appearance(외모 특징 1줄), personality(성격 2-3가지), goal(역할과 목표 1줄), relation(주인공과의 관계 1줄). 반드시 JSON 배열만 반환하세요.'},
-    {role:'user',content:`작품명: ${title}\n시놉시스: ${synopsis}\n\n등장인물 JSON 배열을 반환해주세요.`}
+    {role:'system',content:'당신은 웹소설/웹툰 캐릭터 전문 분석가입니다. 제공된 프로젝트 데이터와 시놉시스를 종합해 등장인물을 JSON 배열로 추출하세요. 각 캐릭터는 다음 필드를 포함합니다: name(이름), role(주인공/히로인/조력자/악당/빌런/조연 중 하나), appearance(외모 특징 1줄), personality(성격 2-3가지), goal(역할과 목표 1줄), relation(주인공과의 관계 1줄). 반드시 JSON 배열만 반환하세요.'},
+    {role:'user',content:`${psCtx ? `[프로젝트 데이터]\n${psCtx}\n\n` : ''}작품명: ${title}\n시놉시스: ${synopsis}\n\n등장인물 JSON 배열을 반환해주세요.`}
   ]);
   btn.disabled=false; btn.innerHTML=oldText;
   try{
@@ -2368,7 +2609,7 @@ let newProjName='';
 function openMode(){openOv('ov-mode');}
 function selMode(m){
   closeOv('ov-mode');
-  if(m==='seller'){flash('판매자 모드 — 준비 중입니다');return;}
+  if(m==='seller'){flash('멘토 모드 — 준비 중입니다');return;}
   openOv('ov-routine');
 }
 function selRoutine(type){
@@ -2477,17 +2718,18 @@ async function autoFillItemModal(){
   const pid = (selProj ? selProj.id : null) || (pdProj ? pdProj.id : null);
   const externalCtx = getStoredContext(pid);
   const internalCtx=planItems.filter(p=>p.value&&p.value.trim()).map(p=>`${p.k||p.q}: ${p.value}`).join('\n');
-  
+  const psCtx = buildContext(window.currentProject);
+
   try{
-    const prompt = `웹툰·웹소설 기획 AI다. 앞서 정해진 기획 내용 및 제공된 참고 문헌을 바탕으로 현재 질문에 맞는 답변을 생성한다. 앞 내용과 세계관·장르·캐릭터가 일관되어야 한다. 답변 텍스트만 출력. 되묻거나 설명 금지. 기호·마크다운·이모지 없이 1~2문장.
-${externalCtx ? `\n[참고 문헌]\n${externalCtx}\n` : ''}
+    const prompt = `웹툰·웹소설 기획 AI다. 아래 제공된 모든 정보를 반드시 참고해 현재 질문에 맞는 답변을 생성한다. 세계관·캐릭터·기존 기획과 반드시 일관성을 유지하라. 답변 텍스트만 출력. 되묻거나 설명 금지. 기호·마크다운·이모지 없이 1~2문장.
+${psCtx ? `\n[프로젝트 데이터]\n${psCtx}\n` : ''}${externalCtx ? `\n[참고 문헌]\n${externalCtx}\n` : ''}
 ${internalCtx ? `\n[앞서 정해진 기획]\n${internalCtx}\n` : ''}
 [현재 질문] ${item.q}${item.h ? ` (힌트: ${item.h})` : ''}
 
 위 내용을 참고한 답변:`;
 
     const result=await ai([
-      {role:'system',content:'웹툰·웹소설 기획 조각을 작성하는 기획 전문가입니다.'},
+      {role:'system',content:'웹툰·웹소설 기획 조각을 작성하는 기획 전문가입니다. 항상 제공된 프로젝트 데이터(세계관, 캐릭터, 작품 요약)를 기반으로 일관된 내용을 생성합니다.'},
       {role:'user',content:prompt}
     ],{max_tokens:150});
     const cleaned=result?result.replace(/^[\s\-\*\#\>\"\']+/,'').trim():'';
@@ -2679,17 +2921,18 @@ async function autoFillBuildupStep(){
   const pid = (selProj ? selProj.id : null) || (pdProj ? pdProj.id : null);
   const externalCtx = getStoredContext(pid);
   const internalCtx = planItems.filter(p => p.value).map(p => `${p.k || p.q}: ${p.value}`).join('\n');
+  const psCtx = buildContext(window.currentProject);
 
   try {
-    const prompt = `웹툰·웹소설 기획 AI다. 앞서 정해진 기획 내용 및 제공된 참고 문헌을 바탕으로 현재 질문에 맞는 답변을 생성한다. 앞 내용과 세계관·장르·캐릭터가 일관되어야 한다. 답변 텍스트만 출력. 되묻거나 설명 금지. 기호·마크다운·이모지 없이 1~2문장.
-${externalCtx ? `\n[참고 문헌]\n${externalCtx}\n` : ''}
+    const prompt = `웹툰·웹소설 기획 AI다. 아래 제공된 모든 정보를 반드시 참고해 현재 질문에 맞는 답변을 생성한다. 세계관·캐릭터·기존 기획과 반드시 일관성을 유지하라. 답변 텍스트만 출력. 되묻거나 설명 금지. 기호·마크다운·이모지 없이 1~2문장.
+${psCtx ? `\n[프로젝트 데이터]\n${psCtx}\n` : ''}${externalCtx ? `\n[참고 문헌]\n${externalCtx}\n` : ''}
 ${internalCtx ? `\n[앞서 정해진 기획]\n${internalCtx}\n` : ''}
 [현재 질문] ${s.q}${s.h ? ` (힌트: ${s.h})` : ''}
 
 위 내용을 참고한 답변:`;
 
     const result = await ai([
-      { role: 'system', content: '작가의 기획을 돕는 유능한 조수입니다.' },
+      { role: 'system', content: '작가의 기획을 돕는 유능한 조수입니다. 항상 제공된 프로젝트 데이터(세계관, 캐릭터, 작품 요약)를 기반으로 일관된 내용을 생성합니다.' },
       { role: 'user', content: prompt }
     ], { max_tokens: 150 });
     const cleaned = result ? result.replace(/^[\s\-\*\#\>\"\']+/,'').trim() : '';
@@ -2940,6 +3183,23 @@ async function aiStream(messages,onChunk,onDone){
     onDone(full||'⚠️ 응답이 비어있습니다.');
   }catch(e){onDone('⚠️ AI 연결 오류. 잠시 후 다시 시도해주세요.');}
 }
+// ── 프로젝트 컨텍스트 빌더 ──
+// window.PS.buildContext가 로드된 후에는 그것을 사용하고,
+// 아직 로드 전이거나 project가 없으면 빈 문자열 반환
+function buildContext(project) {
+  const proj = project || window.currentProject || null;
+  if (!proj) return "";
+  if (window.PS && typeof window.PS.buildContext === "function") {
+    return window.PS.buildContext(proj);
+  }
+  // fallback: PS 미로드 시 최소 컨텍스트만
+  const mem = (proj.memory && proj.memory.summary) || "";
+  const world = proj.world || "";
+  if (!mem && !world) return "";
+  return [world && `[세계관]\n${world}`, mem && `[작품 요약]\n${mem}`]
+    .filter(Boolean).join("\n\n");
+}
+
 // ── 페르소나 ──
 function buildPersona(){
   if(charName==='조수 F형')return`당신은 웹소설 기획 조수 'F형'입니다. 공감 능력이 뛰어나고 따뜻합니다. 유저의 답변을 한 줄로 요약하세요.`;
@@ -3055,6 +3315,10 @@ function confirmEpCount(){
 function addEpisode(){
   const num=olEpisodes.length+1;
   olEpisodes.push({num,act:getAct(num),title:'',keyword:'',synopsis:'',funPoint:'',reference:'',lastPanel:'',tension:5,type:'curiosity'});
+  // projectStore 동기화: project 객체 기반으로 episode 추가
+  if(window.currentProject && window.PS) {
+    window.PS.addEpisode(window.currentProject);
+  }
   renderEpList();drawTensionGraph();saveOutlineData();
   // 새로 추가된 카드 펼치기
   setTimeout(()=>{
@@ -3357,9 +3621,11 @@ async function autoFillEpisode(idx){
   try{
     const pid = (selProj ? selProj.id : null) || (pdProj ? pdProj.id : null);
     const externalCtx = getStoredContext(pid);
+    // projectStore 컨텍스트 (세계관·캐릭터·memory 포함)
+    const psCtx = buildContext(window.currentProject);
 
-    const prompt = `웹툰·웹소설 회차 기획 AI다. 작품 정보, 앞 회차 흐름, 이미 입력된 내용, 그리고 제공된 참고 문헌을 모두 참고해 ${ep.num}화(전체 ${total}화, ${ep.act}막)의 빈 항목만 채워라. 이미 입력된 내용과 일관성을 유지하라. JSON만 출력. 형식: {"type":"${typeIds}","keyword":"","title":"","synopsis":"","funPoint":"","lastPanel":"","tension":숫자}
-${externalCtx ? `\n[참고 문헌]\n${externalCtx}\n` : ''}
+    const prompt = `웹툰·웹소설 회차 기획 AI다. 아래 제공된 모든 정보를 반드시 참고해 ${ep.num}화(전체 ${total}화, ${ep.act}막)의 빈 항목만 채워라. 이미 입력된 내용과 일관성을 유지하라. JSON만 출력. 형식: {"type":"${typeIds}","keyword":"","title":"","synopsis":"","funPoint":"","lastPanel":"","tension":숫자}
+${psCtx ? `\n[프로젝트 데이터]\n${psCtx}\n` : ''}${externalCtx ? `\n[참고 문헌]\n${externalCtx}\n` : ''}
 [작품 정보]
 ${projInfo}${planCtx ? `\n\n[기획 내용]\n${planCtx}` : ''}${prevEps ? `\n\n[앞 회차 흐름]\n${prevEps}` : ''}
 
@@ -3369,7 +3635,7 @@ ${alreadyCtx || '없음'}
 빈 항목(${emptyFields.join(', ') || 'tension'})을 채운 JSON:`;
 
     const result=await ai([
-      {role:'system',content:`회차별 개요를 짜는 전문 편집자입니다.`},
+      {role:'system',content:`회차별 개요를 짜는 전문 편집자입니다. 항상 제공된 프로젝트 데이터(세계관, 캐릭터, 작품 요약)를 기반으로 일관된 내용을 생성합니다.`},
       {role:'user',content:prompt}
     ],{max_tokens:400});
 
@@ -3388,6 +3654,10 @@ ${alreadyCtx || '없음'}
     if(d.tension)ep.tension=Math.min(10,Math.max(1,parseInt(d.tension)||5));
 
     saveOutlineData();
+    // AI가 채운 회차 → memory에 즉시 기록 (캐릭터 상태 + timeline 갱신)
+    if(window.currentProject && window.PS && window.PS.recordEpisodeEvent){
+      window.PS.recordEpisodeEvent(window.currentProject, ep);
+    }
     renderEpList();
     // 채운 카드 다시 펼치기
     setTimeout(()=>{
@@ -3405,6 +3675,16 @@ ${alreadyCtx || '없음'}
 
 async function saveOutlineData(){
   localStorage.setItem('ol_episodes',JSON.stringify(olEpisodes));
+  // projectStore 동기화: episodes 반영 → memory(timeline/characterStates/summary) 재구축
+  if(window.currentProject && window.PS){
+    window.currentProject.episodes = olEpisodes;
+    if(window.PS.updateMemoryFromEpisodes){
+      // updateMemoryFromEpisodes 내부에서 saveProject까지 처리
+      window.PS.updateMemoryFromEpisodes(window.currentProject);
+    } else {
+      window.PS.saveProject(window.currentProject);
+    }
+  }
   if(user&&olProjId){
     try{await sb.from('projects').update({episodes:olEpisodes}).eq('id',olProjId).eq('user_id',user.id);}
     catch(e){}
@@ -3722,9 +4002,13 @@ async function gmSend(){
   ta.value=''; ta.style.height='44px';
   gmLoading=true; $('gm-send').style.opacity='0.5';
   const lid = appendGmLoading();
+  // 만트라 에이전트: 항상 project 데이터 기반으로 응답
+  const gmPsCtx = buildContext(window.currentProject);
+  const gmSystemPrompt = `당신은 웹툰·웹소설 창작자를 위한 전문 AI 코파일럿 '만트라 에이전트'입니다. 스토리텔링, 장르물, 캐릭터, 플롯, 대사, 연출 등 창작 전반에 깊은 식견을 가지고 있습니다. 친근하지만 전문적으로, 구체적이고 실용적인 조언을 제공하세요. 답변은 400자 내외로 간결하게. 마크다운 형식(굵게, 목록 등)을 자유롭게 사용하세요.${gmPsCtx ? `\n\n아래는 현재 작가가 작업 중인 프로젝트 데이터입니다. 이 내용을 기반으로 일관된 조언을 제공하세요:\n\n${gmPsCtx}` : ''}`;
+
   try{
     const reply = await ai([
-      {role:'system', content:`당신은 웹툰·웹소설 창작자를 위한 전문 AI 코파일럿 '만트라 에이전트'입니다. 스토리텔링, 장르물, 캐릭터, 플롯, 대사, 연출 등 창작 전반에 깊은 식견을 가지고 있습니다. 친근하지만 전문적으로, 구체적이고 실용적인 조언을 제공하세요. 답변은 400자 내외로 간결하게. 마크다운 형식(굵게, 목록 등)을 자유롭게 사용하세요.`},
+      {role:'system', content: gmSystemPrompt},
       ...gmMsgs
     ]);
     removeGmLoading(lid);
