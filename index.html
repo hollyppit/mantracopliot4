@@ -34,7 +34,7 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);colo
 .ni{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;cursor:pointer;color:var(--text-faint);font-size:13px;font-weight:600;transition:all 0.2s;border:1px solid transparent;user-select:none;letter-spacing:-0.01em}
 .ni:hover{background:rgba(255,255,255,0.05);color:var(--text-dim)}
 .ni.on{background:rgba(16,185,129,0.08);color:var(--purple-light);border-color:rgba(16,185,129,0.14)}
-.ni .ic{font-size:15px;width:20px;text-align:center;flex-shrink:0}
+.ni .ic{width:20px;height:20px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .nb{font-size:10px;color:var(--text-faint);margin-left:auto;font-weight:600}
 .sb-foot{padding:14px 12px}
 .nbtn{width:100%;padding:13px;background:linear-gradient(135deg,var(--purple),#059669);color:#fff;border:none;border-radius:100px;font-size:13px;font-weight:800;cursor:pointer;font-family:inherit;transition:all 0.25s cubic-bezier(0.16,1,0.3,1);box-shadow:0 6px 20px var(--purple-glow),inset 0 1px 0 rgba(255,255,255,0.15);letter-spacing:-0.01em}
@@ -439,6 +439,22 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);colo
 /* 막 구분선 */
 .act-divider{display:flex;align-items:center;gap:10px;padding:8px 0 4px;font-size:11px;font-weight:800;color:var(--text-faint);letter-spacing:0.08em}
 .act-divider::before,.act-divider::after{content:'';flex:1;height:1px;background:var(--border)}
+/* 작품별 그룹 */
+.proj-group{margin-bottom:8px;max-width:880px}
+.proj-group-hdr{display:flex;align-items:center;gap:10px;padding:11px 16px;border-radius:var(--rs);border:1px solid var(--border);background:rgba(255,255,255,0.025);cursor:pointer;user-select:none;transition:all 0.2s}
+.proj-group-hdr:hover{border-color:var(--border2);background:rgba(255,255,255,0.045)}
+.proj-group-hdr.active{border-color:rgba(16,185,129,0.3);background:rgba(16,185,129,0.04)}
+.proj-group-icon{font-size:14px;flex-shrink:0}
+.proj-group-title{font-size:13px;font-weight:800;color:var(--text);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.proj-group-meta{font-size:11px;color:var(--text-faint);white-space:nowrap;flex-shrink:0}
+.proj-active-badge{font-size:10px;font-weight:700;padding:1px 7px;border-radius:10px;background:rgba(16,185,129,0.15);border:1px solid rgba(16,185,129,0.3);color:var(--green);flex-shrink:0}
+.proj-switch-btn{font-size:11px;font-weight:700;padding:3px 10px;border-radius:8px;border:1px solid var(--border);background:none;color:var(--text-dim);cursor:pointer;font-family:inherit;transition:all 0.15s;flex-shrink:0}
+.proj-switch-btn:hover{border-color:var(--border2);color:var(--text)}
+.proj-group-chevron{font-size:10px;color:var(--text-faint);transition:transform 0.2s;flex-shrink:0;width:14px;text-align:center}
+.proj-group.collapsed .proj-group-chevron{transform:rotate(-90deg)}
+.proj-group-body{display:flex;flex-direction:column;gap:6px;padding:8px 0 4px}
+.proj-group.collapsed .proj-group-body{display:none}
+.proj-group-empty{padding:14px 16px;font-size:12px;color:var(--text-faint);font-style:italic}
 /* 회차 설정 모달 */
 .ep-count-box{background:rgba(12,12,24,0.98);border:1px solid var(--border2);border-radius:20px;padding:32px;width:100%;max-width:400px;box-shadow:0 30px 80px rgba(0,0,0,0.7);display:flex;flex-direction:column;gap:18px}
 .ep-count-title{font-size:18px;font-weight:900}
@@ -456,7 +472,7 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);colo
 .rl-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
 .rl-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:20px;display:flex;flex-direction:column;gap:12px;transition:all 0.2s}
 .rl-card:hover{border-color:var(--border2);transform:translateY(-2px)}
-.rl-card-icon{font-size:26px;background:var(--surface2);width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.rl-card-icon{background:var(--surface2);width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .rl-card-name{font-size:15px;font-weight:800}
 .rl-card-meta{font-size:11px;color:var(--text-faint);font-weight:600;margin-top:2px}
 .rl-badge-def{font-size:10px;font-weight:800;color:var(--text-faint);background:var(--surface2);padding:3px 8px;border-radius:20px;margin-left:auto;flex-shrink:0}
@@ -554,7 +570,7 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);colo
 .mob-nav{display:none;background:rgba(10,10,20,0.92);border-top:1px solid var(--border);flex-shrink:0;backdrop-filter:blur(20px);height:var(--mob-nav-h);padding-bottom:env(safe-area-inset-bottom,0px);box-shadow:0 -10px 30px rgba(0,0,0,0.5)}
 .mob-nav-inner{display:flex;height:100%;align-items:stretch;padding:0 8px}
 .mni{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;color:var(--text-faint);font-size:12px;font-weight:700;padding:10px 6px;background:none;border:none;font-family:inherit;transition:all 0.3s;-webkit-tap-highlight-color:transparent;line-height:1.2;position:relative;min-height:100%}
-.mni .mnic{font-size:26px;line-height:1;transition:all 0.3s;margin-bottom:2px}
+.mni .mnic{width:26px;height:26px;display:flex;align-items:center;justify-content:center;transition:all 0.3s;margin-bottom:2px}
 .mni:active .mnic{transform:scale(0.82)}
 .mni.on{color:var(--purple-light)}
 .mni.on .mnic{transform:translateY(-3px);filter:drop-shadow(0 0 12px var(--purple-glow))}
@@ -564,7 +580,7 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);colo
 @keyframes hubIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 .hub-item{background:var(--surface);border:1px solid var(--border);border-radius:24px;padding:24px 16px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:12px;transition:all 0.3s;cursor:pointer}
 .hub-item:active{transform:scale(0.96);background:var(--surface2);border-color:var(--purple-light)}
-.hub-icon{font-size:32px;width:60px;height:60px;background:linear-gradient(135deg,rgba(16,185,129,0.15),rgba(16,185,129,0.05));border:1px solid rgba(16,185,129,0.2);border-radius:18px;display:flex;align-items:center;justify-content:center;margin-bottom:4px;box-shadow:0 10px 20px rgba(0,0,0,0.2);transition:all 0.3s}
+.hub-icon{width:60px;height:60px;background:linear-gradient(135deg,rgba(16,185,129,0.15),rgba(16,185,129,0.05));border:1px solid rgba(16,185,129,0.2);border-radius:18px;display:flex;align-items:center;justify-content:center;margin-bottom:4px;box-shadow:0 10px 20px rgba(0,0,0,0.2);transition:all 0.3s}
 .hub-item:active .hub-icon{transform:translateY(-2px);box-shadow:0 15px 25px rgba(16,185,129,0.2)}
 .hub-name{font-size:15px;font-weight:800;color:var(--text)}
 .hub-desc{font-size:11px;color:var(--text-dim);line-height:1.4;word-break:keep-all}
@@ -638,7 +654,7 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);colo
 .cd-sec-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:10px;cursor:pointer;transition:all 0.2s;color:var(--text-dim);font-size:13px;font-weight:600;user-select:none}
 .cd-sec-item:hover{background:var(--surface);color:var(--text)}
 .cd-sec-item.on{background:rgba(16,185,129,0.12);color:var(--purple-light)}
-.cd-sec-icon{font-size:15px;width:20px;text-align:center;flex-shrink:0}
+.cd-sec-icon{width:20px;height:20px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .cd-sec-done{margin-left:auto;font-size:10px;color:var(--green);opacity:0;transition:opacity 0.2s}
 .cd-sec-done.vis{opacity:1}
 .cd-chat-area{padding:12px;flex-shrink:0;border-top:1px solid var(--border)}
@@ -711,6 +727,19 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);colo
 .psi-empty:hover{border-color:rgba(16,185,129,0.35);color:var(--text-dim)}
 .proj-del-btn{padding:7px 14px;background:rgba(239,68,68,0.07);border:1px solid rgba(239,68,68,0.18);border-radius:10px;color:#fca5a5;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;transition:all 0.2s;white-space:nowrap}
 .proj-del-btn:hover{background:rgba(239,68,68,0.15);border-color:rgba(239,68,68,0.35)}
+/* ── CHARA SIDEBAR LAYOUT ── */
+.chara-layout{display:flex;flex:1;overflow:hidden;min-height:0}
+.chara-sidebar{width:196px;flex-shrink:0;border-right:1px solid var(--border);overflow-y:auto;padding:10px 0;background:rgba(255,255,255,0.015)}
+.chara-sidebar-title{font-size:10px;font-weight:800;letter-spacing:0.1em;color:var(--text-faint);padding:4px 14px 8px;text-transform:uppercase}
+.chara-proj-item{display:flex;align-items:center;gap:7px;padding:9px 12px 9px 14px;cursor:pointer;font-size:12px;font-weight:600;color:var(--text-dim);transition:all 0.15s;border-left:2px solid transparent;border-right:none;border-top:none;border-bottom:none;background:none;width:100%;text-align:left;font-family:inherit}
+.chara-proj-item:hover{background:rgba(255,255,255,0.04);color:var(--text)}
+.chara-proj-item.on{background:rgba(16,185,129,0.08);color:var(--green);border-left-color:var(--green)}
+.chara-proj-count{font-size:10px;font-weight:700;background:rgba(255,255,255,0.07);padding:2px 6px;border-radius:8px;margin-left:auto;flex-shrink:0}
+.chara-proj-item.on .chara-proj-count{background:rgba(16,185,129,0.18);color:var(--green)}
+.chara-main{flex:1;overflow-y:auto;padding:24px 28px;min-width:0}
+.chara-main-proj{font-size:13px;font-weight:800;color:var(--text);margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+.chara-main-proj .cmp-count{font-size:11px;color:var(--text-faint);font-weight:600}
+@media(max-width:600px){.chara-sidebar{width:52px}.chara-proj-item span.pname{display:none}.chara-proj-count{display:none}}
 /* character cards */
 .char-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-bottom:16px}
 .char-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:20px;display:flex;flex-direction:column;gap:10px;transition:border-color 0.2s}
@@ -788,14 +817,14 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);colo
     <div style="flex:1"><div class="un" id="un">테스터</div><button class="lo" onclick="logout()">로그아웃</button></div>
   </div>
   <nav class="sb-nav">
-    <div class="ni on" id="n-home" onclick="navTo('home')"><span class="ic">🏠</span>홈</div>
-    <div class="ni" id="n-gonmin" onclick="navTo('gonmin')"><span class="ic">🤖</span>창작 에이전트</div>
-    <div class="ni" id="n-myplan" onclick="navTo('myplan')"><span class="ic">📋</span>내 기획안</div>
-    <div class="ni" id="n-outline" onclick="navTo('outline')"><span class="ic">🎬</span>회차 개요</div>
-    <div class="ni" id="n-chara" onclick="navTo('chara')"><span class="ic">👤</span>캐릭터 만들기</div>
-    <div class="ni" id="n-verify" onclick="navTo('verify')"><span class="ic">🔍</span>전문가 고증</div>
-    <div class="ni" id="n-rl" onclick="navTo('rl')"><span class="ic">📦</span>루틴 보관함</div>
-    <div class="ni" id="n-market" onclick="navTo('market')"><span class="ic">🛍️</span>루틴 마켓<span class="nb">준비 중</span></div>
+    <div class="ni on" id="n-home" onclick="navTo('home')"><span class="ic" data-icon="home"></span>홈</div>
+    <div class="ni" id="n-gonmin" onclick="navTo('gonmin')"><span class="ic" data-icon="gonmin"></span>창작 에이전트</div>
+    <div class="ni" id="n-myplan" onclick="navTo('myplan')"><span class="ic" data-icon="myplan"></span>내 기획안</div>
+    <div class="ni" id="n-outline" onclick="navTo('outline')"><span class="ic" data-icon="outline"></span>회차 개요</div>
+    <div class="ni" id="n-chara" onclick="navTo('chara')"><span class="ic" data-icon="chara"></span>캐릭터 만들기</div>
+    <div class="ni" id="n-verify" onclick="navTo('verify')"><span class="ic" data-icon="verify"></span>전문가 고증</div>
+    <div class="ni" id="n-rl" onclick="navTo('rl')"><span class="ic" data-icon="rl"></span>루틴 보관함</div>
+    <div class="ni" id="n-market" onclick="navTo('market')"><span class="ic" data-icon="market"></span>루틴 마켓<span class="nb">준비 중</span></div>
   </nav>
   <div class="sb-foot"><button class="nbtn" onclick="openMode()">+ 새 작품 기획하기</button></div>
 </aside>
@@ -939,17 +968,17 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);colo
       <!-- 두 CTA 버튼 -->
       <div class="home-mode-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;max-width:1100px">
         <div class="myplan-cta myplan-cta-new" onclick="openMode()">
-          <div class="cta-icon" style="font-size:2.6rem;margin-bottom:16px;line-height:1">✦</div>
+          <div class="cta-icon" style="margin-bottom:16px" data-icon="gonmin" data-icon-size="44" data-icon-sw="1.2"></div>
           <div class="cta-title" style="font-size:19px;font-weight:900;margin-bottom:8px;letter-spacing:-0.02em">새 작품 기획하기</div>
           <div id="cta-new-sub" style="font-size:12px;color:var(--text-faint);line-height:1.6">새로운 이야기를 AI와 함께 설계합니다</div>
         </div>
         <div class="myplan-cta myplan-cta-review" onclick="openReviewPicker()">
-          <div class="cta-icon" style="font-size:2.6rem;margin-bottom:16px;line-height:1">🔍</div>
+          <div class="cta-icon" style="margin-bottom:16px" data-icon="review" data-icon-size="44" data-icon-sw="1.2"></div>
           <div class="cta-title" style="font-size:19px;font-weight:900;margin-bottom:8px;letter-spacing:-0.02em">기존 작품 검토하기</div>
           <div id="cta-review-sub" style="font-size:12px;color:var(--text-faint);line-height:1.6">시놉시스·캐릭터·개요를 통합 점검합니다</div>
         </div>
         <div class="myplan-cta myplan-cta-import" onclick="openImportModal()">
-          <div class="cta-icon" style="font-size:2.6rem;margin-bottom:16px;line-height:1">📥</div>
+          <div class="cta-icon" style="margin-bottom:16px" data-icon="import" data-icon-size="44" data-icon-sw="1.2"></div>
           <div class="cta-title" style="font-size:19px;font-weight:900;margin-bottom:8px;letter-spacing:-0.02em">외부 작품 가져오기</div>
           <div style="font-size:12px;color:var(--text-faint);line-height:1.6">PDF / TXT / 텍스트를 불러와 작품으로 변환합니다</div>
         </div>
@@ -972,15 +1001,21 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);colo
   <section class="view" id="view-chara">
     <div class="proj-detail-wrap">
       <div class="proj-detail-header">
-        <div style="font-size:20px;font-weight:900;margin-right:12px">캐릭터 만들기</div>
+        <div style="font-size:20px;font-weight:900;margin-right:8px">캐릭터 만들기</div>
         <div id="ch-memory-status" style="display:flex;align-items:center;gap:6px"></div>
         <div style="flex:1"></div>
         <button class="ol-btn" onclick="resetChars()" style="color:#fde68a;border-color:rgba(251,191,36,0.3)">🔄 초기화</button>
         <button class="ol-btn primary" onclick="saveChars()">저장</button>
       </div>
-      <div class="proj-detail-body">
-        <div class="char-grid" id="char-grid-standalone"></div>
-        <button class="char-add-btn" onclick="addCharCard()">+ 캐릭터 직접 추가</button>
+      <div class="chara-layout">
+        <!-- 왼쪽 사이드바: 작품별 폴더 -->
+        <div class="chara-sidebar" id="chara-sidebar"></div>
+        <!-- 오른쪽 메인: 선택한 작품의 캐릭터 -->
+        <div class="chara-main">
+          <div class="chara-main-proj" id="chara-main-title" style="display:none"></div>
+          <div class="char-grid" id="char-grid-standalone"></div>
+          <button class="char-add-btn" onclick="addCharCard()" id="chara-add-btn" style="display:none">+ 캐릭터 직접 추가</button>
+        </div>
       </div>
     </div>
   </section>
@@ -990,6 +1025,7 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);colo
         <div class="ol-top">
           <div class="ol-title-row">
             <div style="font-size:20px;font-weight:900">회차 개요</div>
+            <div id="ol-proj-badge" style="margin-left:8px"></div>
             <div id="ol-memory-status" style="display:flex;align-items:center;gap:6px"></div>
           </div>
           <div class="ol-actions">
@@ -1022,9 +1058,6 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);colo
       </div>
       <div class="ol-body">
         <div class="ep-list" id="ep-list"></div>
-        <button class="ep-add" onclick="addEpisode()" style="max-width:880px;margin-top:6px">
-          <span style="font-size:16px">+</span> 회차 추가
-        </button>
       </div>
     </div>
   </section>
@@ -1196,8 +1229,8 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);colo
         <label for="import-file-input" style="display:block;border:2px dashed var(--border2);border-radius:14px;padding:32px;text-align:center;cursor:pointer;transition:border-color 0.2s;background:var(--surface)" onmouseover="this.style.borderColor='var(--purple)'" onmouseout="this.style.borderColor='var(--border2)'">
           <div style="font-size:2rem;margin-bottom:10px">📁</div>
           <div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:4px">파일을 클릭해 선택하세요</div>
-          <div style="font-size:12px;color:var(--text-faint)">.pdf .txt .md 지원 · 최대 5MB</div>
-          <input type="file" id="import-file-input" accept=".pdf,.txt,.md" style="display:none" onchange="handleImportFileChange(this)">
+          <div style="font-size:12px;color:var(--text-faint)">.pdf .docx .txt .md 지원 · 최대 10MB</div>
+          <input type="file" id="import-file-input" accept=".pdf,.docx,.txt,.md" style="display:none" onchange="handleImportFileChange(this)">
         </label>
         <div id="import-file-info" style="font-size:12px;color:var(--text-dim);margin-top:10px;min-height:18px"></div>
       </div>
@@ -1312,34 +1345,34 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);colo
     <div class="vb" style="padding-top:10px">
       <div class="hub-grid">
         <div class="hub-item agent" onclick="navTo('gonmin')">
-          <div class="hub-icon">🤖</div>
+          <div class="hub-icon" data-icon="gonmin" data-icon-size="28" data-icon-sw="1.5"></div>
           <div class="hub-name">창작 에이전트</div>
           <div class="hub-desc">아이디어와 설정을 AI와 함께 빌드업</div>
         </div>
         <div class="hub-item plan" onclick="navTo('myplan')">
-          <div class="hub-icon">📋</div>
+          <div class="hub-icon" data-icon="myplan" data-icon-size="28" data-icon-sw="1.5"></div>
           <div class="hub-name">내 기획안</div>
           <div class="hub-desc">진행 중인 작품의 상세 설정 및 목록</div>
         </div>
         <div class="hub-item outline" onclick="navTo('outline')">
-          <div class="hub-icon">🎬</div>
+          <div class="hub-icon" data-icon="outline" data-icon-size="28" data-icon-sw="1.5"></div>
           <div class="hub-name">회차별 개요</div>
           <div class="hub-desc">스토리의 흐름과 긴장감 그래프 설계</div>
         </div>
         <div class="hub-item chara" onclick="navTo('chara')">
-          <div class="hub-icon">👤</div>
+          <div class="hub-icon" data-icon="chara" data-icon-size="28" data-icon-sw="1.5"></div>
           <div class="hub-name">캐릭터 만들기</div>
           <div class="hub-desc">매력적인 캐릭터 설정과 AI 대화</div>
         </div>
         <div class="hub-item verify large" onclick="navTo('verify')">
-          <div class="hub-icon">🔍</div>
+          <div class="hub-icon" data-icon="verify" data-icon-size="26" data-icon-sw="1.5"></div>
           <div class="hub-info">
             <div class="hub-name">작품 검증 (전문가 고증)</div>
             <div class="hub-desc">법률, 의학, 심리 등 실제 분야별 검증</div>
           </div>
         </div>
         <div class="hub-item large" style="opacity:0.6">
-          <div class="hub-icon" style="background:var(--surface2)">🛍️</div>
+          <div class="hub-icon" style="background:var(--surface2)" data-icon="market" data-icon-size="26" data-icon-sw="1.5"></div>
           <div class="hub-info">
             <div class="hub-name">루틴 마켓 <span class="nb" style="margin-left:4px;background:var(--border);padding:2px 6px;border-radius:4px;font-size:9px">준비 중</span></div>
             <div class="hub-desc">다른 창작자의 노하우를 담은 템플릿 탐색</div>
@@ -1355,11 +1388,11 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);colo
 <!-- 모바일 하단 네비 -->
 <nav class="mob-nav" id="mob-nav">
   <div class="mob-nav-inner">
-    <button class="mni on" id="mn-home" onclick="navTo('home')"><span class="mnic">🏠</span>홈</button>
-    <button class="mni" id="mn-gonmin" onclick="navTo('gonmin')"><span class="mnic">🤖</span>에이전트</button>
-    <button class="mni" id="mn-hub" onclick="navTo('hub')"><span class="mnic">📁</span>메뉴</button>
-    <button class="mni" id="mn-myplan" onclick="navTo('myplan')"><span class="mnic">📋</span>기획안</button>
-    <button class="mni" id="mn-outline" onclick="navTo('outline')"><span class="mnic">🎬</span>회차</button>
+    <button class="mni on" id="mn-home" onclick="navTo('home')"><span class="mnic" data-icon="home" data-icon-size="24"></span>홈</button>
+    <button class="mni" id="mn-gonmin" onclick="navTo('gonmin')"><span class="mnic" data-icon="gonmin" data-icon-size="24"></span>에이전트</button>
+    <button class="mni" id="mn-hub" onclick="navTo('hub')"><span class="mnic" data-icon="hub" data-icon-size="24"></span>메뉴</button>
+    <button class="mni" id="mn-myplan" onclick="navTo('myplan')"><span class="mnic" data-icon="myplan" data-icon-size="24"></span>기획안</button>
+    <button class="mni" id="mn-outline" onclick="navTo('outline')"><span class="mnic" data-icon="outline" data-icon-size="24"></span>회차</button>
   </div>
 </nav>
 <!-- 항목 입력 모달 -->
@@ -1413,15 +1446,24 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);colo
       <button onclick="saveOlTextInput()" style="width:100%;margin-top:10px;padding:11px;background:var(--purple);color:#fff;border:none;border-radius:12px;font-size:13px;font-weight:800;cursor:pointer;font-family:inherit;box-shadow:0 4px 14px var(--purple-glow)">연동하기</button>
     </div>
     <div class="ol-panel" id="ol-panel-pdf">
-      <input type="file" id="ol-pdf-input" accept=".pdf,.txt,.md" style="display:none" onchange="handleOlPdfUpload(this)">
+      <input type="file" id="ol-pdf-input" accept=".pdf,.docx,.txt,.md" style="display:none" onchange="handleOlPdfUpload(this)">
       <div class="ol-pdf-drop" onclick="$('ol-pdf-input').click()">
         <div style="font-size:36px">📄</div>
-        <div style="font-size:13px;font-weight:700">PDF, TXT, MD 파일 선택</div>
+        <div style="font-size:13px;font-weight:700">PDF, Word, TXT, MD 파일 선택</div>
         <div style="font-size:11px;color:var(--text-faint)">클릭하여 파일 선택</div>
       </div>
       <div class="ol-pdf-status" id="ol-pdf-status"></div>
     </div>
     <button class="ol-btn" style="width:100%;margin-top:12px;text-align:center" onclick="closeOlProjSelect()">취소</button>
+  </div>
+</div>
+<!-- 프로젝트 전환 모달 (회차 개요 · 캐릭터 만들기) -->
+<div class="ol-proj-ov" id="proj-switch-ov" onclick="if(event.target===this)closeProjSwitchModal()">
+  <div class="ol-proj-box">
+    <div style="font-size:17px;font-weight:900;margin-bottom:4px">📁 작품 전환</div>
+    <div style="font-size:13px;color:var(--text-dim);margin-bottom:16px">회차 개요·캐릭터를 관리할 작품을 선택하세요</div>
+    <div class="ol-proj-list" id="proj-switch-list"></div>
+    <button class="ol-btn" style="width:100%;margin-top:12px;text-align:center" onclick="closeProjSwitchModal()">취소</button>
   </div>
 </div>
 <!-- 시놉시스 입력 모달 (내 기획안) -->
@@ -1437,10 +1479,10 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);colo
       <textarea class="ol-text-ta" id="syn-text-input" placeholder="작품 시놉시스를 입력하세요. 장르, 주인공, 핵심 갈등, 결말 방향 등을 자유롭게 써주세요..."></textarea>
     </div>
     <div class="ol-panel" id="syn-panel-pdf">
-      <input type="file" id="syn-pdf-input" accept=".pdf,.txt,.md" style="display:none" onchange="handleSynPdfUpload(this)">
+      <input type="file" id="syn-pdf-input" accept=".pdf,.docx,.txt,.md" style="display:none" onchange="handleSynPdfUpload(this)">
       <div class="ol-pdf-drop" onclick="$('syn-pdf-input').click()">
         <div style="font-size:36px">📄</div>
-        <div style="font-size:13px;font-weight:700">PDF, TXT, MD 파일 선택</div>
+        <div style="font-size:13px;font-weight:700">PDF, Word, TXT, MD 파일 선택</div>
         <div style="font-size:11px;color:var(--text-faint)">클릭하여 파일 선택</div>
       </div>
       <div class="ol-pdf-status" id="syn-pdf-status"></div>
@@ -1577,6 +1619,7 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);colo
     <div class="chc" onclick="selChar('조수 T형')"><div class="cca"><img src="images/조수a.gif" style="width:100%;height:100%;object-fit:cover;border-radius:50%"></div><div class="ccn">조수 T형</div><div class="ccd">논리적이고 직관적인 기획 파트너.<br>허점을 날카롭게 짚어줍니다.</div></div>
     <div class="chc" onclick="selChar('조수 F형')"><div class="cca"><img src="images/조수b.gif" style="width:100%;height:100%;object-fit:cover;border-radius:50%"></div><div class="ccn">조수 F형</div><div class="ccd">공감 능력이 뛰어난 감성형 파트너.<br>캐릭터 감정선을 깊이 분석합니다.</div></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mammoth/mammoth.browser.min.js"></script>
 <script>
   // pdf.js worker setup
   if (window.pdfjsLib) {
@@ -1871,6 +1914,42 @@ const SHORT=[
 ];
 // ── 유틸 ──
 const $=id=>document.getElementById(id);
+
+// ── 아이콘 시스템 (stroke-based SVG) ──
+const ICONS={
+  home:`<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>`,
+  gonmin:`<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>`,
+  myplan:`<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/>`,
+  outline:`<line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/>`,
+  chara:`<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>`,
+  verify:`<circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>`,
+  rl:`<path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>`,
+  market:`<path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/>`,
+  hub:`<rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>`,
+  pos:`<polygon points="12 2 2 7 12 12 22 7"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/>`,
+  basic:`<rect x="2" y="3" width="20" height="18" rx="2"/><line x1="8" y1="9" x2="16" y2="9"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="12" y2="17"/>`,
+  desire:`<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>`,
+  trait:`<line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/>`,
+  life:`<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>`,
+  rel:`<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>`,
+  inner:`<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>`,
+  book:`<path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>`,
+  pen:`<path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>`,
+  plus:`<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/>`,
+  import:`<polyline points="8 17 12 21 16 17"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.88 18.09A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.29"/>`,
+  review:`<circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><polyline points="9 11 11 13 15 9"/>`,
+};
+function svgIcon(name,size=18,sw=1.8){
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round">${ICONS[name]||''}</svg>`;
+}
+function initIcons(){
+  document.querySelectorAll('[data-icon]').forEach(el=>{
+    const name=el.getAttribute('data-icon');
+    const size=parseInt(el.getAttribute('data-icon-size')||'18');
+    const sw=parseFloat(el.getAttribute('data-icon-sw')||'1.8');
+    el.innerHTML=svgIcon(name,size,sw);
+  });
+}
 const flash=(msg,d=2000)=>{const e=$('fl');e.textContent=msg.length>45?msg.slice(0,45)+'...':msg;e.classList.add('on');setTimeout(()=>e.classList.remove('on'),d)};
 const md=t=>{
   if(!t)return'';
@@ -1973,8 +2052,8 @@ function saveOlTextInput(){
 }
 
 async function extractTextFromFile(file) {
-  const maxSize = 5 * 1024 * 1024; // 5MB
-  if (file.size > maxSize) throw new Error('5MB 이하의 파일만 업로드 가능합니다.');
+  const maxSize = 10 * 1024 * 1024; // 10MB
+  if (file.size > maxSize) throw new Error('10MB 이하의 파일만 업로드 가능합니다.');
 
   const extension = file.name.split('.').pop().toLowerCase();
   if (extension === 'pdf') {
@@ -1988,6 +2067,11 @@ async function extractTextFromFile(file) {
         fullText += pageText + '\n';
     }
     return fullText.trim();
+  } else if (extension === 'docx') {
+    const arrayBuffer = await file.arrayBuffer();
+    if (!window.mammoth) throw new Error('Word 파일 파서를 불러오는 중입니다. 잠시 후 다시 시도해주세요.');
+    const result = await mammoth.extractRawText({ arrayBuffer });
+    return result.value.trim();
   } else if (extension === 'txt' || extension === 'md') {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -1996,7 +2080,7 @@ async function extractTextFromFile(file) {
       reader.readAsText(file);
     });
   } else {
-    throw new Error('지원하지 않는 파일 형식입니다. (.pdf, .txt, .md)');
+    throw new Error('지원하지 않는 파일 형식입니다. (.pdf, .docx, .txt, .md)');
   }
 }
 
@@ -2036,12 +2120,12 @@ async function handleOlPdfUpload(input) {
     const text = await extractTextFromFile(file);
     if (!text || text.trim().length < 10) throw new Error('텍스트를 추출할 수 없습니다. 파일 내용을 확인해주세요.');
 
-    status.textContent = '구조화 중...';
+    status.textContent = '원문 저장 중...';
 
-    // ── 2. 텍스트 구조화 ──
+    // ── 2. 텍스트 구조화 (원문 그대로 보존) ──
     const memory = (window.PS && window.PS.structureMemory)
       ? window.PS.structureMemory(text)
-      : { rawText: text, summary: text.slice(0, 300), characters: [], timeline: [] };
+      : { rawText: text, summary: text, sourceCharacters: [], textTimeline: [] };
 
     // ── 3. project.memory에 저장 ──
     if (window.currentProject && window.PS && window.PS.saveMemory) {
@@ -2057,11 +2141,10 @@ async function handleOlPdfUpload(input) {
 
     // ── 5. UI 상태 표시 ──
     const charCount = (memory.sourceCharacters || []).length;
-    const tlCount = (memory.textTimeline || []).length;
     status.innerHTML =
       `✓ <strong>작품 연동 완료</strong>: "${file.name}"<br>` +
       `<span style="font-size:11px;opacity:0.85">` +
-        `요약 ${memory.summary.length}자 · 등장인물 ${charCount}명 추출 · 사건 흐름 ${tlCount}개` +
+        `원문 ${text.length.toLocaleString()}자 · 등장인물 ${charCount}명 추출` +
       `</span>`;
 
     setTimeout(() => { _applyOlLinkedText(ctx); }, 1000);
@@ -2159,7 +2242,7 @@ async function handleSynPdfUpload(input) {
     // ── memory 구조화 ──
     const memory = (window.PS && window.PS.structureMemory)
       ? window.PS.structureMemory(text)
-      : { rawText: text, summary: text.slice(0, 300), sourceCharacters: [], textTimeline: [] };
+      : { rawText: text, summary: text, sourceCharacters: [], textTimeline: [] };
 
     if (window.currentProject && window.PS && window.PS.saveMemory) {
       window.PS.saveMemory(window.currentProject, memory);
@@ -2170,11 +2253,10 @@ async function handleSynPdfUpload(input) {
 
     synPdfText = text;
     const charCount = (memory.sourceCharacters || []).length;
-    const tlCount = (memory.textTimeline || []).length;
     status.innerHTML =
       `✓ <strong>작품 연동 완료</strong>: "${file.name}" — 저장하기를 눌러주세요<br>` +
       `<span style="font-size:11px;opacity:0.85">` +
-        `요약 ${memory.summary.length}자 · 등장인물 ${charCount}명 추출 · 사건 흐름 ${tlCount}개` +
+        `원문 ${text.length.toLocaleString()}자 · 등장인물 ${charCount}명 추출` +
       `</span>`;
   } catch (err) {
     status.textContent = `❌ ${err.message}`;
@@ -2189,6 +2271,7 @@ const closeOv=id=>$(id).classList.remove('on');
 function goHome(){navTo('home');}
 document.addEventListener('DOMContentLoaded',()=>{
   const ta=$('im-ta');if(ta)ta.addEventListener('keydown',e=>{if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)){e.preventDefault();saveItemModal();}});
+  initIcons();
 });
 // ── 홈 헤더 컨텍스트 업데이트 ──
 function updateHomeContext() {
@@ -3275,17 +3358,14 @@ async function _runImportProject(text,statusEl){
   proj.genre='';
   proj.synopsis=text;
 
-  // 3. structureMemory로 캐릭터 이름 정규식 추출 (AI 없이)
-  const rawMemory=window.PS.structureMemory(text);
-  proj.characters=rawMemory.sourceCharacters.map(c=>({
-    id:Date.now().toString()+Math.random().toString(36).slice(2),
-    name:c.name,role:'',goal:'',emotion:'',relationships:{},arc:[]
-  }));
+  // 3. 캐릭터는 자동 생성하지 않음 — 사용자가 직접 추가하거나 AI 채우기로 추가
+  proj.characters=[];
 
-  // 4. memory에 원문 전체 보존
+  // 4. memory에 원문 전체 보존 (캐릭터 추출은 AI 참조용으로만 사용)
+  const rawMemory=window.PS.structureMemory(text);
   proj.memory={
     rawText:text,
-    summary:'',
+    summary:text,
     sourceCharacters:rawMemory.sourceCharacters,
     textTimeline:rawMemory.textTimeline,
     timeline:[],
@@ -3446,7 +3526,9 @@ function linkToOutline(){
   if(!pdProj)return;
   olProjId=pdProj.id;
   localStorage.setItem('ol_proj',olProjId);
+  localStorage.setItem('ch_proj',pdProj.id);
   renderOlProj();renderEpList();drawTensionGraph();
+  renderProjBadge();
   navTo('outline');
 }
 
@@ -3658,6 +3740,21 @@ function renderCharCards(){
   const isStandalone = $('view-chara').classList.contains('on');
   const target = isStandalone ? $('char-grid-standalone') : $('char-grid');
   if(!target) return;
+  // 사이드바 뷰: 메인 제목 + 추가 버튼 표시 제어
+  if(isStandalone){
+    const titleEl=$('chara-main-title');
+    const addBtn=$('chara-add-btn');
+    const projTitle=getCurrentProjTitle();
+    if(titleEl){
+      if(projTitle){
+        titleEl.style.display='flex';
+        titleEl.innerHTML=`📁 ${escH(projTitle)} <span class="cmp-count">${pdChars.length}명</span>`;
+      } else {
+        titleEl.style.display='none';
+      }
+    }
+    if(addBtn) addBtn.style.display=projTitle?'':'none';
+  }
   target.innerHTML='';
   const ROLES=['주인공','히로인','조력자','악당','빌런','조연'];
   pdChars.forEach((ch,i)=>{
@@ -3761,6 +3858,7 @@ function initCharaView(){
       }
     }
   }
+  renderCharSidebar();
   renderChProjBadge();
   renderCharCards();
 }
@@ -3782,6 +3880,34 @@ function renderMemoryStatus(elementId){
 
 function renderChProjBadge(){
   renderMemoryStatus('ch-memory-status');
+  renderCharSidebar();
+}
+
+// ── 캐릭터 뷰 좌측 사이드바: 작품별 폴더 목록 ──
+function renderCharSidebar(){
+  const sidebar=$('chara-sidebar');
+  if(!sidebar)return;
+  const projs=JSON.parse(localStorage.getItem('mp')||'[]');
+  const currentId=window.currentProject&&window.currentProject.id;
+  sidebar.innerHTML='<div class="chara-sidebar-title">내 작품</div>';
+  if(!projs.length){
+    sidebar.innerHTML+='<div style="font-size:11px;color:var(--text-faint);padding:10px 14px;line-height:1.6">작품이 없습니다.<br>내 기획안에서 작품을 만들어보세요.</div>';
+    return;
+  }
+  projs.forEach(p=>{
+    // mp의 character 수 + currentProject 반영
+    let charCount=Array.isArray(p.characters)?p.characters.length:0;
+    if(p.id===currentId && window.currentProject){
+      charCount=(window.currentProject.characters||[]).length;
+    }
+    const isActive=p.id===currentId;
+    const btn=document.createElement('button');
+    btn.className='chara-proj-item'+(isActive?' on':'');
+    btn.title=p.title;
+    btn.innerHTML=`<span style="font-size:14px;flex-shrink:0">📁</span><span class="pname" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escH(p.title)}</span><span class="chara-proj-count">${charCount}</span>`;
+    btn.onclick=()=>switchToProject(p.id);
+    sidebar.appendChild(btn);
+  });
 }
 
 function openChProjSelect(){
@@ -3836,18 +3962,19 @@ async function saveChars(){
   if(user){
     try{await sb.from('projects').update({characters:pdChars}).eq('id',pdProj.id).eq('user_id',user.id);}catch(e){}
   }
+  renderCharSidebar();
 }
 
 // ── 캐릭터 디벨롭 가이드 ──
 const CD_SECTIONS=[
-  {id:'pos',icon:'🎭',title:'포지션 & 첫인상',fields:[
+  {id:'pos',icon:svgIcon('pos',15,1.8),title:'포지션 & 첫인상',fields:[
     {id:'position',label:'이야기 속 포지션',hint:'이 사건/갈등에서 어떤 편에 서있는가',type:'chips',chips:['주인공 편','중립','대립 세력','관찰자','변동 가능'],text:true,ph:''},
     {id:'narrative_role',label:'서사적 역할',hint:'이야기 진행에 어떤 도움을 주는가?',type:'chips',chips:['통찰력 제공','사건 단서 제공','주의 분산','기분 전환/익살','지역적 색채'],text:true,ph:''},
     {id:'oneLiner',label:'한 줄 표현',hint:'이 사람을 단번에 정의하는 멋진 한 문장',type:'input',ph:'예) 웃음 뒤에 칼을 숨기는 배신자'},
     {id:'firstAppearance',label:'첫 등장 방식',hint:'독자 마음속에서 인상이 결정되는 중요한 순간',type:'area',ph:'어떤 장면에서, 어떤 모습으로 처음 나타나는가?'},
     {id:'nameMeaning',label:'이름의 의미 & 작명 계기',hint:'개성이 잘 드러나는 이름을 정한 이유',type:'input',ph:''},
   ]},
-  {id:'basic',icon:'📋',title:'신상 & 환경',fields:[
+  {id:'basic',icon:svgIcon('basic',15,1.8),title:'신상 & 환경',fields:[
     {id:'age_reason',label:'나이 & 정한 이유',type:'input',ph:'예) 27세 / 사회 초년생의 불안함을 표현하기 위해'},
     {id:'birthday',label:'생일 & 별자리',type:'input',ph:'예) 11월 30일 / 사수자리'},
     {id:'hometown_why',label:'거주지 & 사는 이유',type:'input',ph:''},
@@ -3857,7 +3984,7 @@ const CD_SECTIONS=[
     {id:'socialStatus',label:'사회경제적 지위',type:'chips',chips:['상류층','중산층','서민층','빈곤층','불명'],text:false,ph:''},
     {id:'id_card',label:'신상명세 (공식 기록)',hint:'공식 시스템에 어떻게 기록되어 있는가?',type:'area',ph:''},
   ]},
-  {id:'desire',icon:'🔥',title:'욕망 & 목표',fields:[
+  {id:'desire',icon:svgIcon('desire',15,1.8),title:'욕망 & 목표',fields:[
     {id:'desire',label:'갈망하는 것 / 왜 싸우는가',hint:'욕구가 생긴 원인, 캐릭터를 움직이게 만드는 힘',type:'area',ph:'무엇을 원하고, 왜 원하는가?'},
     {id:'obstacle',label:'가질 수 없는 이유 (장벽)',hint:'목표를 가로막는 결정적인 방해물',type:'input',ph:''},
     {id:'planA',label:'플랜 A — 긍정적 목표',hint:'정공법으로 목표를 이루려는 방법',type:'area',ph:''},
@@ -3865,7 +3992,7 @@ const CD_SECTIONS=[
     {id:'afterSuccess',label:'목표 달성 후 미래',type:'input',ph:'성공하면 어떻게 변하는가?'},
     {id:'afterFailure',label:'목표 실패 시 결과',type:'input',ph:'실패하면 어떤 미래가 기다리는가?'},
   ]},
-  {id:'trait',icon:'🧠',title:'성격 & 특성',fields:[
+  {id:'trait',icon:svgIcon('trait',15,1.8),title:'성격 & 특성',fields:[
     {id:'fear',label:'가장 두려워하는 것 (트라우마)',hint:'그의 치명적인 약점이 된다',type:'input',ph:''},
     {id:'habit',label:'특이한 습관 / 몸짓 언어',hint:'몸은 감정을 반영하는 신뢰할 만한 장치',type:'input',ph:''},
     {id:'ability',label:'특화된 능력 & 부각 상황',type:'area',ph:''},
@@ -3875,7 +4002,7 @@ const CD_SECTIONS=[
     {id:'fashion',label:'패션 컨셉',type:'chips',chips:['캐주얼','포멀','스트리트','클래식','히피/자유','다크/엣지','스포티','전통'],text:true,ph:''},
     {id:'possession',label:'중요하게 여기는 소유물 (소품)',hint:'인물에게 없을 수 없는 소중한 물건',type:'input',ph:''},
   ]},
-  {id:'life',icon:'🌟',title:'라이프스타일',fields:[
+  {id:'life',icon:svgIcon('life',15,1.8),title:'라이프스타일',fields:[
     {id:'job_goal',label:'직업 & 장기적 목표',type:'input',ph:''},
     {id:'jobReason',label:'직업을 택한 (혹은 없는) 이유',type:'input',ph:''},
     {id:'dailyRoutine',label:'평소 일과',type:'area',ph:''},
@@ -3887,7 +4014,7 @@ const CD_SECTIONS=[
     {id:'pet',label:'애완동물 여부',type:'input',ph:''},
     {id:'rest_plan',label:'뜻밖의 휴식이 생기면?',type:'input',ph:''},
   ]},
-  {id:'rel',icon:'🤝',title:'관계',fields:[
+  {id:'rel',icon:svgIcon('rel',15,1.8),title:'관계',fields:[
     {id:'ally',label:'죽이 잘 맞는 조력자',hint:'대사를 주고받으며 서사를 전개하는 인물',type:'input',ph:''},
     {id:'rival',label:'상극인 라이벌',hint:'가치관 대립, 사사건건 방해하는 존재',type:'area',ph:''},
     {id:'family_importance',label:'부모/가족 & 주인공에의 중요도',type:'area',ph:''},
@@ -3897,7 +4024,7 @@ const CD_SECTIONS=[
     {id:'friends_view',label:'친구들 눈에 비친 모습',type:'input',ph:''},
     {id:'enemy_why',label:'가장 큰 적 & 멀어진 이유',type:'input',ph:''},
   ]},
-  {id:'inner',icon:'💭',title:'내면 & 서사',fields:[
+  {id:'inner',icon:svgIcon('inner',15,1.8),title:'내면 & 서사',fields:[
     {id:'selfImage',label:'자기 자신에 대한 생각',type:'area',ph:''},
     {id:'secret',label:'감추고 싶은 부분 (비밀)',type:'input',ph:''},
     {id:'defining_event',label:'현재 모습에 결정적 영향을 준 사건',type:'area',ph:''},
@@ -4160,12 +4287,16 @@ async function draftCharacters(){
 // ── 루틴 보관함 (RL) ──
 function loadRL(){
   let rl=JSON.parse(localStorage.getItem('rl')||'null');
+  const defaultIcons={'lib-long':svgIcon('book',22,1.6),'lib-short':svgIcon('pen',22,1.6)};
   if(!rl){
     rl=[
-      {id:'lib-long',name:'장편 루틴',icon:'📖',desc:'22단계로 탄탄한 장편 스토리를 기획합니다',steps:LONG.map(s=>({...s})),isDefault:true},
-      {id:'lib-short',name:'단편 루틴',icon:'✍️',desc:'11단계로 빠르게 단편 아이디어를 정리합니다',steps:SHORT.map(s=>({...s})),isDefault:true},
+      {id:'lib-long',name:'장편 루틴',icon:defaultIcons['lib-long'],desc:'22단계로 탄탄한 장편 스토리를 기획합니다',steps:LONG.map(s=>({...s})),isDefault:true},
+      {id:'lib-short',name:'단편 루틴',icon:defaultIcons['lib-short'],desc:'11단계로 빠르게 단편 아이디어를 정리합니다',steps:SHORT.map(s=>({...s})),isDefault:true},
     ];
     localStorage.setItem('rl',JSON.stringify(rl));
+  } else {
+    // 기본 루틴 아이콘이 이모지로 캐싱된 경우 SVG로 갱신
+    rl.forEach(r=>{ if(defaultIcons[r.id] && !r.icon.startsWith('<svg')) r.icon=defaultIcons[r.id]; });
   }
   return rl;
 }
@@ -4194,7 +4325,7 @@ function renderRL(){
   });
   const add=document.createElement('div');
   add.className='rl-card-add';
-  add.innerHTML='<div style="font-size:26px">➕</div><div style="font-size:14px;font-weight:700">새 루틴 만들기</div><div style="font-size:12px;margin-top:2px">빈 루틴 또는 기존 루틴을 복제해 시작하세요</div>';
+  add.innerHTML=`<div style="opacity:0.7">${svgIcon('plus',26,1.6)}</div><div style="font-size:14px;font-weight:700">새 루틴 만들기</div><div style="font-size:12px;margin-top:2px">빈 루틴 또는 기존 루틴을 복제해 시작하세요</div>`;
   add.onclick=createNewRL;
   grid.appendChild(add);
 }
@@ -5160,6 +5291,15 @@ const ACT_RANGES=[[1,12],[13,35],[36,55],[56,100]]; // 막별 화수 기본 범�
 let olEpisodes=[]; // [{num,act,title,keyword,synopsis,funPoint,reference,lastPanel,tension,type}]
 let olProjId=null;
 let olFilter='all';
+let collapsedProjects=new Set(); // 접힌 작품 ID 집합
+
+function getStoredProjectsFull(){
+  const mp=JSON.parse(localStorage.getItem('mp')||'[]');
+  return mp.map(p=>{
+    try{const s=localStorage.getItem(`project_${p.id}`);if(s)return{...p,...JSON.parse(s)};}catch(e){}
+    return p;
+  }).filter(p=>p.id&&p.title);
+}
 
 async function initOutline(){
   const savedProj=localStorage.getItem('ol_proj');
@@ -5190,6 +5330,12 @@ async function initOutline(){
     }
   }
 
+  // 활성 작품 외 나머지는 기본 접힘 상태로 초기화
+  const activeId=(window.currentProject&&window.currentProject.id)||olProjId;
+  getStoredProjectsFull().forEach(p=>{
+    if(p.id!==activeId) collapsedProjects.add(p.id);
+  });
+
   renderOlProj();
   renderEpList();
   drawTensionGraph();
@@ -5207,6 +5353,105 @@ function getAct(num){
 
 function renderOlProj(){
   renderMemoryStatus('ol-memory-status');
+  renderProjBadge();
+}
+
+// ── 프로젝트 배지: 현재 작품명 표시 + 전환 버튼 ──
+function getCurrentProjTitle(){
+  if(window.currentProject && window.currentProject.title) return window.currentProject.title;
+  const pid=olProjId||localStorage.getItem('ol_proj');
+  if(pid){
+    const p=(JSON.parse(localStorage.getItem('mp')||'[]')).find(pj=>pj.id===pid);
+    if(p) return p.title;
+  }
+  return null;
+}
+
+function renderProjBadge(){
+  const title=getCurrentProjTitle();
+  const btnStyle='display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:12px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap;border:1px solid rgba(16,185,129,0.35);background:rgba(16,185,129,0.08);color:var(--green);transition:all 0.15s';
+  const emptyStyle='display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:12px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap;border:1px dashed var(--border2);background:none;color:var(--text-dim);transition:all 0.15s';
+  const html=title
+    ? `<button onclick="openProjSwitchModal()" style="${btnStyle}" title="작품 전환">📁 ${title}</button>`
+    : `<button onclick="openProjSwitchModal()" style="${emptyStyle}" title="작품 선택">📁 작품 선택</button>`;
+  ['ol-proj-badge','ch-proj-badge'].forEach(id=>{const el=$(id);if(el)el.innerHTML=html;});
+}
+
+function openProjSwitchModal(){
+  const projs=JSON.parse(localStorage.getItem('mp')||'[]');
+  const list=$('proj-switch-list');
+  list.innerHTML='';
+  if(!projs.length){
+    list.innerHTML='<div style="color:var(--text-faint);font-size:13px;padding:12px">저장된 작품이 없습니다.<br>내 기획안에서 작품을 먼저 만들어주세요.</div>';
+  }
+  projs.forEach(p=>{
+    const isActive=window.currentProject&&window.currentProject.id===p.id;
+    const el=document.createElement('div');
+    el.className='ol-proj-item';
+    el.style.cssText=isActive?'border-color:rgba(16,185,129,0.4);background:rgba(16,185,129,0.07)':'';
+    el.innerHTML=`<div style="flex:1"><div class="opp-title">${p.title}${isActive?' <span style="font-size:10px;color:var(--green);font-weight:700">현재</span>':''}</div><div class="opp-meta">${p.genre||'미분류'}</div></div>`;
+    el.onclick=()=>switchToProject(p.id);
+    list.appendChild(el);
+  });
+  $('proj-switch-ov').classList.add('on');
+}
+
+function closeProjSwitchModal(){
+  $('proj-switch-ov').classList.remove('on');
+}
+
+function switchToProject(pid){
+  const projs=JSON.parse(localStorage.getItem('mp')||'[]');
+  const p=projs.find(pj=>pj.id===pid);
+  if(!p){flash('작품을 찾을 수 없습니다');return;}
+
+  // 1. 프로젝트 전역 변수 갱신
+  olProjId=pid;
+  pdProj=p;
+  selProj=p;
+  localStorage.setItem('ol_proj',pid);
+  localStorage.setItem('ch_proj',pid);
+
+  // 2. currentProject 로드 (PS.loadProject 우선, fallback: mp 항목 기반 생성)
+  const loaded=window.PS&&window.PS.loadProject?window.PS.loadProject(pid):null;
+  if(loaded){
+    window.currentProject=loaded;
+  } else {
+    window.currentProject={
+      id:p.id, title:p.title, genre:p.genre||'', synopsis:p.synopsis||'',
+      characters:Array.isArray(p.characters)?[...p.characters]:[],
+      episodes:Array.isArray(p.episodes)?[...p.episodes]:[],
+      memory:{}
+    };
+    if(window.PS) window.PS.saveProject(window.currentProject);
+  }
+  if(window.PS) window.PS.setCurrentProject(window.currentProject);
+
+  // 3. 회차 데이터 갱신
+  olEpisodes=Array.isArray(window.currentProject.episodes)?window.currentProject.episodes:[];
+
+  // 4. 캐릭터 데이터 갱신
+  pdChars=(window.currentProject.characters||[]).map(ch=>({
+    id:ch.id||'', name:ch.name||'', role:ch.role||'조연',
+    appearance:ch.appearance||'', personality:ch.emotion||ch.personality||'',
+    goal:ch.goal||'', relation:ch.relation||''
+  }));
+
+  // 전환된 작품은 펼치고, 나머지는 접기
+  getStoredProjectsFull().forEach(pj=>{
+    if(pj.id===pid) collapsedProjects.delete(pid);
+    else collapsedProjects.add(pj.id);
+  });
+
+  closeProjSwitchModal();
+  renderProjBadge();
+  renderCharSidebar();
+  renderMemoryStatus('ol-memory-status');
+  renderMemoryStatus('ch-memory-status');
+  renderEpList();
+  drawTensionGraph();
+  renderCharCards();
+  flash(`'${p.title}' 작품으로 전환됐습니다`);
 }
 
 function openOlProjSelect(){
@@ -5288,59 +5533,35 @@ function filterAct(act){
   renderEpList();
 }
 
-function renderEpList(){
-  const list=$('ep-list');list.innerHTML='';
-  const eps=olFilter==='all'?olEpisodes:olEpisodes.filter(ep=>ep.act===olFilter);
+// ── 에피소드 카드 렌더링 (활성 작품용, 편집 가능) ──
+function renderEpCards(container, episodes){
+  const ACT_NAMES=['','1막 — 모험의 시작','2막 — 활약의 순간','3막 — 방심과 대혼란','4막 — 각성과 최종 임무'];
+  let lastAct=0;
+  const filtered=olFilter==='all'?episodes:episodes.filter(ep=>ep.act===olFilter);
 
-  // ── 빈 상태 처리 ──
-  if(eps.length===0){
-    const es=document.createElement('div');
-    es.style.cssText='padding:32px 0;display:flex;flex-direction:column;align-items:center;gap:18px;max-width:880px;margin:0 auto';
-
+  if(filtered.length===0){
+    const empty=document.createElement('div');
     if(olFilter!=='all'){
-      // 필터 결과 없음
-      es.innerHTML=`
-        <div style="font-size:2rem">🔍</div>
-        <div style="text-align:center">
-          <div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:6px">이 막에 해당하는 회차가 없어요</div>
-          <div style="font-size:13px;color:var(--text-faint)">필터를 '전체'로 바꾸거나 회차를 추가해보세요.</div>
-        </div>`;
-    } else if(olProjId){
-      // 회차 없음 + 프로젝트 연동됨
-      es.innerHTML=`
-        <div style="font-size:2.2rem">📋</div>
-        <div style="text-align:center">
-          <div style="font-size:15px;font-weight:900;color:var(--text);margin-bottom:6px">아직 회차가 없어요</div>
-          <div style="font-size:13px;color:var(--text-dim);line-height:1.7">첫 회차를 추가하면 긴장감 그래프와<br>AI 자동 채우기 기능을 사용할 수 있어요.</div>
-        </div>
-        <button onclick="addEpisode()" style="padding:11px 26px;background:var(--purple);border:none;border-radius:14px;color:#fff;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;box-shadow:0 4px 16px var(--purple-glow);transition:all 0.2s" onmouseover="this.style.filter='brightness(1.12)';this.style.transform='translateY(-1px)'" onmouseout="this.style.filter='';this.style.transform=''">+ 첫 회차 추가하기</button>`;
+      empty.className='proj-group-empty';
+      empty.textContent='이 막에 해당하는 회차가 없습니다.';
     } else {
-      // 회차 없음 + 프로젝트 미연동
-      es.innerHTML=`
-        <div style="font-size:2.2rem">🔗</div>
-        <div style="text-align:center">
-          <div style="font-size:15px;font-weight:900;color:var(--text);margin-bottom:6px">작품을 연동하고 회차를 설계해보세요</div>
-          <div style="font-size:13px;color:var(--text-dim);line-height:1.7">기획안을 연동하면 AI가 맥락을 기억하고<br>각 회차를 자동으로 채워드립니다.</div>
-        </div>
-        <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center">
-          <button onclick="openProjectMemoryModal()" style="padding:11px 22px;background:var(--purple);border:none;border-radius:14px;color:#fff;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;box-shadow:0 4px 16px var(--purple-glow);transition:all 0.2s" onmouseover="this.style.filter='brightness(1.12)'" onmouseout="this.style.filter=''">🔗 작품 연동하기</button>
-          <button onclick="addEpisode()" style="padding:11px 22px;background:rgba(255,255,255,0.05);border:1px solid var(--border2);border-radius:14px;color:var(--text-dim);font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;transition:all 0.2s" onmouseover="this.style.borderColor='var(--purple)';this.style.color='var(--purple-light)'" onmouseout="this.style.borderColor='var(--border2)';this.style.color='var(--text-dim)'">+ 회차만 추가하기</button>
-        </div>`;
+      empty.style.cssText='padding:20px 0;display:flex;flex-direction:column;align-items:flex-start;gap:12px';
+      empty.innerHTML=`
+        <div style="font-size:13px;color:var(--text-faint)">아직 등록된 회차가 없어요. 첫 회차를 추가해보세요.</div>
+        <button onclick="addEpisode()" style="padding:9px 20px;background:var(--purple);border:none;border-radius:12px;color:#fff;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;box-shadow:0 4px 12px var(--purple-glow)">+ 첫 회차 추가하기</button>`;
     }
-    list.appendChild(es);
+    container.appendChild(empty);
     return;
   }
 
-  let lastAct=0;
-  const ACT_NAMES=['','1막 — 모험의 시작','2막 — 활약의 순간','3막 — 방심과 대혼란','4막 — 각성과 최종 임무'];
-  eps.forEach((ep,visIdx)=>{
+  filtered.forEach(ep=>{
     const realIdx=olEpisodes.indexOf(ep);
     if(ep.act!==lastAct){
       lastAct=ep.act;
       const div=document.createElement('div');div.className='act-divider';
       div.style.color=ACT_COLORS[ep.act-1]||'var(--text-faint)';
       div.textContent=ACT_NAMES[ep.act]||`${ep.act}막`;
-      list.appendChild(div);
+      container.appendChild(div);
     }
     const typeInfo=EP_TYPES.find(t=>t.id===ep.type)||EP_TYPES[0];
     const card=document.createElement('div');card.className='ep-card';card.dataset.epIdx=realIdx;
@@ -5399,19 +5620,140 @@ function renderEpList(){
       if(e.target.classList.contains('ep-del'))return;
       toggleEp(card,realIdx);
     });
-    list.appendChild(card);
+    container.appendChild(card);
   });
-  // 미니 그래프 그리기
+  // 미니 그래프
   setTimeout(()=>{
-    eps.forEach((ep,i)=>{
+    filtered.forEach(ep=>{
       const realIdx=olEpisodes.indexOf(ep);
       drawMiniTension(realIdx);
     });
   },20);
 }
 
+// ── 비활성 작품 회차 요약 카드 (읽기 전용) ──
+function renderEpCardsSummary(container, episodes){
+  if(!episodes||!episodes.length){
+    const empty=document.createElement('div');
+    empty.className='proj-group-empty';
+    empty.textContent='회차 없음';
+    container.appendChild(empty);
+    return;
+  }
+  const ACT_NAMES=['','1막','2막','3막','4막'];
+  let lastAct=0;
+  episodes.forEach((ep,i)=>{
+    const act=ep.act||(ep.num?getAct(ep.num):1);
+    if(act!==lastAct){
+      lastAct=act;
+      const div=document.createElement('div');div.className='act-divider';
+      div.style.color=ACT_COLORS[act-1]||'var(--text-faint)';
+      div.textContent=ACT_NAMES[act]||`${act}막`;
+      container.appendChild(div);
+    }
+    const typeInfo=EP_TYPES.find(t=>t.id===ep.type)||EP_TYPES[0];
+    const card=document.createElement('div');
+    card.className='ep-card';
+    card.style.opacity='0.75';
+    card.innerHTML=`
+      <div class="ep-row" style="cursor:default">
+        <div class="ep-num">${ep.num||i+1}</div>
+        <div class="ep-act-dot" style="background:${ACT_COLORS[act-1]||'#888'}"></div>
+        <div class="ep-main">
+          ${ep.keyword?`<div class="ep-keyword">${ep.keyword}</div>`:''}
+          <div class="ep-title ${ep.title?'':'empty'}">${ep.title||'제목 없음'}</div>
+        </div>
+        <span class="ep-type-badge" style="color:${typeInfo.color};background:${typeInfo.bg}">${typeInfo.label}</span>
+      </div>`;
+    container.appendChild(card);
+  });
+}
+
+// ── 작품별 그룹 렌더링 ──
+function renderEpList(){
+  const list=$('ep-list');list.innerHTML='';
+  const allProjs=getStoredProjectsFull();
+  const activeId=(window.currentProject&&window.currentProject.id)||olProjId;
+
+  // 작품이 하나도 없을 때
+  if(!allProjs.length){
+    const es=document.createElement('div');
+    es.style.cssText='padding:40px 0;display:flex;flex-direction:column;align-items:center;gap:18px;max-width:880px;margin:0 auto';
+    es.innerHTML=`
+      <div style="font-size:2.2rem">🔗</div>
+      <div style="text-align:center">
+        <div style="font-size:15px;font-weight:900;color:var(--text);margin-bottom:6px">작품을 연동하고 회차를 설계해보세요</div>
+        <div style="font-size:13px;color:var(--text-dim);line-height:1.7">기획안을 연동하면 AI가 맥락을 기억하고<br>각 회차를 자동으로 채워드립니다.</div>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center">
+        <button onclick="openProjectMemoryModal()" style="padding:11px 22px;background:var(--purple);border:none;border-radius:14px;color:#fff;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;box-shadow:0 4px 16px var(--purple-glow)">🔗 작품 연동하기</button>
+        <button onclick="addEpisode()" style="padding:11px 22px;background:rgba(255,255,255,0.05);border:1px solid var(--border2);border-radius:14px;color:var(--text-dim);font-size:13px;font-weight:700;font-family:inherit;cursor:pointer">+ 회차만 추가하기</button>
+      </div>`;
+    list.appendChild(es);
+    return;
+  }
+
+  // 작품 순서: 활성 작품 맨 위
+  const sorted=[...allProjs].sort((a,b)=>(b.id===activeId?1:0)-(a.id===activeId?1:0));
+
+  sorted.forEach(proj=>{
+    const isActive=proj.id===activeId;
+    const isCollapsed=collapsedProjects.has(proj.id);
+    const episodes=isActive?olEpisodes:(proj.episodes||[]);
+    const epCount=episodes.length;
+    const genre=proj.genre||'미분류';
+
+    // 그룹 컨테이너
+    const group=document.createElement('div');
+    group.className='proj-group'+(isCollapsed?' collapsed':'');
+    group.dataset.projId=proj.id;
+
+    // 그룹 헤더
+    const hdr=document.createElement('div');
+    hdr.className='proj-group-hdr'+(isActive?' active':'');
+    hdr.innerHTML=`
+      <span class="proj-group-chevron">▼</span>
+      <span class="proj-group-icon">📁</span>
+      <span class="proj-group-title">${proj.title||'제목 없음'}</span>
+      ${isActive?'<span class="proj-active-badge">현재 작업 중</span>':''}
+      <span class="proj-group-meta">${genre} · ${epCount}화</span>
+      ${!isActive?`<button class="proj-switch-btn" onclick="event.stopPropagation();switchToProject('${proj.id}')">편집하기</button>`:''}
+    `;
+    hdr.addEventListener('click',()=>toggleProjGroup(proj.id));
+    group.appendChild(hdr);
+
+    // 그룹 바디
+    const body=document.createElement('div');
+    body.className='proj-group-body';
+
+    if(isActive){
+      renderEpCards(body, olEpisodes);
+      // 회차 추가 버튼
+      const addBtn=document.createElement('button');
+      addBtn.className='ep-add';
+      addBtn.innerHTML='<span style="font-size:16px">+</span> 회차 추가';
+      addBtn.onclick=addEpisode;
+      body.appendChild(addBtn);
+    } else {
+      renderEpCardsSummary(body, episodes);
+    }
+
+    group.appendChild(body);
+    list.appendChild(group);
+  });
+}
+
 function toggleEp(card,idx){
   card.classList.toggle('expanded');
+}
+
+function toggleProjGroup(projId){
+  if(collapsedProjects.has(projId)){
+    collapsedProjects.delete(projId);
+  } else {
+    collapsedProjects.add(projId);
+  }
+  renderEpList();
 }
 
 function updateEp(idx,key,val){

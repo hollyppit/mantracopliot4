@@ -168,11 +168,8 @@ export function structureMemory(text) {
 
   const clean = text.trim();
 
-  // 1. summary: 앞 3문장 또는 최대 400자
-  const sentMatches = clean.match(/[^.!?\n]{5,}[.!?。]/g) || [];
-  const summary =
-    sentMatches.slice(0, 3).join(" ").trim().slice(0, 400) ||
-    clean.slice(0, 300).replace(/\n+/g, " ");
+  // 1. summary: 원문 전체 그대로 (요약 없음)
+  const summary = clean;
 
   // 2. sourceCharacters: 한국어 이름 패턴 추출
   const JOSA_CLASS = "은는이가을를의에서도로와과아야";
@@ -495,28 +492,19 @@ export function buildContext(project) {
     })
     .join("\n");
 
-  // ── 파일 추출 이름 목록 ──
-  const srcChars = (project.memory && project.memory.sourceCharacters || [])
-    .filter(c => c.name)
-    .map(c => c.name)
-    .join(", ");
-
-  // ── 파일 업로드 사건 흐름 ──
-  const textTl = (project.memory && project.memory.textTimeline) || [];
-  const textTlText = textTl.slice(0, 10)
-    .map(t => `${t.seq}. ${t.text}`)
-    .join("\n");
-
+  // ── 연동된 원문 (파일/직접 입력 전문 그대로) ──
+  const rawText = (project.memory && project.memory.rawText) || "";
   const summary = (project.memory && project.memory.summary) || "";
+  // rawText가 있으면 원문 전체 사용, 없으면 에피소드 기반 요약만 사용
+  const linkedText = rawText || "";
 
   const lines = [];
   if (world)        lines.push(`[세계관]\n${world}`);
   if (characters)   lines.push(`[캐릭터 현재 상태]\n${characters}`);
   if (arcLines)     lines.push(`[캐릭터 감정 변화 이력]\n${arcLines}`);
-  if (srcChars)     lines.push(`[등장인물 (파일 추출)]\n${srcChars}`);
-  if (textTlText)   lines.push(`[사건 흐름 (파일 추출)]\n${textTlText}`);
+  if (linkedText)   lines.push(`[연동된 원문]\n${linkedText}`);
   if (tlText)       lines.push(`[최근 회차 흐름]\n${tlText}`);
-  if (summary)      lines.push(`[서사 흐름 요약]\n${summary}`);
+  if (!linkedText && summary) lines.push(`[서사 흐름 요약]\n${summary}`);
 
   return lines.join("\n\n");
 }
