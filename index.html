@@ -19,8 +19,8 @@
 }
 body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;overflow:hidden;letter-spacing:-0.02em}
 .orb{position:fixed;border-radius:50%;filter:blur(100px);pointer-events:none;z-index:0}
-.o1{width:700px;height:700px;top:-250px;left:-150px;background:radial-gradient(circle,rgba(16,185,129,0.13),transparent 70%)}
-.o2{width:600px;height:600px;bottom:-200px;right:-150px;background:radial-gradient(circle,rgba(16,185,129,0.09),transparent 70%)}
+.o1{width:700px;height:700px;top:-250px;left:-150px;background:radial-gradient(circle,rgba(16,185,129,0.07),transparent 70%)}
+.o2{width:600px;height:600px;bottom:-200px;right:-150px;background:radial-gradient(circle,rgba(16,185,129,0.04),transparent 70%)}
 /* 사이드바 */
 .sidebar{width:var(--sw);min-height:100vh;background:rgba(7,7,14,0.97);border-right:1px solid rgba(255,255,255,0.06);display:flex;flex-direction:column;position:relative;z-index:100;flex-shrink:0;backdrop-filter:var(--blur)}
 .sb-logo{padding:24px 20px 16px;font-size:15px;font-weight:900;border-bottom:1px solid rgba(255,255,255,0.06);display:flex;align-items:center;gap:8px;letter-spacing:-0.03em}
@@ -33,7 +33,7 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);colo
 .sb-nav{flex:1;padding:8px 12px;display:flex;flex-direction:column;gap:3px}
 .ni{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;cursor:pointer;color:var(--text-faint);font-size:13px;font-weight:600;transition:all 0.2s;border:1px solid transparent;user-select:none;letter-spacing:-0.01em}
 .ni:hover{background:rgba(255,255,255,0.05);color:var(--text-dim)}
-.ni.on{background:rgba(16,185,129,0.11);color:var(--purple-light);border-color:rgba(16,185,129,0.18)}
+.ni.on{background:rgba(16,185,129,0.08);color:var(--purple-light);border-color:rgba(16,185,129,0.14)}
 .ni .ic{font-size:15px;width:20px;text-align:center;flex-shrink:0}
 .nb{font-size:10px;color:var(--text-faint);margin-left:auto;font-weight:600}
 .sb-foot{padding:14px 12px}
@@ -49,26 +49,26 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);colo
 /* 프로젝트 그리드 */
 .pg{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px}
 .pc{background:rgba(255,255,255,0.025);border:1px solid rgba(255,255,255,0.07);border-radius:20px;padding:22px;cursor:pointer;transition:all 0.25s cubic-bezier(0.16,1,0.3,1);display:flex;flex-direction:column;gap:12px;position:relative;overflow:hidden}
-.pc::before{content:'';position:absolute;inset:0;background:linear-gradient(140deg,rgba(16,185,129,0.06),transparent 55%);opacity:0;transition:opacity .25s;pointer-events:none}
-.pc:hover{border-color:rgba(16,185,129,0.25);transform:translateY(-3px);box-shadow:0 16px 40px rgba(0,0,0,0.35),0 0 0 1px rgba(16,185,129,0.07)}
+.pc::before{content:'';position:absolute;inset:0;background:linear-gradient(140deg,rgba(255,255,255,0.03),transparent 55%);opacity:0;transition:opacity .25s;pointer-events:none}
+.pc:hover{border-color:rgba(255,255,255,0.14);transform:translateY(-3px);box-shadow:0 16px 40px rgba(0,0,0,0.4)}
 .pc:hover::before{opacity:1}
-.pc-genre{font-size:11px;font-weight:700;color:var(--purple-light);background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.18);padding:3px 10px;border-radius:100px;display:inline-block;letter-spacing:0.03em}
+.pc-genre{font-size:11px;font-weight:700;color:var(--text-dim);background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);padding:3px 10px;border-radius:100px;display:inline-block;letter-spacing:0.03em}
 .pc-title{font-size:16px;font-weight:800;line-height:1.4;letter-spacing:-0.02em}
 .pc-syn{font-size:13px;color:var(--text-dim);line-height:1.65;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;line-clamp:3;overflow:hidden}
 .pc-foot{font-size:11px;color:var(--text-faint);font-weight:600;display:flex;justify-content:space-between;margin-top:auto;padding-top:10px;border-top:1px solid rgba(255,255,255,0.05)}
 .pc-add{background:rgba(255,255,255,0.02);border:1.5px dashed rgba(255,255,255,0.12);border-radius:20px;padding:22px;cursor:pointer;transition:all 0.25s;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;min-height:160px;color:var(--text-faint)}
-.pc-add:hover{border-color:rgba(16,185,129,0.4);color:var(--purple-light);background:rgba(16,185,129,0.04)}
+.pc-add:hover{border-color:rgba(255,255,255,0.22);color:var(--text-dim);background:rgba(255,255,255,0.04)}
 .pc-add .plus{font-size:26px;opacity:0.7}
 /* 내 기획안 CTA */
 .myplan-cta{border-radius:var(--r);padding:32px 28px;cursor:pointer;transition:all 0.3s;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;min-height:180px;border:1.5px solid transparent}
-.myplan-cta-new{background:linear-gradient(145deg,rgba(16,185,129,0.12),rgba(16,185,129,0.06));border-color:rgba(16,185,129,0.3);box-shadow:0 0 0 0 rgba(16,185,129,0)}
-.myplan-cta-new:hover{transform:translateY(-4px);border-color:var(--green);box-shadow:0 16px 40px rgba(16,185,129,0.22)}
-.myplan-cta-new .cta-icon{color:#6EE7B7;text-shadow:0 0 20px rgba(16,185,129,0.5)}
+.myplan-cta-new{background:linear-gradient(145deg,rgba(16,185,129,0.09),rgba(16,185,129,0.04));border-color:rgba(16,185,129,0.22);box-shadow:0 0 0 0 rgba(16,185,129,0)}
+.myplan-cta-new:hover{transform:translateY(-4px);border-color:rgba(16,185,129,0.5);box-shadow:0 16px 40px rgba(16,185,129,0.15)}
+.myplan-cta-new .cta-icon{color:#6EE7B7;text-shadow:0 0 20px rgba(16,185,129,0.4)}
 .myplan-cta-new .cta-title{color:#6EE7B7}
-.myplan-cta-review{background:linear-gradient(145deg,rgba(16,185,129,0.14),rgba(16,185,129,0.06));border-color:rgba(16,185,129,0.3);box-shadow:0 0 0 0 rgba(16,185,129,0)}
-.myplan-cta-review:hover{transform:translateY(-4px);border-color:var(--purple);box-shadow:0 16px 40px rgba(16,185,129,0.25)}
-.myplan-cta-review .cta-icon{color:var(--purple-light);text-shadow:0 0 20px rgba(16,185,129,0.5)}
-.myplan-cta-review .cta-title{color:var(--purple-light)}
+.myplan-cta-review{background:linear-gradient(145deg,rgba(214,183,90,0.1),rgba(214,183,90,0.04));border-color:rgba(214,183,90,0.25);box-shadow:0 0 0 0 rgba(214,183,90,0)}
+.myplan-cta-review:hover{transform:translateY(-4px);border-color:rgba(214,183,90,0.5);box-shadow:0 16px 40px rgba(214,183,90,0.18)}
+.myplan-cta-review .cta-icon{color:var(--gold-light);text-shadow:0 0 20px rgba(214,183,90,0.5)}
+.myplan-cta-review .cta-title{color:var(--gold-light)}
 .myplan-cta-import{background:linear-gradient(145deg,rgba(59,130,246,0.14),rgba(59,130,246,0.06));border-color:rgba(59,130,246,0.3)}
 .myplan-cta-import:hover{transform:translateY(-4px);border-color:#3B82F6;box-shadow:0 16px 40px rgba(59,130,246,0.25)}
 .myplan-cta-import .cta-icon{color:#93C5FD;text-shadow:0 0 20px rgba(59,130,246,0.5)}
@@ -80,8 +80,8 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);colo
 .ip-qsub{font-size:12px;font-weight:500;color:var(--text-dim);display:block;margin-top:4px}
 .ip-btn-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 .ip-btn{padding:8px 14px;border-radius:10px;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;transition:all 0.2s;border:1px solid}
-.ip-btn.ai{background:rgba(16,185,129,0.12);border-color:rgba(16,185,129,0.35);color:var(--purple-light)}
-.ip-btn.ai:hover{background:rgba(16,185,129,0.22);border-color:var(--purple-light)}
+.ip-btn.ai{background:rgba(255,255,255,0.05);border-color:rgba(255,255,255,0.12);color:var(--text-dim)}
+.ip-btn.ai:hover{background:rgba(255,255,255,0.09);border-color:rgba(255,255,255,0.2);color:var(--text)}
 .ip-btn.input{background:rgba(255,255,255,0.04);border-color:var(--border2);color:var(--text)}
 .ip-btn.input:hover{background:rgba(255,255,255,0.08);border-color:var(--border2);color:var(--text)}
 .ip-btn.skip{background:none;border-color:transparent;color:var(--text-faint);font-size:11px;padding:8px 6px}
@@ -93,7 +93,7 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);colo
 .ip-submit:hover{filter:brightness(1.1)}
 .ip-done{background:rgba(16,185,129,0.06);border:1px solid rgba(16,185,129,0.2);border-radius:14px;padding:12px 16px;margin-bottom:12px;font-size:13px;font-weight:700;color:#6EE7B7;display:flex;align-items:center;gap:8px}
 /* ── 진행률 패널 ── */
-.pp-wrap{background:rgba(16,185,129,0.05);border:1.5px solid rgba(16,185,129,0.2);border-radius:16px;padding:16px 18px;margin-bottom:12px}
+.pp-wrap{background:rgba(255,255,255,0.025);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:16px 18px;margin-bottom:12px}
 .pp-header{display:flex;align-items:center;margin-bottom:12px}
 .pp-label{font-size:10px;font-weight:800;letter-spacing:0.1em;color:var(--purple-light);text-transform:uppercase}
 .pp-proj-row{padding:10px 12px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:12px;margin-bottom:7px}
@@ -106,16 +106,16 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);colo
 /* ── 추천 카드 (항상 노출) ── */
 .rec-card{border-radius:14px;padding:16px 18px;margin-bottom:10px}
 .rec-card.priority{background:rgba(255,180,0,0.04);border:1.5px solid rgba(255,180,0,0.22)}
-.rec-card.suggest{background:rgba(16,185,129,0.05);border:1.5px solid rgba(16,185,129,0.18)}
+.rec-card.suggest{background:rgba(255,255,255,0.025);border:1px solid rgba(255,255,255,0.08)}
 .rec-card-header{font-size:10px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:8px;display:flex;align-items:center;gap:5px}
 .rec-card.priority .rec-card-header{color:rgba(255,180,0,0.8)}
-.rec-card.suggest .rec-card-header{color:var(--purple-light)}
+.rec-card.suggest .rec-card-header{color:var(--text-dim)}
 .rec-card-msg{font-size:14px;font-weight:700;color:var(--text);line-height:1.6;margin-bottom:12px}
 .rec-card-sub{font-size:12px;color:var(--text-dim);display:block;margin-top:3px;font-weight:500}
 .rec-card-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 /* ── AI 트리거 카드 ── */
-.ai-trig{background:rgba(16,185,129,0.08);border:1.5px solid rgba(16,185,129,0.28);border-radius:14px;padding:14px 18px;margin-bottom:10px;display:flex;align-items:center;gap:14px;cursor:pointer;transition:all 0.2s;animation:trig-in 0.35s ease}
-.ai-trig:hover{background:rgba(16,185,129,0.14);border-color:var(--purple-light)}
+.ai-trig{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.09);border-radius:14px;padding:14px 18px;margin-bottom:10px;display:flex;align-items:center;gap:14px;cursor:pointer;transition:all 0.2s;animation:trig-in 0.35s ease}
+.ai-trig:hover{background:rgba(16,185,129,0.08);border-color:rgba(16,185,129,0.3)}
 @keyframes trig-in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 .ai-trig-icon{font-size:1.4rem;flex-shrink:0}
 .ai-trig-body{flex:1}
@@ -173,7 +173,7 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);colo
 .ia{max-width:760px;margin:0 auto;width:100%;display:flex;flex-direction:column;gap:10px;padding-bottom:24px}
 .cr{display:flex;flex-wrap:wrap;gap:8px}
 .cbtn{background:var(--surface);border:1px solid var(--border);color:var(--text);padding:9px 18px;border-radius:100px;font-size:14px;font-weight:600;font-family:inherit;cursor:pointer;transition:all 0.25s}
-.cbtn:hover{background:rgba(16,185,129,0.12);border-color:var(--purple-light);transform:translateY(-2px);box-shadow:0 8px 20px var(--purple-glow)}
+.cbtn:hover{background:rgba(255,255,255,0.07);border-color:rgba(255,255,255,0.18);transform:translateY(-2px);box-shadow:0 8px 20px rgba(0,0,0,0.3)}
 .ibtn{width:100%;background:rgba(214,183,90,0.06);border:1px solid rgba(214,183,90,0.25);color:var(--gold-light);padding:12px 20px;border-radius:var(--rs);font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;transition:all 0.25s;display:flex;align-items:center;justify-content:center;gap:8px}
 .ibtn:hover{background:rgba(214,183,90,0.12);border-color:rgba(214,183,90,0.5)}
 .ibw{background:rgba(12,12,22,0.7);border:1px solid rgba(255,255,255,0.09);border-radius:28px;padding:12px 12px 12px 22px;display:flex;gap:12px;align-items:flex-end;backdrop-filter:blur(40px);transition:border-color 0.25s,box-shadow 0.25s;box-shadow:inset 0 1px 0 rgba(255,255,255,0.04)}
@@ -739,8 +739,8 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);colo
 .ob-step-label{font-size:11px;font-weight:800;color:var(--text-faint);letter-spacing:0.1em;text-transform:uppercase}
 /* ── PROJECT BOARD ── */
 #project-board{margin-bottom:28px}
-.pb-card{background:rgba(16,185,129,0.07);border:1.5px solid rgba(16,185,129,0.22);border-radius:20px;padding:22px 24px;transition:border-color 0.3s}
-.pb-card:hover{border-color:rgba(16,185,129,0.4)}
+.pb-card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.09);border-radius:20px;padding:22px 24px;transition:border-color 0.3s}
+.pb-card:hover{border-color:rgba(255,255,255,0.16)}
 .pb-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
 .pb-label{font-size:10px;font-weight:800;letter-spacing:0.12em;color:var(--purple-light);text-transform:uppercase;opacity:0.75}
 .pb-title{font-size:19px;font-weight:900;color:var(--text);margin-bottom:14px;line-height:1.25}
@@ -753,12 +753,12 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);colo
 .pb-btn.primary{background:var(--purple);color:#fff;box-shadow:0 4px 16px var(--purple-glow)}
 .pb-btn.primary:hover{filter:brightness(1.12);transform:translateY(-1px);box-shadow:0 6px 20px var(--purple-glow)}
 .pb-btn.secondary{background:rgba(255,255,255,0.05);border:1px solid var(--border2);color:var(--text-dim)}
-.pb-btn.secondary:hover{background:rgba(16,185,129,0.1);border-color:rgba(16,185,129,0.35);color:var(--purple-light);transform:translateY(-1px)}
+.pb-btn.secondary:hover{background:rgba(255,255,255,0.08);border-color:rgba(255,255,255,0.2);color:var(--text);transform:translateY(-1px)}
 .pb-btn:active{transform:translateY(0)!important}
 .pb-empty{background:rgba(255,255,255,0.02);border:1.5px dashed rgba(255,255,255,0.08);border-radius:20px;padding:22px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px}
 .pb-empty-text{font-size:13px;color:var(--text-faint)}
-.pb-empty-btn{padding:8px 16px;border-radius:10px;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.25);color:var(--purple-light);font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;transition:all 0.2s;white-space:nowrap}
-.pb-empty-btn:hover{background:rgba(16,185,129,0.2);border-color:rgba(16,185,129,0.45)}
+.pb-empty-btn{padding:8px 16px;border-radius:10px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);color:var(--text-dim);font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;transition:all 0.2s;white-space:nowrap}
+.pb-empty-btn:hover{background:rgba(255,255,255,0.09);border-color:rgba(255,255,255,0.2);color:var(--text)}
 @media(max-width:640px){.pb-btn{font-size:13px;padding:11px 16px}.pb-actions{gap:8px}}
 </style>
 </head>
@@ -816,26 +816,26 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);colo
       <div id="home-start-section" style="margin-bottom:28px">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
           <div style="font-size:11px;font-weight:700;letter-spacing:0.1em;color:var(--text-faint);text-transform:uppercase" id="home-start-label">새 작품 시작</div>
-          <button id="home-start-compact-btn" style="display:none;padding:7px 14px;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.28);border-radius:10px;color:var(--purple-light);font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;transition:all 0.2s" onclick="openMode()" onmouseover="this.style.background='rgba(16,185,129,0.2)'" onmouseout="this.style.background='rgba(16,185,129,0.1)'">+ 새 작품 기획하기</button>
+          <button id="home-start-compact-btn" style="display:none;padding:7px 14px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);border-radius:10px;color:var(--text-dim);font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;transition:all 0.2s" onclick="openMode()" onmouseover="this.style.background='rgba(255,255,255,0.09)';this.style.color='var(--text)'" onmouseout="this.style.background='rgba(255,255,255,0.05)';this.style.color='var(--text-dim)'">+ 새 작품 기획하기</button>
         </div>
         <div id="home-mode-cards" class="home-mode-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
-          <div onclick="openMode()" style="background:rgba(16,185,129,0.1);border:1.5px solid rgba(16,185,129,0.28);border-radius:20px;padding:24px 22px;cursor:pointer;display:flex;align-items:center;gap:16px;transition:all 0.25s;box-shadow:0 4px 24px rgba(16,185,129,0.1)" onmouseover="this.style.background='rgba(16,185,129,0.17)';this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 32px rgba(16,185,129,0.2)'" onmouseout="this.style.background='rgba(16,185,129,0.1)';this.style.transform='translateY(0)';this.style.boxShadow='0 4px 24px rgba(16,185,129,0.1)'">
+          <div onclick="openMode()" style="background:rgba(255,255,255,0.03);border:1px solid rgba(16,185,129,0.2);border-radius:20px;padding:24px 22px;cursor:pointer;display:flex;align-items:center;gap:16px;transition:all 0.25s" onmouseover="this.style.background='rgba(16,185,129,0.08)';this.style.transform='translateY(-2px)';this.style.borderColor='rgba(16,185,129,0.38)'" onmouseout="this.style.background='rgba(255,255,255,0.03)';this.style.transform='translateY(0)';this.style.borderColor='rgba(16,185,129,0.2)'">
             <div style="font-size:2rem;flex-shrink:0">✍️</div>
             <div style="flex:1;min-width:0">
               <div style="font-size:16px;font-weight:900;color:var(--purple-light);margin-bottom:4px">작품 기획 시작하기</div>
-              <div style="font-size:11px;font-weight:700;color:rgba(16,185,129,0.5);margin-bottom:5px;letter-spacing:0.03em">창작자 모드</div>
+              <div style="font-size:11px;font-weight:700;color:rgba(16,185,129,0.45);margin-bottom:5px;letter-spacing:0.03em">창작자 모드</div>
               <div style="font-size:12px;color:var(--text-dim);line-height:1.6">시놉시스 · 캐릭터 · 회차 개요를 AI와 함께</div>
             </div>
-            <div style="color:var(--purple-light);font-size:18px;font-weight:300;flex-shrink:0">→</div>
+            <div style="color:var(--text-faint);font-size:18px;font-weight:300;flex-shrink:0">→</div>
           </div>
-          <div onclick="selMode('seller')" style="background:rgba(16,185,129,0.07);border:1.5px solid rgba(16,185,129,0.18);border-radius:20px;padding:24px 22px;cursor:pointer;display:flex;align-items:center;gap:16px;transition:all 0.25s;box-shadow:0 4px 24px rgba(16,185,129,0.06)" onmouseover="this.style.background='rgba(16,185,129,0.13)';this.style.transform='translateY(-2px)'" onmouseout="this.style.background='rgba(16,185,129,0.07)';this.style.transform='translateY(0)'">
+          <div onclick="selMode('seller')" style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.07);border-radius:20px;padding:24px 22px;cursor:pointer;display:flex;align-items:center;gap:16px;transition:all 0.25s" onmouseover="this.style.background='rgba(255,255,255,0.05)';this.style.transform='translateY(-2px)';this.style.borderColor='rgba(255,255,255,0.14)'" onmouseout="this.style.background='rgba(255,255,255,0.02)';this.style.transform='translateY(0)';this.style.borderColor='rgba(255,255,255,0.07)'">
             <div style="font-size:2rem;flex-shrink:0">🛍️</div>
             <div style="flex:1;min-width:0">
-              <div style="font-size:16px;font-weight:900;color:#6EE7B7;margin-bottom:4px">루틴 & 수익화</div>
-              <div style="font-size:11px;font-weight:700;color:rgba(16,185,129,0.45);margin-bottom:5px;letter-spacing:0.03em">멘토 모드</div>
-              <div style="font-size:12px;color:var(--text-dim);line-height:1.6">루틴 설계 · 마켓 등록 · 수익화</div>
+              <div style="font-size:16px;font-weight:900;color:var(--text-dim);margin-bottom:4px">루틴 & 수익화</div>
+              <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.25);margin-bottom:5px;letter-spacing:0.03em">멘토 모드</div>
+              <div style="font-size:12px;color:var(--text-faint);line-height:1.6">루틴 설계 · 마켓 등록 · 수익화</div>
             </div>
-            <div style="font-size:10px;font-weight:700;color:var(--green);background:rgba(16,185,129,0.12);border:1px solid rgba(16,185,129,0.2);padding:3px 9px;border-radius:10px;white-space:nowrap;flex-shrink:0">준비 중</div>
+            <div style="font-size:10px;font-weight:700;color:var(--text-faint);background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);padding:3px 9px;border-radius:10px;white-space:nowrap;flex-shrink:0">준비 중</div>
           </div>
         </div>
       </div>
@@ -845,12 +845,12 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);colo
         <div style="font-size:11px;font-weight:700;letter-spacing:0.1em;color:var(--purple-light);text-transform:uppercase;margin-bottom:12px">✦ 창작 에이전트</div>
         <!-- 예시 문구 칩 (compact) -->
         <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px">
-          <button onclick="homeQuick('주인공 동기가 너무 약한 것 같아요')" style="background:var(--surface);border:1px solid var(--border);color:var(--text-dim);font-size:13px;font-weight:600;padding:8px 14px;border-radius:100px;cursor:pointer;font-family:inherit;transition:all 0.15s;white-space:nowrap" onmouseover="this.style.borderColor='var(--purple)';this.style.color='var(--text)';this.style.background='rgba(16,185,129,0.08)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-dim)';this.style.background='var(--surface)'">✏️ 주인공 동기가 약해요</button>
-          <button onclick="homeQuick('클라이막스 장면이 너무 평범해요')" style="background:var(--surface);border:1px solid var(--border);color:var(--text-dim);font-size:13px;font-weight:600;padding:8px 14px;border-radius:100px;cursor:pointer;font-family:inherit;transition:all 0.15s;white-space:nowrap" onmouseover="this.style.borderColor='var(--purple)';this.style.color='var(--text)';this.style.background='rgba(16,185,129,0.08)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-dim)';this.style.background='var(--surface)'">🔥 클라이막스가 평범해요</button>
-          <button onclick="homeQuick('캐릭터 대사가 어색해요')" style="background:var(--surface);border:1px solid var(--border);color:var(--text-dim);font-size:13px;font-weight:600;padding:8px 14px;border-radius:100px;cursor:pointer;font-family:inherit;transition:all 0.15s;white-space:nowrap" onmouseover="this.style.borderColor='var(--purple)';this.style.color='var(--text)';this.style.background='rgba(16,185,129,0.08)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-dim)';this.style.background='var(--surface)'">💬 대사가 어색해요</button>
-          <button onclick="homeQuick('복선 심는 법이 어려워요')" style="background:var(--surface);border:1px solid var(--border);color:var(--text-dim);font-size:13px;font-weight:600;padding:8px 14px;border-radius:100px;cursor:pointer;font-family:inherit;transition:all 0.15s;white-space:nowrap" onmouseover="this.style.borderColor='var(--purple)';this.style.color='var(--text)';this.style.background='rgba(16,185,129,0.08)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-dim)';this.style.background='var(--surface)'">🔗 복선 심는 법</button>
-          <button onclick="homeQuick('독자 훅이 어떤 게 효과적인가요')" style="background:var(--surface);border:1px solid var(--border);color:var(--text-dim);font-size:13px;font-weight:600;padding:8px 14px;border-radius:100px;cursor:pointer;font-family:inherit;transition:all 0.15s;white-space:nowrap" onmouseover="this.style.borderColor='var(--purple)';this.style.color='var(--text)';this.style.background='rgba(16,185,129,0.08)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-dim)';this.style.background='var(--surface)'">🎣 독자 훅</button>
-          <button onclick="homeQuick('장르물을 쓰고 싶어요. 어디서부터 시작하면 좋을까요')" style="background:var(--surface);border:1px solid var(--border);color:var(--text-dim);font-size:13px;font-weight:600;padding:8px 14px;border-radius:100px;cursor:pointer;font-family:inherit;transition:all 0.15s;white-space:nowrap" onmouseover="this.style.borderColor='var(--purple)';this.style.color='var(--text)';this.style.background='rgba(16,185,129,0.08)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-dim)';this.style.background='var(--surface)'">🎭 장르물 쓰고 싶어요</button>
+          <button onclick="homeQuick('주인공 동기가 너무 약한 것 같아요')" style="background:var(--surface);border:1px solid var(--border);color:var(--text-dim);font-size:13px;font-weight:600;padding:8px 14px;border-radius:100px;cursor:pointer;font-family:inherit;transition:all 0.15s;white-space:nowrap" onmouseover="this.style.borderColor='rgba(255,255,255,0.18)';this.style.color='var(--text)';this.style.background='rgba(255,255,255,0.06)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-dim)';this.style.background='var(--surface)'">✏️ 주인공 동기가 약해요</button>
+          <button onclick="homeQuick('클라이막스 장면이 너무 평범해요')" style="background:var(--surface);border:1px solid var(--border);color:var(--text-dim);font-size:13px;font-weight:600;padding:8px 14px;border-radius:100px;cursor:pointer;font-family:inherit;transition:all 0.15s;white-space:nowrap" onmouseover="this.style.borderColor='rgba(255,255,255,0.18)';this.style.color='var(--text)';this.style.background='rgba(255,255,255,0.06)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-dim)';this.style.background='var(--surface)'">🔥 클라이막스가 평범해요</button>
+          <button onclick="homeQuick('캐릭터 대사가 어색해요')" style="background:var(--surface);border:1px solid var(--border);color:var(--text-dim);font-size:13px;font-weight:600;padding:8px 14px;border-radius:100px;cursor:pointer;font-family:inherit;transition:all 0.15s;white-space:nowrap" onmouseover="this.style.borderColor='rgba(255,255,255,0.18)';this.style.color='var(--text)';this.style.background='rgba(255,255,255,0.06)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-dim)';this.style.background='var(--surface)'">💬 대사가 어색해요</button>
+          <button onclick="homeQuick('복선 심는 법이 어려워요')" style="background:var(--surface);border:1px solid var(--border);color:var(--text-dim);font-size:13px;font-weight:600;padding:8px 14px;border-radius:100px;cursor:pointer;font-family:inherit;transition:all 0.15s;white-space:nowrap" onmouseover="this.style.borderColor='rgba(255,255,255,0.18)';this.style.color='var(--text)';this.style.background='rgba(255,255,255,0.06)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-dim)';this.style.background='var(--surface)'">🔗 복선 심는 법</button>
+          <button onclick="homeQuick('독자 훅이 어떤 게 효과적인가요')" style="background:var(--surface);border:1px solid var(--border);color:var(--text-dim);font-size:13px;font-weight:600;padding:8px 14px;border-radius:100px;cursor:pointer;font-family:inherit;transition:all 0.15s;white-space:nowrap" onmouseover="this.style.borderColor='rgba(255,255,255,0.18)';this.style.color='var(--text)';this.style.background='rgba(255,255,255,0.06)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-dim)';this.style.background='var(--surface)'">🎣 독자 훅</button>
+          <button onclick="homeQuick('장르물을 쓰고 싶어요. 어디서부터 시작하면 좋을까요')" style="background:var(--surface);border:1px solid var(--border);color:var(--text-dim);font-size:13px;font-weight:600;padding:8px 14px;border-radius:100px;cursor:pointer;font-family:inherit;transition:all 0.15s;white-space:nowrap" onmouseover="this.style.borderColor='rgba(255,255,255,0.18)';this.style.color='var(--text)';this.style.background='rgba(255,255,255,0.06)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-dim)';this.style.background='var(--surface)'">🎭 장르물 쓰고 싶어요</button>
         </div>
         <!-- 직접 입력 바 -->
         <div style="border-top:1px solid var(--border);padding-top:12px;display:flex;align-items:flex-end;gap:10px">
@@ -2593,11 +2593,11 @@ function renderActionBoard() {
     }
 
     const recBtns = recs.map(r => {
-      const bg     = r.primary ? 'rgba(16,185,129,0.08)' : 'rgba(255,255,255,0.03)';
-      const border = r.primary ? 'rgba(16,185,129,0.2)'  : 'var(--border)';
-      const bgHov  = r.primary ? 'rgba(16,185,129,0.16)' : 'rgba(255,255,255,0.06)';
-      const bdHov  = r.primary ? 'rgba(16,185,129,0.4)'  : 'var(--border2)';
-      const arrowC = r.primary ? 'var(--purple-light)'   : 'var(--text-faint)';
+      const bg     = r.primary ? 'rgba(255,255,255,0.04)' : 'rgba(255,255,255,0.02)';
+      const border = r.primary ? 'rgba(255,255,255,0.1)'  : 'var(--border)';
+      const bgHov  = r.primary ? 'rgba(255,255,255,0.07)' : 'rgba(255,255,255,0.05)';
+      const bdHov  = r.primary ? 'rgba(255,255,255,0.18)' : 'var(--border2)';
+      const arrowC = r.primary ? 'var(--text-dim)'        : 'var(--text-faint)';
       return `<button onclick="${r.action}"
         style="background:${bg};border:1px solid ${border};border-radius:12px;padding:12px 16px;cursor:pointer;font-family:inherit;text-align:left;transition:all 0.2s;display:flex;align-items:center;gap:12px"
         onmouseover="this.style.background='${bgHov}';this.style.borderColor='${bdHov}'"
