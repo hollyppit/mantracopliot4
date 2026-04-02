@@ -1537,6 +1537,17 @@ if (!window.PS) {
   window.PS = {};
 }
 
+// 현재 프로젝트 반환 (더미)
+if (typeof window.PS.getCurrentProject !== "function") {
+  window.PS.getCurrentProject = function () {
+    return {
+      title: "테스트 기획안",
+      synopsis: "기본 시놉시스입니다"
+    };
+  };
+}
+
+// 스타일 프롬프트 (더미)
 if (typeof window.PS.buildGuidePrompt !== "function") {
   window.PS.buildGuidePrompt = function () {
     return "";
