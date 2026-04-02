@@ -61,22 +61,30 @@ async function handleYoutube(url, env, cors) {
 async function handleChat(request, env, cors) {
   const body = await request.json();
   const model = body.model || 'gpt-4o-mini';
+  const streamMode = body.stream === true;
+
   if (model.startsWith('claude-')) {
     const res = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'x-api-key': env.ANTHROPIC_API_KEY, 'anthropic-version': '2023-06-01' },
-      body: JSON.stringify({ model, max_tokens: body.max_tokens || 1024, system: body.system || '당신은 유능한 AI 조수입니다.', messages: body.messages }),
+      body: JSON.stringify({ model, max_tokens: body.max_tokens || 1024, stream: streamMode, system: body.system || '당신은 유능한 AI 조수입니다.', messages: body.messages }),
     });
     if (res.status === 529 || res.status === 503) {
-      return callOpenAI(body, env, cors, 'gpt-4o-mini');
+      return callOpenAI(body, env, cors, 'gpt-4o-mini', streamMode);
+    }
+    if (streamMode && res.ok) {
+      return new Response(res.body, {
+        status: 200,
+        headers: { 'Content-Type': 'text/event-stream', 'Cache-Control': 'no-cache', 'Access-Control-Allow-Origin': '*' },
+      });
     }
     return json(await res.json(), res.status, cors);
   } else {
-    return callOpenAI(body, env, cors, model);
+    return callOpenAI(body, env, cors, model, streamMode);
   }
 }
 
-async function callOpenAI(body, env, cors, model) {
+async function callOpenAI(body, env, cors, model, streamMode = false) {
   const messages = [];
   if (body.system) messages.push({ role: 'system', content: body.system });
   if (body.messages) messages.push(...body.messages);
@@ -85,7 +93,16 @@ async function callOpenAI(body, env, cors, model) {
     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${env.OPENAI_API_KEY}` },
     body: JSON.stringify({ model, messages, temperature: body.temperature || 0.7, max_tokens: body.max_tokens || 1024 }),
   });
-  return json(await res.json(), res.status, cors);
+  const data = await res.json();
+  if (streamMode) {
+    const text = data.choices?.[0]?.message?.content || '';
+    const sseBody = `data: ${JSON.stringify({ type: 'content_block_delta', index: 0, delta: { type: 'text_delta', text } })}\n\ndata: [DONE]\n\n`;
+    return new Response(sseBody, {
+      status: 200,
+      headers: { 'Content-Type': 'text/event-stream', 'Cache-Control': 'no-cache', 'Access-Control-Allow-Origin': '*' },
+    });
+  }
+  return json(data, res.status, cors);
 }
 
 async function verifyJWT(request, env) {
