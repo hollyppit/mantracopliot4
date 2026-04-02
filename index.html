@@ -93,20 +93,16 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);colo
 .ip-submit:hover{filter:brightness(1.1)}
 .ip-done{background:rgba(16,185,129,0.06);border:1px solid rgba(16,185,129,0.2);border-radius:14px;padding:12px 16px;margin-bottom:12px;font-size:13px;font-weight:700;color:#6EE7B7;display:flex;align-items:center;gap:8px}
 /* ── 진행률 패널 ── */
-.pp-wrap{background:rgba(16,185,129,0.05);border:1.5px solid rgba(16,185,129,0.2);border-radius:16px;padding:18px 20px;margin-bottom:12px}
-.pp-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.pp-wrap{background:rgba(16,185,129,0.05);border:1.5px solid rgba(16,185,129,0.2);border-radius:16px;padding:16px 18px;margin-bottom:12px}
+.pp-header{display:flex;align-items:center;margin-bottom:12px}
 .pp-label{font-size:10px;font-weight:800;letter-spacing:0.1em;color:var(--purple-light);text-transform:uppercase}
-.pp-score{font-size:20px;font-weight:900;color:var(--text)}
-.pp-score em{font-style:normal;color:var(--purple-light)}
-.pp-bar-track{width:100%;height:5px;background:rgba(255,255,255,0.07);border-radius:4px;overflow:hidden;margin-bottom:14px}
-.pp-bar-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--purple),#6EE7B7);transition:width 0.8s cubic-bezier(0.25,0.46,0.45,0.94)}
-.pp-checks{display:flex;flex-direction:column;gap:7px}
-.pp-check{display:flex;align-items:center;gap:9px;font-size:12px;font-weight:600}
-.pp-check-icon{width:17px;height:17px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:9px;flex-shrink:0}
-.pp-check.done .pp-check-icon{background:rgba(16,185,129,0.15);color:#6EE7B7;border:1px solid rgba(16,185,129,0.3)}
-.pp-check.todo .pp-check-icon{background:rgba(255,255,255,0.04);color:var(--text-faint);border:1px solid var(--border)}
-.pp-check.done .pp-check-label{color:var(--text-dim)}
-.pp-check.todo .pp-check-label{color:var(--text)}
+.pp-proj-row{padding:10px 12px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:12px;margin-bottom:7px}
+.pp-proj-row:last-child{margin-bottom:0}
+.pp-proj-title{font-size:12px;font-weight:700;color:var(--text);margin-bottom:7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pp-stats{display:flex;gap:5px;flex-wrap:wrap}
+.pp-stat{display:flex;align-items:center;gap:4px;font-size:11px;font-weight:700;padding:3px 8px;border-radius:20px;flex-shrink:0}
+.pp-stat.done{background:rgba(16,185,129,0.12);color:#6EE7B7;border:1px solid rgba(16,185,129,0.25)}
+.pp-stat.todo{background:rgba(255,255,255,0.03);color:var(--text-faint);border:1px solid var(--border)}
 /* ── 추천 카드 (항상 노출) ── */
 .rec-card{border-radius:14px;padding:16px 18px;margin-bottom:10px}
 .rec-card.priority{background:rgba(255,180,0,0.04);border:1.5px solid rgba(255,180,0,0.22)}
@@ -2675,30 +2671,54 @@ function abStartTemplate(genre) {
 function renderProgressPanel() {
   const el = document.getElementById('progress-panel');
   if (!el) return;
-  const proj = window.PS && window.PS.getCurrentProject();
-  if (!proj || !(proj.title || (proj.episodes && proj.episodes.length))) {
-    el.innerHTML = '';
-    return;
+
+  // mp 기획안 목록 수집
+  const mpArr = JSON.parse(localStorage.getItem('mp') || '[]');
+
+  // currentProject가 mp에 없으면 앞에 추가
+  const curProj = window.PS && window.PS.getCurrentProject ? window.PS.getCurrentProject() : null;
+  let allProjects = [...mpArr];
+  if (curProj && curProj.title && !allProjects.find(p => p.id === curProj.id)) {
+    allProjects.unshift(curProj);
   }
 
-  const { score, checks } = calcCompletionScore(proj);
+  if (!allProjects.length) { el.innerHTML = ''; return; }
 
-  const checkItems = checks.map(c => `
-    <div class="pp-check ${c.done ? 'done' : 'todo'}">
-      <div class="pp-check-icon">${c.done ? '✓' : '○'}</div>
-      <span class="pp-check-label">${c.label}</span>
-    </div>`).join('');
+  const projRows = allProjects.slice(0, 6).map(p => {
+    // projectStore에서 최신 캐릭터/회차 데이터 로드
+    let proj = p;
+    try {
+      const stored = localStorage.getItem(`project_${p.id}`);
+      if (stored) proj = { ...p, ...JSON.parse(stored) };
+    } catch(e) {}
+
+    const hasSynopsis = (proj.synopsis || '').trim().length > 10;
+    const epCount    = (proj.episodes   || []).length;
+    const charCount  = (proj.characters || []).length;
+
+    return `
+      <div class="pp-proj-row">
+        <div class="pp-proj-title">${proj.title || '제목 없음'}</div>
+        <div class="pp-stats">
+          <div class="pp-stat ${hasSynopsis ? 'done' : 'todo'}">
+            ${hasSynopsis ? '✓' : '○'} 시놉시스
+          </div>
+          <div class="pp-stat ${epCount > 0 ? 'done' : 'todo'}">
+            ${epCount > 0 ? epCount + '화' : '○'} 회차 개요
+          </div>
+          <div class="pp-stat ${charCount > 0 ? 'done' : 'todo'}">
+            ${charCount > 0 ? charCount + '명' : '○'} 캐릭터
+          </div>
+        </div>
+      </div>`;
+  }).join('');
 
   el.innerHTML = `
     <div class="pp-wrap">
       <div class="pp-header">
-        <div class="pp-label">✦ 작품 완성도</div>
-        <div class="pp-score"><em>${score}%</em></div>
+        <div class="pp-label">✦ 작품 진행 현황</div>
       </div>
-      <div class="pp-bar-track">
-        <div class="pp-bar-fill" style="width:${score}%"></div>
-      </div>
-      <div class="pp-checks">${checkItems}</div>
+      ${projRows}
     </div>`;
 }
 
@@ -3233,7 +3253,7 @@ async function submitImport(){
   }
   const statusEl=$('import-status');
   const btn=$('import-submit-btn');
-  if(statusEl){statusEl.textContent='분석 중...';statusEl.style.display='block';}
+  if(statusEl){statusEl.textContent='저장 중...';statusEl.style.display='block';}
   if(btn){btn.disabled=true;btn.style.opacity='0.5';}
   try{
     await _runImportProject(text,statusEl);
@@ -3244,58 +3264,35 @@ async function submitImport(){
 }
 
 async function _runImportProject(text,statusEl){
-  // 1. structureMemory로 기본 추출
-  const rawMemory=window.PS.structureMemory(text);
-
-  // 2. AI로 제목·장르·요약·캐릭터·타임라인 추출
-  if(statusEl)statusEl.textContent='📖 AI 분석 중...';
-  let aiResult=null;
-  try{
-    const prompt=`아래 텍스트는 소설 또는 웹툰 원고입니다. 다음 JSON 형식으로만 응답하세요 (설명 없이):
-{"title":"작품 제목 (없으면 가져온 작품)","genre":"장르 2-4자","summary":"3-5문장 요약","characters":[{"name":"이름","role":"역할 1문장"}],"timeline":["핵심 사건1","핵심 사건2","핵심 사건3"]}
-
-텍스트:
-${text.slice(0,3000)}`;
-    const raw=await ai([
-      {role:'system',content:'당신은 스토리 구조를 JSON으로 추출하는 AI입니다. 반드시 JSON만 출력합니다.'},
-      {role:'user',content:prompt}
-    ],{max_tokens:1200});
-    const m=raw.match(/\{[\s\S]*\}/);
-    if(m)aiResult=JSON.parse(m[0]);
-  }catch(e){/* AI 실패 시 fallback */}
-
   if(statusEl)statusEl.textContent='💾 프로젝트 생성 중...';
 
-  // 3. 프로젝트 생성
-  const title=aiResult?.title||'가져온 작품';
+  // 1. 제목: 첫 번째 비어있지 않은 줄 (최대 40자)
+  const firstLine=text.split('\n').map(l=>l.trim()).find(l=>l.length>0)||'가져온 작품';
+  const title=firstLine.replace(/^[#\s*\-]+/,'').slice(0,40)||'가져온 작품';
+
+  // 2. 프로젝트 생성 — 원문 텍스트를 시놉시스로 그대로 저장
   const proj=window.PS.createEmptyProject(title);
-  proj.genre=aiResult?.genre||'';
-  proj.synopsis=aiResult?.summary||rawMemory.summary||'';
+  proj.genre='';
+  proj.synopsis=text;
 
-  // 4. 캐릭터 구성
-  proj.characters=(aiResult?.characters||[]).map(c=>({
+  // 3. structureMemory로 캐릭터 이름 정규식 추출 (AI 없이)
+  const rawMemory=window.PS.structureMemory(text);
+  proj.characters=rawMemory.sourceCharacters.map(c=>({
     id:Date.now().toString()+Math.random().toString(36).slice(2),
-    name:c.name,role:c.role||'',goal:'',emotion:'',relationships:{},arc:[]
+    name:c.name,role:'',goal:'',emotion:'',relationships:{},arc:[]
   }));
-  if(!proj.characters.length){
-    proj.characters=rawMemory.sourceCharacters.map(c=>({
-      id:Date.now().toString()+Math.random().toString(36).slice(2),
-      name:c.name,role:'',goal:'',emotion:'',relationships:{},arc:[]
-    }));
-  }
 
-  // 5. memory 구성
-  const timeline=aiResult?.timeline?.map((t,i)=>({seq:i+1,text:t}))||rawMemory.textTimeline;
+  // 4. memory에 원문 전체 보존
   proj.memory={
     rawText:text,
-    summary:aiResult?.summary||rawMemory.summary||'',
+    summary:'',
     sourceCharacters:rawMemory.sourceCharacters,
-    textTimeline:timeline,
+    textTimeline:rawMemory.textTimeline,
     timeline:[],
     characterStates:{}
   };
 
-  // 6. 저장
+  // 5. 저장
   window.PS.saveProject(proj);
   window.PS.setCurrentProject(proj);
 
