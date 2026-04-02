@@ -454,6 +454,43 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
 .mp .mpi{font-size:56px}
 .mp h3{font-size:20px;font-weight:800;color:var(--text)}
 .mp p{font-size:14px;line-height:1.7;max-width:320px}
+/* 루틴 보관함 */
+.rl-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
+.rl-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:20px;display:flex;flex-direction:column;gap:12px;transition:all 0.2s}
+.rl-card:hover{border-color:var(--border2);transform:translateY(-2px)}
+.rl-card-icon{font-size:26px;background:var(--surface2);width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.rl-card-name{font-size:15px;font-weight:800}
+.rl-card-meta{font-size:11px;color:var(--text-faint);font-weight:600;margin-top:2px}
+.rl-badge-def{font-size:10px;font-weight:800;color:var(--text-faint);background:var(--surface2);padding:3px 8px;border-radius:20px;margin-left:auto;flex-shrink:0}
+.rl-card-desc{font-size:13px;color:var(--text-dim);line-height:1.5}
+.rl-card-actions{display:flex;gap:8px;margin-top:auto;flex-wrap:wrap}
+.rl-btn{padding:7px 14px;border-radius:9px;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;transition:all 0.2s;border:1px solid}
+.rl-btn.pri{background:rgba(139,92,246,0.12);border-color:rgba(139,92,246,0.3);color:var(--purple-light)}
+.rl-btn.pri:hover{background:rgba(139,92,246,0.22)}
+.rl-btn.sec{background:rgba(255,255,255,0.04);border-color:var(--border2);color:var(--text-dim)}
+.rl-btn.sec:hover{color:var(--text)}
+.rl-btn.dan{background:rgba(239,68,68,0.08);border-color:rgba(239,68,68,0.2);color:#F87171}
+.rl-btn.dan:hover{background:rgba(239,68,68,0.16)}
+.rl-card-add{background:var(--surface);border:1px dashed var(--border2);border-radius:var(--r);padding:20px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;min-height:160px;cursor:pointer;transition:all 0.2s;text-align:center;color:var(--text-dim)}
+.rl-card-add:hover{border-color:var(--purple);color:var(--purple-light);background:rgba(139,92,246,0.05)}
+/* 루틴 편집 오버레이 */
+.rle-box{background:rgba(12,12,24,0.97);border:1px solid var(--border2);border-radius:24px;padding:30px;width:100%;max-width:560px;max-height:85vh;overflow-y:auto;box-shadow:0 30px 80px rgba(0,0,0,0.7);display:flex;flex-direction:column;gap:18px}
+.rle-field{display:flex;flex-direction:column;gap:6px}
+.rle-label{font-size:11px;font-weight:800;color:var(--text-faint);letter-spacing:0.08em;text-transform:uppercase}
+.rle-input{background:var(--surface);border:1px solid var(--border);border-radius:9px;color:var(--text);font-family:inherit;font-size:14px;padding:9px 13px;outline:none;transition:border-color 0.2s;width:100%}
+.rle-input:focus{border-color:var(--purple-light)}
+.rle-step{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--surface);border:1px solid var(--border);border-radius:9px;margin-bottom:7px;cursor:grab}
+.rle-step:active{cursor:grabbing;opacity:0.7}
+.rle-step-icon{font-size:18px;width:28px;text-align:center;flex-shrink:0}
+.rle-step-body{flex:1;min-width:0}
+.rle-step-kw{font-size:10px;font-weight:800;color:var(--purple-light)}
+.rle-step-q{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rle-step-edit{padding:4px 10px;background:rgba(139,92,246,0.08);border:1px solid rgba(139,92,246,0.2);color:var(--purple-light);cursor:pointer;font-size:11px;font-weight:700;border-radius:6px;font-family:inherit;flex-shrink:0}
+.rle-step-edit:hover{background:rgba(139,92,246,0.18)}
+.rle-step-del{padding:4px 8px;background:none;border:none;color:var(--text-faint);cursor:pointer;font-size:16px;flex-shrink:0;border-radius:6px;transition:all 0.15s}
+.rle-step-del:hover{color:#F87171;background:rgba(239,68,68,0.1)}
+.rle-step-modal{display:none;position:absolute;inset:0;background:rgba(0,0,0,0.7);z-index:10;align-items:center;justify-content:center;border-radius:24px}
+.rle-smodal-box{background:rgba(14,14,26,0.99);border:1px solid var(--border2);border-radius:16px;padding:24px;width:100%;max-width:400px;display:flex;flex-direction:column;gap:14px}
 /* 로딩 */
 .thk{color:var(--text-dim);font-size:14px;display:flex;align-items:center;gap:10px;padding:4px 0}
 .td span{animation:blk 1.2s infinite}.td span:nth-child(2){animation-delay:0.2s}.td span:nth-child(3){animation-delay:0.4s}
@@ -759,6 +796,7 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
     <div class="ni" id="n-outline" onclick="navTo('outline')"><span class="ic">🎬</span>회차 개요</div>
     <div class="ni" id="n-chara" onclick="navTo('chara')"><span class="ic">👤</span>캐릭터 만들기</div>
     <div class="ni" id="n-verify" onclick="navTo('verify')"><span class="ic">🔍</span>전문가 고증</div>
+    <div class="ni" id="n-rl" onclick="navTo('rl')"><span class="ic">📦</span>루틴 보관함</div>
     <div class="ni" id="n-market" onclick="navTo('market')"><span class="ic">🛍️</span>루틴 마켓<span class="nb">준비 중</span></div>
   </nav>
   <div class="sb-foot"><button class="nbtn" onclick="openMode()">+ 새 작품 기획하기</button></div>
@@ -1039,6 +1077,17 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
         border-radius: 12px;
         font-size: 14px;
       "></div>
+    </div>
+  </section>
+  <!-- 루틴 보관함 -->
+  <section class="view" id="view-rl">
+    <div class="vh">
+      <div class="vt">루틴 보관함</div>
+      <button onclick="createNewRL()" style="padding:9px 18px;background:var(--purple);border:none;border-radius:10px;color:#fff;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;transition:all 0.2s;box-shadow:0 4px 14px var(--purple-glow)" onmouseover="this.style.filter='brightness(1.1)'" onmouseout="this.style.filter=''">+ 새 루틴 만들기</button>
+    </div>
+    <div class="vb">
+      <div style="font-size:13px;color:var(--text-dim);margin-bottom:20px;line-height:1.6">창작 루틴을 커스텀하고 보관합니다. 새 작품 기획 시 보관함의 루틴을 선택할 수 있습니다.</div>
+      <div class="rl-grid" id="rl-grid"></div>
     </div>
   </section>
   <!-- 루틴 마켓 -->
@@ -1448,8 +1497,73 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
   <div class="rp">
     <div class="rpt">어떤 루틴으로 시작할까요?</div>
     <div class="rps">기획하려는 작품 형태를 선택해주세요.</div>
-    <div class="ri" onclick="selRoutine('long')"><div class="rii">📖</div><div><div class="rin">장편 루틴</div><div class="rid">22단계로 탄탄한 장편 스토리를 기획합니다</div></div><div class="rib">추천</div></div>
-    <div class="ri" onclick="selRoutine('short')"><div class="rii">✍️</div><div><div class="rin">단편 루틴</div><div class="rid">11단계로 빠르게 단편 아이디어를 정리합니다</div></div></div>
+    <div id="ov-routine-list"></div>
+    <div style="text-align:center;margin-top:12px">
+      <button onclick="closeOv('ov-routine');navTo('rl')" style="background:none;border:none;color:var(--text-faint);font-size:12px;font-family:inherit;cursor:pointer;padding:4px 8px;border-radius:6px" onmouseover="this.style.color='var(--purple-light)'" onmouseout="this.style.color='var(--text-faint)'">📦 루틴 보관함에서 관리하기 →</button>
+    </div>
+  </div>
+</div>
+<!-- 오버레이: 루틴 편집 -->
+<div class="ov" id="ov-rl-edit">
+  <div class="rle-box" style="position:relative">
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      <div style="font-size:19px;font-weight:900">루틴 편집</div>
+      <button onclick="closeRLEdit()" style="background:none;border:none;color:var(--text-dim);font-size:20px;cursor:pointer;padding:4px 8px;border-radius:6px;font-family:inherit" onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color='var(--text-dim)'">✕</button>
+    </div>
+    <div style="display:grid;grid-template-columns:60px 1fr;gap:12px">
+      <div class="rle-field">
+        <div class="rle-label">아이콘</div>
+        <input class="rle-input" id="rle-icon" placeholder="📖" style="text-align:center;font-size:20px;padding:8px">
+      </div>
+      <div class="rle-field">
+        <div class="rle-label">루틴 이름</div>
+        <input class="rle-input" id="rle-name" placeholder="루틴 이름">
+      </div>
+    </div>
+    <div class="rle-field">
+      <div class="rle-label">설명</div>
+      <input class="rle-input" id="rle-desc" placeholder="이 루틴에 대한 간단한 설명">
+    </div>
+    <div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <div class="rle-label" style="margin:0">단계 목록</div>
+        <button class="rl-btn pri" onclick="addRLEStep()" style="font-size:12px;padding:6px 12px">+ 단계 추가</button>
+      </div>
+      <div id="rle-steps"></div>
+      <div id="rle-empty-steps" style="display:none;text-align:center;padding:24px;color:var(--text-faint);font-size:13px">단계를 추가해주세요.</div>
+    </div>
+    <div style="display:flex;gap:10px;justify-content:flex-end">
+      <button class="rl-btn sec" onclick="closeRLEdit()">취소</button>
+      <button class="rl-btn pri" onclick="saveRLEdit()" style="padding:9px 20px">저장</button>
+    </div>
+    <!-- 단계 편집 미니모달 -->
+    <div class="rle-step-modal" id="rle-step-modal">
+      <div class="rle-smodal-box">
+        <div style="font-size:15px;font-weight:800">단계 편집</div>
+        <div style="display:grid;grid-template-columns:70px 1fr;gap:10px">
+          <div class="rle-field">
+            <div class="rle-label">아이콘</div>
+            <input class="rle-input" id="rle-smodal-v" placeholder="📝" style="text-align:center;font-size:18px;padding:7px">
+          </div>
+          <div class="rle-field">
+            <div class="rle-label">카테고리</div>
+            <input class="rle-input" id="rle-smodal-k" placeholder="아이디어">
+          </div>
+        </div>
+        <div class="rle-field">
+          <div class="rle-label">질문</div>
+          <input class="rle-input" id="rle-smodal-q" placeholder="사용자에게 물어볼 질문을 입력하세요">
+        </div>
+        <div class="rle-field">
+          <div class="rle-label">힌트 (선택)</div>
+          <input class="rle-input" id="rle-smodal-h" placeholder="AI 힌트 텍스트 (선택사항)">
+        </div>
+        <div style="display:flex;gap:8px;justify-content:flex-end">
+          <button class="rl-btn sec" onclick="closeRLEStepModal()">취소</button>
+          <button class="rl-btn pri" onclick="saveRLEStepEdit()">확인</button>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 <!-- 오버레이: 캐릭터 선택 -->
@@ -1819,6 +1933,7 @@ function navTo(v){
   if(v==='home')renderActionBoard();
   if(v==='myplan')loadMyPlan();
   if(v==='works')loadProjects();
+  if(v==='rl')renderRL();
   if(v==='outline'){initOutline();setTimeout(drawTensionGraph,100);}
   if(v==='chara'){initCharaView();}
   if(v==='tasks'){
@@ -3023,7 +3138,8 @@ function renderMyPlanWorks(){
     const preview=p.synopsis||(p.answer_history&&p.answer_history.find(i=>i.value)?.value)||'기획 내용을 확인하세요.';
     const hasSyn=!!(p.synopsis&&p.synopsis.length>10);
     const synBtn=`<button onclick="event.stopPropagation();openSynModal('${p.id}')" style="margin-top:6px;width:100%;background:${hasSyn?'rgba(16,185,129,0.06)':'rgba(255,255,255,0.03)'};border:1px ${hasSyn?'solid rgba(16,185,129,0.2)':'dashed var(--border2)'};color:${hasSyn?'#6EE7B7':'var(--text-faint)'};font-size:12px;font-weight:700;padding:8px;border-radius:10px;cursor:pointer;font-family:inherit;transition:all 0.2s" onmouseover="this.style.background='rgba(16,185,129,0.12)';this.style.borderColor='rgba(16,185,129,0.3)';this.style.color='#6EE7B7'" onmouseout="this.style.background='${hasSyn?'rgba(16,185,129,0.06)':'rgba(255,255,255,0.03)'}';this.style.borderColor='${hasSyn?'rgba(16,185,129,0.2)':'var(--border2)'}';this.style.color='${hasSyn?'#6EE7B7':'var(--text-faint)'}'">📝 ${hasSyn?'시놉시스 편집':'시놉시스 입력'}</button>`;
-    c.innerHTML=`<div><span class="pc-genre">${p.genre||'미분류'}</span></div><div class="pc-title">${p.title}</div><div class="pc-syn">${preview}</div><div class="pc-foot"><span>${p.routine_type==='short'?'단편':'장편'}</span><span>${(p.answer_history||[]).filter(i=>i.value).length}단계 완료</span></div>${actionBtn}${synBtn}`;
+    const _rtLabel=(()=>{const t=p.routine_type;if(t==='short')return'단편';if(t==='long'||!t)return'장편';const _rl=loadRL();const _r=_rl.find(r=>r.id===t);return _r?_r.name:'커스텀';})();
+    c.innerHTML=`<div><span class="pc-genre">${p.genre||'미분류'}</span></div><div class="pc-title">${p.title}</div><div class="pc-syn">${preview}</div><div class="pc-foot"><span>${_rtLabel}</span><span>${(p.answer_history||[]).filter(i=>i.value).length}단계 완료</span></div>${actionBtn}${synBtn}`;
     c.onclick=()=>openProjDetail(p.id);
     g.appendChild(c);
   });
@@ -4027,6 +4143,173 @@ async function draftCharacters(){
   }
 }
 
+// ── 루틴 보관함 (RL) ──
+function loadRL(){
+  let rl=JSON.parse(localStorage.getItem('rl')||'null');
+  if(!rl){
+    rl=[
+      {id:'lib-long',name:'장편 루틴',icon:'📖',desc:'22단계로 탄탄한 장편 스토리를 기획합니다',steps:LONG.map(s=>({...s})),isDefault:true},
+      {id:'lib-short',name:'단편 루틴',icon:'✍️',desc:'11단계로 빠르게 단편 아이디어를 정리합니다',steps:SHORT.map(s=>({...s})),isDefault:true},
+    ];
+    localStorage.setItem('rl',JSON.stringify(rl));
+  }
+  return rl;
+}
+function saveRL(rl){localStorage.setItem('rl',JSON.stringify(rl));}
+
+function renderRL(){
+  const rl=loadRL();
+  const grid=$('rl-grid');
+  grid.innerHTML='';
+  rl.forEach(r=>{
+    const d=document.createElement('div');
+    d.className='rl-card';
+    d.innerHTML=`<div style="display:flex;align-items:center;gap:12px">
+      <div class="rl-card-icon">${r.icon}</div>
+      <div style="flex:1;min-width:0">
+        <div style="display:flex;align-items:center;gap:8px"><div class="rl-card-name">${r.name}</div>${r.isDefault?'<span class="rl-badge-def">기본</span>':''}</div>
+        <div class="rl-card-meta">${r.steps.length}단계</div>
+      </div></div>
+      <div class="rl-card-desc">${r.desc}</div>
+      <div class="rl-card-actions">
+        <button class="rl-btn pri" onclick="openRLEdit('${r.id}')">✏️ 편집</button>
+        <button class="rl-btn sec" onclick="cloneRL('${r.id}')">복제</button>
+        ${!r.isDefault?`<button class="rl-btn dan" onclick="deleteRL('${r.id}')">삭제</button>`:''}
+      </div>`;
+    grid.appendChild(d);
+  });
+  const add=document.createElement('div');
+  add.className='rl-card-add';
+  add.innerHTML='<div style="font-size:26px">➕</div><div style="font-size:14px;font-weight:700">새 루틴 만들기</div><div style="font-size:12px;margin-top:2px">빈 루틴 또는 기존 루틴을 복제해 시작하세요</div>';
+  add.onclick=createNewRL;
+  grid.appendChild(add);
+}
+
+function renderRoutineOverlay(){
+  const rl=loadRL();
+  const c=$('ov-routine-list');
+  c.innerHTML='';
+  rl.forEach((r,i)=>{
+    const d=document.createElement('div');
+    d.className='ri';
+    d.onclick=()=>selRoutine(r.id);
+    d.innerHTML=`<div class="rii">${r.icon}</div><div><div class="rin">${r.name}</div><div class="rid">${r.steps.length}단계 · ${r.desc}</div></div>${i===0?'<div class="rib">추천</div>':''}`;
+    c.appendChild(d);
+  });
+}
+
+function cloneRL(id){
+  const rl=loadRL();
+  const src=rl.find(r=>r.id===id);if(!src)return;
+  const clone={...src,id:'rl-'+Date.now(),name:src.name+' (복사본)',isDefault:false,steps:src.steps.map(s=>({...s}))};
+  rl.push(clone);saveRL(rl);renderRL();flash('루틴이 복제됐습니다');
+}
+
+function deleteRL(id){
+  const rl=loadRL();
+  const idx=rl.findIndex(r=>r.id===id);
+  if(idx===-1)return;
+  if(rl[idx].isDefault){flash('기본 루틴은 삭제할 수 없습니다');return;}
+  if(!confirm('이 루틴을 삭제할까요?'))return;
+  rl.splice(idx,1);saveRL(rl);renderRL();flash('루틴이 삭제됐습니다');
+}
+
+function createNewRL(){
+  const rl=loadRL();
+  const id='rl-'+Date.now();
+  rl.push({id,name:'새 루틴',icon:'🎨',desc:'나만의 창작 루틴',steps:[],isDefault:false});
+  saveRL(rl);renderRL();openRLEdit(id);
+}
+
+// ── 루틴 편집 ──
+let rlEditId=null,rlEditSteps=[],rlEditStepEditIdx=-1;
+
+function openRLEdit(id){
+  const rl=loadRL();
+  const r=rl.find(r=>r.id===id);if(!r)return;
+  rlEditId=id;
+  rlEditSteps=r.steps.map(s=>({...s}));
+  $('rle-name').value=r.name;
+  $('rle-icon').value=r.icon;
+  $('rle-desc').value=r.desc;
+  renderRLESteps();
+  openOv('ov-rl-edit');
+}
+
+function closeRLEdit(){
+  closeOv('ov-rl-edit');
+  rlEditId=null;rlEditSteps=[];rlEditStepEditIdx=-1;
+  const sm=$('rle-step-modal');if(sm)sm.style.display='none';
+}
+
+function saveRLEdit(){
+  const rl=loadRL();
+  const idx=rl.findIndex(r=>r.id===rlEditId);if(idx===-1)return;
+  rl[idx].name=$('rle-name').value.trim()||rl[idx].name;
+  rl[idx].icon=$('rle-icon').value.trim()||rl[idx].icon;
+  rl[idx].desc=$('rle-desc').value.trim()||rl[idx].desc;
+  rl[idx].steps=rlEditSteps.map(s=>({...s}));
+  saveRL(rl);closeRLEdit();renderRL();flash('루틴이 저장됐습니다');
+}
+
+function renderRLESteps(){
+  const list=$('rle-steps');
+  const empty=$('rle-empty-steps');
+  list.innerHTML='';
+  if(rlEditSteps.length===0){if(empty)empty.style.display='block';return;}
+  if(empty)empty.style.display='none';
+  rlEditSteps.forEach((s,i)=>{
+    const d=document.createElement('div');
+    d.className='rle-step';d.draggable=true;d.dataset.idx=i;
+    d.innerHTML=`<span class="rle-step-icon">${s.v}</span><div class="rle-step-body"><div class="rle-step-kw">${s.k}</div><div class="rle-step-q">${s.q}</div></div><button class="rle-step-edit" onclick="openRLEStepEdit(${i})">편집</button><button class="rle-step-del" onclick="deleteRLEStep(${i})">✕</button>`;
+    d.addEventListener('dragstart',e=>{e.dataTransfer.setData('text/plain',i);d.style.opacity='0.5';});
+    d.addEventListener('dragend',()=>{d.style.opacity='';});
+    d.addEventListener('dragover',e=>{e.preventDefault();d.style.background='rgba(139,92,246,0.1)';});
+    d.addEventListener('dragleave',()=>{d.style.background='';});
+    d.addEventListener('drop',e=>{
+      e.preventDefault();d.style.background='';
+      const from=parseInt(e.dataTransfer.getData('text/plain'));
+      if(from===i)return;
+      const moved=rlEditSteps.splice(from,1)[0];
+      rlEditSteps.splice(i,0,moved);
+      renderRLESteps();
+    });
+    list.appendChild(d);
+  });
+}
+
+function deleteRLEStep(i){rlEditSteps.splice(i,1);renderRLESteps();}
+
+function addRLEStep(){
+  rlEditStepEditIdx=-1;
+  $('rle-smodal-v').value='📝';$('rle-smodal-k').value='';
+  $('rle-smodal-q').value='';$('rle-smodal-h').value='';
+  $('rle-step-modal').style.display='flex';
+}
+
+function openRLEStepEdit(i){
+  rlEditStepEditIdx=i;
+  const s=rlEditSteps[i];
+  $('rle-smodal-v').value=s.v;$('rle-smodal-k').value=s.k;
+  $('rle-smodal-q').value=s.q;$('rle-smodal-h').value=s.h||'';
+  $('rle-step-modal').style.display='flex';
+}
+
+function saveRLEStepEdit(){
+  const v=$('rle-smodal-v').value.trim()||'📝';
+  const k=$('rle-smodal-k').value.trim()||'항목';
+  const q=$('rle-smodal-q').value.trim();
+  const h=$('rle-smodal-h').value.trim();
+  if(!q){flash('질문을 입력해주세요');return;}
+  const step={id:'cs-'+Date.now(),v,k,q,h:h||null};
+  if(rlEditStepEditIdx===-1){rlEditSteps.push(step);}
+  else{rlEditSteps[rlEditStepEditIdx]={...rlEditSteps[rlEditStepEditIdx],...step};}
+  $('rle-step-modal').style.display='none';
+  renderRLESteps();
+}
+
+function closeRLEStepModal(){$('rle-step-modal').style.display='none';}
+
 // ── 모드/루틴/캐릭터/이름 선택 ──
 let pendingRoutineType='';
 let newProjName='';
@@ -4034,6 +4317,7 @@ function openMode(){openOv('ov-mode');}
 function selMode(m){
   closeOv('ov-mode');
   if(m==='seller'){flash('멘토 모드 — 준비 중입니다');return;}
+  renderRoutineOverlay();
   openOv('ov-routine');
 }
 function selRoutine(type){
@@ -4072,7 +4356,11 @@ let editingIdx=-1;
 let dragIdx=-1;
 
 function initPlanView(type){
-  const base=(type==='long'?LONG:SHORT).map(s=>({...s,value:''}));
+  let src;
+  if(type==='long')src=LONG;
+  else if(type==='short')src=SHORT;
+  else{const rl=loadRL();const r=rl.find(r=>r.id===type);src=r?r.steps:LONG;}
+  const base=src.map(s=>({...s,value:''}));
   planItems=[...base];
   selProj=null; // 새 프로젝트 시작
   $('plan-proj-name').textContent=newProjName;
