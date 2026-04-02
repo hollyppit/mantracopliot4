@@ -1551,12 +1551,18 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
           </div>
         </div>
         <div class="rle-field">
-          <div class="rle-label">질문</div>
-          <input class="rle-input" id="rle-smodal-q" placeholder="사용자에게 물어볼 질문을 입력하세요">
+          <div class="rle-label">질문 <span style="font-weight:400;color:var(--text-dim);text-transform:none;letter-spacing:0;font-size:11px">— 빌드업 대화에서 작가에게 표시됩니다</span></div>
+          <input class="rle-input" id="rle-smodal-q" placeholder="예: 주인공은 뭘 하고 싶어 하나요?">
         </div>
         <div class="rle-field">
-          <div class="rle-label">힌트 (선택)</div>
-          <input class="rle-input" id="rle-smodal-h" placeholder="AI 힌트 텍스트 (선택사항)">
+          <div class="rle-label">스토리텔링 인사이트 <span style="font-weight:400;color:var(--text-dim);text-transform:none;letter-spacing:0;font-size:11px">— 질문 아래 작가에게 표시</span></div>
+          <textarea class="rle-input" id="rle-smodal-h" placeholder="예: 등장인물은 극 중에서 반드시 움직여야 합니다. 움직이게 만드는 건 강력한 동기입니다." rows="3" style="resize:vertical;line-height:1.5"></textarea>
+          <div style="font-size:11px;color:var(--text-faint);margin-top:4px">영웅의 여정·3막 구조 등 내러티브 이론 기반으로 작성하면 효과적입니다.</div>
+        </div>
+        <div class="rle-field">
+          <div class="rle-label">AI 자동 채우기 가이드 <span style="font-weight:400;color:var(--text-dim);text-transform:none;letter-spacing:0;font-size:11px">— 설정 시 AI가 이 기준으로 답변을 채웁니다</span></div>
+          <textarea class="rle-input" id="rle-smodal-ai" placeholder="예: 주인공의 내적 동기와 외적 목표를 구분해서 작성하세요. 단순한 욕망보다 결핍에서 오는 동기가 더 설득력 있습니다." rows="3" style="resize:vertical;line-height:1.5"></textarea>
+          <div style="font-size:11px;color:var(--text-faint);margin-top:4px">비워두면 스토리텔링 인사이트가 AI 힌트로 사용됩니다.</div>
         </div>
         <div style="display:flex;gap:8px;justify-content:flex-end">
           <button class="rl-btn sec" onclick="closeRLEStepModal()">취소</button>
@@ -4283,7 +4289,7 @@ function deleteRLEStep(i){rlEditSteps.splice(i,1);renderRLESteps();}
 function addRLEStep(){
   rlEditStepEditIdx=-1;
   $('rle-smodal-v').value='📝';$('rle-smodal-k').value='';
-  $('rle-smodal-q').value='';$('rle-smodal-h').value='';
+  $('rle-smodal-q').value='';$('rle-smodal-h').value='';$('rle-smodal-ai').value='';
   $('rle-step-modal').style.display='flex';
 }
 
@@ -4292,6 +4298,7 @@ function openRLEStepEdit(i){
   const s=rlEditSteps[i];
   $('rle-smodal-v').value=s.v;$('rle-smodal-k').value=s.k;
   $('rle-smodal-q').value=s.q;$('rle-smodal-h').value=s.h||'';
+  $('rle-smodal-ai').value=s.ai_prompt||'';
   $('rle-step-modal').style.display='flex';
 }
 
@@ -4300,8 +4307,9 @@ function saveRLEStepEdit(){
   const k=$('rle-smodal-k').value.trim()||'항목';
   const q=$('rle-smodal-q').value.trim();
   const h=$('rle-smodal-h').value.trim();
+  const ai_prompt=$('rle-smodal-ai').value.trim();
   if(!q){flash('질문을 입력해주세요');return;}
-  const step={id:'cs-'+Date.now(),v,k,q,h:h||null};
+  const step={id:'cs-'+Date.now(),v,k,q,h:h||null,ai_prompt:ai_prompt||null};
   if(rlEditStepEditIdx===-1){rlEditSteps.push(step);}
   else{rlEditSteps[rlEditStepEditIdx]={...rlEditSteps[rlEditStepEditIdx],...step};}
   $('rle-step-modal').style.display='none';
@@ -4437,7 +4445,8 @@ async function autoFillItemModal(){
       internalCtx && `[앞서 정해진 기획]\n${internalCtx}`
     ].filter(Boolean).join('\n\n');
 
-    const request = `웹툰·웹소설 기획 AI다. 세계관·캐릭터·기존 기획과 반드시 일관성을 유지하라. 답변 텍스트만 출력. 되묻거나 설명 금지. 기호·마크다운·이모지 없이 1~2문장.\n[현재 질문] ${item.q}${item.h ? ` (힌트: ${item.h})` : ''}\n\n위 내용을 참고한 답변:`;
+    const _itemGuide=item.ai_prompt||item.h||'';
+    const request = `웹툰·웹소설 기획 AI다. 세계관·캐릭터·기존 기획과 반드시 일관성을 유지하라. 답변 텍스트만 출력. 되묻거나 설명 금지. 기호·마크다운·이모지 없이 1~2문장.\n[현재 질문] ${item.q}${_itemGuide ? ` (가이드: ${_itemGuide})` : ''}\n\n위 내용을 참고한 답변:`;
 
     const result=await ai([
       {role:'system',content:'웹툰·웹소설 기획 조각을 작성하는 기획 전문가입니다. 항상 제공된 프로젝트 데이터(세계관, 캐릭터, 작품 요약)를 기반으로 일관된 내용을 생성합니다.'},
@@ -4640,7 +4649,8 @@ async function autoFillBuildupStep(){
       internalCtx && `[앞서 정해진 기획]\n${internalCtx}`
     ].filter(Boolean).join('\n\n');
 
-    const request = `웹툰·웹소설 기획 AI다. 세계관·캐릭터·기존 기획과 반드시 일관성을 유지하라. 답변 텍스트만 출력. 되묻거나 설명 금지. 기호·마크다운·이모지 없이 1~2문장.\n[현재 질문] ${s.q}${s.h ? ` (힌트: ${s.h})` : ''}\n\n위 내용을 참고한 답변:`;
+    const _sGuide=s.ai_prompt||s.h||'';
+    const request = `웹툰·웹소설 기획 AI다. 세계관·캐릭터·기존 기획과 반드시 일관성을 유지하라. 답변 텍스트만 출력. 되묻거나 설명 금지. 기호·마크다운·이모지 없이 1~2문장.\n[현재 질문] ${s.q}${_sGuide ? ` (가이드: ${_sGuide})` : ''}\n\n위 내용을 참고한 답변:`;
 
     const result = await ai([
       { role: 'system', content: '작가의 기획을 돕는 유능한 조수입니다. 항상 제공된 프로젝트 데이터(세계관, 캐릭터, 작품 요약)를 기반으로 일관된 내용을 생성합니다.' },
