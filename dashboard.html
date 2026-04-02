@@ -303,6 +303,114 @@ body {
 }
 .modal-btn.danger:hover { background: rgba(239,68,68,0.12); border-color: rgba(239,68,68,0.4); }
 
+/* ── 전문가 검증 ── */
+.verify-section {
+  margin-top: 60px;
+  padding-top: 40px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+}
+.verify-desc {
+  font-size: 13px; color: var(--text-faint); line-height: 1.8;
+  margin-bottom: 20px; word-break: keep-all;
+}
+.verify-input {
+  width: 100%;
+  background: rgba(255,255,255,0.02); color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 16px; padding: 16px 20px;
+  font-family: inherit; font-size: 14px; line-height: 1.8;
+  resize: vertical; min-height: 110px;
+  outline: none; transition: border-color .25s;
+}
+.verify-input:focus { border-color: rgba(214,183,90,0.4); }
+.verify-input::placeholder { color: var(--text-faint); }
+.verify-btn {
+  display: inline-flex; align-items: center; gap: 10px;
+  margin-top: 14px;
+  background: linear-gradient(135deg, rgba(214,183,90,0.15), rgba(139,92,246,0.15));
+  border: 1px solid rgba(214,183,90,0.35);
+  color: var(--gold-light);
+  padding: 13px 28px; border-radius: 100px;
+  font-size: 14px; font-weight: 700; font-family: inherit;
+  cursor: pointer; transition: all .3s;
+  box-shadow: 0 4px 20px rgba(214,183,90,0.1);
+}
+.verify-btn:hover {
+  background: linear-gradient(135deg, rgba(214,183,90,0.25), rgba(139,92,246,0.25));
+  border-color: rgba(214,183,90,0.6);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(214,183,90,0.2);
+}
+.verify-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+/* 결과 영역 */
+.verify-result {
+  margin-top: 24px;
+  display: flex; flex-direction: column; gap: 12px;
+}
+/* 로딩 */
+.verify-loading {
+  padding: 32px 0; text-align: center;
+  color: var(--text-faint); font-size: 13px; font-weight: 600;
+  letter-spacing: 0.06em;
+  animation: pulse-fade 1.4s ease-in-out infinite;
+}
+@keyframes pulse-fade { 0%,100%{opacity:.4} 50%{opacity:1} }
+/* 섹션 레이블 */
+.vr-label {
+  font-size: 10px; font-weight: 800; letter-spacing: 0.12em;
+  text-transform: uppercase; margin-bottom: 10px;
+  display: flex; align-items: center; gap: 8px;
+}
+.vr-label::after { content:''; flex:1; height:1px; background:rgba(255,255,255,0.06); }
+/* 유사 사례 카드 */
+.case-card {
+  background: rgba(255,255,255,0.02);
+  border: 1px solid var(--border);
+  border-radius: 18px; padding: 18px 22px;
+  transition: border-color .2s;
+  animation: card-in .35s ease both;
+}
+.case-card:hover { border-color: rgba(139,92,246,0.28); }
+@keyframes card-in { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+.case-card-title {
+  font-size: 14px; font-weight: 800; color: var(--text);
+  margin-bottom: 6px; display: flex; align-items: center; gap: 8px;
+}
+.case-card-badge {
+  font-size: 10px; font-weight: 700; padding: 2px 8px;
+  border-radius: 100px;
+  background: rgba(139,92,246,0.1); border: 1px solid rgba(139,92,246,0.2);
+  color: var(--purple-light);
+}
+.case-card-desc {
+  font-size: 13px; color: var(--text-faint); line-height: 1.7;
+  word-break: keep-all;
+}
+/* 판단 카드 */
+.verdict-card {
+  background: linear-gradient(135deg, rgba(214,183,90,0.06), rgba(139,92,246,0.06));
+  border: 1px solid rgba(214,183,90,0.25);
+  border-radius: 18px; padding: 20px 24px;
+  animation: card-in .35s .15s ease both;
+}
+.verdict-icon { font-size: 1.4rem; margin-bottom: 10px; }
+.verdict-title {
+  font-size: 12px; font-weight: 800; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--gold);
+  margin-bottom: 10px;
+}
+.verdict-text {
+  font-size: 14px; color: var(--text); line-height: 1.8;
+  font-weight: 600; word-break: keep-all;
+}
+.verdict-tags { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+.verdict-tag {
+  font-size: 11px; font-weight: 700; padding: 4px 12px;
+  border-radius: 100px;
+  background: rgba(214,183,90,0.08); border: 1px solid rgba(214,183,90,0.2);
+  color: var(--gold-light);
+}
+
 /* ── MOBILE ── */
 @media (max-width: 768px) {
   .header { padding: 16px 20px; }
@@ -365,6 +473,17 @@ body {
       <a class="btn-start" href="index.html">✦ 첫 작품 기획 시작하기</a>
     </div>
   </div>
+  <!-- 전문가 검증 -->
+  <div class="verify-section">
+    <div class="section-title">전문가 검증</div>
+    <p class="verify-desc">기획안의 핵심 내용을 입력하면, 유사한 성공·실패 사례와 비교해 구조적 패턴을 진단합니다.</p>
+    <textarea class="verify-input" id="verify-input"
+      placeholder="예) 기억을 잃은 소녀가 자신이 세계를 구할 운명임을 알게 되고, 동료들과 함께 흑막 조직에 맞서는 판타지 액션 이야기"></textarea>
+    <button class="verify-btn" id="verifyBtn" onclick="runVerify()">
+      ✦ 전문가 검증 받기
+    </button>
+    <div class="verify-result" id="verify-result"></div>
+  </div>
 </main>
 
 <!-- DETAIL MODAL -->
@@ -387,6 +506,105 @@ const SUPABASE_URL = 'https://mvygorffhbshubqkerpo.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im12eWdvcmZmaGJzaHVicWtlcnBvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2MzU3ODQsImV4cCI6MjA4OTIxMTc4NH0.p7usz-l53gmibWpswzTFvhzmR3UX7QkWb3oPsy3A50c';
 const _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 function $(id) { return document.getElementById(id); }
+
+// ── 전문가 검증 (RAG → 카드 UI) ──
+
+// 텍스트 기반 패턴 감지 (임시 embedding 사용 시 fallback 판단 제공)
+function _detectPattern(text) {
+  const t = text;
+  if (/기억|잃|운명|각성|선택받/.test(t))
+    return { label: '기억 상실·각성형', verdict: '이 구조는 초반 설명 과다 패턴과 유사합니다. 주인공의 수동적 각성보다 능동적 선택에서 시작하면 독자의 몰입이 높아집니다.', tags: ['각성형 클리셰', '수동적 주인공', '설명 과다 위험'] };
+  if (/복수|원수|배신|죽인/.test(t))
+    return { label: '복수극 구조', verdict: '복수 동기는 강력하지만, 주인공이 복수 과정에서 변해가는 내면 갈등이 없으면 단순 액션 구조로 평탄해질 수 있습니다.', tags: ['복수 동기 명확', '내면 갈등 필요', '캐릭터 변화 아크'] };
+  if (/이세계|전생|환생|회귀|회빙환/.test(t))
+    return { label: '이세계·회귀 구조', verdict: '이세계 진입 이후 "왜 이 세계여야 하는가"에 대한 설득력이 부족할 경우 독자 이탈이 빠릅니다. 진입 계기와 목표를 즉시 명확히 하세요.', tags: ['이세계 진입 동기', '목표 설정 필수', '클리셰 탈피 필요'] };
+  if (/로맨스|사랑|남주|여주|설레/.test(t))
+    return { label: '로맨스 중심 구조', verdict: '감정선 전개 속도와 두 인물의 관계 역학이 독자 체류를 결정합니다. 초반 긴장감(밀당)을 설계해 두세요.', tags: ['감정선 속도 조절', '관계 역학 설계', '밀당 구조 중요'] };
+  return { label: '일반 서사 구조', verdict: '기획안의 핵심 갈등이 아직 선명하지 않습니다. "주인공이 무엇을 원하는가"와 "무엇이 그것을 막는가"를 한 문장으로 정리해보세요.', tags: ['갈등 구조 보완 필요', '주인공 목표 불명확', '독자 훅 강화 권장'] };
+}
+
+// RAG 결과 → 카드 데이터 변환
+function _mapCaseCard(item, idx) {
+  // match_cases RPC가 반환하는 필드를 유연하게 처리
+  const title   = item.title       || item.name        || item.case_title || `유사 사례 ${idx + 1}`;
+  const desc    = item.description || item.content     || item.summary    || item.text || '상세 내용이 없습니다.';
+  const score   = item.similarity  !== undefined ? Math.round(item.similarity * 100) : null;
+  return { title, desc, score };
+}
+
+// 결과 HTML 렌더
+function _renderVerifyResult(cases, pattern) {
+  const box = $('verify-result');
+
+  // 유사 사례 섹션
+  let casesHtml = `<div class="vr-label" style="color:var(--purple-light)">유사 사례</div>`;
+  if (cases.length) {
+    casesHtml += cases.map((c, i) => `
+      <div class="case-card" style="animation-delay:${i * 0.08}s">
+        <div class="case-card-title">
+          ${c.title}
+          ${c.score !== null ? `<span class="case-card-badge">유사도 ${c.score}%</span>` : ''}
+        </div>
+        <div class="case-card-desc">${c.desc}</div>
+      </div>`).join('');
+  } else {
+    casesHtml += `<div class="case-card"><div class="case-card-desc" style="color:var(--text-faint)">데이터베이스에 충분한 유사 사례가 아직 없습니다. 검증 데이터가 쌓이면 더 정확한 비교가 가능합니다.</div></div>`;
+  }
+
+  // 판단 섹션
+  const verdictHtml = `
+    <div class="vr-label" style="color:var(--gold);margin-top:8px">판단</div>
+    <div class="verdict-card">
+      <div class="verdict-icon">⚖️</div>
+      <div class="verdict-title">${pattern.label}</div>
+      <div class="verdict-text">${pattern.verdict}</div>
+      <div class="verdict-tags">${pattern.tags.map(t => `<span class="verdict-tag">${t}</span>`).join('')}</div>
+    </div>`;
+
+  box.innerHTML = casesHtml + verdictHtml;
+}
+
+async function runVerify() {
+  const text = $('verify-input').value.trim();
+  const btn  = $('verifyBtn');
+  const box  = $('verify-result');
+
+  if (!text) {
+    $('verify-input').focus();
+    $('verify-input').style.borderColor = 'rgba(239,68,68,0.5)';
+    setTimeout(() => { $('verify-input').style.borderColor = ''; }, 1200);
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = '⏳ 검증 중...';
+  box.innerHTML = `<div class="verify-loading">✦ 유사 사례를 검색하고 있습니다...</div>`;
+
+  try {
+    // 임시 embedding — 실제 서비스 시 Edge Function /api/embed 로 교체
+    const embedding = [0.1, 0.2, 0.3];
+
+    const { data, error } = await _sb.rpc('match_cases', {
+      query_embedding: embedding,
+      match_count: 3
+    });
+
+    console.log('RAG 결과:', data, error);
+
+    const cases   = (data || []).map(_mapCaseCard);
+    const pattern = _detectPattern(text);
+    _renderVerifyResult(cases, pattern);
+
+  } catch (e) {
+    console.error(e);
+    // RPC 미설정 상태에서도 패턴 판단은 제공
+    const pattern = _detectPattern(text);
+    _renderVerifyResult([], pattern);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '✦ 전문가 검증 받기';
+  }
+}
 
 // ── 헬퍼 ──
 function formatDate(iso) {
