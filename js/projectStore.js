@@ -1,6 +1,39 @@
 // ── projectStore.js ──
 // 데이터 중심 구조: 프로젝트 / 캐릭터 / 회차를 구조적으로 관리
 
+// ── AI 스타일 가이드 ──
+export const guides = [
+  {
+    id: "default",
+    name: "기본",
+    prompt: "일반적인 스토리 구조로 작성"
+  },
+  {
+    id: "action",
+    name: "액션 중심",
+    prompt: "빠른 전개, 강한 갈등, 긴장감 중심으로 작성"
+  },
+  {
+    id: "emotion",
+    name: "감정 중심",
+    prompt: "인물의 감정과 내면 묘사를 깊게 표현"
+  }
+];
+
+export function getActiveGuide(project, extraGuides = []) {
+  const all = [...guides, ...extraGuides];
+  return all.find(g => g.id === (project && project.activeGuide)) || all[0];
+}
+
+/** localStorage에서 커스텀 가이드 목록을 읽음 (브라우저 전용) */
+function _loadCustomGuides() {
+  try {
+    return JSON.parse(
+      (typeof localStorage !== "undefined" && localStorage.getItem("custom_guides")) || "[]"
+    );
+  } catch { return []; }
+}
+
 // 회차 타입별 기본 감정 매핑 (캐릭터 상태 추론용)
 const TYPE_TO_EMOTION = {
   curiosity: "호기심",
@@ -17,6 +50,7 @@ export function createEmptyProject(title = "새 프로젝트") {
     world: "",
     characters: [],
     episodes: [],
+    activeGuide: "default",
     memory: {
       // ── 파일 업로드 기반 (structureMemory) ──
       rawText: "",
@@ -432,10 +466,10 @@ export function buildContext(project) {
 
   const summary = (project.memory && project.memory.summary) || "";
 
-  // 모두 비어있으면 컨텍스트 없음
-  if (!world && !characters && !tl.length && !summary && !srcChars && !textTlText) return "";
+  const guide = getActiveGuide(project, _loadCustomGuides());
 
   const lines = [];
+  lines.push(`[작성 스타일]\n${guide.prompt}`);
   if (world)        lines.push(`[세계관]\n${world}`);
   if (characters)   lines.push(`[캐릭터 현재 상태]\n${characters}`);
   if (arcLines)     lines.push(`[캐릭터 감정 변화 이력]\n${arcLines}`);

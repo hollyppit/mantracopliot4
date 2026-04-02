@@ -261,6 +261,34 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
 .xlink-btn:hover{border-color:var(--purple-light);color:var(--purple-light);background:rgba(139,92,246,0.08)}
 .xlink-btn.active{border-color:var(--green);color:#6EE7B7;background:rgba(16,185,129,0.08)}
 .xiw-row{display:flex;gap:10px;align-items:flex-end}
+.guide-bar{display:flex;align-items:center;gap:8px;padding:4px 0}
+.guide-sel-btn{font-size:12px;font-weight:700;padding:5px 12px 5px 10px;border-radius:20px;border:1px solid rgba(214,183,90,0.35);background:rgba(214,183,90,0.06);color:var(--gold-light);cursor:pointer;font-family:inherit;transition:all 0.2s;white-space:nowrap;display:flex;align-items:center;gap:6px}
+.guide-sel-btn:hover{border-color:var(--gold);background:rgba(214,183,90,0.12)}
+.guide-sel-btn .gs-arrow{font-size:10px;opacity:0.7;transition:transform 0.2s}
+.guide-sel-btn.open .gs-arrow{transform:rotate(180deg)}
+.guide-dropdown{position:absolute;bottom:calc(100% + 6px);left:0;background:rgba(12,12,24,0.97);border:1px solid var(--border2);border-radius:14px;padding:6px;min-width:180px;box-shadow:0 12px 40px rgba(0,0,0,0.6);z-index:200;display:none}
+.guide-dropdown.open{display:block}
+.guide-opt{font-size:13px;font-weight:700;padding:9px 14px;border-radius:9px;cursor:pointer;color:var(--text-dim);transition:all 0.15s;display:flex;align-items:center;gap:8px}
+.guide-opt:hover{background:rgba(214,183,90,0.1);color:var(--gold-light)}
+.guide-opt.active{color:var(--gold-light);background:rgba(214,183,90,0.12)}
+.guide-opt .go-dot{width:6px;height:6px;border-radius:50%;background:var(--gold);opacity:0;flex-shrink:0}
+.guide-opt.active .go-dot{opacity:1}
+.guide-wrap{position:relative}
+.guide-dd-sep{height:1px;background:var(--border);margin:6px 4px}
+.guide-add-btn{font-size:12px;font-weight:700;padding:8px 14px;border-radius:9px;cursor:pointer;color:var(--text-faint);transition:all 0.15s;display:flex;align-items:center;gap:6px;width:100%;background:none;border:none;font-family:inherit;text-align:left}
+.guide-add-btn:hover{background:rgba(139,92,246,0.08);color:var(--purple-light)}
+.guide-form{padding:10px 10px 8px;display:flex;flex-direction:column;gap:7px}
+.guide-form input,.guide-form textarea{background:rgba(255,255,255,0.05);border:1px solid var(--border2);border-radius:8px;color:var(--text);font-family:inherit;font-size:12px;padding:7px 10px;outline:none;width:100%;box-sizing:border-box;transition:border-color 0.15s;resize:none}
+.guide-form input:focus,.guide-form textarea:focus{border-color:rgba(139,92,246,0.5)}
+.guide-form textarea{min-height:52px;line-height:1.5}
+.guide-form-row{display:flex;gap:6px;justify-content:flex-end}
+.guide-form-save{font-size:12px;font-weight:800;padding:6px 14px;border-radius:8px;background:rgba(139,92,246,0.18);border:1px solid rgba(139,92,246,0.4);color:var(--purple-light);cursor:pointer;font-family:inherit;transition:all 0.15s}
+.guide-form-save:hover{background:rgba(139,92,246,0.3)}
+.guide-form-cancel{font-size:12px;font-weight:700;padding:6px 10px;border-radius:8px;background:none;border:1px solid var(--border);color:var(--text-faint);cursor:pointer;font-family:inherit;transition:all 0.15s}
+.guide-form-cancel:hover{color:var(--text-dim)}
+.guide-opt-del{font-size:11px;opacity:0;margin-left:auto;color:var(--text-faint);background:none;border:none;cursor:pointer;font-family:inherit;padding:0 2px;transition:all 0.15s;flex-shrink:0}
+.guide-opt:hover .guide-opt-del{opacity:1}
+.guide-opt-del:hover{color:#F87171}
 .xi{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:11px 18px;color:var(--text);font-family:inherit;font-size:14px;resize:none;outline:none;height:44px;max-height:120px;line-height:1.5;transition:border-color 0.3s}
 .xi:focus{border-color:var(--purple-light)}
 .xi::placeholder{color:var(--text-faint)}
@@ -980,6 +1008,16 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
       </div>
       <div class="xb" id="xb"></div>
       <div class="xiw">
+        <div class="guide-bar">
+          <span style="font-size:11px;color:var(--text-faint);white-space:nowrap">작성 스타일:</span>
+          <div class="guide-wrap">
+            <button class="guide-sel-btn" id="guide-sel-btn" onclick="toggleGuideDropdown()">
+              <span id="guide-sel-label">기본</span>
+              <span class="gs-arrow">▼</span>
+            </button>
+            <div class="guide-dropdown" id="guide-dropdown"></div>
+          </div>
+        </div>
         <div class="xlink-row" id="xlink-row">
           <span style="font-size:11px;color:var(--text-faint);align-self:center;white-space:nowrap">내 작품 연동:</span>
         </div>
@@ -3246,7 +3284,7 @@ async function submitBuildupAns(val){
   $('dt').innerHTML='<div class="thk">분석 중... <div class="td"><span>●</span><span>●</span><span>●</span></div></div>';
   const fb=await ai([
     {role:'system',content:buildPersona()},
-    {role:'user',content:`[기획 단계: ${s.k||s.q}]\n[작가 답변]: ${val}\n\n한 줄로 요약해주세요. (최대 60자)`}
+    {role:'user',content:`${_guidePrompt()}[기획 단계: ${s.k||s.q}]\n[작가 답변]: ${val}\n\n한 줄로 요약해주세요. (최대 60자)`}
   ]);
   flash('✓ '+(fb||'저장됨'));
   updateDots(chatStep);
@@ -3397,6 +3435,7 @@ function openXChat(greeting,sub){
   const ap=$('xc-avatar-panel');
   if(ap)ap.style.display='none';
   renderXLinkButtons();
+  renderGuideSelector();
   addXMsg('assistant',greeting);
   setTimeout(()=>$('xi').focus(),300);
 }
@@ -3469,7 +3508,7 @@ async function doXSend(){
   const cEl=ld.querySelector('.xc');
   const xs=$('xs');if(xs)xs.disabled=true;
   await aiStream(
-    [{role:'system',content:xPersona},...xMsgs],
+    [{role:'system',content:_guidePrompt()+xPersona},...xMsgs],
     full=>{cEl.innerHTML=md(full)+'<span style="opacity:0.4;animation:flt 0.8s ease-in-out infinite">▋</span>';$('xb').scrollTop=$('xb').scrollHeight;},
     full=>{xMsgs.push({role:'assistant',content:full});cEl.innerHTML=md(full);$('xb').scrollTop=$('xb').scrollHeight;if(xs)xs.disabled=false;}
   );
@@ -3544,6 +3583,137 @@ function buildContext(project) {
   if (!mem && !world) return "";
   return [world && `[세계관]\n${world}`, mem && `[작품 요약]\n${mem}`]
     .filter(Boolean).join("\n\n");
+}
+
+// ── 작성 스타일 가이드 프리픽스 ──
+// 모든 AI 호출에서 buildContext를 경유하지 않는 경우에 사용
+function _guidePrompt() {
+  const proj = window.currentProject;
+  const activeId = proj?.activeGuide || 'default';
+  const guide = getAllGuides().find(g => g.id === activeId) || getAllGuides()[0];
+  return guide ? `[작성 스타일]\n${guide.prompt}\n\n` : '';
+}
+
+// ── 커스텀 가이드 저장소 ──
+function loadCustomGuides() {
+  try { return JSON.parse(localStorage.getItem('custom_guides') || '[]'); } catch { return []; }
+}
+function saveCustomGuides(list) {
+  localStorage.setItem('custom_guides', JSON.stringify(list));
+}
+function getAllGuides() {
+  return [...(window.PS?.guides || []), ...loadCustomGuides()];
+}
+
+// ── 가이드 셀렉터 UI ──
+function renderGuideSelector() {
+  const proj = window.currentProject;
+  const activeId = proj?.activeGuide || 'default';
+  const allGuides = getAllGuides();
+  const active = allGuides.find(g => g.id === activeId) || allGuides[0];
+
+  const btn = $('guide-sel-btn');
+  const label = $('guide-sel-label');
+  const dd = $('guide-dropdown');
+  if (!btn || !label || !dd) return;
+
+  if (active) label.textContent = active.name;
+
+  const defaultIds = new Set((window.PS?.guides || []).map(g => g.id));
+
+  const optHtml = allGuides.map(g => {
+    const isCustom = !defaultIds.has(g.id);
+    const delBtn = isCustom
+      ? `<button class="guide-opt-del" onclick="event.stopPropagation();deleteCustomGuide('${g.id}')" title="삭제">✕</button>`
+      : '';
+    return `<div class="guide-opt${g.id === activeId ? ' active' : ''}" onclick="selectGuide('${g.id}')">
+      <span class="go-dot"></span>${g.name}
+      <span style="font-size:11px;color:var(--text-faint);margin-left:auto;font-weight:400;margin-right:4px">${g.prompt.slice(0, 14)}…</span>
+      ${delBtn}
+    </div>`;
+  }).join('');
+
+  dd.innerHTML = optHtml +
+    `<div class="guide-dd-sep"></div>
+     <button class="guide-add-btn" onclick="openGuideForm()">＋ 새 가이드 만들기</button>`;
+}
+
+function toggleGuideDropdown() {
+  const btn = $('guide-sel-btn');
+  const dd = $('guide-dropdown');
+  if (!btn || !dd) return;
+  const isOpen = dd.classList.contains('open');
+  if (isOpen) {
+    dd.classList.remove('open');
+    btn.classList.remove('open');
+  } else {
+    renderGuideSelector();
+    dd.classList.add('open');
+    btn.classList.add('open');
+    setTimeout(() => {
+      document.addEventListener('click', _closeGuideDd, { once: true, capture: true });
+    }, 0);
+  }
+}
+
+function _closeGuideDd(e) {
+  const wrap = document.querySelector('.guide-wrap');
+  if (wrap && wrap.contains(e.target)) return;
+  const dd = $('guide-dropdown');
+  const btn = $('guide-sel-btn');
+  if (dd) dd.classList.remove('open');
+  if (btn) btn.classList.remove('open');
+}
+
+function openGuideForm() {
+  const dd = $('guide-dropdown');
+  if (!dd) return;
+  dd.innerHTML =
+    `<div class="guide-form">
+      <input id="gf-name" placeholder="가이드 이름 (예: 로맨스 중심)" maxlength="20">
+      <textarea id="gf-prompt" placeholder="AI 지시 문장 (예: 두 인물의 감정 변화와 설렘을 중심으로 작성)" rows="3"></textarea>
+      <div class="guide-form-row">
+        <button class="guide-form-cancel" onclick="renderGuideSelector()">취소</button>
+        <button class="guide-form-save" onclick="saveNewGuide()">저장</button>
+      </div>
+    </div>`;
+  setTimeout(() => $('gf-name')?.focus(), 50);
+}
+
+function saveNewGuide() {
+  const name = $('gf-name')?.value.trim();
+  const prompt = $('gf-prompt')?.value.trim();
+  if (!name || !prompt) { flash('이름과 설명을 모두 입력해주세요.'); return; }
+  const custom = loadCustomGuides();
+  const newGuide = { id: 'cg_' + Date.now(), name, prompt };
+  custom.push(newGuide);
+  saveCustomGuides(custom);
+  selectGuide(newGuide.id);
+}
+
+function deleteCustomGuide(id) {
+  const custom = loadCustomGuides().filter(g => g.id !== id);
+  saveCustomGuides(custom);
+  const proj = window.currentProject;
+  if (proj?.activeGuide === id) {
+    proj.activeGuide = 'default';
+    window.PS?.saveProject(proj);
+  }
+  renderGuideSelector();
+}
+
+function selectGuide(id) {
+  const proj = window.currentProject;
+  if (!proj || !window.PS) return;
+  proj.activeGuide = id;
+  window.PS.saveProject(proj);
+  renderGuideSelector();
+  const dd = $('guide-dropdown');
+  const btn = $('guide-sel-btn');
+  if (dd) dd.classList.remove('open');
+  if (btn) btn.classList.remove('open');
+  const guide = getAllGuides().find(g => g.id === id);
+  flash(`✦ 스타일: ${guide?.name || id}`);
 }
 
 // ── 페르소나 ──
