@@ -71,6 +71,25 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
 .myplan-cta-import:hover{transform:translateY(-4px);border-color:#3B82F6;box-shadow:0 16px 40px rgba(59,130,246,0.25)}
 .myplan-cta-import .cta-icon{color:#93C5FD;text-shadow:0 0 20px rgba(59,130,246,0.5)}
 .myplan-cta-import .cta-title{color:#93C5FD}
+/* 인터랙티브 이슈 패널 */
+.ip-card{background:rgba(255,180,0,0.04);border:1.5px solid rgba(255,180,0,0.22);border-radius:14px;padding:16px 18px;margin-bottom:12px}
+.ip-progress{font-size:10px;font-weight:800;letter-spacing:0.08em;color:rgba(255,180,0,0.8);text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.ip-question{font-size:14px;font-weight:700;color:var(--text);line-height:1.6;margin-bottom:14px}
+.ip-qsub{font-size:12px;font-weight:500;color:var(--text-dim);display:block;margin-top:4px}
+.ip-btn-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.ip-btn{padding:8px 14px;border-radius:10px;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;transition:all 0.2s;border:1px solid}
+.ip-btn.ai{background:rgba(139,92,246,0.12);border-color:rgba(139,92,246,0.35);color:var(--purple-light)}
+.ip-btn.ai:hover{background:rgba(139,92,246,0.22);border-color:var(--purple-light)}
+.ip-btn.input{background:rgba(255,255,255,0.04);border-color:var(--border2);color:var(--text)}
+.ip-btn.input:hover{background:rgba(255,255,255,0.08);border-color:var(--border2);color:var(--text)}
+.ip-btn.skip{background:none;border-color:transparent;color:var(--text-faint);font-size:11px;padding:8px 6px}
+.ip-btn.skip:hover{color:var(--text-dim)}
+.ip-input-wrap{margin-top:12px;display:flex;flex-direction:column;gap:8px}
+.ip-ta{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:inherit;font-size:14px;line-height:1.5;padding:10px 14px;resize:none;outline:none;min-height:68px;transition:border-color 0.2s}
+.ip-ta:focus{border-color:var(--purple-light)}
+.ip-submit{padding:8px 18px;border-radius:10px;background:var(--purple);border:none;color:#fff;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;transition:all 0.2s;align-self:flex-end;box-shadow:0 4px 12px var(--purple-glow)}
+.ip-submit:hover{filter:brightness(1.1)}
+.ip-done{background:rgba(16,185,129,0.06);border:1px solid rgba(16,185,129,0.2);border-radius:14px;padding:12px 16px;margin-bottom:12px;font-size:13px;font-weight:700;color:#6EE7B7;display:flex;align-items:center;gap:8px}
 .dash-mode-btn{border:none;font-size:12px;font-weight:700;padding:6px 18px;border-radius:16px;cursor:pointer;font-family:inherit;transition:all 0.2s;color:var(--text-dim);background:none}
 .dash-mode-btn:hover{color:var(--text)}
 .dash-mode-btn.on{background:var(--purple);color:#fff}
@@ -772,6 +791,8 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
       <!-- ProjectBoard: 작업 트리거 보드 -->
       <div id="project-board"></div>
 
+      <!-- IssuePanel: 인터랙티브 스토리 점검 -->
+      <div id="issue-panel"></div>
       <!-- ActionBoard: 작업 유도 보드 (블록 2–4) -->
       <div id="action-board"></div>
     </div>
@@ -1994,20 +2015,87 @@ function pbOpenLinkModal() {
   setTimeout(() => openOlProjSelect(), 150);
 }
 
-// ── 프로젝트 기본 문제 감지 ──
+// ── 프로젝트 문제 감지 (인터랙티브 — type/message/question/options 포함) ──
 function detectIssues(project) {
   if (!project) return [];
   const issues = [];
-  if (!(project.characters || []).length)
-    issues.push({ code: 'no_chars',    label: '캐릭터 없음',   desc: '주인공/조연 설정이 비어있어요' });
-  if (!(project.episodes   || []).length)
-    issues.push({ code: 'no_eps',      label: '회차 없음',     desc: '아직 작성된 회차가 없어요' });
-  if (((project.memory && project.memory.timeline) || []).length < 2)
-    issues.push({ code: 'thin_story',  label: '스토리 부족',   desc: '서사 흐름이 2개 미만이에요' });
-  if (!((project.memory && project.memory.rawText) || '').trim())
-    issues.push({ code: 'no_link',     label: '작품 미연동',   desc: '원고/시놉시스 파일을 연동해보세요' });
-  if (!(project.world || '').trim())
-    issues.push({ code: 'no_world',    label: '세계관 없음',   desc: '세계관 설정이 입력되지 않았어요' });
+  const chars = project.characters || [];
+  const eps   = project.episodes   || [];
+  const tl    = (project.memory && project.memory.timeline) || [];
+  const textTl= (project.memory && project.memory.textTimeline) || [];
+
+  // 캐릭터 없음
+  if (!chars.length) {
+    issues.push({
+      type: 'no_chars',
+      message: '등장인물 설정이 없습니다',
+      question: '주인공의 이름과 역할을 알려주세요. AI가 기본 설정을 만들어드립니다.',
+      options: [
+        { label: '✦ AI로 생성', action: 'ai' },
+        { label: '✏️ 직접 입력', action: 'input' },
+        { label: '건너뛰기', action: 'skip' }
+      ]
+    });
+  }
+
+  // 목표 없음 (캐릭터는 있지만 goal이 빈 경우)
+  const charsNoGoal = chars.filter(c => !(c.goal || '').trim());
+  if (charsNoGoal.length) {
+    issues.push({
+      type: 'no_goal',
+      message: `'${charsNoGoal[0].name}'의 목표가 없습니다`,
+      question: `${charsNoGoal[0].name}은 무엇을 원하나요? 이 캐릭터의 핵심 동기를 설정하세요.`,
+      targetName: charsNoGoal[0].name,
+      options: [
+        { label: '✦ AI로 생성', action: 'ai' },
+        { label: '✏️ 직접 입력', action: 'input' },
+        { label: '건너뛰기', action: 'skip' }
+      ]
+    });
+  }
+
+  // 회차 없음
+  if (!eps.length) {
+    issues.push({
+      type: 'no_eps',
+      message: '작성된 회차가 없습니다',
+      question: '1화에서 일어날 핵심 사건을 한 줄로 설명해주세요.',
+      options: [
+        { label: '✦ AI로 생성', action: 'ai' },
+        { label: '📋 회차 개요로 이동', action: 'goto_outline' },
+        { label: '건너뛰기', action: 'skip' }
+      ]
+    });
+  }
+
+  // 스토리 흐름 부족
+  if (tl.length < 2 && textTl.length < 2) {
+    issues.push({
+      type: 'thin_story',
+      message: '서사 흐름이 부족합니다',
+      question: '이 이야기의 핵심 갈등 구조를 간단히 설명해주세요.',
+      options: [
+        { label: '✦ AI로 생성', action: 'ai' },
+        { label: '✏️ 직접 입력', action: 'input' },
+        { label: '건너뛰기', action: 'skip' }
+      ]
+    });
+  }
+
+  // 세계관 없음
+  if (!(project.world || '').trim()) {
+    issues.push({
+      type: 'no_world',
+      message: '세계관 설정이 없습니다',
+      question: '이야기의 배경 세계를 간단히 설명해주세요. (예: 현대 한국, 중세 마법 왕국 등)',
+      options: [
+        { label: '✦ AI로 생성', action: 'ai' },
+        { label: '✏️ 직접 입력', action: 'input' },
+        { label: '건너뛰기', action: 'skip' }
+      ]
+    });
+  }
+
   return issues;
 }
 
@@ -2077,22 +2165,8 @@ function renderActionBoard() {
       </button>`;
     }).join('');
 
-    // ── 문제 감지 블록 ──
-    const issues = detectIssues(proj);
-    const issueBlock = issues.length ? `
-      <div style="background:rgba(255,180,0,0.05);border:1px solid rgba(255,180,0,0.2);border-radius:12px;padding:12px 16px;margin-bottom:8px">
-        <div style="font-size:10px;font-weight:800;letter-spacing:0.08em;color:rgba(255,180,0,0.9);text-transform:uppercase;margin-bottom:8px">⚠ 감지된 문제 ${issues.length}개</div>
-        <div style="display:flex;flex-direction:column;gap:4px">
-          ${issues.map(i => `<div style="display:flex;align-items:baseline;gap:6px;font-size:12px">
-            <span style="color:rgba(255,180,0,0.8);font-weight:700;white-space:nowrap">· ${i.label}</span>
-            <span style="color:var(--text-faint)">${i.desc}</span>
-          </div>`).join('')}
-        </div>
-      </div>` : '';
-
     block2 = `<div style="background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:16px;padding:18px 20px;margin-bottom:12px">
       <div style="font-size:10px;font-weight:800;letter-spacing:0.1em;color:var(--purple-light);text-transform:uppercase;margin-bottom:14px">✦ 다음 작업 추천</div>
-      ${issueBlock}
       <div style="display:flex;flex-direction:column;gap:8px">${recBtns}</div>
     </div>`;
   }
@@ -2120,6 +2194,7 @@ function renderActionBoard() {
   </div>`;
 
   el.innerHTML = block2 + block3 + block4;
+  renderIssuePanel();
 }
 
 // AI 에이전트에 바로 메시지 전송
@@ -2146,6 +2221,197 @@ function abStartTemplate(genre) {
   }, 80);
 }
 
+// ── 인터랙티브 이슈 패널 ──
+let _issueCursor = 0;
+let _issueInputOpen = false;
+
+function renderIssuePanel() {
+  const el = document.getElementById('issue-panel');
+  if (!el) return;
+  const proj = window.PS && window.PS.getCurrentProject();
+  if (!proj) { el.innerHTML = ''; return; }
+
+  const issues = detectIssues(proj);
+  if (_issueCursor >= issues.length) _issueCursor = 0;
+
+  if (!issues.length) {
+    el.innerHTML = `<div class="ip-done">✅ 감지된 문제가 없습니다 — 작품이 잘 구성되어 있어요!</div>`;
+    return;
+  }
+
+  const issue = issues[_issueCursor];
+  const total = issues.length;
+
+  const dots = Array.from({ length: Math.min(total, 8) }, (_, i) =>
+    `<span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:${i === _issueCursor ? 'rgba(255,180,0,0.9)' : 'rgba(255,180,0,0.22)'}"></span>`
+  ).join('');
+
+  const btnHtml = issue.options.map(opt =>
+    `<button class="ip-btn ${opt.action}" onclick="_issueAction('${opt.action}','${issue.type}')">${opt.label}</button>`
+  ).join('');
+
+  const inputHtml = _issueInputOpen ? `
+    <div class="ip-input-wrap">
+      <textarea class="ip-ta" id="ip-ta" placeholder="내용을 입력하세요..." rows="2"></textarea>
+      <button class="ip-submit" onclick="_issueSubmit('${issue.type}')">저장</button>
+    </div>` : '';
+
+  el.innerHTML = `<div class="ip-card">
+    <div class="ip-progress">
+      ⚠ 점검 필요 · ${_issueCursor + 1}/${total}
+      <span style="display:flex;gap:3px;margin-left:auto">${dots}</span>
+    </div>
+    <div class="ip-question">
+      ${issue.message}
+      <span class="ip-qsub">${issue.question}</span>
+    </div>
+    <div class="ip-btn-row">${btnHtml}</div>
+    ${inputHtml}
+  </div>`;
+
+  if (_issueInputOpen) {
+    const ta = document.getElementById('ip-ta');
+    if (ta) ta.focus();
+  }
+}
+
+async function _issueAction(action, type) {
+  const proj = window.PS && window.PS.getCurrentProject();
+  if (!proj) return;
+
+  if (action === 'skip') {
+    _issueInputOpen = false;
+    _issueCursor = (_issueCursor + 1) % Math.max(1, detectIssues(proj).length);
+    renderIssuePanel();
+    return;
+  }
+  if (action === 'goto_outline') { navTo('outline'); return; }
+  if (action === 'input') {
+    _issueInputOpen = true;
+    renderIssuePanel();
+    return;
+  }
+  if (action === 'ai') {
+    _issueInputOpen = false;
+    // 로딩 표시
+    const card = document.querySelector('.ip-card');
+    if (card) {
+      const br = card.querySelector('.ip-btn-row');
+      if (br) br.innerHTML = `<span style="font-size:12px;color:var(--text-faint)">✦ AI 생성 중...</span>`;
+    }
+    await _issueAiGenerate(type, proj);
+  }
+}
+
+async function _issueAiGenerate(type, proj) {
+  const synopsis = proj.synopsis || (proj.memory && proj.memory.summary) || '';
+  const title    = proj.title || '이 작품';
+  let prompt = '', applyFn;
+
+  if (type === 'no_chars') {
+    prompt = `웹툰/소설 "${title}" (${proj.genre||'장르 미설정'})의 주인공 캐릭터를 JSON으로 생성하세요.
+시놉시스: ${synopsis.slice(0,300)}
+형식(JSON만): {"name":"이름","role":"주인공","goal":"핵심 목표 1문장","emotion":"초기 감정"}`;
+    applyFn = raw => {
+      const m = raw.match(/\{[\s\S]*?\}/);
+      if (!m) return;
+      const c = JSON.parse(m[0]);
+      proj.characters = proj.characters || [];
+      proj.characters.push({ id: Date.now().toString(), name: c.name||'주인공', role: c.role||'주인공', goal: c.goal||'', emotion: c.emotion||'', relationships:{}, arc:[] });
+    };
+  } else if (type === 'no_goal') {
+    const iss = detectIssues(proj).find(i => i.type === 'no_goal');
+    const tgt = iss?.targetName || proj.characters[0]?.name || '';
+    prompt = `웹툰/소설 "${title}"에서 캐릭터 "${tgt}"의 핵심 목표를 한 문장으로 작성하세요.
+시놉시스: ${synopsis.slice(0,200)}
+목표 문장만 출력하세요.`;
+    applyFn = raw => {
+      const char = (proj.characters||[]).find(c => c.name === tgt);
+      if (char) char.goal = raw.trim().slice(0,120);
+    };
+  } else if (type === 'no_eps') {
+    prompt = `웹툰/소설 "${title}"의 1화 핵심 사건을 50자 이내로 작성하세요.
+시놉시스: ${synopsis.slice(0,200)}
+사건 설명만 출력하세요.`;
+    applyFn = raw => {
+      proj.episodes = proj.episodes || [];
+      proj.episodes.push({ ep:1, title:'1화', synopsis:raw.trim().slice(0,150), events:[], tension:50, characters_involved:[] });
+      if (window.PS.updateMemoryFromEpisodes) window.PS.updateMemoryFromEpisodes(proj);
+    };
+  } else if (type === 'thin_story') {
+    prompt = `웹툰/소설 "${title}"의 핵심 갈등 구조를 3줄로 작성하세요(발단/갈등/절정, 각 30자 이내).
+시놉시스: ${synopsis.slice(0,200)}
+번호나 레이블 없이 줄바꿈으로만 구분해서 출력하세요.`;
+    applyFn = raw => {
+      const lines = raw.trim().split('\n').map(l=>l.replace(/^[\d\.\-\s]+/,'').trim()).filter(Boolean);
+      if (!proj.memory) proj.memory = window.PS.createEmptyProject().memory;
+      const tl = proj.memory.textTimeline || [];
+      lines.forEach(l => tl.push({ seq: tl.length+1, text: l.slice(0,100) }));
+      proj.memory.textTimeline = tl.slice(0,20);
+      proj.memory.summary = (proj.memory.summary ? proj.memory.summary+' ' : '') + lines.join(' → ');
+    };
+  } else if (type === 'no_world') {
+    prompt = `웹툰/소설 "${title}" (${proj.genre||'장르 미설정'})의 세계관 배경을 2-3문장으로 설명하세요.
+시놉시스: ${synopsis.slice(0,200)}
+설명만 출력하세요.`;
+    applyFn = raw => { proj.world = raw.trim().slice(0,300); };
+  }
+
+  try {
+    const result = await ai([
+      { role:'system', content:'당신은 웹툰/소설 기획 전문 AI입니다. 요청한 형식으로만 정확하게 출력합니다.' },
+      { role:'user', content:prompt }
+    ], { max_tokens:400 });
+    applyFn(result);
+    if (window.PS.updateMemoryFromEpisodes && proj.episodes && proj.episodes.length) window.PS.updateMemoryFromEpisodes(proj);
+    window.PS.saveProject(proj);
+    flash('✅ AI가 작품 데이터를 업데이트했습니다');
+    _issueInputOpen = false;
+    _issueCursor++;
+    renderIssuePanel();
+    renderProjectBoard();
+  } catch(e) {
+    flash('⚠️ AI 생성 중 오류가 발생했습니다');
+    renderIssuePanel();
+  }
+}
+
+function _issueSubmit(type) {
+  const ta  = document.getElementById('ip-ta');
+  const val = ta ? ta.value.trim() : '';
+  if (!val) { flash('내용을 입력해주세요'); return; }
+  const proj = window.PS && window.PS.getCurrentProject();
+  if (!proj) return;
+
+  if (type === 'no_chars') {
+    proj.characters = proj.characters || [];
+    proj.characters.push({ id:Date.now().toString(), name:val.split(/\s/)[0]||val, role:'주인공', goal:'', emotion:'', relationships:{}, arc:[] });
+  } else if (type === 'no_goal') {
+    const iss = detectIssues(proj).find(i => i.type==='no_goal');
+    const char = (proj.characters||[]).find(c => c.name===iss?.targetName);
+    if (char) char.goal = val.slice(0,120);
+  } else if (type === 'no_eps') {
+    proj.episodes = proj.episodes || [];
+    proj.episodes.push({ ep:1, title:'1화', synopsis:val.slice(0,150), events:[], tension:50, characters_involved:[] });
+    if (window.PS.updateMemoryFromEpisodes) window.PS.updateMemoryFromEpisodes(proj);
+  } else if (type === 'thin_story') {
+    if (!proj.memory) proj.memory = window.PS.createEmptyProject().memory;
+    const tl = proj.memory.textTimeline || [];
+    tl.push({ seq:tl.length+1, text:val.slice(0,150) });
+    proj.memory.textTimeline = tl.slice(0,20);
+    proj.memory.summary = (proj.memory.summary ? proj.memory.summary+' / ' : '') + val.slice(0,100);
+  } else if (type === 'no_world') {
+    proj.world = val.slice(0,300);
+  }
+
+  window.PS.saveProject(proj);
+  flash('✅ 저장됐습니다');
+  _issueInputOpen = false;
+  _issueCursor++;
+  renderIssuePanel();
+  renderProjectBoard();
+}
+
 // 홈 진입 시 보드 갱신 + window.PS 패치를 DOMContentLoaded 이후 실행
 // (window.PS는 <script type="module">이 파싱 후 실행되므로 DOMContentLoaded 전에 완료됨)
 document.addEventListener('DOMContentLoaded', () => {
@@ -2165,12 +2431,13 @@ document.addEventListener('DOMContentLoaded', () => {
   const _origNavTo = navTo;
   window.navTo = function(v) {
     _origNavTo(v);
-    if (v === 'home') { renderProjectBoard(); updateHomeContext(); }
+    if (v === 'home') { renderProjectBoard(); renderIssuePanel(); updateHomeContext(); }
   };
 
   // 초기 렌더
   renderProjectBoard();
   renderActionBoard();
+  renderIssuePanel();
   updateHomeContext();
 });
 
