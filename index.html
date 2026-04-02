@@ -103,32 +103,6 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);colo
 .pp-stat{display:flex;align-items:center;gap:4px;font-size:11px;font-weight:700;padding:3px 8px;border-radius:20px;flex-shrink:0}
 .pp-stat.done{background:rgba(16,185,129,0.12);color:#6EE7B7;border:1px solid rgba(16,185,129,0.25)}
 .pp-stat.todo{background:rgba(255,255,255,0.03);color:var(--text-faint);border:1px solid var(--border)}
-/* ── 추천 카드 (항상 노출) ── */
-.rec-card{border-radius:14px;padding:16px 18px;margin-bottom:10px}
-.rec-card.priority{background:rgba(255,180,0,0.04);border:1.5px solid rgba(255,180,0,0.22)}
-.rec-card.suggest{background:rgba(255,255,255,0.025);border:1px solid rgba(255,255,255,0.08)}
-.rec-card-header{font-size:10px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:8px;display:flex;align-items:center;gap:5px}
-.rec-card.priority .rec-card-header{color:rgba(255,180,0,0.8)}
-.rec-card.suggest .rec-card-header{color:var(--text-dim)}
-.rec-card-msg{font-size:14px;font-weight:700;color:var(--text);line-height:1.6;margin-bottom:12px}
-.rec-card-sub{font-size:12px;color:var(--text-dim);display:block;margin-top:3px;font-weight:500}
-.rec-card-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-/* ── AI 트리거 카드 ── */
-.ai-trig{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.09);border-radius:14px;padding:14px 18px;margin-bottom:10px;display:flex;align-items:center;gap:14px;cursor:pointer;transition:all 0.2s;animation:trig-in 0.35s ease}
-.ai-trig:hover{background:rgba(16,185,129,0.08);border-color:rgba(16,185,129,0.3)}
-@keyframes trig-in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-.ai-trig-icon{font-size:1.4rem;flex-shrink:0}
-.ai-trig-body{flex:1}
-.ai-trig-label{font-size:10px;font-weight:800;color:var(--purple-light);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:3px}
-.ai-trig-msg{font-size:14px;font-weight:700;color:var(--text)}
-.ai-trig-dismiss{font-size:12px;color:var(--text-faint);background:none;border:none;cursor:pointer;font-family:inherit;padding:4px 8px;border-radius:6px;transition:all 0.15s;flex-shrink:0}
-.ai-trig-dismiss:hover{color:var(--text-dim);background:rgba(255,255,255,0.06)}
-/* ── AI 사용량 쿼터 ── */
-.quota-bar{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text-dim);margin-top:10px;padding-top:10px;border-top:1px solid var(--border)}
-.quota-dots{display:flex;gap:3px}
-.quota-dot{width:8px;height:8px;border-radius:50%;transition:background 0.3s}
-.quota-dot.used{background:var(--purple)}
-.quota-dot.free{background:rgba(255,255,255,0.1)}
 .dash-mode-btn{border:none;font-size:12px;font-weight:700;padding:6px 18px;border-radius:16px;cursor:pointer;font-family:inherit;transition:all 0.2s;color:var(--text-dim);background:none}
 .dash-mode-btn:hover{color:var(--text)}
 .dash-mode-btn.on{background:var(--purple);color:#fff}
@@ -907,8 +881,6 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);colo
 
       <!-- ProgressPanel: 작품 완성도 체크리스트 -->
       <div id="progress-panel"></div>
-      <!-- AI 트리거 카드 (idle/view 기반 자동 노출) -->
-      <div id="ai-trigger-card"></div>
       <!-- ActionBoard: 작업 유도 보드 (블록 2–4) -->
       <div id="action-board"></div>
     </div>
@@ -991,8 +963,6 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);colo
           <div style="font-size:12px;color:var(--text-faint);line-height:1.6">PDF / TXT / 텍스트를 불러와 작품으로 변환합니다</div>
         </div>
       </div>
-      <!-- IssuePanel: 점검 필요 카드 -->
-      <div id="issue-panel" style="max-width:780px;width:100%"></div>
       <!-- 작품 목록 -->
       <div style="max-width:780px;width:100%">
         <div style="font-size:11px;font-weight:700;letter-spacing:0.1em;color:var(--text-faint);text-transform:uppercase;margin-bottom:16px" id="myplan-list-label">내 작품</div>
@@ -2028,7 +1998,7 @@ function navTo(v){
     const mm=$('mn-hub');if(mm)mm.classList.add('on');
   }
   if(v==='home')renderActionBoard();
-  if(v==='myplan'){loadMyPlan();renderIssuePanel();}
+  if(v==='myplan'){loadMyPlan();}
   if(v==='works')loadProjects();
   if(v==='rl')renderRL();
   if(v==='outline'){initOutline();setTimeout(drawTensionGraph,100);}
@@ -2518,129 +2488,6 @@ function calcCompletionScore(project) {
   return { score, checks, missing };
 }
 
-// ── 추천 카드 데이터 빌드 (항상 1개 이상) ──
-function buildRecommendCards(project, scoreData) {
-  const { score, missing } = scoreData;
-
-  const MAP = {
-    chars:    { icon: '👤', msg: '캐릭터를 구체적으로 설정하면 스토리가 더 살아납니다',    sub: '주인공의 이름·목표·초기 감정을 설정해보세요',                        issueType: 'no_chars'   },
-    eps:      { icon: '📝', msg: '첫 화 개요를 만들어 보세요',                           sub: '1화 핵심 사건을 한 줄로 설명하면 AI가 구조화해드립니다',              issueType: 'no_eps'     },
-    conflict: { icon: '⚡', msg: '갈등 구조가 스토리의 핵심입니다',                       sub: '발단→갈등→절정 구조를 설정하면 서사가 탄탄해집니다',                  issueType: 'thin_story' },
-    first_ep: { icon: '🎣', msg: '1화가 독자의 첫인상을 결정합니다',                      sub: '시작 장면을 구체화하면 독자 훅이 강해집니다',                         issueType: 'no_eps'     }
-  };
-
-  const cards = [];
-
-  // 부족한 항목 → priority 카드 (최대 2개)
-  missing.slice(0, 2).forEach(type => {
-    const info = MAP[type];
-    if (info) cards.push({ kind: 'priority', missingType: type, ...info });
-  });
-
-  // 완성도에 따른 긍정/다음단계 카드
-  if (score >= 75 && score < 100) {
-    cards.push({ kind: 'suggest', icon: '✦', issueType: null,
-      msg: `현재 완성도 ${score}%입니다. 다음 단계로 넘어가보세요`,
-      sub: '스토리 확장 또는 갈등 심화를 AI와 함께 진행해보세요' });
-  }
-  if (score === 100) {
-    cards.push({ kind: 'suggest', icon: '🎉', issueType: null,
-      msg: '기본 설정 완성! 본격적인 집필을 시작해보세요',
-      sub: 'AI 창작 에이전트와 함께 첫 장면을 써내려가세요' });
-  }
-
-  // 항상 최소 1개 보장
-  if (cards.length === 0) {
-    cards.push({ kind: 'suggest', icon: '💡', issueType: null,
-      msg: '작품을 더 풍성하게 만들어보세요',
-      sub: '캐릭터 관계도나 세계관 설정을 추가해보세요' });
-  }
-
-  return cards;
-}
-
-function detectIssues(project) {
-  if (!project) return [];
-  const issues = [];
-  const chars = project.characters || [];
-  const eps   = project.episodes   || [];
-  const tl    = (project.memory && project.memory.timeline) || [];
-  const textTl= (project.memory && project.memory.textTimeline) || [];
-
-  // 캐릭터 없음
-  if (!chars.length) {
-    issues.push({
-      type: 'no_chars',
-      message: '등장인물 설정이 없습니다',
-      question: '주인공의 이름과 역할을 알려주세요. AI가 기본 설정을 만들어드립니다.',
-      options: [
-        { label: '✦ AI로 생성', action: 'ai' },
-        { label: '✏️ 직접 입력', action: 'input' },
-        { label: '건너뛰기', action: 'skip' }
-      ]
-    });
-  }
-
-  // 목표 없음 (캐릭터는 있지만 goal이 빈 경우)
-  const charsNoGoal = chars.filter(c => !(c.goal || '').trim());
-  if (charsNoGoal.length) {
-    issues.push({
-      type: 'no_goal',
-      message: `'${charsNoGoal[0].name}'의 목표가 없습니다`,
-      question: `${charsNoGoal[0].name}은 무엇을 원하나요? 이 캐릭터의 핵심 동기를 설정하세요.`,
-      targetName: charsNoGoal[0].name,
-      options: [
-        { label: '✦ AI로 생성', action: 'ai' },
-        { label: '✏️ 직접 입력', action: 'input' },
-        { label: '건너뛰기', action: 'skip' }
-      ]
-    });
-  }
-
-  // 회차 없음
-  if (!eps.length) {
-    issues.push({
-      type: 'no_eps',
-      message: '작성된 회차가 없습니다',
-      question: '1화에서 일어날 핵심 사건을 한 줄로 설명해주세요.',
-      options: [
-        { label: '✦ AI로 생성', action: 'ai' },
-        { label: '📋 회차 개요로 이동', action: 'goto_outline' },
-        { label: '건너뛰기', action: 'skip' }
-      ]
-    });
-  }
-
-  // 스토리 흐름 부족
-  if (tl.length < 2 && textTl.length < 2) {
-    issues.push({
-      type: 'thin_story',
-      message: '서사 흐름이 부족합니다',
-      question: '이 이야기의 핵심 갈등 구조를 간단히 설명해주세요.',
-      options: [
-        { label: '✦ AI로 생성', action: 'ai' },
-        { label: '✏️ 직접 입력', action: 'input' },
-        { label: '건너뛰기', action: 'skip' }
-      ]
-    });
-  }
-
-  // 세계관 없음
-  if (!(project.world || '').trim()) {
-    issues.push({
-      type: 'no_world',
-      message: '세계관 설정이 없습니다',
-      question: '이야기의 배경 세계를 간단히 설명해주세요. (예: 현대 한국, 중세 마법 왕국 등)',
-      options: [
-        { label: '✦ AI로 생성', action: 'ai' },
-        { label: '✏️ 직접 입력', action: 'input' },
-        { label: '건너뛰기', action: 'skip' }
-      ]
-    });
-  }
-
-  return issues;
-}
 
 // ── ActionBoard: 작업 유도 보드 (블록 2–4) ──
 function renderActionBoard() {
@@ -2737,7 +2584,6 @@ function renderActionBoard() {
   </div>`;
 
   el.innerHTML = block2 + block3 + block4;
-  renderIssuePanel();
 }
 
 // AI 에이전트에 바로 메시지 전송
@@ -2819,360 +2665,6 @@ function renderProgressPanel() {
     </div>`;
 }
 
-// ── 인터랙티브 이슈 패널 (항상 1개 이상 카드 노출) ──
-let _issueCursor = 0;
-let _issueInputOpen = null; // null 또는 issue.type 문자열
-let _dismissedCards = new Set();
-
-function dismissRecCard(cardId) {
-  _dismissedCards.add(cardId);
-  renderIssuePanel();
-}
-
-function renderIssuePanel() {
-  const el = document.getElementById('issue-panel');
-  if (!el) return;
-  const proj = window.PS && window.PS.getCurrentProject();
-  if (!proj) { el.innerHTML = ''; return; }
-
-  const scoreData    = calcCompletionScore(proj);
-  const recCards     = buildRecommendCards(proj, scoreData);
-  const legacyIssues = detectIssues(proj);
-
-  let html = '';
-
-  recCards.forEach(card => {
-    const cardId = card.missingType || (card.kind + '_' + card.icon);
-    if (_dismissedCards.has(cardId)) return;
-
-    const legacyIssue = card.issueType
-      ? legacyIssues.find(i => i.type === card.issueType)
-      : null;
-
-    // 버튼 행
-    let actionsHtml = '';
-    if (legacyIssue) {
-      actionsHtml = legacyIssue.options.map(opt =>
-        `<button class="ip-btn ${opt.action}" onclick="_issueAction('${opt.action}','${legacyIssue.type}')">${opt.label}</button>`
-      ).join('');
-    } else {
-      actionsHtml = `<button class="ip-btn ai" onclick="abSendToAgent('스토리를 더 발전시키고 싶어요. 현재 설정을 바탕으로 다음 단계를 제안해주세요')">✦ AI와 계속하기</button>`;
-    }
-
-    // 쿼터 배지 (AI 버튼이 있는 카드에만)
-    const quotaHtml = legacyIssue ? _AiQuota.renderQuotaBadge() : '';
-
-    // 직접 입력 영역 (해당 type이 열려 있을 때)
-    const inputHtml = (_issueInputOpen && legacyIssue && _issueInputOpen === legacyIssue.type) ? `
-      <div class="ip-input-wrap" style="margin-top:12px">
-        <textarea class="ip-ta" id="ip-ta-${legacyIssue.type}" placeholder="내용을 입력하세요..." rows="2"></textarea>
-        <button class="ip-submit" onclick="_issueSubmit('${legacyIssue.type}')">저장</button>
-      </div>` : '';
-
-    html += `
-      <div class="rec-card ${card.kind}">
-        <div class="rec-card-header">
-          <span>${card.icon}</span>
-          <span>${card.kind === 'priority' ? '점검 필요' : '다음 단계'}</span>
-          <button onclick="dismissRecCard('${cardId}')" style="margin-left:auto;background:none;border:none;color:var(--text-faint);cursor:pointer;font-size:14px;padding:0 2px;line-height:1;opacity:0.5" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.5'">✕</button>
-        </div>
-        <div class="rec-card-msg">
-          ${card.msg}
-          <span class="rec-card-sub">${card.sub}</span>
-        </div>
-        <div class="rec-card-actions">${actionsHtml}</div>
-        ${inputHtml}
-        ${quotaHtml}
-      </div>`;
-  });
-
-  el.innerHTML = html;
-
-  // 열린 textarea 포커스
-  if (_issueInputOpen) {
-    const ta = document.getElementById(`ip-ta-${_issueInputOpen}`);
-    if (ta) ta.focus();
-  }
-}
-
-async function _issueAction(action, type) {
-  const proj = window.PS && window.PS.getCurrentProject();
-  if (!proj) return;
-
-  if (action === 'skip') {
-    _issueInputOpen = null;
-    renderIssuePanel();
-    return;
-  }
-  if (action === 'goto_outline') { navTo('outline'); return; }
-  if (action === 'input') {
-    _issueInputOpen = (_issueInputOpen === type) ? null : type; // 토글
-    renderIssuePanel();
-    return;
-  }
-  if (action === 'ai') {
-    _issueInputOpen = null;
-    // 로딩 표시 — 해당 카드의 액션 영역만 업데이트
-    document.querySelectorAll('.rec-card.priority').forEach(card => {
-      const acts = card.querySelector('.rec-card-actions');
-      if (acts && card.innerHTML.includes(`'${type}'`)) {
-        acts.innerHTML = `<span style="font-size:12px;color:var(--text-faint)">✦ AI 생성 중...</span>`;
-      }
-    });
-    await _issueAiGenerate(type, proj);
-  }
-}
-
-async function _issueAiGenerate(type, proj) {
-  // ── 쿼터 체크 ──
-  if (!_AiQuota.canUse()) {
-    flash(`오늘 무료 AI 생성 횟수(${_AiQuota.FREE_LIMIT}회)를 모두 사용했습니다`);
-    renderIssuePanel();
-    return;
-  }
-
-  const synopsis = proj.synopsis || (proj.memory && proj.memory.summary) || '';
-  const title    = proj.title || '이 작품';
-  let prompt = '', applyFn;
-
-  if (type === 'no_chars') {
-    prompt = `웹툰/소설 "${title}" (${proj.genre||'장르 미설정'})의 주인공 캐릭터를 JSON으로 생성하세요.
-시놉시스: ${synopsis.slice(0,300)}
-형식(JSON만): {"name":"이름","role":"주인공","goal":"핵심 목표 1문장","emotion":"초기 감정"}`;
-    applyFn = raw => {
-      const m = raw.match(/\{[\s\S]*?\}/);
-      if (!m) return;
-      const c = JSON.parse(m[0]);
-      proj.characters = proj.characters || [];
-      proj.characters.push({ id: Date.now().toString(), name: c.name||'주인공', role: c.role||'주인공', goal: c.goal||'', emotion: c.emotion||'', relationships:{}, arc:[] });
-    };
-  } else if (type === 'no_goal') {
-    const iss = detectIssues(proj).find(i => i.type === 'no_goal');
-    const tgt = iss?.targetName || proj.characters[0]?.name || '';
-    prompt = `웹툰/소설 "${title}"에서 캐릭터 "${tgt}"의 핵심 목표를 한 문장으로 작성하세요.
-시놉시스: ${synopsis.slice(0,200)}
-목표 문장만 출력하세요.`;
-    applyFn = raw => {
-      const char = (proj.characters||[]).find(c => c.name === tgt);
-      if (char) char.goal = raw.trim().slice(0,120);
-    };
-  } else if (type === 'no_eps') {
-    prompt = `웹툰/소설 "${title}"의 1화 핵심 사건을 50자 이내로 작성하세요.
-시놉시스: ${synopsis.slice(0,200)}
-사건 설명만 출력하세요.`;
-    applyFn = raw => {
-      proj.episodes = proj.episodes || [];
-      proj.episodes.push({ ep:1, title:'1화', synopsis:raw.trim().slice(0,150), events:[], tension:50, characters_involved:[] });
-      if (window.PS.updateMemoryFromEpisodes) window.PS.updateMemoryFromEpisodes(proj);
-    };
-  } else if (type === 'thin_story') {
-    prompt = `웹툰/소설 "${title}"의 핵심 갈등 구조를 3줄로 작성하세요(발단/갈등/절정, 각 30자 이내).
-시놉시스: ${synopsis.slice(0,200)}
-번호나 레이블 없이 줄바꿈으로만 구분해서 출력하세요.`;
-    applyFn = raw => {
-      const lines = raw.trim().split('\n').map(l=>l.replace(/^[\d\.\-\s]+/,'').trim()).filter(Boolean);
-      if (!proj.memory) proj.memory = window.PS.createEmptyProject().memory;
-      const tl = proj.memory.textTimeline || [];
-      lines.forEach(l => tl.push({ seq: tl.length+1, text: l.slice(0,100) }));
-      proj.memory.textTimeline = tl.slice(0,20);
-      proj.memory.summary = (proj.memory.summary ? proj.memory.summary+' ' : '') + lines.join(' → ');
-    };
-  } else if (type === 'no_world') {
-    prompt = `웹툰/소설 "${title}" (${proj.genre||'장르 미설정'})의 세계관 배경을 2-3문장으로 설명하세요.
-시놉시스: ${synopsis.slice(0,200)}
-설명만 출력하세요.`;
-    applyFn = raw => { proj.world = raw.trim().slice(0,300); };
-  }
-
-  try {
-    const result = await ai([
-      { role:'system', content:'당신은 웹툰/소설 기획 전문 AI입니다. 요청한 형식으로만 정확하게 출력합니다.' },
-      { role:'user', content:prompt }
-    ], { max_tokens:400 });
-    applyFn(result);
-    if (window.PS.updateMemoryFromEpisodes && proj.episodes && proj.episodes.length) window.PS.updateMemoryFromEpisodes(proj);
-    window.PS.saveProject(proj);
-    _AiQuota.consume(); // ── 성공 시 차감 ──
-    flash('✅ AI가 작품 데이터를 업데이트했습니다');
-    _issueInputOpen = null;
-    renderProgressPanel();
-    renderIssuePanel();
-    renderProjectBoard();
-  } catch(e) {
-    flash('⚠️ AI 생성 중 오류가 발생했습니다');
-    renderIssuePanel();
-  }
-}
-
-function _issueSubmit(type) {
-  const ta  = document.getElementById('ip-ta');
-  const val = ta ? ta.value.trim() : '';
-  if (!val) { flash('내용을 입력해주세요'); return; }
-  const proj = window.PS && window.PS.getCurrentProject();
-  if (!proj) return;
-
-  if (type === 'no_chars') {
-    proj.characters = proj.characters || [];
-    proj.characters.push({ id:Date.now().toString(), name:val.split(/\s/)[0]||val, role:'주인공', goal:'', emotion:'', relationships:{}, arc:[] });
-  } else if (type === 'no_goal') {
-    const iss = detectIssues(proj).find(i => i.type==='no_goal');
-    const char = (proj.characters||[]).find(c => c.name===iss?.targetName);
-    if (char) char.goal = val.slice(0,120);
-  } else if (type === 'no_eps') {
-    proj.episodes = proj.episodes || [];
-    proj.episodes.push({ ep:1, title:'1화', synopsis:val.slice(0,150), events:[], tension:50, characters_involved:[] });
-    if (window.PS.updateMemoryFromEpisodes) window.PS.updateMemoryFromEpisodes(proj);
-  } else if (type === 'thin_story') {
-    if (!proj.memory) proj.memory = window.PS.createEmptyProject().memory;
-    const tl = proj.memory.textTimeline || [];
-    tl.push({ seq:tl.length+1, text:val.slice(0,150) });
-    proj.memory.textTimeline = tl.slice(0,20);
-    proj.memory.summary = (proj.memory.summary ? proj.memory.summary+' / ' : '') + val.slice(0,100);
-  } else if (type === 'no_world') {
-    proj.world = val.slice(0,300);
-  }
-
-  window.PS.saveProject(proj);
-  flash('✅ 저장됐습니다');
-  _issueInputOpen = null;
-  renderProgressPanel();
-  renderIssuePanel();
-  renderProjectBoard();
-}
-
-// ── AI 사용량 쿼터 관리 ──
-const _AiQuota = {
-  FREE_LIMIT: 3,
-
-  _todayKey() {
-    const d = new Date();
-    return `ai_quota_${d.getFullYear()}_${d.getMonth()}_${d.getDate()}`;
-  },
-
-  getUsed() {
-    return parseInt(localStorage.getItem(this._todayKey()) || '0', 10);
-  },
-
-  isPaid() {
-    return localStorage.getItem('user_plan') === 'paid';
-  },
-
-  canUse() {
-    return this.isPaid() || this.getUsed() < this.FREE_LIMIT;
-  },
-
-  consume() {
-    if (this.isPaid()) return;
-    localStorage.setItem(this._todayKey(), this.getUsed() + 1);
-  },
-
-  remaining() {
-    if (this.isPaid()) return Infinity;
-    return Math.max(0, this.FREE_LIMIT - this.getUsed());
-  },
-
-  renderQuotaBadge() {
-    if (this.isPaid()) {
-      return `<div class="quota-bar"><span style="color:var(--purple-light);font-weight:700">✦ 무제한 (유료)</span></div>`;
-    }
-    const rem  = this.remaining();
-    const used = this.FREE_LIMIT - rem;
-    const dots = Array.from({ length: this.FREE_LIMIT }, (_, i) =>
-      `<span class="quota-dot ${i < used ? 'used' : 'free'}"></span>`
-    ).join('');
-    const color = rem === 0 ? '#fca5a5' : rem === 1 ? '#FDE68A' : 'var(--text-dim)';
-    return `<div class="quota-bar">
-      <span class="quota-dots">${dots}</span>
-      <span style="color:${color}">오늘 AI 생성 ${rem === 0 ? '없음 (내일 초기화)' : `${rem}회 남음`}</span>
-    </div>`;
-  }
-};
-
-// ── AI 개입 트리거 시스템 (idle 30s / view 60s / 미작성 항목) ──
-const _AiTrigger = {
-  _idleTimer:   null,
-  _viewTimer:   null,
-  _dismissed:   false,
-  _curAction:   null,
-
-  // 홈 화면 진입 시 호출
-  onEnterHome() {
-    this._dismissed = false;
-    this._clearAll();
-    this._idleTimer = setTimeout(() => this._fireIdle(),  30000);
-    this._viewTimer = setTimeout(() => this._fireView(),  60000);
-  },
-
-  // 사용자 입력/클릭 시 idle 타이머 리셋
-  resetIdle() {
-    clearTimeout(this._idleTimer);
-    this._idleTimer = setTimeout(() => this._fireIdle(), 30000);
-  },
-
-  _clearAll() {
-    clearTimeout(this._idleTimer);
-    clearTimeout(this._viewTimer);
-  },
-
-  _fireIdle() {
-    if (this._dismissed) return;
-    if (!document.getElementById('view-home')?.classList.contains('on')) return;
-    const proj = window.PS && window.PS.getCurrentProject();
-    if (!proj) return;
-
-    const { missing } = calcCompletionScore(proj);
-    const MAP = {
-      chars:    { msg: 'AI로 캐릭터 초안 만들어보기',   type: 'no_chars'   },
-      eps:      { msg: 'AI로 첫 화 개요 만들어보기',    type: 'no_eps'     },
-      conflict: { msg: 'AI로 갈등 구조 설계하기',       type: 'thin_story' },
-      first_ep: { msg: 'AI로 1화 시작 장면 잡기',       type: 'no_eps'     }
-    };
-
-    const target = MAP[missing[0]];
-    if (!target) return;
-
-    this._show(target.msg, () => _issueAiGenerate(target.type, proj));
-  },
-
-  _fireView() {
-    if (this._dismissed) return;
-    if (!document.getElementById('view-home')?.classList.contains('on')) return;
-    const proj = window.PS && window.PS.getCurrentProject();
-    if (!proj) return;
-
-    this._show(
-      'AI 창작 에이전트에게 아이디어 물어보기',
-      () => abSendToAgent('현재 작품 설정에서 가장 발전시켜야 할 부분을 분석하고, 구체적인 개선 방향을 제안해주세요')
-    );
-  },
-
-  _show(msg, action) {
-    const el = document.getElementById('ai-trigger-card');
-    if (!el) return;
-    this._curAction = action;
-    el.innerHTML = `
-      <div class="ai-trig" onclick="_AiTrigger.act()">
-        <div class="ai-trig-icon">✦</div>
-        <div class="ai-trig-body">
-          <div class="ai-trig-label">AI 제안</div>
-          <div class="ai-trig-msg">${msg}</div>
-        </div>
-        <button class="ai-trig-dismiss" onclick="event.stopPropagation();_AiTrigger.dismiss()">✕</button>
-      </div>`;
-  },
-
-  act() {
-    if (this._curAction) this._curAction();
-    this.dismiss();
-  },
-
-  dismiss() {
-    this._dismissed = true;
-    const el = document.getElementById('ai-trigger-card');
-    if (el) el.innerHTML = '';
-    this._clearAll();
-  }
-};
 
 // 홈 진입 시 보드 갱신 + window.PS 패치를 DOMContentLoaded 이후 실행
 // (window.PS는 <script type="module">이 파싱 후 실행되므로 DOMContentLoaded 전에 완료됨)
@@ -3189,31 +2681,22 @@ document.addEventListener('DOMContentLoaded', () => {
     };
   }
 
-  // navTo 래핑: 홈으로 돌아올 때 보드 + 헤더 + 진행률 갱신 + 트리거 재시작
+  // navTo 래핑: 홈으로 돌아올 때 보드 + 헤더 + 진행률 갱신
   const _origNavTo = navTo;
   window.navTo = function(v) {
     _origNavTo(v);
     if (v === 'home') {
       renderProjectBoard();
       renderProgressPanel();
-      renderIssuePanel();
       updateHomeContext();
-      _AiTrigger.onEnterHome();
-    } else {
-      _AiTrigger._clearAll(); // 다른 뷰로 이동 시 타이머 정지
     }
   };
-
-  // idle 리셋: 홈 화면의 입력 이벤트 감지
-  document.addEventListener('input',   () => { if (document.getElementById('view-home')?.classList.contains('on')) _AiTrigger.resetIdle(); }, { passive: true });
-  document.addEventListener('keydown', () => { if (document.getElementById('view-home')?.classList.contains('on')) _AiTrigger.resetIdle(); }, { passive: true });
 
   // 초기 렌더
   renderProjectBoard();
   renderProgressPanel();
   renderActionBoard();
   updateHomeContext();
-  _AiTrigger.onEnterHome();
 });
 
 // ── 내 기획안 대쉬보드 ──
