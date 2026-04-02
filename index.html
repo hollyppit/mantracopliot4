@@ -2823,7 +2823,10 @@ function startCharChat(){
   const ch=pdChars[cdCharIdx];if(!ch)return;
   closeCharDev();
   xMsgs=[];xLinkedProj=pdProj||null;
-  xPersonaBase=buildCharPersona(ch);xPersona=xPersonaBase;
+  xPersonaBase=buildCharPersona(ch);
+  // 캐릭터가 존재하는 세계 맥락(세계관·타임라인·다른 캐릭터 상태) 추가
+  const memCtx = buildContext(window.currentProject);
+  xPersona = xPersonaBase + (memCtx ? `\n\n[이 캐릭터가 존재하는 세계 — 작가만 알고 있는 설정]\n${memCtx}` : '');
   const name=ch.name||'캐릭터';
   openXChat(`저는 **${name}**입니다. 작가님과 자연스럽게 대화하겠습니다. 제 설정에 대해 물어보셔도 좋고, 장면 속 상황에 반응하게 해보셔도 좋아요.`,name);
 }
@@ -3023,7 +3026,8 @@ async function openInsightAt(idx){
   const s=planItems[idx];
   if(!s){b.innerHTML='<div class="ips"><div class="iptx">항목을 찾을 수 없어요.</div></div>';return;}
   const ctx=planItems.filter(p=>p.value).slice(-3).map(p=>`${p.k||p.q}: ${p.value}`).join('\n');
-  const raw=await ai([{role:'user',content:'당신은 스토리텔링 구조 전문가입니다.\n기획 단계 질문: "'+s.q+'"\n지금까지 쌓인 내용: '+(ctx||'없음')+'\n다음 JSON으로만 응답 (코드블록 없이):\n{"role":"이 단계의 서사적 역할 2~3문장","principle":"핵심 스토리텔링 원칙 2~3문장","tip":"이 단계에서 자주 실수하는 것과 해결책","reference":"이 단계에서 실제 작품들은 어떤 선택을 했는지 구체적인 레퍼런스 2~3개. 형식: \'작품명 — [어떤 선택]을 했고, [어떤 효과]가 생겼다.\' 웹툰·소설·드라마 등 장르 다양하게.","question":"답하기 전에 스스로 물어볼 질문 1개"}'}]);
+  const psCtx = buildContext(window.currentProject);
+  const raw=await ai([{role:'user',content:'당신은 스토리텔링 구조 전문가입니다.\n기획 단계 질문: "'+s.q+'"\n지금까지 쌓인 내용: '+(ctx||'없음')+(psCtx?'\n\n[프로젝트 메모리]\n'+psCtx:'')+'\n다음 JSON으로만 응답 (코드블록 없이):\n{"role":"이 단계의 서사적 역할 2~3문장","principle":"핵심 스토리텔링 원칙 2~3문장","tip":"이 단계에서 자주 실수하는 것과 해결책","reference":"이 단계에서 실제 작품들은 어떤 선택을 했는지 구체적인 레퍼런스 2~3개. 형식: \'작품명 — [어떤 선택]을 했고, [어떤 효과]가 생겼다.\' 웹툰·소설·드라마 등 장르 다양하게.","question":"답하기 전에 스스로 물어볼 질문 1개"}'}]);
   try{
     const parsed=JSON.parse(raw.replace(/```json|```/g,'').trim());
     const refHtml=parsed.reference?`<div class="ips" style="background:rgba(16,185,129,0.04);border-radius:12px;padding:16px;border:1px solid rgba(16,185,129,0.15)"><div class="ipl">🎬 다른 작품들의 선택</div><div class="iptx" style="color:#A7F3D0;white-space:pre-line">${parsed.reference}</div></div>`:'';
@@ -3297,7 +3301,8 @@ function startVerify(name){
 function projCtx(){
   if(!selProj)return'';
   const h=(selProj.answer_history||[]).slice(0,10).map(e=>`- ${e.id}: ${e.value}`).join('\n');
-  return `\n\n[작품 정보]\n제목: ${selProj.title}\n장르: ${selProj.genre||''}\n시놉시스: ${selProj.synopsis||''}${h?'\n[기획 내용]\n'+h:''}`;
+  const memCtx = buildContext(window.currentProject);
+  return `\n\n[작품 정보]\n제목: ${selProj.title}\n장르: ${selProj.genre||''}\n시놉시스: ${selProj.synopsis||''}${h?'\n[기획 내용]\n'+h:''}${memCtx?'\n\n[프로젝트 메모리 — 세계관·캐릭터·회차 흐름]\n'+memCtx:''}`;
 }
 function openXChat(greeting,sub){
   navTo('xc');
@@ -3357,7 +3362,8 @@ function projCtxOf(p){
   if(!p)return'';
   const externalCtx = getStoredContext(p.id);
   const h=(p.answer_history||[]).slice(0,10).map(e=>`- ${e.id}: ${e.value}`).join('\n');
-  return`\n\n[작품 정보]\n제목: ${p.title}\n장르: ${p.genre||''}\n시놉시스: ${p.synopsis||''}${externalCtx ? '\n[참고 문헌]\n'+externalCtx : ''}${h?'\n[기획 내용]\n'+h:''}`;
+  const memCtx = buildContext(window.currentProject);
+  return`\n\n[작품 정보]\n제목: ${p.title}\n장르: ${p.genre||''}\n시놉시스: ${p.synopsis||''}${externalCtx ? '\n[참고 문헌]\n'+externalCtx : ''}${h?'\n[기획 내용]\n'+h:''}${memCtx?'\n\n[프로젝트 메모리 — 세계관·캐릭터·회차 흐름]\n'+memCtx:''}`;
 }
 
 function addXMsg(role,text){
