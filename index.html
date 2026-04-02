@@ -5688,19 +5688,30 @@ function renderEpList(){
 
   // 작품이 하나도 없을 때
   if(!allProjs.length){
-    const es=document.createElement('div');
-    es.style.cssText='padding:40px 0;display:flex;flex-direction:column;align-items:center;gap:18px;max-width:880px;margin:0 auto';
-    es.innerHTML=`
-      <div style="font-size:2.2rem">🔗</div>
-      <div style="text-align:center">
-        <div style="font-size:15px;font-weight:900;color:var(--text);margin-bottom:6px">작품을 연동하고 회차를 설계해보세요</div>
-        <div style="font-size:13px;color:var(--text-dim);line-height:1.7">기획안을 연동하면 AI가 맥락을 기억하고<br>각 회차를 자동으로 채워드립니다.</div>
-      </div>
-      <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center">
-        <button onclick="openProjectMemoryModal()" style="padding:11px 22px;background:var(--purple);border:none;border-radius:14px;color:#fff;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;box-shadow:0 4px 16px var(--purple-glow)">🔗 작품 연동하기</button>
-        <button onclick="addEpisode()" style="padding:11px 22px;background:rgba(255,255,255,0.05);border:1px solid var(--border2);border-radius:14px;color:var(--text-dim);font-size:13px;font-weight:700;font-family:inherit;cursor:pointer">+ 회차만 추가하기</button>
-      </div>`;
-    list.appendChild(es);
+    if(!olEpisodes.length){
+      // 회차도 없으면 빈 상태 안내
+      const es=document.createElement('div');
+      es.style.cssText='padding:40px 0;display:flex;flex-direction:column;align-items:center;gap:18px;max-width:880px;margin:0 auto';
+      es.innerHTML=`
+        <div style="font-size:2.2rem">🔗</div>
+        <div style="text-align:center">
+          <div style="font-size:15px;font-weight:900;color:var(--text);margin-bottom:6px">작품을 연동하고 회차를 설계해보세요</div>
+          <div style="font-size:13px;color:var(--text-dim);line-height:1.7">기획안을 연동하면 AI가 맥락을 기억하고<br>각 회차를 자동으로 채워드립니다.</div>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center">
+          <button onclick="openProjectMemoryModal()" style="padding:11px 22px;background:var(--purple);border:none;border-radius:14px;color:#fff;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;box-shadow:0 4px 16px var(--purple-glow)">🔗 작품 연동하기</button>
+          <button onclick="addEpisode()" style="padding:11px 22px;background:rgba(255,255,255,0.05);border:1px solid var(--border2);border-radius:14px;color:var(--text-dim);font-size:13px;font-weight:700;font-family:inherit;cursor:pointer">+ 회차만 추가하기</button>
+        </div>`;
+      list.appendChild(es);
+      return;
+    }
+    // 연동 작품 없이 회차만 추가한 경우
+    renderEpCards(list, olEpisodes);
+    const addBtn=document.createElement('button');
+    addBtn.className='ep-add';
+    addBtn.innerHTML='<span style="font-size:16px">+</span> 회차 추가';
+    addBtn.onclick=addEpisode;
+    list.appendChild(addBtn);
     return;
   }
 
