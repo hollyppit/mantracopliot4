@@ -67,6 +67,10 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
 .myplan-cta-review:hover{transform:translateY(-4px);border-color:var(--purple);box-shadow:0 16px 40px rgba(139,92,246,0.25)}
 .myplan-cta-review .cta-icon{color:var(--purple-light);text-shadow:0 0 20px rgba(139,92,246,0.5)}
 .myplan-cta-review .cta-title{color:var(--purple-light)}
+.myplan-cta-import{background:linear-gradient(145deg,rgba(59,130,246,0.14),rgba(59,130,246,0.06));border-color:rgba(59,130,246,0.3)}
+.myplan-cta-import:hover{transform:translateY(-4px);border-color:#3B82F6;box-shadow:0 16px 40px rgba(59,130,246,0.25)}
+.myplan-cta-import .cta-icon{color:#93C5FD;text-shadow:0 0 20px rgba(59,130,246,0.5)}
+.myplan-cta-import .cta-title{color:#93C5FD}
 .dash-mode-btn{border:none;font-size:12px;font-weight:700;padding:6px 18px;border-radius:16px;cursor:pointer;font-family:inherit;transition:all 0.2s;color:var(--text-dim);background:none}
 .dash-mode-btn:hover{color:var(--text)}
 .dash-mode-btn.on{background:var(--purple);color:#fff}
@@ -833,7 +837,7 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
     </div>
     <div class="vb" style="display:flex;flex-direction:column;gap:28px">
       <!-- 두 CTA 버튼 -->
-      <div class="home-mode-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:780px">
+      <div class="home-mode-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;max-width:1100px">
         <div class="myplan-cta myplan-cta-new" onclick="openMode()">
           <div class="cta-icon" style="font-size:2.6rem;margin-bottom:16px;line-height:1">✦</div>
           <div class="cta-title" style="font-size:19px;font-weight:900;margin-bottom:8px;letter-spacing:-0.02em">새 작품 기획하기</div>
@@ -843,6 +847,11 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
           <div class="cta-icon" style="font-size:2.6rem;margin-bottom:16px;line-height:1">🔍</div>
           <div class="cta-title" style="font-size:19px;font-weight:900;margin-bottom:8px;letter-spacing:-0.02em">기존 작품 검토하기</div>
           <div id="cta-review-sub" style="font-size:12px;color:var(--text-faint);line-height:1.6">시놉시스·캐릭터·개요를 통합 점검합니다</div>
+        </div>
+        <div class="myplan-cta myplan-cta-import" onclick="openImportModal()">
+          <div class="cta-icon" style="font-size:2.6rem;margin-bottom:16px;line-height:1">📥</div>
+          <div class="cta-title" style="font-size:19px;font-weight:900;margin-bottom:8px;letter-spacing:-0.02em">외부 작품 가져오기</div>
+          <div style="font-size:12px;color:var(--text-faint);line-height:1.6">PDF / TXT / 텍스트를 불러와 작품으로 변환합니다</div>
         </div>
       </div>
       <!-- 작품 목록 -->
@@ -1044,6 +1053,42 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
       <div style="font-size:13px;color:var(--text-dim);margin-bottom:24px">AI가 시놉시스·캐릭터·개요를 통합 분석합니다</div>
       <div id="review-picker-list" style="display:flex;flex-direction:column;gap:10px;max-height:340px;overflow-y:auto"></div>
       <button onclick="closeOv('ov-review-picker')" style="margin-top:18px;width:100%;padding:12px;background:var(--surface);border:1px solid var(--border);border-radius:12px;color:var(--text-dim);font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;transition:all 0.2s" onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color='var(--text-dim)'">취소</button>
+    </div>
+  </div>
+  <!-- 외부 작품 가져오기 모달 -->
+  <div class="item-modal" id="import-modal" onclick="if(event.target===this)closeImportModal()">
+    <div class="im-box" style="max-width:600px;gap:0">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+        <div style="font-size:18px;font-weight:900">외부 작품 가져오기</div>
+        <button onclick="closeImportModal()" style="background:none;border:none;color:var(--text-dim);font-size:20px;cursor:pointer;padding:0 4px;line-height:1">✕</button>
+      </div>
+      <div style="font-size:13px;color:var(--text-dim);margin-bottom:20px;line-height:1.5">PDF / TXT / 텍스트를 불러와 새 프로젝트로 변환합니다</div>
+      <!-- 탭 -->
+      <div style="display:flex;gap:4px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:4px;margin-bottom:20px">
+        <button id="import-tab-file" onclick="switchImportTab('file')" style="flex:1;padding:9px;border-radius:9px;border:none;background:var(--purple);color:#fff;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;transition:all 0.2s">📄 파일 업로드</button>
+        <button id="import-tab-text" onclick="switchImportTab('text')" style="flex:1;padding:9px;border-radius:9px;border:none;background:none;color:var(--text-dim);font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;transition:all 0.2s">✍️ 직접 입력</button>
+      </div>
+      <!-- 파일 업로드 패널 -->
+      <div id="import-panel-file">
+        <label for="import-file-input" style="display:block;border:2px dashed var(--border2);border-radius:14px;padding:32px;text-align:center;cursor:pointer;transition:border-color 0.2s;background:var(--surface)" onmouseover="this.style.borderColor='var(--purple)'" onmouseout="this.style.borderColor='var(--border2)'">
+          <div style="font-size:2rem;margin-bottom:10px">📁</div>
+          <div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:4px">파일을 클릭해 선택하세요</div>
+          <div style="font-size:12px;color:var(--text-faint)">.pdf .txt .md 지원 · 최대 5MB</div>
+          <input type="file" id="import-file-input" accept=".pdf,.txt,.md" style="display:none" onchange="handleImportFileChange(this)">
+        </label>
+        <div id="import-file-info" style="font-size:12px;color:var(--text-dim);margin-top:10px;min-height:18px"></div>
+      </div>
+      <!-- 직접 입력 패널 -->
+      <div id="import-panel-text" style="display:none">
+        <textarea id="import-textarea" class="im-ta" placeholder="작품의 시놉시스, 대본, 소설 원고 등을 붙여넣기 하세요..." style="min-height:180px"></textarea>
+      </div>
+      <!-- 분석 상태 -->
+      <div id="import-status" style="display:none;font-size:13px;font-weight:700;color:var(--purple-light);padding:12px 0;text-align:center"></div>
+      <!-- 버튼 -->
+      <div class="im-row" style="margin-top:16px">
+        <button class="im-cancel" onclick="closeImportModal()">취소</button>
+        <button class="im-save" id="import-submit-btn" onclick="submitImport()">📥 작품 불러오기</button>
+      </div>
     </div>
   </div>
   <!-- 캐릭터 디벨롭 오버레이 -->
@@ -2197,6 +2242,157 @@ function selectAndTask(pid){
   selProj=p;
   $('tpn').textContent=p.title;
   navTo('tasks');
+}
+
+// ── 외부 작품 가져오기 ──
+let _importTab='file';
+let _importFileText='';
+
+function openImportModal(){
+  _importTab='file';
+  _importFileText='';
+  const fi=$('import-file-input');
+  if(fi)fi.value='';
+  const ta=$('import-textarea');
+  if(ta)ta.value='';
+  const info=$('import-file-info');
+  if(info)info.textContent='';
+  const st=$('import-status');
+  if(st){st.textContent='';st.style.display='none';}
+  const btn=$('import-submit-btn');
+  if(btn){btn.disabled=false;btn.style.opacity='1';}
+  switchImportTab('file');
+  $('import-modal').classList.add('on');
+}
+
+function closeImportModal(){
+  $('import-modal').classList.remove('on');
+}
+
+function switchImportTab(tab){
+  _importTab=tab;
+  const filePanel=$('import-panel-file');
+  const textPanel=$('import-panel-text');
+  const fileTab=$('import-tab-file');
+  const textTab=$('import-tab-text');
+  if(filePanel)filePanel.style.display=tab==='file'?'block':'none';
+  if(textPanel)textPanel.style.display=tab==='text'?'block':'none';
+  if(fileTab){fileTab.style.background=tab==='file'?'var(--purple)':'none';fileTab.style.color=tab==='file'?'#fff':'var(--text-dim)';}
+  if(textTab){textTab.style.background=tab==='text'?'var(--purple)':'none';textTab.style.color=tab==='text'?'#fff':'var(--text-dim)';}
+}
+
+async function handleImportFileChange(input){
+  const file=input.files[0];
+  if(!file)return;
+  const info=$('import-file-info');
+  if(info)info.textContent=`⏳ ${file.name} 읽는 중...`;
+  try{
+    _importFileText=await extractTextFromFile(file);
+    if(info)info.textContent=`✅ ${file.name} (${_importFileText.length.toLocaleString()}자 추출됨)`;
+  }catch(e){
+    if(info)info.textContent=`⚠️ ${e.message}`;
+    _importFileText='';
+  }
+}
+
+async function submitImport(){
+  let text='';
+  if(_importTab==='file'){
+    text=_importFileText;
+    if(!text){flash('파일을 먼저 선택해주세요');return;}
+  }else{
+    const ta=$('import-textarea');
+    text=ta?ta.value.trim():'';
+    if(!text){flash('텍스트를 입력해주세요');return;}
+  }
+  const statusEl=$('import-status');
+  const btn=$('import-submit-btn');
+  if(statusEl){statusEl.textContent='분석 중...';statusEl.style.display='block';}
+  if(btn){btn.disabled=true;btn.style.opacity='0.5';}
+  try{
+    await _runImportProject(text,statusEl);
+  }catch(e){
+    if(statusEl)statusEl.textContent='⚠️ 오류가 발생했습니다. 다시 시도해주세요.';
+    if(btn){btn.disabled=false;btn.style.opacity='1';}
+  }
+}
+
+async function _runImportProject(text,statusEl){
+  // 1. structureMemory로 기본 추출
+  const rawMemory=window.PS.structureMemory(text);
+
+  // 2. AI로 제목·장르·요약·캐릭터·타임라인 추출
+  if(statusEl)statusEl.textContent='📖 AI 분석 중...';
+  let aiResult=null;
+  try{
+    const prompt=`아래 텍스트는 소설 또는 웹툰 원고입니다. 다음 JSON 형식으로만 응답하세요 (설명 없이):
+{"title":"작품 제목 (없으면 가져온 작품)","genre":"장르 2-4자","summary":"3-5문장 요약","characters":[{"name":"이름","role":"역할 1문장"}],"timeline":["핵심 사건1","핵심 사건2","핵심 사건3"]}
+
+텍스트:
+${text.slice(0,3000)}`;
+    const raw=await ai([
+      {role:'system',content:'당신은 스토리 구조를 JSON으로 추출하는 AI입니다. 반드시 JSON만 출력합니다.'},
+      {role:'user',content:prompt}
+    ],{max_tokens:1200});
+    const m=raw.match(/\{[\s\S]*\}/);
+    if(m)aiResult=JSON.parse(m[0]);
+  }catch(e){/* AI 실패 시 fallback */}
+
+  if(statusEl)statusEl.textContent='💾 프로젝트 생성 중...';
+
+  // 3. 프로젝트 생성
+  const title=aiResult?.title||'가져온 작품';
+  const proj=window.PS.createEmptyProject(title);
+  proj.genre=aiResult?.genre||'';
+  proj.synopsis=aiResult?.summary||rawMemory.summary||'';
+
+  // 4. 캐릭터 구성
+  proj.characters=(aiResult?.characters||[]).map(c=>({
+    id:Date.now().toString()+Math.random().toString(36).slice(2),
+    name:c.name,role:c.role||'',goal:'',emotion:'',relationships:{},arc:[]
+  }));
+  if(!proj.characters.length){
+    proj.characters=rawMemory.sourceCharacters.map(c=>({
+      id:Date.now().toString()+Math.random().toString(36).slice(2),
+      name:c.name,role:'',goal:'',emotion:'',relationships:{},arc:[]
+    }));
+  }
+
+  // 5. memory 구성
+  const timeline=aiResult?.timeline?.map((t,i)=>({seq:i+1,text:t}))||rawMemory.textTimeline;
+  proj.memory={
+    rawText:text,
+    summary:aiResult?.summary||rawMemory.summary||'',
+    sourceCharacters:rawMemory.sourceCharacters,
+    textTimeline:timeline,
+    timeline:[],
+    characterStates:{}
+  };
+
+  // 6. 저장
+  window.PS.saveProject(proj);
+  window.PS.setCurrentProject(proj);
+
+  // mp 리스트에 추가 (내 기획안 그리드용)
+  const mpEntry={
+    id:proj.id,title:proj.title,genre:proj.genre,synopsis:proj.synopsis,
+    characters:proj.characters,episodes:[],answer_history:[],routine_type:'long'
+  };
+  const mpArr=JSON.parse(localStorage.getItem('mp')||'[]');
+  mpArr.unshift(mpEntry);
+  localStorage.setItem('mp',JSON.stringify(mpArr.slice(0,50)));
+
+  // Supabase 저장 (로그인 시)
+  if(window.user&&window.sb){
+    try{await window.sb.from('projects').insert({...mpEntry,user_id:window.user.id,completed_at:new Date().toISOString()});}catch(e){}
+  }
+
+  if(statusEl)statusEl.textContent='✅ 작품 불러오기 완료!';
+  setTimeout(()=>{
+    closeImportModal();
+    flash(`'${proj.title}' 프로젝트가 생성됐습니다`);
+    navTo('outline');
+  },800);
 }
 
 function openReviewPicker(){
