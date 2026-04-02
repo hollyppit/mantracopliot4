@@ -1537,11 +1537,32 @@ const SB_URL='https://mvygorffhbshubqkerpo.supabase.co';
 const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im12eWdvcmZmaGJzaHVicWtlcnBvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2MzU3ODQsImV4cCI6MjA4OTIxMTc4NH0.p7usz-l53gmibWpswzTFvhzmR3UX7QkWb3oPsy3A50c';
 const sb=window.supabase.createClient(SB_URL,SB_KEY);
 
+function getProjectText() {
+  if (!selProj) return '(선택된 기획안 없음)';
+  const parts = [];
+  if (selProj.title) parts.push('제목: ' + selProj.title);
+  if (selProj.synopsis) parts.push('시놉시스: ' + selProj.synopsis);
+  return parts.length ? parts.join('\n') : '(기획안 내용 없음)';
+}
+
+async function getEmbedding(text) {
+  const res = await fetch("/api/embed", {
+    method: "POST",
+    body: JSON.stringify({ text }),
+  });
+  const data = await res.json();
+  return data.embedding;
+}
+
 async function runExpert(type) {
-  const { data, error } = await supabase
-    .from('story_cases')
-    .select('*')
-    .eq('type', type);
+  const text = getProjectText();
+
+  const embedding = await getEmbedding(text);
+
+  const { data, error } = await supabase.rpc('match_cases', {
+    query_embedding: embedding,
+    match_count: 3
+  });
 
   const resultBox = document.getElementById('expert-result');
 
@@ -1556,9 +1577,19 @@ async function runExpert(type) {
 
 분야: ${type}
 
-유사 사례:
+입력 기획안:
+${text}
+
+판단:
+이 기획안은 유사 사례 기반으로 다음 문제 가능성이 있습니다.
+
+문제:
 ${data.map(c => "- " + c.description).join("\n")}
-  `;
+
+수정 방향:
+- 초반 갈등을 빠르게 제시하세요
+- 설명을 줄이고 행동 중심으로 전개하세요
+`;
 }
 
 // ── 상태 ──
