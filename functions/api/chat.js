@@ -85,6 +85,18 @@ export async function onRequestPost(context) {
         const data = await openaiRes.json();
         const text = data.choices?.[0]?.message?.content || '';
         if (text) {
+          // 스트리밍 모드에서도 SSE 형식으로 반환
+          if (streamMode) {
+            const sseBody = `data: ${JSON.stringify({ type: 'content_block_delta', index: 0, delta: { type: 'text_delta', text } })}\n\ndata: [DONE]\n\n`;
+            return new Response(sseBody, {
+              status: 200,
+              headers: {
+                'Content-Type': 'text/event-stream',
+                'Cache-Control': 'no-cache',
+                'Access-Control-Allow-Origin': '*',
+              },
+            });
+          }
           return new Response(JSON.stringify({
             choices: [{ message: { content: text } }],
           }), { status: 200, headers: corsHeaders });
