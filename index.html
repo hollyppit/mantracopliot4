@@ -1092,6 +1092,14 @@ body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:
       </div>
       <div class="xb" id="xb"></div>
       <div class="xiw">
+        <div id="rag-toggle-bar" style="display:flex;align-items:center;gap:8px;padding:6px 16px 0;font-size:12px;color:var(--text-faint)">
+          <span>실제 자료 기반 고증 (RAG)</span>
+          <button id="rag-toggle-btn" onclick="toggleRag()" style="
+            padding:3px 10px;border-radius:20px;border:1px solid var(--border);
+            background:var(--surface2);color:var(--text-faint);
+            font-size:11px;font-weight:700;cursor:pointer;transition:all 0.2s;
+          ">OFF</button>
+        </div>
         <div class="guide-bar">
           <span style="font-size:11px;color:var(--text-faint);white-space:nowrap">작성 스타일:</span>
           <div class="guide-wrap">
@@ -1645,32 +1653,63 @@ async function generateFromAI(input) {
   return "현재 AI 응답을 생성할 수 없습니다. API 키 또는 네트워크 상태를 확인하세요.";
 }
 
+function toggleRag() {
+  ragEnabled = !ragEnabled;
+  const btn = document.getElementById('rag-toggle-btn');
+  if (ragEnabled) {
+    btn.textContent = 'ON';
+    btn.style.background = 'var(--accent, #7c5cfc)';
+    btn.style.color = '#fff';
+    btn.style.borderColor = 'var(--accent, #7c5cfc)';
+  } else {
+    btn.textContent = 'OFF';
+    btn.style.background = 'var(--surface2)';
+    btn.style.color = 'var(--text-faint)';
+    btn.style.borderColor = 'var(--border)';
+  }
+  console.log("RAG 토글:", ragEnabled ? "ON" : "OFF");
+}
+
 async function runExpert(type) {
   const text = getProjectText();
   const resultBox = document.getElementById('expert-result');
-  resultBox.innerText = '분석 중...';
 
   const input = `당신은 ${type} 분야 전문가입니다.\n\n아래 기획안을 분석하고 문제점과 수정 방향을 알려주세요.\n\n기획안:\n${text}`;
 
   try {
-    console.log("AI 직결 모드 실행");
+    console.log("RAG 상태:", ragEnabled);
 
-    const result = await generateFromAI(input);
-
-    if (!result || result.trim() === "") {
-      resultBox.innerText = "AI 응답이 비어있습니다. API 설정을 확인하세요.";
+    // RAG OFF → 무조건 AI
+    if (!ragEnabled) {
+      resultBox.innerText = '분석 중...';
+      const result = await generateFromAI(input);
+      resultBox.innerText = result || "AI 응답이 비어있습니다. API 설정을 확인하세요.";
       return;
     }
 
-    resultBox.innerText = result;
+    // RAG ON → 시도 후 AI fallback
+    resultBox.innerText = '자료 기반 분석 중...';
+    const ragResult = await generateFromRAG(await getRAG(text), type, text);
+
+    if (ragResult && ragResult.trim() !== "") {
+      resultBox.innerText = ragResult;
+      return;
+    }
+
+    console.warn("RAG 실패 → AI fallback");
+    resultBox.innerText = '분석 중...';
+    const aiResult = await generateFromAI(input);
+    resultBox.innerText = aiResult || "AI 응답이 비어있습니다. API 설정을 확인하세요.";
 
   } catch (e) {
     console.error("runExpert error:", e);
-    resultBox.innerText = "AI 실행 중 오류 발생 (API 키 또는 네트워크 문제)";
+    resultBox.innerText = '분석 중...';
+    resultBox.innerText = await generateFromAI(input);
   }
 }
 
 // ── 상태 ──
+let ragEnabled = false;
 let user=null,projects=[],selProj=null,steps=[],step=0,hist=[],charName='조수 T형',xMsgs=[],xPersona='',xPersonaBase='',xLinkedProj=null;
 // ── 루틴 데이터 ──
 const LONG=[
