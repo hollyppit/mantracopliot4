@@ -648,6 +648,19 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);back
   .rle-box{padding:20px 18px}
   /* 키보드 단축키 힌트 숨김 (모바일에서 불필요) */
   .gm-hint-keyboard{display:none}
+  /* 뷰 하단 패딩 제거 — 모바일은 mob-nav가 공간 확보 */
+  .view{padding-bottom:0}
+  /* 기획 목차 헤더 패딩 · 제목 · 버튼 */
+  .plan-header{padding:14px 16px 0}
+  .plan-title-wrap{min-width:0;flex:1}
+  .plan-proj-name{font-size:18px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .plan-sub{font-size:11px}
+  .plan-btn{font-size:12px;padding:6px 12px}
+  /* 홈 인사말 제목 폰트 축소 */
+  #home-greeting-title{font-size:24px!important;line-height:1.25!important}
+  /* 프로젝트 선택 · 회차 수 설정 오버레이 패딩 축소 */
+  .ol-proj-box{padding:18px 16px}
+  .ep-count-box{padding:22px 18px}
 }
 /* ── CHARACTER DEV OVERLAY ── */
 .cd-ov{position:fixed;left:var(--sw);right:0;top:0;bottom:0;z-index:300;background:rgba(0,0,0,0.88);backdrop-filter:blur(24px);display:none;align-items:stretch}
@@ -1448,7 +1461,7 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);back
   </div>
 </nav>
 <!-- 항목 입력 모달 -->
-<div class="item-modal" id="item-modal">
+<div class="item-modal" id="item-modal" onclick="if(event.target===this)closeItemModal()">
   <div class="im-box">
     <div class="im-label" id="im-label">기획 항목</div>
     <div class="im-q" id="im-q"></div>
@@ -1481,7 +1494,7 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);back
   <div class="ipb" id="ipb"></div>
 </div>
 <!-- 회차 개요: 프로젝트 선택 -->
-<div class="ol-proj-ov" id="ol-proj-ov">
+<div class="ol-proj-ov" id="ol-proj-ov" onclick="if(event.target===this)closeOlProjSelect()">
   <div class="ol-proj-box">
     <div style="font-size:17px;font-weight:900">작품 연동하기</div>
     <div style="font-size:13px;color:var(--text-dim);margin-top:3px">프로젝트 단위 1회 연동 — 회차 개요·캐릭터 등 모든 기능이 동일한 데이터를 사용합니다</div>
@@ -1519,7 +1532,7 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);back
   </div>
 </div>
 <!-- 시놉시스 입력 모달 (내 기획안) -->
-<div class="syn-modal-ov" id="syn-modal-ov">
+<div class="syn-modal-ov" id="syn-modal-ov" onclick="if(event.target===this)closeSynModal()">
   <div class="syn-modal-box">
     <div style="font-size:17px;font-weight:900;margin-bottom:4px">시놉시스 입력/편집</div>
     <div id="syn-modal-proj-name" style="font-size:12px;color:var(--purple-light);font-weight:700;margin-bottom:14px"></div>
@@ -1546,7 +1559,7 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);back
   </div>
 </div>
 <!-- 회차 수 설정 모달 -->
-<div class="ol-proj-ov" id="ep-count-ov">
+<div class="ol-proj-ov" id="ep-count-ov" onclick="if(event.target===this)$('ep-count-ov').classList.remove('on')">
   <div class="ep-count-box">
     <div class="ep-count-title">회차 수를 정해볼까요?</div>
     <div class="ep-count-sub">이미 있는 회차 다음부터 추가됩니다</div>
