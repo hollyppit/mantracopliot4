@@ -199,7 +199,7 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);colo
 .eg{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px}
 .ec{background:var(--surface);border:1px solid var(--border);border-radius:var(--rs);padding:20px 16px;text-align:center;cursor:pointer;transition:all 0.25s}
 .ec:hover{border-color:var(--purple-light);background:rgba(16,185,129,0.1);transform:translateY(-3px)}
-.eci{font-size:28px;margin-bottom:10px}
+.eci{font-size:28px;margin-bottom:10px;display:flex;align-items:center;justify-content:center;color:var(--text-dim)}
 .ecn{font-size:13px;font-weight:700;color:var(--text)}
 /* 기획 목차 화면 */
 .plan-header{padding:28px 36px 0;flex-shrink:0;display:flex;align-items:center;justify-content:space-between;gap:16px}
@@ -1068,21 +1068,21 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);colo
         <div>
           <div class="vst">🛡️ 전문가 고증</div>
           <div class="eg">
-            <div class="ec" onclick="startVerify('의학 전문가')"><div class="eci">🩺</div><div class="ecn">의학/법의학</div></div>
-            <div class="ec" onclick="startVerify('수사 전문가')"><div class="eci">🚓</div><div class="ecn">형사/수사</div></div>
-            <div class="ec" onclick="startVerify('법률 전문가')"><div class="eci">⚖️</div><div class="ecn">법률/재판</div></div>
-            <div class="ec" onclick="startVerify('심리학 전문가')"><div class="eci">🧠</div><div class="ecn">심리학</div></div>
-            <div class="ec" onclick="startVerify('역사 전문가')"><div class="eci">📜</div><div class="ecn">역사/시대</div></div>
-            <div class="ec" onclick="startVerify('군사 전문가')"><div class="eci">⚔️</div><div class="ecn">군사/무기</div></div>
+            <div class="ec" onclick="startVerify('의학 전문가')"><div class="eci"><svg width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="16" cy="10" r="4"/><path d="M10 28v-4a6 6 0 0 1 12 0v4"/><path d="M13 18h6M16 15v6"/></svg></div><div class="ecn">의학/법의학</div></div>
+            <div class="ec" onclick="startVerify('수사 전문가')"><div class="eci"><svg width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="14" cy="14" r="7"/><line x1="19.5" y1="19.5" x2="26" y2="26"/><path d="M11 14h6M14 11v6"/></svg></div><div class="ecn">형사/수사</div></div>
+            <div class="ec" onclick="startVerify('법률 전문가')"><div class="eci"><svg width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><line x1="16" y1="4" x2="16" y2="28"/><path d="M9 28h14"/><path d="M8 10l-4 6h8l-4-6z"/><path d="M24 10l-4 6h8l-4-6z"/><line x1="8" y1="10" x2="24" y2="10"/></svg></div><div class="ecn">법률/재판</div></div>
+            <div class="ec" onclick="startVerify('심리학 전문가')"><div class="eci"><svg width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M16 5a9 9 0 0 1 9 9c0 3-1.5 5.5-4 7v3H11v-3c-2.5-1.5-4-4-4-7a9 9 0 0 1 9-9z"/><line x1="13" y1="27" x2="19" y2="27"/><line x1="16" y1="14" x2="16" y2="20"/><line x1="13" y1="17" x2="19" y2="17"/></svg></div><div class="ecn">심리학</div></div>
+            <div class="ec" onclick="startVerify('역사 전문가')"><div class="eci"><svg width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="6" width="16" height="20" rx="2"/><path d="M12 6V4M20 6V4"/><line x1="12" y1="14" x2="20" y2="14"/><line x1="12" y1="18" x2="20" y2="18"/><line x1="12" y1="22" x2="17" y2="22"/></svg></div><div class="ecn">역사/시대</div></div>
+            <div class="ec" onclick="startVerify('군사 전문가')"><div class="eci"><svg width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4l2 6h6l-5 4 2 6-5-4-5 4 2-6-5-4h6z"/><path d="M10 22l-4 6M22 22l4 6"/></svg></div><div class="ecn">군사/무기</div></div>
           </div>
         </div>
         <div>
           <div class="vst">📝 편집자 검토</div>
           <div class="eg">
-            <div class="ec" onclick="startVerify('냉정한 편집자')"><div class="eci">🥶</div><div class="ecn">냉정한 편집자</div></div>
-            <div class="ec" onclick="startVerify('공감형 편집자')"><div class="eci">🥰</div><div class="ecn">공감형 편집자</div></div>
-            <div class="ec" onclick="startVerify('로판 편집자')"><div class="eci">✨</div><div class="ecn">장르별 편집자</div></div>
-            <div class="ec" onclick="startVerify('10년차 평론가')"><div class="eci">🔍</div><div class="ecn">10년차 평론가</div></div>
+            <div class="ec" onclick="startVerify('냉정한 편집자')"><div class="eci"><svg width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="5" width="18" height="22" rx="2"/><line x1="11" y1="11" x2="21" y2="11"/><line x1="11" y1="15" x2="21" y2="15"/><line x1="11" y1="19" x2="17" y2="19"/><path d="M19 20l2 2 3-3" stroke-width="1.6"/></svg></div><div class="ecn">냉정한 편집자</div></div>
+            <div class="ec" onclick="startVerify('공감형 편집자')"><div class="eci"><svg width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M16 27S6 21 6 13a6 6 0 0 1 10-4.47A6 6 0 0 1 26 13c0 8-10 14-10 14z"/></svg></div><div class="ecn">공감형 편집자</div></div>
+            <div class="ec" style="cursor:default;opacity:0.45;pointer-events:none;position:relative"><div class="eci"><svg width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="16" cy="12" r="4"/><path d="M8 28c0-5 3.6-8 8-8s8 3 8 8"/><path d="M24 8c2 1 3 3 3 5s-1 4-3 5"/><path d="M8 8C6 9 5 11 5 13s1 4 3 5"/></svg></div><div class="ecn">멘토 추천</div><span style="position:absolute;top:8px;right:8px;font-size:9px;font-weight:800;letter-spacing:0.06em;color:var(--text-faint);background:rgba(255,255,255,0.06);border:1px solid var(--border);border-radius:4px;padding:2px 5px">준비중</span></div>
+            <div class="ec" style="cursor:default;opacity:0.45;pointer-events:none;position:relative"><div class="eci"><svg width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8h20v12a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V8z"/><path d="M6 8l10 8 10-8"/><circle cx="24" cy="24" r="4"/><line x1="24" y1="22" x2="24" y2="26"/><line x1="22" y1="24" x2="26" y2="24"/></svg></div><div class="ecn">실시간 피드백</div><span style="position:absolute;top:8px;right:8px;font-size:9px;font-weight:800;letter-spacing:0.06em;color:var(--text-faint);background:rgba(255,255,255,0.06);border:1px solid var(--border);border-radius:4px;padding:2px 5px">준비중</span></div>
           </div>
         </div>
       </div>
@@ -2561,15 +2561,25 @@ function renderActionBoard() {
     </div>`;
   }
 
-  // 블록 3: 빠른 시작 템플릿
+  // 블록 3: 빠른 시작 템플릿 — 루틴 보관함 기반
+  const rlList = loadRL();
+  const rlBtns = rlList.map(r => {
+    const escapedId = r.id.replace(/'/g, "\\'");
+    return `<button onclick="abStartRoutine('${escapedId}')" style="display:flex;align-items:center;gap:10px;background:rgba(16,185,129,0.06);border:1px solid rgba(16,185,129,0.2);border-radius:12px;padding:10px 16px;cursor:pointer;font-family:inherit;text-align:left;width:100%;transition:all 0.2s" onmouseover="this.style.background='rgba(16,185,129,0.14)';this.style.borderColor='rgba(16,185,129,0.5)'" onmouseout="this.style.background='rgba(16,185,129,0.06)';this.style.borderColor='rgba(16,185,129,0.2)'">
+      <div style="width:28px;height:28px;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:rgba(16,185,129,0.12);border-radius:8px">${r.icon}</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:13px;font-weight:700;color:var(--text)">${r.name}</div>
+        <div style="font-size:11px;color:var(--text-faint);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${r.desc}</div>
+      </div>
+      <div style="font-size:11px;color:var(--text-faint);flex-shrink:0">${r.steps.length}단계</div>
+    </button>`;
+  }).join('');
   const block3 = `<div style="background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:16px;padding:18px 20px;margin-bottom:12px">
-    <div style="font-size:10px;font-weight:800;letter-spacing:0.1em;color:var(--text-faint);text-transform:uppercase;margin-bottom:14px">⚡ 빠른 시작 템플릿</div>
-    <div style="display:flex;flex-wrap:wrap;gap:8px">
-      <button onclick="abStartTemplate('학원 액션')" style="background:rgba(255,100,50,0.08);border:1px solid rgba(255,100,50,0.2);border-radius:10px;padding:9px 16px;cursor:pointer;font-family:inherit;font-size:13px;font-weight:700;color:var(--text);transition:all 0.2s" onmouseover="this.style.background='rgba(255,100,50,0.18)';this.style.borderColor='rgba(255,100,50,0.5)'" onmouseout="this.style.background='rgba(255,100,50,0.08)';this.style.borderColor='rgba(255,100,50,0.2)'">🥋 학원 액션</button>
-      <button onclick="abStartTemplate('복수극')" style="background:rgba(220,50,100,0.08);border:1px solid rgba(220,50,100,0.2);border-radius:10px;padding:9px 16px;cursor:pointer;font-family:inherit;font-size:13px;font-weight:700;color:var(--text);transition:all 0.2s" onmouseover="this.style.background='rgba(220,50,100,0.18)';this.style.borderColor='rgba(220,50,100,0.5)'" onmouseout="this.style.background='rgba(220,50,100,0.08)';this.style.borderColor='rgba(220,50,100,0.2)'">🗡️ 복수극</button>
-      <button onclick="abStartTemplate('이세계 전생')" style="background:rgba(100,80,220,0.08);border:1px solid rgba(100,80,220,0.2);border-radius:10px;padding:9px 16px;cursor:pointer;font-family:inherit;font-size:13px;font-weight:700;color:var(--text);transition:all 0.2s" onmouseover="this.style.background='rgba(100,80,220,0.18)';this.style.borderColor='rgba(100,80,220,0.5)'" onmouseout="this.style.background='rgba(100,80,220,0.08)';this.style.borderColor='rgba(100,80,220,0.2)'">🌀 이세계 전생</button>
-      <button onclick="abStartTemplate('로맨스 판타지')" style="background:rgba(230,100,180,0.08);border:1px solid rgba(230,100,180,0.2);border-radius:10px;padding:9px 16px;cursor:pointer;font-family:inherit;font-size:13px;font-weight:700;color:var(--text);transition:all 0.2s" onmouseover="this.style.background='rgba(230,100,180,0.18)';this.style.borderColor='rgba(230,100,180,0.5)'" onmouseout="this.style.background='rgba(230,100,180,0.08)';this.style.borderColor='rgba(230,100,180,0.2)'">💗 로맨스 판타지</button>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+      <div style="font-size:10px;font-weight:800;letter-spacing:0.1em;color:var(--text-faint);text-transform:uppercase">⚡ 빠른 시작 템플릿</div>
+      <button onclick="navTo('rl')" style="background:none;border:none;font-size:11px;color:var(--text-faint);cursor:pointer;padding:0;font-family:inherit" onmouseover="this.style.color='var(--purple)'" onmouseout="this.style.color='var(--text-faint)'">루틴 관리 →</button>
     </div>
+    <div style="display:flex;flex-direction:column;gap:8px">${rlBtns}</div>
   </div>`;
 
   // 블록 4: 문제 해결 버튼
@@ -2596,6 +2606,18 @@ function abSendToAgent(text) {
     gt.style.height = Math.min(gt.scrollHeight, 130) + 'px';
     gmSend();
   }, 80);
+}
+
+// 루틴으로 빠른 시작 — 중간 오버레이 없이 빌드업 대화 바로 시작
+function abStartRoutine(id) {
+  pendingRoutineType = id;
+  newProjName = '작품 ' + String(Math.floor(Math.random() * 999) + 1).padStart(3, '0');
+  // 캐릭터 UI 동기화 (기본값 유지)
+  const ceEl = $('ce'); if (ceEl) ceEl.src = charName === '조수 F형' ? 'images/조수b.gif' : 'images/조수a.gif';
+  const cnpEl = $('cnp'); if (cnpEl) cnpEl.textContent = charName;
+  const dspEl = $('dsp'); if (dspEl) dspEl.textContent = charName;
+  initPlanView(id);
+  startBuildup();
 }
 
 // 장르 템플릿으로 빠른 시작 — AI 에이전트에 기획 요청
@@ -3838,11 +3860,15 @@ function renderRL(){
         <div class="rl-card-meta">${r.steps.length}단계</div>
       </div></div>
       <div class="rl-card-desc">${r.desc}</div>
-      <div class="rl-card-actions">
+      ${r.isDefault
+        ? `<div style="font-size:11px;color:var(--text-faint);margin-top:10px;padding:8px 12px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:8px">🔒 만트라 스튜디오가 제공하는 기본 루틴입니다. 관리자만 편집 가능합니다.</div>
+      <div class="rl-card-actions"><button class="rl-btn sec" onclick="cloneRL('${r.id}')">복제</button></div>`
+        : `<div class="rl-card-actions">
         <button class="rl-btn pri" onclick="openRLEdit('${r.id}')">✏️ 편집</button>
         <button class="rl-btn sec" onclick="cloneRL('${r.id}')">복제</button>
-        ${!r.isDefault?`<button class="rl-btn dan" onclick="deleteRL('${r.id}')">삭제</button>`:''}
-      </div>`;
+        <button class="rl-btn dan" onclick="deleteRL('${r.id}')">삭제</button>
+      </div>`
+      }`;
     grid.appendChild(d);
   });
   const add=document.createElement('div');
@@ -3894,6 +3920,7 @@ let rlEditId=null,rlEditSteps=[],rlEditStepEditIdx=-1,rlEditAvatar=null;
 function openRLEdit(id){
   const rl=loadRL();
   const r=rl.find(r=>r.id===id);if(!r)return;
+  if(r.isDefault){flash('기본 루틴은 관리자만 편집할 수 있습니다. 복제 후 수정해주세요.');return;}
   rlEditId=id;
   rlEditSteps=r.steps.map(s=>({...s}));
   rlEditAvatar=r.avatar||null;
@@ -5896,20 +5923,50 @@ function homeChat(){
 
 // ── 창작 에이전트 ──
 // ── 사이트 내 기능 맵 ──
+// 앱 내 전체 기능 목록 (키워드는 해당 기능에만 특화된 것만)
 const SITE_FEATURES = [
-  { keywords:['회차','개요','에피소드','화','목차','구성','막'], label:'회차 개요', icon:'🎬', action:"navTo('outline')", desc:'회차별 긴장감·구성 설계' },
-  { keywords:['기획','아이디어','스토리','플롯','구조','이야기'], label:'스토리 빌드업', icon:'📖', action:"openMode()", desc:'22단계 스토리 구조 기획' },
-  { keywords:['검증','고증','편집','피드백','평론','전문가','의학','법률','심리'], label:'작품 검증', icon:'🔍', action:"navTo('verify')", desc:'전문가 AI가 작품을 검토' },
-  { keywords:['대사','캐릭터','인물','성격','말투'], label:'오늘의 작업 — 대사 검토', icon:'💬', action:"navTo('tasks')", desc:'캐릭터 대사 검토 및 개선' },
-  { keywords:['복선','설정','충돌','오류','체크'], label:'오늘의 작업 — 복선 체크', icon:'🔗', action:"navTo('tasks')", desc:'복선·설정 충돌 점검' },
+  {
+    keywords: ['회차','1화','2화','3화','에피소드','목차','씬 구성','긴장감 곡선','회차별'],
+    label: '회차 개요', icon: '🎬', action: "navTo('outline')",
+    desc: '회차별 긴장감·구성 설계'
+  },
+  {
+    keywords: ['기획 시작','루틴','빌드업','처음부터 기획','작품 기획','새 작품','장편','단편 루틴'],
+    label: '스토리 빌드업', icon: '📖', action: "openMode()",
+    desc: '루틴 기반 단계별 스토리 기획'
+  },
+  {
+    keywords: ['기획안','시놉시스','내 작품','작품 정보','저장된 기획','기획 수정'],
+    label: '내 기획안', icon: '📋', action: "navTo('myplan')",
+    desc: '시놉시스·캐릭터·회차 통합 관리'
+  },
+  {
+    keywords: ['캐릭터','주인공','인물','성격','말투','빌런','조연','캐릭터 설정','이름 짓기'],
+    label: '캐릭터 만들기', icon: '🧑‍🎨', action: "navTo('char')",
+    desc: '캐릭터 프로필·관계도 설계'
+  },
+  {
+    keywords: ['고증','전문가','의학','법률','수사','심리','역사','군사','사실 확인','현실성'],
+    label: '전문가 고증', icon: '🔍', action: "navTo('verify')",
+    desc: '전문가 AI가 작품의 현실성 검토'
+  },
+  {
+    keywords: ['편집자','피드백','검토','냉정','공감형','독자 반응','완성도'],
+    label: '전문가 고증 — 편집자 검토', icon: '📝', action: "navTo('verify')",
+    desc: '편집자 시각의 구조·감정선 피드백'
+  },
 ];
 
+// 키워드 매칭 점수 기반으로 가장 관련 높은 기능 반환
+// 매칭 없으면 전체 목록 반환
 function getFeatureSuggestion(userText, replyText) {
   const combined = (userText + ' ' + replyText).toLowerCase();
+  let best = null, bestScore = 0;
   for (const f of SITE_FEATURES) {
-    if (f.keywords.some(k => combined.includes(k))) return f;
+    const score = f.keywords.filter(k => combined.includes(k)).length;
+    if (score > bestScore) { bestScore = score; best = f; }
   }
-  return null;
+  return bestScore > 0 ? { single: best } : { all: SITE_FEATURES };
 }
 
 function extractYTKeyword(userText, replyText) {
@@ -5972,26 +6029,44 @@ async function gmSend(){
   $('gm-msgs').scrollTop=$('gm-msgs').scrollHeight;
 }
 
-async function appendGmExtras(feature, ytKeyword) {
+async function appendGmExtras(featureResult, ytKeyword) {
   const msgs = $('gm-msgs');
   const wrap = document.createElement('div');
   wrap.style.cssText = 'display:flex;flex-direction:column;gap:10px;max-width:88%;padding-left:36px';
   msgs.appendChild(wrap);
 
   // 기능 추천 카드
-  if (feature) {
+  if (featureResult) {
     const label = document.createElement('div');
     label.style.cssText = 'font-size:11px;font-weight:800;letter-spacing:0.08em;color:var(--purple-light);text-transform:uppercase;margin-bottom:6px;opacity:0.8';
     label.textContent = '✦ 관련 기능 추천';
     wrap.appendChild(label);
 
-    const fc = document.createElement('div');
-    fc.style.cssText = 'background:rgba(16,185,129,0.13);border:1.5px solid rgba(16,185,129,0.45);border-radius:14px;padding:16px 18px;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;gap:14px;box-shadow:0 2px 12px rgba(16,185,129,0.12)';
-    fc.innerHTML = `<div style="font-size:2rem;flex-shrink:0">${feature.icon}</div><div style="flex:1;min-width:0"><div style="font-size:15px;font-weight:800;color:#fff;margin-bottom:4px">${feature.label}</div><div style="font-size:12px;color:var(--text-dim);line-height:1.4">${feature.desc}</div></div><div style="font-size:13px;color:var(--purple-light);font-weight:800;flex-shrink:0;background:rgba(16,185,129,0.2);padding:6px 12px;border-radius:8px;border:1px solid rgba(16,185,129,0.3)">열기 →</div>`;
-    fc.onmouseover = () => { fc.style.background='rgba(16,185,129,0.2)'; fc.style.transform='translateY(-2px)'; fc.style.boxShadow='0 4px 20px rgba(16,185,129,0.22)'; };
-    fc.onmouseout = () => { fc.style.background='rgba(16,185,129,0.13)'; fc.style.transform='translateY(0)'; fc.style.boxShadow='0 2px 12px rgba(16,185,129,0.12)'; };
-    fc.onclick = () => eval(feature.action);
-    wrap.appendChild(fc);
+    if (featureResult.single) {
+      // 단일 강조 카드
+      const f = featureResult.single;
+      const fc = document.createElement('div');
+      fc.style.cssText = 'background:rgba(16,185,129,0.13);border:1.5px solid rgba(16,185,129,0.45);border-radius:14px;padding:16px 18px;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;gap:14px;box-shadow:0 2px 12px rgba(16,185,129,0.12)';
+      fc.innerHTML = `<div style="font-size:2rem;flex-shrink:0">${f.icon}</div><div style="flex:1;min-width:0"><div style="font-size:15px;font-weight:800;color:#fff;margin-bottom:4px">${f.label}</div><div style="font-size:12px;color:var(--text-dim);line-height:1.4">${f.desc}</div></div><div style="font-size:13px;color:var(--purple-light);font-weight:800;flex-shrink:0;background:rgba(16,185,129,0.2);padding:6px 12px;border-radius:8px;border:1px solid rgba(16,185,129,0.3)">열기 →</div>`;
+      fc.onmouseover = () => { fc.style.background='rgba(16,185,129,0.2)'; fc.style.transform='translateY(-2px)'; fc.style.boxShadow='0 4px 20px rgba(16,185,129,0.22)'; };
+      fc.onmouseout = () => { fc.style.background='rgba(16,185,129,0.13)'; fc.style.transform='translateY(0)'; fc.style.boxShadow='0 2px 12px rgba(16,185,129,0.12)'; };
+      fc.onclick = () => eval(f.action);
+      wrap.appendChild(fc);
+    } else if (featureResult.all) {
+      // 전체 기능 컴팩트 목록
+      const grid = document.createElement('div');
+      grid.style.cssText = 'display:flex;flex-direction:column;gap:6px';
+      featureResult.all.forEach(f => {
+        const fc = document.createElement('div');
+        fc.style.cssText = 'background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 14px;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;gap:10px';
+        fc.innerHTML = `<div style="font-size:1.3rem;flex-shrink:0;width:28px;text-align:center">${f.icon}</div><div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:700;color:var(--text)">${f.label}</div><div style="font-size:11px;color:var(--text-faint);margin-top:1px">${f.desc}</div></div><div style="font-size:11px;color:var(--text-faint);flex-shrink:0">→</div>`;
+        fc.onmouseover = () => { fc.style.borderColor='var(--purple-light)'; fc.style.background='rgba(16,185,129,0.07)'; };
+        fc.onmouseout = () => { fc.style.borderColor='var(--border)'; fc.style.background='var(--surface)'; };
+        fc.onclick = () => eval(f.action);
+        grid.appendChild(fc);
+      });
+      wrap.appendChild(grid);
+    }
   }
 
   // VideoPanel: 맥락 기반 영상 추천
