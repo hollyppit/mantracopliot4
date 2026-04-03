@@ -609,7 +609,7 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);back
   .dw{padding:0}
   .ia{padding-left:16px;padding-right:16px;padding-bottom:12px}
   /* 항목 입력 모달 */
-  .im-box{padding:24px 20px;border-radius:20px}
+  .im-box{padding:24px 20px;border-radius:20px;max-height:85dvh;overflow-y:auto}
   .im-q{font-size:16px}
   /* 목차 패딩 */
   .plan-body{padding:16px 18px 24px}
@@ -642,6 +642,16 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);back
   .mc{padding:28px 20px}
   /* 루틴 선택 패널 */
   .rp{padding:22px 18px}
+  /* 챗 상단 헤더 패딩 축소 */
+  .chud{padding:12px 16px}
+  /* 회차 상세 필드 — 1컬럼 */
+  .ep-field-row{grid-template-columns:1fr}
+  /* 프로젝트명 입력 오버레이 패딩 축소 */
+  .pn-box{padding:28px 20px}
+  /* 루틴 편집 오버레이 패딩 축소 */
+  .rle-box{padding:20px 18px}
+  /* 키보드 단축키 힌트 숨김 (모바일에서 불필요) */
+  .gm-hint-keyboard{display:none}
 }
 /* ── CHARACTER DEV OVERLAY ── */
 .cd-ov{position:fixed;left:var(--sw);right:0;top:0;bottom:0;z-index:300;background:rgba(0,0,0,0.88);backdrop-filter:blur(24px);display:none;align-items:stretch}
@@ -820,6 +830,12 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);back
   .cd-sec-item .cd-sec-icon{width:24px;height:24px}
   .cd-sec-item span:not(.cd-sec-icon){display:none}
   .cd-content{padding:20px 14px}
+  /* 회차 개요 사이드바 — 아이콘만 표시 */
+  .ol-sidebar{width:44px;min-width:44px}
+  .ol-sidebar-title{display:none}
+  .ol-sidebar-item{justify-content:center;padding:10px 4px}
+  .ol-sidebar-item span:not(:first-child){display:none}
+  .ol-sidebar-item span:first-child{font-size:16px!important}
 }
 </style>
 </head>
@@ -977,9 +993,9 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);back
             <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:currentColor;margin-left:2px"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
           </button>
         </div>
-        <div style="font-size:11px;color:var(--text-faint);margin-top:7px;display:flex;gap:14px;padding:0 4px">
+        <div class="gm-hint-row" style="font-size:11px;color:var(--text-faint);margin-top:7px;display:flex;gap:14px;padding:0 4px">
           <span>✦ 창작 에이전트가 함께합니다</span>
-          <span>Shift+Enter 줄바꿈</span>
+          <span class="gm-hint-keyboard">Shift+Enter 줄바꿈</span>
         </div>
       </div>
     </div>
