@@ -1181,6 +1181,108 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);back
 }
 .pa-mob-fab{display:none;width:36px;height:36px;border-radius:10px;background:rgba(255,77,106,0.18);border:1px solid rgba(255,77,106,0.35);color:#FF6B8A;font-size:16px;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:all 0.2s}
 .pa-mob-fab:hover{background:rgba(255,77,106,0.3)}
+/* ── 내 작업실 (Studio) ── */
+.std-ov{position:fixed;inset:0;z-index:9999;display:none;background:#0D0F14}
+.std-ov.on{display:flex}
+.std-side{width:220px;min-width:220px;background:#12141A;border-right:1px solid rgba(255,255,255,0.06);display:flex;flex-direction:column;overflow:hidden}
+.std-side-hdr{display:flex;align-items:center;justify-content:space-between;padding:16px 14px 12px;border-bottom:1px solid rgba(255,255,255,0.06)}
+.std-side-hdr h3{font-size:14px;font-weight:700;color:#E2E8F0;margin:0}
+.std-close-btn{background:none;border:none;color:#94A3B8;font-size:18px;cursor:pointer;padding:4px 8px;border-radius:6px;transition:all .15s}
+.std-close-btn:hover{background:rgba(255,255,255,0.08);color:#fff}
+.std-side-body{flex:1;overflow-y:auto;padding:8px 0}
+.std-side-body::-webkit-scrollbar{width:4px}
+.std-side-body::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);border-radius:2px}
+.std-sec{margin-bottom:2px}
+.std-sec-hdr{display:flex;align-items:center;gap:6px;padding:8px 14px;cursor:pointer;color:#94A3B8;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;user-select:none;transition:color .15s}
+.std-sec-hdr:hover{color:#E2E8F0}
+.std-sec-hdr .arr{font-size:10px;transition:transform .2s;width:12px;text-align:center}
+.std-sec-hdr.open .arr{transform:rotate(90deg)}
+.std-sec-body{display:none;padding:2px 8px 6px}
+.std-sec-hdr.open+.std-sec-body{display:block}
+.std-sec-item{display:flex;align-items:center;justify-content:space-between;padding:6px 10px;border-radius:6px;cursor:pointer;color:#CBD5E1;font-size:13px;transition:background .15s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.std-sec-item:hover{background:rgba(255,255,255,0.05)}
+.std-sec-item .std-add-btn{opacity:0;background:none;border:none;color:#00C8E0;font-size:16px;cursor:pointer;padding:0 4px;transition:opacity .15s;flex-shrink:0}
+.std-sec-item:hover .std-add-btn{opacity:1}
+.std-divider{height:1px;background:rgba(255,255,255,0.06);margin:8px 14px}
+.std-folder-hdr{display:flex;align-items:center;justify-content:space-between;padding:8px 14px}
+.std-folder-hdr span{color:#94A3B8;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px}
+.std-new-folder-btn{background:none;border:1px solid rgba(0,200,224,0.3);color:#00C8E0;font-size:11px;padding:3px 10px;border-radius:5px;cursor:pointer;transition:all .15s}
+.std-new-folder-btn:hover{background:rgba(0,200,224,0.1)}
+.std-folder-item{display:flex;align-items:center;gap:8px;padding:6px 14px;cursor:pointer;color:#CBD5E1;font-size:13px;transition:background .15s}
+.std-folder-item:hover{background:rgba(255,255,255,0.05)}
+.std-folder-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+/* ── 메인 보드 ── */
+.std-board{flex:1;position:relative;overflow:hidden;background:#FAFAFA;background-image:radial-gradient(circle,#ddd 1px,transparent 1px);background-size:24px 24px}
+.std-board-canvas{position:absolute;top:0;left:0;width:100%;height:100%;transform-origin:0 0}
+.std-toolbar{position:absolute;top:12px;right:16px;display:flex;gap:8px;z-index:10}
+.std-toolbar button{background:#fff;border:1px solid #E2E8F0;color:#475569;font-size:12px;padding:6px 12px;border-radius:8px;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,0.06);transition:all .15s;display:flex;align-items:center;gap:4px}
+.std-toolbar button:hover{background:#F1F5F9;border-color:#CBD5E1}
+/* 카드 공통 */
+.std-card{position:absolute;border-radius:10px;background:#fff;box-shadow:0 2px 16px rgba(0,0,0,0.1);cursor:grab;user-select:none;transition:box-shadow .15s,transform .15s;overflow:hidden}
+.std-card:hover{box-shadow:0 6px 24px rgba(0,0,0,0.15);transform:translateY(-2px)}
+.std-card:active{cursor:grabbing;box-shadow:0 8px 28px rgba(0,0,0,0.18);transform:translateY(0)}
+.std-card-bar{height:5px;width:100%}
+.std-card-body{padding:12px 14px 10px}
+.std-card-type{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:#94A3B8;margin-bottom:4px;display:flex;align-items:center;gap:4px}
+.std-card-title{font-size:14px;font-weight:600;color:#1E293B;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.std-card-meta{font-size:11px;color:#94A3B8;margin-top:6px}
+.std-card-close{position:absolute;top:8px;right:8px;width:22px;height:22px;border-radius:50%;background:rgba(0,0,0,0.06);border:none;color:#94A3B8;font-size:14px;cursor:pointer;display:none;align-items:center;justify-content:center;transition:all .15s;line-height:1}
+.std-card:hover .std-card-close{display:flex}
+.std-card-close:hover{background:rgba(239,68,68,0.15);color:#EF4444}
+/* 폴더 카드 */
+.std-folder-card{border-radius:12px;min-width:240px;min-height:180px}
+.std-folder-card-hdr{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid rgba(0,0,0,0.06)}
+.std-folder-card-hdr span{font-size:14px;font-weight:700;color:#1E293B}
+.std-folder-card-actions{display:flex;gap:4px}
+.std-folder-card-actions button{background:none;border:none;font-size:14px;cursor:pointer;padding:2px 6px;border-radius:4px;color:#64748B;transition:all .15s}
+.std-folder-card-actions button:hover{background:rgba(0,0,0,0.06)}
+.std-folder-card-body{position:relative;min-height:120px;padding:8px}
+/* 블록 */
+.std-block{position:absolute;border-radius:6px;overflow:hidden;box-shadow:0 1px 6px rgba(0,0,0,0.08)}
+.std-block-text textarea{width:100%;height:100%;border:none;padding:8px;font-size:12px;resize:none;background:#fff;color:#1E293B;font-family:inherit;outline:none;box-sizing:border-box}
+.std-block-img{width:100%;height:100%;object-fit:cover}
+.std-block-close{position:absolute;top:2px;right:2px;width:18px;height:18px;border-radius:50%;background:rgba(0,0,0,0.4);border:none;color:#fff;font-size:11px;cursor:pointer;display:none;align-items:center;justify-content:center;line-height:1}
+.std-block:hover .std-block-close{display:flex}
+/* 편집 모달 */
+.std-modal-ov{position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:10001;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+.std-modal-ov.on{display:flex}
+.std-modal{background:#fff;border-radius:14px;width:90%;max-width:600px;max-height:85vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.3)}
+.std-modal-hdr{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid #E2E8F0}
+.std-modal-hdr h3{font-size:16px;font-weight:700;color:#1E293B;margin:0}
+.std-modal-close{background:none;border:none;font-size:20px;color:#94A3B8;cursor:pointer;padding:4px 8px;border-radius:6px;transition:all .15s}
+.std-modal-close:hover{background:#F1F5F9;color:#1E293B}
+.std-modal-body{padding:20px}
+.std-modal-body label{display:block;font-size:12px;font-weight:600;color:#64748B;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.5px}
+.std-modal-body input,.std-modal-body textarea{width:100%;border:1px solid #E2E8F0;border-radius:8px;padding:10px 12px;font-size:14px;color:#1E293B;background:#F8FAFC;transition:border-color .15s;font-family:inherit;box-sizing:border-box}
+.std-modal-body input:focus,.std-modal-body textarea:focus{outline:none;border-color:#818CF8}
+.std-modal-body textarea{min-height:160px;resize:vertical}
+.std-modal-body .field{margin-bottom:16px}
+.std-modal-foot{padding:14px 20px;border-top:1px solid #E2E8F0;display:flex;justify-content:flex-end;gap:8px}
+.std-modal-foot button{padding:8px 20px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s}
+.std-modal-foot .std-cancel{background:#F1F5F9;border:1px solid #E2E8F0;color:#64748B}
+.std-modal-foot .std-cancel:hover{background:#E2E8F0}
+.std-modal-foot .std-save{background:#818CF8;border:none;color:#fff}
+.std-modal-foot .std-save:hover{background:#6366F1}
+/* 폴더 생성 모달 */
+.std-folder-modal{position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:10002;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+.std-folder-modal.on{display:flex}
+.std-folder-modal-box{background:#fff;border-radius:14px;padding:24px;width:90%;max-width:360px;box-shadow:0 20px 60px rgba(0,0,0,0.3)}
+.std-folder-modal-box h3{margin:0 0 16px;font-size:16px;font-weight:700;color:#1E293B}
+.std-folder-modal-box input{width:100%;border:1px solid #E2E8F0;border-radius:8px;padding:10px 12px;font-size:14px;margin-bottom:12px;box-sizing:border-box}
+.std-folder-modal-box input:focus{outline:none;border-color:#FFD700}
+.std-color-row{display:flex;gap:6px;margin-bottom:16px}
+.std-color-opt{width:28px;height:28px;border-radius:50%;border:2px solid transparent;cursor:pointer;transition:all .15s}
+.std-color-opt.sel{border-color:#1E293B;transform:scale(1.15)}
+.std-folder-modal-btns{display:flex;justify-content:flex-end;gap:8px}
+.std-folder-modal-btns button{padding:8px 18px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s}
+/* 모바일 */
+@media(max-width:768px){
+  .std-side{width:100%;min-width:0;position:absolute;z-index:2;height:100%;transform:translateX(0);transition:transform .25s}
+  .std-side.hidden{transform:translateX(-100%)}
+  .std-board{width:100%}
+  .std-mob-toggle{display:flex !important}
+}
+.std-mob-toggle{display:none;position:absolute;top:12px;left:12px;z-index:10;background:#fff;border:1px solid #E2E8F0;width:36px;height:36px;border-radius:8px;align-items:center;justify-content:center;font-size:16px;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,0.06)}
 </style>
 </head>
 <body>
@@ -1204,6 +1306,7 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);back
 <div class="mob-hdr" id="mob-hdr">
   <div class="mob-hdr-logo">✦ Mantra <em>Copilot</em></div>
   <button class="pa-mob-fab" onclick="paAdd()" title="주석 달기">📌</button>
+  <button class="pa-mob-fab" onclick="studioOpen()" title="내 작업실" style="background:rgba(0,200,224,0.18);border-color:rgba(0,200,224,0.35);color:#00C8E0">🗂</button>
   <button class="mob-hdr-action" onclick="toggleDashPanel()">내 대시보드</button>
 </div>
 <!-- 내 대시보드 패널 -->
@@ -1267,6 +1370,7 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);back
     <div class="ni" id="n-verify" onclick="navTo('verify')"><span class="ic" data-icon="verify"></span>전문가 고증</div>
     <div class="ni" id="n-market" onclick="navTo('market')"><span class="ic" data-icon="market"></span>루틴 마켓<span class="nb">준비 중</span></div>
     <div class="ni" onclick="openWhiteBoard()" style="margin-top:6px;border-top:1px solid rgba(0,200,224,0.08);padding-top:12px"><span class="ic">🕸</span>화이트보드</div>
+    <div class="ni" id="n-studio" onclick="studioOpen()" style="margin-top:2px"><span class="ic">🗂</span>내 작업실</div>
   </nav>
   <div class="sb-foot"><button class="pa-fab" onclick="paAdd()">📌 주석 달기</button><button class="nbtn" onclick="openMode()">+ 새 작품 기획하기</button></div>
 </aside>
@@ -1625,9 +1729,15 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);back
       </div>
       <div class="xb" id="xb"></div>
       <div class="xiw">
-        <div id="rag-toggle-bar" style="display:flex;align-items:center;gap:8px;padding:6px 16px 0;font-size:12px;color:var(--text-faint)">
+        <div id="rag-toggle-bar" style="display:flex;align-items:center;gap:8px;padding:6px 16px 0;font-size:12px;color:var(--text-faint);flex-wrap:wrap">
           <span>실제 자료 기반 고증 (RAG)</span>
           <button id="rag-toggle-btn" onclick="toggleRag()" style="
+            padding:3px 10px;border-radius:20px;border:1px solid var(--border);
+            background:var(--surface2);color:var(--text-faint);
+            font-size:11px;font-weight:700;cursor:pointer;transition:all 0.2s;
+          ">OFF</button>
+          <span style="margin-left:8px">🗂 내 자료 참고</span>
+          <button id="prag-toggle-btn" onclick="togglePersonalRag()" style="
             padding:3px 10px;border-radius:20px;border:1px solid var(--border);
             background:var(--surface2);color:var(--text-faint);
             font-size:11px;font-weight:700;cursor:pointer;transition:all 0.2s;
@@ -3704,6 +3814,7 @@ async function _runImportProject(text,statusEl){
   // Supabase 저장 (로그인 시)
   if(window.user&&window.sb){
     try{await window.sb.from('projects').insert({...mpEntry,user_id:window.user.id,completed_at:new Date().toISOString()});}catch(e){}
+    if(typeof embedProject==='function')embedProject(mpEntry);
   }
 
   if(statusEl)statusEl.textContent='✅ 작품 불러오기 완료!';
@@ -3904,6 +4015,7 @@ async function saveSynopsisEdit(){
   if(user){
     try{await sb.from('projects').update({synopsis:text}).eq('id',pdProj.id).eq('user_id',user.id);}catch(e){}
   }
+  if(typeof embedProject==='function')embedProject(pdProj);
   $('syn-save-status').textContent='✓ 저장됐습니다';
   setTimeout(()=>{if($('syn-save-status'))$('syn-save-status').textContent='';},2500);
 }
@@ -4345,6 +4457,7 @@ async function saveChars(){
   if(user){
     try{await sb.from('projects').update({characters:pdChars}).eq('id',pdProj.id).eq('user_id',user.id);}catch(e){}
   }
+  if(typeof embedProject==='function')embedProject(pdProj);
   renderCharSidebar();
 }
 
@@ -5273,6 +5386,7 @@ async function savePlanProject(){
   const arr=JSON.parse(localStorage.getItem('mp')||'[]');
   arr.unshift(proj);localStorage.setItem('mp',JSON.stringify(arr.slice(0,50)));
   if(user){try{await sb.from('projects').insert({...proj,user_id:user.id,completed_at:new Date().toISOString()});}catch(e){}}
+  if(typeof embedProject==='function')embedProject(proj);
   return pid;
 }
 // ── 빌드업 챗 (목차 연동) ──
@@ -6967,6 +7081,7 @@ async function saveOutlineData(){
   if(user&&olProjId){
     try{await sb.from('projects').update({episodes:olEpisodes}).eq('id',olProjId).eq('user_id',user.id);}
     catch(e){}
+    if(typeof embedProject==='function'){const ep=projects.find(p=>p.id===olProjId);if(ep)embedProject({...ep,episodes:olEpisodes});}
   }
   flash('💾 개요 저장됨');
 }
@@ -9189,6 +9304,657 @@ document.addEventListener('DOMContentLoaded',()=>setTimeout(paLoad,300));
     <canvas id="rb-draw-canvas" style="position:absolute;top:0;left:0;z-index:0;pointer-events:none"></canvas>
   </div>
 </div>
+<!-- ── 개인 RAG 스크립트 ── -->
+<script>
+(function(){
+  // ── 개인 RAG 상태 ──
+  let pragEnabled=localStorage.getItem('prag_enabled')==='true';
+
+  // 초기화: 버튼 상태 복원
+  document.addEventListener('DOMContentLoaded',()=>{
+    setTimeout(()=>{
+      const btn=document.getElementById('prag-toggle-btn');
+      if(btn&&pragEnabled){btn.textContent='ON';btn.style.background='#00C8E0';btn.style.color='#fff';btn.style.borderColor='#00C8E0';}
+    },200);
+  });
+
+  window.togglePersonalRag=function(){
+    pragEnabled=!pragEnabled;
+    localStorage.setItem('prag_enabled',pragEnabled);
+    const btn=document.getElementById('prag-toggle-btn');
+    if(pragEnabled){btn.textContent='ON';btn.style.background='#00C8E0';btn.style.color='#fff';btn.style.borderColor='#00C8E0';}
+    else{btn.textContent='OFF';btn.style.background='var(--surface2)';btn.style.color='var(--text-faint)';btn.style.borderColor='var(--border)';}
+  };
+  window.isPragEnabled=function(){return pragEnabled;};
+
+  // ── 백그라운드 임베딩 함수 ──
+  async function getAuthToken(){
+    try{const{data}=await sb.auth.getSession();return data?.session?.access_token||null;}catch(e){return null;}
+  }
+
+  window.embedCard=function(sourceType,projectId,text,sourceIndex){
+    if(!user||!text||text.trim().length<10)return;
+    getAuthToken().then(token=>{
+      if(!token)return;
+      fetch('/api/embed-card',{
+        method:'POST',
+        headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
+        body:JSON.stringify({table:sourceType,card_id:projectId,text:text.slice(0,6000),source_index:sourceIndex||0})
+      }).catch(e=>console.warn('embed-card:',e));
+    });
+  };
+
+  // ── 프로젝트 저장 시 자동 임베딩 ──
+  window.embedProject=function(proj){
+    if(!proj||!proj.id)return;
+    // 기획안 (title + synopsis)
+    const planText=[proj.title||'',proj.synopsis||''].filter(Boolean).join(' ');
+    if(planText.length>=10)embedCard('plan',proj.id,planText,0);
+    // 회차개요
+    if(proj.episodes&&proj.episodes.length){
+      proj.episodes.forEach((ep,i)=>{
+        const epText=typeof ep==='string'?ep:(ep.content||ep.summary||JSON.stringify(ep));
+        if(epText&&epText.length>=10)embedCard('episode',proj.id,(proj.title||'')+' '+(i+1)+'화 '+epText,i);
+      });
+    }
+    // 캐릭터
+    if(proj.characters&&proj.characters.length){
+      proj.characters.forEach((ch,i)=>{
+        const nm=typeof ch==='string'?ch:(ch.name||'캐릭터');
+        const desc=typeof ch==='string'?'':(ch.description||ch.traits||ch.features||'');
+        const chText=[nm,typeof desc==='string'?desc:JSON.stringify(desc)].filter(Boolean).join(' ');
+        if(chText.length>=5)embedCard('character',proj.id,(proj.title||'')+' '+chText,i);
+      });
+    }
+  };
+
+  // ── RAG 채팅 (doXSend 대체) ──
+  // 기존 doXSend 를 래핑하여 개인 RAG ON일 때 /rag-chat 사용
+  const _origDoXSend=window.doXSend;
+
+  window.doXSend=async function(){
+    if(!pragEnabled)return _origDoXSend();
+    // 개인 RAG 모드
+    const b=document.getElementById('xi');const v=b.value.trim();if(!v)return;
+    b.value='';b.style.height='44px';
+    addXMsg('user',v);xMsgs.push({role:'user',content:v});
+    const aName=document.getElementById('xct')?.textContent||'Mantra AI';
+    const avatarHtml=typeof xCharImage!=='undefined'&&xCharImage?'<img class="xm-avatar" src="'+xCharImage+'">':'';
+    const ld=document.createElement('div');ld.className='xm assistant';
+    if(avatarHtml)ld.innerHTML='<div class="xm-avatar-row">'+avatarHtml+'<div><div class="xm-name">'+aName+'</div><div class="xmi"><div class="xc">🗂 내 자료 검색 중...</div></div></div></div>';
+    else ld.innerHTML='<div class="xm-name">'+aName+'</div><div class="xmi"><div class="xc">🗂 내 자료 검색 중...</div></div>';
+    document.getElementById('xb').appendChild(ld);document.getElementById('xb').scrollTop=document.getElementById('xb').scrollHeight;
+    const cEl=ld.querySelector('.xc');
+    try{
+      const token=await getAuthToken();
+      if(!token){cEl.innerHTML='⚠️ 로그인이 필요합니다.';return;}
+      const res=await fetch('/api/rag-chat',{
+        method:'POST',
+        headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
+        body:JSON.stringify({message:v,messages:xMsgs.slice(-10)})
+      });
+      const data=await res.json();
+      if(data.error){cEl.innerHTML='⚠️ '+data.error;return;}
+      const reply=data.reply||'응답 없음';
+      xMsgs.push({role:'assistant',content:reply});
+      let refHtml='';
+      if(data.referenced&&data.referenced.length){
+        refHtml='<div style="margin-top:10px;padding-top:8px;border-top:1px solid rgba(255,255,255,0.08);font-size:11px;color:var(--text-faint)">📎 참고한 자료: '+
+          data.referenced.map(r=>'<span style="background:rgba(0,200,224,0.1);padding:2px 8px;border-radius:12px;margin:2px;display:inline-block;cursor:pointer" onclick="pragGoToSource(\''+r.source+'\')">'+r.source+' · '+r.title+'</span>').join('')+'</div>';
+      }
+      cEl.innerHTML=(typeof md==='function'?md(reply):reply)+refHtml;
+      document.getElementById('xb').scrollTop=document.getElementById('xb').scrollHeight;
+    }catch(e){cEl.innerHTML='⚠️ RAG 호출 오류: '+e.message;}
+  };
+
+  // 참고 자료 소스 이동
+  window.pragGoToSource=function(source){
+    const map={'기획안':'myplan','회차개요':'outline','캐릭터':'chara'};
+    const view=map[source];
+    if(view&&typeof navTo==='function')navTo(view);
+  };
+})();
+</script>
+<!-- ── 내 작업실 오버레이 ── -->
+<div class="std-ov" id="std-ov">
+  <div class="std-side" id="std-side">
+    <div class="std-side-hdr"><h3>내 작업실</h3><button class="std-close-btn" onclick="studioClose()">✕</button></div>
+    <div class="std-side-body" id="std-side-body"></div>
+  </div>
+  <div class="std-board" id="std-board">
+    <button class="std-mob-toggle" onclick="document.getElementById('std-side').classList.toggle('hidden')">☰</button>
+    <div class="std-toolbar">
+      <button onclick="studioResetView()">🏠 전체 보기</button>
+      <button id="std-save-ind">💾 저장됨</button>
+    </div>
+    <div class="std-board-canvas" id="std-canvas"></div>
+  </div>
+</div>
+<!-- 작업실 편집 모달 -->
+<div class="std-modal-ov" id="std-modal-ov" onclick="if(event.target===this)studioCloseModal()">
+  <div class="std-modal" id="std-modal">
+    <div class="std-modal-hdr"><h3 id="std-modal-title">편집</h3><button class="std-modal-close" onclick="studioCloseModal()">✕</button></div>
+    <div class="std-modal-body" id="std-modal-body"></div>
+    <div class="std-modal-foot"><button class="std-cancel" onclick="studioCloseModal()">취소</button><button class="std-save" onclick="studioSaveModal()">저장</button></div>
+  </div>
+</div>
+<!-- 작업실 폴더 생성 모달 -->
+<div class="std-folder-modal" id="std-folder-modal" onclick="if(event.target===this)this.classList.remove('on')">
+  <div class="std-folder-modal-box">
+    <h3>새 폴더</h3>
+    <input id="std-folder-name" placeholder="폴더 이름">
+    <div class="std-color-row" id="std-color-row"></div>
+    <div class="std-folder-modal-btns">
+      <button style="background:#F1F5F9;border:1px solid #E2E8F0;color:#64748B" onclick="document.getElementById('std-folder-modal').classList.remove('on')">취소</button>
+      <button style="background:#FFD700;border:none;color:#1E293B" onclick="studioCreateFolder()">만들기</button>
+    </div>
+  </div>
+</div>
+<script>
+// ── 내 작업실 (Studio) ──
+(function(){
+  const STD_COLORS=['#FFD700','#FF6B6B','#4ECDC4','#818CF8','#F59E0B','#34D399','#60A5FA','#F472B6'];
+  const TYPE_COLORS={plan:'#818CF8',outline:'#34D399',character:'#F59E0B',whiteboard:'#60A5FA',folder:'#FFD700'};
+  const TYPE_LABELS={plan:'📋 기획안',outline:'📑 회차 개요',character:'👤 캐릭터',whiteboard:'🗂 화이트보드',folder:'📁 폴더'};
+
+  let stdOpen=false, stdFolders=[], stdPositions=[], stdFolderBlocks={};
+  let stdPanX=0, stdPanY=0, stdScale=1, stdIsPanning=false, stdPanStart={x:0,y:0};
+  let stdModalCtx=null;
+  let stdProjectsCache=[];
+
+  window.studioOpen=async function(){
+    if(!user){if(window.flash)flash('로그인 후 이용할 수 있습니다');return;}
+    document.getElementById('std-ov').classList.add('on');
+    stdOpen=true;
+    await studioLoadAll();
+  };
+  window.studioClose=function(){
+    document.getElementById('std-ov').classList.remove('on');
+    stdOpen=false;
+  };
+
+  async function studioLoadAll(){
+    await Promise.all([studioLoadProjects(),studioLoadFolders(),studioLoadPositions()]);
+    studioRenderSidebar();
+    studioRenderBoard();
+  }
+
+  async function studioLoadProjects(){
+    try{
+      const{data}=await sb.from('projects').select('*').eq('user_id',user.id).order('completed_at',{ascending:false});
+      stdProjectsCache=data||[];
+    }catch(e){stdProjectsCache=projects||[];}
+  }
+  async function studioLoadFolders(){
+    try{
+      const{data}=await sb.from('studio_folders').select('*').eq('user_id',user.id).order('created_at',{ascending:true});
+      stdFolders=data||[];
+    }catch(e){stdFolders=[];}
+  }
+  async function studioLoadPositions(){
+    try{
+      const{data}=await sb.from('studio_card_positions').select('*').eq('user_id',user.id);
+      stdPositions=data||[];
+    }catch(e){stdPositions=[];}
+  }
+  async function studioLoadBlocks(folderId){
+    try{
+      const{data}=await sb.from('studio_blocks').select('*').eq('user_id',user.id).eq('folder_id',folderId);
+      stdFolderBlocks[folderId]=data||[];
+    }catch(e){stdFolderBlocks[folderId]=[];}
+  }
+
+  // ── 사이드바 렌더링 ──
+  function studioRenderSidebar(){
+    const body=document.getElementById('std-side-body');
+    body.innerHTML='';
+
+    // 연동 보관함
+    const secLabel=el('div','std-divider');
+    secLabel.style.cssText='padding:10px 14px 4px;color:#64748B;font-size:11px;font-weight:700;letter-spacing:0.5px';
+    secLabel.textContent='📌 연동 보관함';
+    body.appendChild(secLabel);
+
+    // 기획안 섹션
+    stdRenderSection(body,'plan','📋 기획안',stdProjectsCache.map(p=>({id:p.id,name:p.title||'(제목 없음)'})));
+
+    // 회차 개요 섹션 (프로젝트 중 episodes 있는 것)
+    const outlineItems=stdProjectsCache.filter(p=>p.episodes&&p.episodes.length).map(p=>({id:p.id,name:(p.title||'?')+' ('+p.episodes.length+'화)'}));
+    stdRenderSection(body,'outline','📑 회차 개요',outlineItems);
+
+    // 캐릭터 섹션 (프로젝트 중 characters 있는 것)
+    const charItems=stdProjectsCache.filter(p=>p.characters&&p.characters.length).map(p=>({id:p.id,name:(p.title||'?')+' ('+p.characters.length+'명)'}));
+    stdRenderSection(body,'character','👤 캐릭터',charItems);
+
+    // 화이트보드 섹션 (localStorage)
+    const wbRaw=JSON.parse(localStorage.getItem('wb_boards_v1')||'[]');
+    const wbItems=wbRaw.map(b=>({id:b.id,name:b.name||'화이트보드'}));
+    stdRenderSection(body,'whiteboard','🗂 화이트보드',wbItems);
+
+    // 내 폴더
+    const fDiv=el('div','std-divider');body.appendChild(fDiv);
+    const fHdr=el('div','std-folder-hdr');
+    fHdr.innerHTML='<span>📁 내 폴더</span>';
+    const addBtn=document.createElement('button');
+    addBtn.className='std-new-folder-btn';addBtn.textContent='+ 새 폴더';
+    addBtn.onclick=()=>studioOpenFolderModal();
+    fHdr.appendChild(addBtn);
+    body.appendChild(fHdr);
+
+    stdFolders.forEach(f=>{
+      const fi=el('div','std-folder-item');
+      const dot=el('div','std-folder-dot');dot.style.background=f.color||'#FFD700';
+      fi.appendChild(dot);
+      const nm=document.createElement('span');nm.textContent=f.name;nm.style.cssText='flex:1;overflow:hidden;text-overflow:ellipsis';
+      fi.appendChild(nm);
+      fi.onclick=()=>studioAddCardToBoard('folder',f.id);
+      fi.oncontextmenu=async(e)=>{
+        e.preventDefault();
+        if(confirm('폴더 "'+f.name+'"를 삭제하시겠습니까?')){
+          await sb.from('studio_folders').delete().eq('id',f.id).eq('user_id',user.id);
+          await sb.from('studio_card_positions').delete().eq('card_type','folder').eq('card_ref_id',f.id).eq('user_id',user.id);
+          await studioLoadFolders();studioRenderSidebar();studioRenderBoard();
+        }
+      };
+      body.appendChild(fi);
+    });
+  }
+
+  function stdRenderSection(parent,type,label,items){
+    const sec=el('div','std-sec');
+    const hdr=el('div','std-sec-hdr');
+    hdr.innerHTML='<span class="arr">▶</span>'+label+' <span style="color:#475569;font-size:11px;margin-left:auto">'+items.length+'</span>';
+    hdr.onclick=()=>hdr.classList.toggle('open');
+    sec.appendChild(hdr);
+    const bd=el('div','std-sec-body');
+    if(!items.length){
+      const empty=el('div');empty.style.cssText='color:#475569;font-size:12px;padding:6px 10px';empty.textContent='항목 없음';
+      bd.appendChild(empty);
+    }
+    items.forEach(it=>{
+      const row=el('div','std-sec-item');
+      row.innerHTML='<span style="flex:1;overflow:hidden;text-overflow:ellipsis">'+esc(it.name)+'</span>';
+      const btn=document.createElement('button');btn.className='std-add-btn';btn.textContent='+';
+      btn.title='보드에 추가';
+      btn.onclick=(e)=>{e.stopPropagation();studioAddCardToBoard(type,it.id);};
+      row.appendChild(btn);
+      bd.appendChild(row);
+    });
+    sec.appendChild(bd);
+    parent.appendChild(sec);
+  }
+
+  // ── 보드에 카드 추가 ──
+  async function studioAddCardToBoard(cardType,refId){
+    const existing=stdPositions.find(p=>p.card_type===cardType&&p.card_ref_id===String(refId)&&p.is_on_board);
+    if(existing){if(window.flash)flash('이미 보드에 있습니다');return;}
+    const off=stdPositions.find(p=>p.card_type===cardType&&p.card_ref_id===String(refId)&&!p.is_on_board);
+    if(off){
+      await sb.from('studio_card_positions').update({is_on_board:true,pos_x:100-stdPanX+Math.random()*200,pos_y:100-stdPanY+Math.random()*100}).eq('id',off.id).eq('user_id',user.id);
+    }else{
+      const px=100-stdPanX+Math.random()*200, py=100-stdPanY+Math.random()*100;
+      await sb.from('studio_card_positions').insert({user_id:user.id,card_type:cardType,card_ref_id:String(refId),pos_x:px,pos_y:py,is_on_board:true});
+    }
+    await studioLoadPositions();studioRenderBoard();
+    stdUpdateSaveInd();
+  }
+
+  // ── 보드 렌더링 ──
+  function studioRenderBoard(){
+    const canvas=document.getElementById('std-canvas');
+    canvas.innerHTML='';
+    canvas.style.transform='translate('+stdPanX+'px,'+stdPanY+'px) scale('+stdScale+')';
+
+    const onBoard=stdPositions.filter(p=>p.is_on_board);
+    onBoard.forEach(pos=>{
+      if(pos.card_type==='folder'){
+        studioRenderFolderCard(canvas,pos);
+      }else{
+        studioRenderLinkedCard(canvas,pos);
+      }
+    });
+  }
+
+  function studioRenderLinkedCard(canvas,pos){
+    const card=el('div','std-card');
+    card.style.cssText='left:'+pos.pos_x+'px;top:'+pos.pos_y+'px;width:200px;min-height:140px';
+    const bar=el('div','std-card-bar');bar.style.background=TYPE_COLORS[pos.card_type]||'#818CF8';
+    card.appendChild(bar);
+
+    const close=el('button','std-card-close');close.textContent='✕';
+    close.onclick=async(e)=>{e.stopPropagation();
+      await sb.from('studio_card_positions').update({is_on_board:false}).eq('id',pos.id).eq('user_id',user.id);
+      await studioLoadPositions();studioRenderBoard();stdUpdateSaveInd();
+    };
+    card.appendChild(close);
+
+    const body=el('div','std-card-body');
+    const typeLbl=el('div','std-card-type');typeLbl.textContent=TYPE_LABELS[pos.card_type]||pos.card_type;
+    body.appendChild(typeLbl);
+
+    // 데이터 로드해서 제목 표시
+    let title='',meta='';
+    if(pos.card_type==='whiteboard'){
+      const wbRaw=JSON.parse(localStorage.getItem('wb_boards_v1')||'[]');
+      const wb=wbRaw.find(b=>b.id===pos.card_ref_id);
+      title=wb?wb.name:'(삭제된 보드)';
+      meta=wb?new Date(wb.updatedAt).toLocaleDateString():'';
+    }else{
+      const proj=stdProjectsCache.find(p=>p.id===pos.card_ref_id);
+      if(proj){
+        title=proj.title||'(제목 없음)';
+        meta=proj.completed_at?new Date(proj.completed_at).toLocaleDateString():'';
+        if(pos.card_type==='outline')title+=' ('+((proj.episodes||[]).length)+'화)';
+        if(pos.card_type==='character')title+=' ('+((proj.characters||[]).length)+'명)';
+      }else{title='(삭제된 항목)';}
+    }
+    const titleEl=el('div','std-card-title');titleEl.textContent=title;body.appendChild(titleEl);
+    const metaEl=el('div','std-card-meta');metaEl.textContent=meta;body.appendChild(metaEl);
+    card.appendChild(body);
+
+    card.onclick=()=>studioOpenEditModal(pos);
+    stdMakeDraggable(card,pos);
+    canvas.appendChild(card);
+  }
+
+  function studioRenderFolderCard(canvas,pos){
+    const folder=stdFolders.find(f=>f.id===pos.card_ref_id);
+    if(!folder)return;
+    const card=el('div','std-card std-folder-card');
+    card.style.cssText='left:'+pos.pos_x+'px;top:'+pos.pos_y+'px;width:260px;min-height:180px;background:'+(folder.color||'#FFD700')+'22;border:1px solid '+(folder.color||'#FFD700')+'44';
+
+    const hdr=el('div','std-folder-card-hdr');
+    const nm=el('span');nm.textContent=folder.name;
+    hdr.appendChild(nm);
+    const acts=el('div','std-folder-card-actions');
+    const addBlockBtn=document.createElement('button');addBlockBtn.textContent='+';addBlockBtn.title='블록 추가';
+    addBlockBtn.onclick=(e)=>{e.stopPropagation();studioAddBlock(folder.id,pos);};
+    acts.appendChild(addBlockBtn);
+    const delBtn=document.createElement('button');delBtn.textContent='✕';delBtn.title='보드에서 제거';
+    delBtn.onclick=async(e)=>{e.stopPropagation();
+      await sb.from('studio_card_positions').update({is_on_board:false}).eq('id',pos.id).eq('user_id',user.id);
+      await studioLoadPositions();studioRenderBoard();
+    };
+    acts.appendChild(delBtn);
+    hdr.appendChild(acts);
+    card.appendChild(hdr);
+
+    const body=el('div','std-folder-card-body');
+    const blocks=stdFolderBlocks[folder.id]||[];
+    blocks.forEach(blk=>{
+      const bEl=el('div','std-block');
+      bEl.style.cssText='left:'+blk.pos_x+'px;top:'+blk.pos_y+'px;width:'+blk.width+'px;height:'+blk.height+'px;position:absolute';
+      if(blk.type==='text'){
+        const ta=document.createElement('textarea');ta.className='std-block-text';ta.value=blk.content||'';
+        const taWrap=el('div','std-block-text');taWrap.style.cssText='width:100%;height:100%';
+        ta.style.cssText='width:100%;height:100%;border:none;padding:8px;font-size:12px;resize:none;background:#fff;color:#1E293B;font-family:inherit;outline:none;box-sizing:border-box';
+        ta.onblur=async()=>{
+          await sb.from('studio_blocks').update({content:ta.value}).eq('id',blk.id).eq('user_id',user.id);
+          stdUpdateSaveInd();
+        };
+        bEl.appendChild(ta);
+      }else if(blk.type==='image'){
+        if(blk.content){
+          const img=document.createElement('img');img.className='std-block-img';img.src=blk.content;
+          bEl.appendChild(img);
+        }
+      }
+      const bc=el('button','std-block-close');bc.textContent='✕';
+      bc.onclick=async(e)=>{e.stopPropagation();
+        await sb.from('studio_blocks').delete().eq('id',blk.id).eq('user_id',user.id);
+        await studioLoadBlocks(folder.id);studioRenderBoard();
+      };
+      bEl.appendChild(bc);
+      stdMakeBlockDraggable(bEl,blk,folder.id);
+      body.appendChild(bEl);
+    });
+    card.appendChild(body);
+
+    stdMakeDraggable(card,pos);
+    // 보드 열릴 때 블록도 로드
+    if(!stdFolderBlocks[folder.id]){
+      studioLoadBlocks(folder.id).then(()=>studioRenderBoard());
+    }
+    canvas.appendChild(card);
+  }
+
+  // ── 블록 추가 ──
+  async function studioAddBlock(folderId,pos){
+    const type=prompt('블록 타입을 선택하세요: text 또는 image','text');
+    if(type!=='text'&&type!=='image')return;
+    let content='';
+    if(type==='image'){
+      content=await new Promise(resolve=>{
+        const inp=document.createElement('input');inp.type='file';inp.accept='image/*';
+        inp.onchange=()=>{
+          const f=inp.files[0];if(!f)return resolve('');
+          const r=new FileReader();r.onload=e=>resolve(e.target.result);r.readAsDataURL(f);
+        };
+        inp.click();
+      });
+      if(!content){content=prompt('또는 이미지 URL을 입력하세요','');if(!content)return;}
+    }
+    await sb.from('studio_blocks').insert({user_id:user.id,folder_id:folderId,type:type,content:content,pos_x:10+Math.random()*40,pos_y:10+Math.random()*40,width:type==='image'?160:180,height:type==='image'?120:100});
+    await studioLoadBlocks(folderId);studioRenderBoard();stdUpdateSaveInd();
+  }
+
+  // ── 카드 드래그 ──
+  function stdMakeDraggable(el,pos){
+    let sx,sy,ox,oy,moved=false;
+    const down=e=>{
+      if(e.target.tagName==='BUTTON'||e.target.tagName==='TEXTAREA'||e.target.tagName==='INPUT')return;
+      e.stopPropagation();
+      moved=false;
+      sx=e.clientX||e.touches[0].clientX;sy=e.clientY||e.touches[0].clientY;
+      ox=pos.pos_x;oy=pos.pos_y;
+      const move2=ev=>{
+        const cx=ev.clientX||ev.touches[0].clientX, cy=ev.clientY||ev.touches[0].clientY;
+        const dx=(cx-sx)/stdScale, dy=(cy-sy)/stdScale;
+        if(Math.abs(dx)>3||Math.abs(dy)>3)moved=true;
+        pos.pos_x=ox+dx;pos.pos_y=oy+dy;
+        el.style.left=pos.pos_x+'px';el.style.top=pos.pos_y+'px';
+      };
+      const up2=async()=>{
+        document.removeEventListener('mousemove',move2);document.removeEventListener('mouseup',up2);
+        document.removeEventListener('touchmove',move2);document.removeEventListener('touchend',up2);
+        if(moved){
+          await sb.from('studio_card_positions').update({pos_x:pos.pos_x,pos_y:pos.pos_y}).eq('id',pos.id).eq('user_id',user.id);
+          stdUpdateSaveInd();
+        }
+      };
+      document.addEventListener('mousemove',move2);document.addEventListener('mouseup',up2);
+      document.addEventListener('touchmove',move2,{passive:false});document.addEventListener('touchend',up2);
+    };
+    el.addEventListener('mousedown',down);el.addEventListener('touchstart',down,{passive:false});
+  }
+
+  function stdMakeBlockDraggable(el,blk,folderId){
+    let sx,sy,ox,oy;
+    el.addEventListener('mousedown',e=>{
+      if(e.target.tagName==='BUTTON'||e.target.tagName==='TEXTAREA')return;
+      e.stopPropagation();
+      sx=e.clientX;sy=e.clientY;ox=blk.pos_x;oy=blk.pos_y;
+      const mv=ev=>{
+        blk.pos_x=ox+(ev.clientX-sx);blk.pos_y=oy+(ev.clientY-sy);
+        el.style.left=blk.pos_x+'px';el.style.top=blk.pos_y+'px';
+      };
+      const up=async()=>{
+        document.removeEventListener('mousemove',mv);document.removeEventListener('mouseup',up);
+        await sb.from('studio_blocks').update({pos_x:blk.pos_x,pos_y:blk.pos_y}).eq('id',blk.id).eq('user_id',user.id);
+      };
+      document.addEventListener('mousemove',mv);document.addEventListener('mouseup',up);
+    });
+  }
+
+  // ── 보드 Pan & Zoom ──
+  (function(){
+    const board=document.getElementById('std-board');
+    if(!board)return;
+    board.addEventListener('mousedown',e=>{
+      if(e.target!==board&&!e.target.classList.contains('std-board-canvas')&&e.target.id!=='std-board')return;
+      stdIsPanning=true;stdPanStart={x:e.clientX-stdPanX,y:e.clientY-stdPanY};
+      board.style.cursor='grabbing';
+    });
+    document.addEventListener('mousemove',e=>{
+      if(!stdIsPanning)return;
+      stdPanX=e.clientX-stdPanStart.x;stdPanY=e.clientY-stdPanStart.y;
+      const c=document.getElementById('std-canvas');if(c)c.style.transform='translate('+stdPanX+'px,'+stdPanY+'px) scale('+stdScale+')';
+    });
+    document.addEventListener('mouseup',()=>{
+      if(stdIsPanning){stdIsPanning=false;board.style.cursor='';}
+    });
+    board.addEventListener('wheel',e=>{
+      if(!stdOpen)return;
+      e.preventDefault();
+      const d=e.deltaY>0?-0.1:0.1;
+      stdScale=Math.max(0.3,Math.min(2.5,stdScale+d));
+      const c=document.getElementById('std-canvas');if(c)c.style.transform='translate('+stdPanX+'px,'+stdPanY+'px) scale('+stdScale+')';
+    },{passive:false});
+    // touch pan
+    let tStart=null;
+    board.addEventListener('touchstart',e=>{
+      if(e.target!==board&&e.target.id!=='std-canvas'&&e.target.id!=='std-board')return;
+      if(e.touches.length===1){tStart={x:e.touches[0].clientX-stdPanX,y:e.touches[0].clientY-stdPanY};}
+    },{passive:false});
+    board.addEventListener('touchmove',e=>{
+      if(!tStart||e.touches.length!==1)return;
+      e.preventDefault();
+      stdPanX=e.touches[0].clientX-tStart.x;stdPanY=e.touches[0].clientY-tStart.y;
+      const c=document.getElementById('std-canvas');if(c)c.style.transform='translate('+stdPanX+'px,'+stdPanY+'px) scale('+stdScale+')';
+    },{passive:false});
+    board.addEventListener('touchend',()=>{tStart=null;});
+  })();
+
+  window.studioResetView=function(){
+    stdPanX=0;stdPanY=0;stdScale=1;
+    const c=document.getElementById('std-canvas');if(c)c.style.transform='translate(0px,0px) scale(1)';
+  };
+
+  // ── 편집 모달 ──
+  function studioOpenEditModal(pos){
+    const ov=document.getElementById('std-modal-ov');
+    const title=document.getElementById('std-modal-title');
+    const body=document.getElementById('std-modal-body');
+    body.innerHTML='';
+    stdModalCtx={pos:pos};
+
+    if(pos.card_type==='plan'){
+      const proj=stdProjectsCache.find(p=>p.id===pos.card_ref_id);
+      if(!proj){body.innerHTML='<p>데이터를 찾을 수 없습니다</p>';ov.classList.add('on');return;}
+      title.textContent='📋 기획안 편집';
+      stdModalCtx.proj=proj;
+      body.innerHTML='<div class="field"><label>제목</label><input id="std-m-title" value="'+esc(proj.title||'')+'"></div><div class="field"><label>시놉시스</label><textarea id="std-m-synopsis">'+(esc(proj.synopsis||''))+'</textarea></div>';
+    }else if(pos.card_type==='outline'){
+      const proj=stdProjectsCache.find(p=>p.id===pos.card_ref_id);
+      if(!proj){body.innerHTML='<p>데이터를 찾을 수 없습니다</p>';ov.classList.add('on');return;}
+      title.textContent='📑 회차 개요 — '+esc(proj.title||'');
+      stdModalCtx.proj=proj;
+      let html='<div class="field"><label>제목</label><input id="std-m-title" value="'+esc(proj.title||'')+'" readonly style="background:#F1F5F9"></div>';
+      (proj.episodes||[]).forEach((ep,i)=>{
+        html+='<div class="field" style="border-left:3px solid #34D399;padding-left:12px;margin-bottom:12px"><label>'+(i+1)+'화</label><textarea id="std-m-ep-'+i+'" style="min-height:80px">'+esc(typeof ep==='string'?ep:(ep.content||ep.summary||JSON.stringify(ep)))+'</textarea></div>';
+      });
+      body.innerHTML=html;
+    }else if(pos.card_type==='character'){
+      const proj=stdProjectsCache.find(p=>p.id===pos.card_ref_id);
+      if(!proj){body.innerHTML='<p>데이터를 찾을 수 없습니다</p>';ov.classList.add('on');return;}
+      title.textContent='👤 캐릭터 — '+esc(proj.title||'');
+      stdModalCtx.proj=proj;
+      let html='';
+      (proj.characters||[]).forEach((ch,i)=>{
+        const nm=typeof ch==='string'?ch:(ch.name||'캐릭터 '+(i+1));
+        const desc=typeof ch==='string'?'':(ch.description||ch.traits||ch.features||'');
+        const imgUrl=typeof ch==='string'?'':(ch.imageUrl||ch.image||'');
+        html+='<div class="field" style="border-left:3px solid #F59E0B;padding-left:12px;margin-bottom:14px"><label>'+esc(nm)+'</label>';
+        if(imgUrl)html+='<img src="'+esc(imgUrl)+'" style="width:60px;height:60px;border-radius:8px;object-fit:cover;margin-bottom:8px;display:block">';
+        html+='<input id="std-m-chname-'+i+'" value="'+esc(nm)+'" placeholder="이름" style="margin-bottom:6px"><textarea id="std-m-chdesc-'+i+'" style="min-height:60px" placeholder="특징">'+esc(typeof desc==='string'?desc:JSON.stringify(desc))+'</textarea></div>';
+      });
+      body.innerHTML=html;
+    }else if(pos.card_type==='whiteboard'){
+      title.textContent='🗂 화이트보드';
+      body.innerHTML='<p style="color:#64748B;margin:20px 0">화이트보드는 전용 뷰에서 편집할 수 있습니다.</p><button style="background:#60A5FA;color:#fff;border:none;padding:10px 24px;border-radius:8px;font-size:14px;cursor:pointer" onclick="studioClose();openWhiteBoard()">화이트보드 열기</button>';
+    }
+    ov.classList.add('on');
+  }
+  window.studioCloseModal=function(){document.getElementById('std-modal-ov').classList.remove('on');stdModalCtx=null;};
+
+  window.studioSaveModal=async function(){
+    if(!stdModalCtx||!stdModalCtx.proj)return studioCloseModal();
+    const proj=stdModalCtx.proj;
+    const pos=stdModalCtx.pos;
+
+    if(pos.card_type==='plan'){
+      const t=document.getElementById('std-m-title').value;
+      const s=document.getElementById('std-m-synopsis').value;
+      await sb.from('projects').update({title:t,synopsis:s}).eq('id',proj.id).eq('user_id',user.id);
+      proj.title=t;proj.synopsis=s;
+    }else if(pos.card_type==='outline'){
+      const eps=[...(proj.episodes||[])];
+      eps.forEach((ep,i)=>{
+        const ta=document.getElementById('std-m-ep-'+i);
+        if(ta){
+          if(typeof ep==='string')eps[i]=ta.value;
+          else if(ep.content!==undefined)eps[i]={...ep,content:ta.value};
+          else if(ep.summary!==undefined)eps[i]={...ep,summary:ta.value};
+          else eps[i]=ta.value;
+        }
+      });
+      await sb.from('projects').update({episodes:eps}).eq('id',proj.id).eq('user_id',user.id);
+      proj.episodes=eps;
+    }else if(pos.card_type==='character'){
+      const chars=[...(proj.characters||[])];
+      chars.forEach((ch,i)=>{
+        const nm=document.getElementById('std-m-chname-'+i);
+        const desc=document.getElementById('std-m-chdesc-'+i);
+        if(typeof ch==='string'){chars[i]=nm?nm.value:ch;}
+        else{
+          if(nm)chars[i]={...ch,name:nm.value};
+          if(desc){
+            if(ch.description!==undefined)chars[i].description=desc.value;
+            else if(ch.traits!==undefined)chars[i].traits=desc.value;
+            else if(ch.features!==undefined)chars[i].features=desc.value;
+            else chars[i].description=desc.value;
+          }
+        }
+      });
+      await sb.from('projects').update({characters:chars}).eq('id',proj.id).eq('user_id',user.id);
+      proj.characters=chars;
+    }
+    studioCloseModal();
+    if(typeof embedProject==='function')embedProject(proj);
+    await studioLoadProjects();studioRenderBoard();studioRenderSidebar();
+    stdUpdateSaveInd();
+    if(window.flash)flash('저장 완료');
+  };
+
+  // ── 폴더 생성 ──
+  function studioOpenFolderModal(){
+    const m=document.getElementById('std-folder-modal');
+    document.getElementById('std-folder-name').value='';
+    const row=document.getElementById('std-color-row');row.innerHTML='';
+    STD_COLORS.forEach((c,i)=>{
+      const o=el('div','std-color-opt'+(i===0?' sel':''));o.style.background=c;o.dataset.color=c;
+      o.onclick=()=>{row.querySelectorAll('.std-color-opt').forEach(x=>x.classList.remove('sel'));o.classList.add('sel');};
+      row.appendChild(o);
+    });
+    m.classList.add('on');
+  }
+  window.studioCreateFolder=async function(){
+    const name=document.getElementById('std-folder-name').value.trim();
+    if(!name){if(window.flash)flash('이름을 입력하세요');return;}
+    const sel=document.querySelector('#std-color-row .std-color-opt.sel');
+    const color=sel?sel.dataset.color:'#FFD700';
+    await sb.from('studio_folders').insert({user_id:user.id,name:name,color:color});
+    document.getElementById('std-folder-modal').classList.remove('on');
+    await studioLoadFolders();studioRenderSidebar();
+    if(window.flash)flash('폴더 생성됨');
+  };
+
+  // ── 유틸 ──
+  function el(tag,cls){const e=document.createElement(tag==='div'||tag==='span'||tag==='button'?tag:'div');if(cls)e.className=cls;return e;}
+  function esc(s){if(!s)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+  function stdUpdateSaveInd(){const el=document.getElementById('std-save-ind');if(el)el.textContent='💾 '+new Date().toLocaleTimeString();}
+})();
+</script>
 <!-- UMA 하단 티커 -->
 <div class="uma-ticker" aria-hidden="true">
   <div class="uma-ticker-track">
