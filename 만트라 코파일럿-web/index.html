@@ -1010,7 +1010,8 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);back
   .rb-pen-color{width:16px;height:16px}
   #rb-pen-size-slider{width:50px}
   .wb-back-btn{padding:0 8px;font-size:11px}
-  .rbt-memo-group .rb-memo-colors{top:auto;bottom:100%;margin-top:0;margin-bottom:4px}
+  .rbt-memo-group .rb-memo-colors{position:fixed;top:auto;bottom:auto;left:auto;right:auto;margin:0;padding:8px 10px;gap:8px;border-radius:12px}
+  .rb-memo-color{width:36px!important;height:36px!important;border-radius:8px!important}
   /* 모바일에서 편집/삭제/리사이즈 버튼 항상 표시 */
   .rb-char-card .rb-del-btn,.rb-memo-card .rb-del-btn{opacity:1}
   .rb-char-card .rb-edit-btn,.rb-memo-card .rb-edit-btn{opacity:1}
@@ -1031,7 +1032,8 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);back
 }
 .rb-toolbar-title{font-family:'Black Han Sans',sans-serif;font-size:15px;color:#7FFEFF;letter-spacing:0.04em;margin-right:8px}
 .rbt{height:34px;padding:0 14px;border-radius:8px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;border:1px solid rgba(0,200,224,0.3);background:rgba(0,200,224,0.1);color:#7FFEFF;transition:all 0.2s;white-space:nowrap}
-.rbt:hover{background:rgba(0,200,224,0.22);border-color:rgba(0,200,224,0.55)}
+.rbt:hover,.rbt:active{background:rgba(0,200,224,0.22);border-color:rgba(0,200,224,0.55)}
+.rbt:active{background:rgba(0,200,224,0.35);transform:scale(0.95)}
 .rbt.danger{border-color:rgba(252,165,165,0.3);background:rgba(252,165,165,0.08);color:#fca5a5}
 .rbt.danger:hover{background:rgba(252,165,165,0.18)}
 .rbt.close-btn{border-color:rgba(255,255,255,0.15);background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.7);margin-left:auto}
@@ -1112,7 +1114,8 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);back
 .rbt-memo-group{position:relative}
 .rb-memo-colors{position:absolute;top:100%;left:0;background:#1a1a2e;border:1px solid rgba(0,200,224,0.2);border-radius:10px;padding:6px;display:flex;gap:4px;z-index:10;margin-top:4px}
 .rb-memo-color{width:24px;height:24px;border-radius:6px;cursor:pointer;border:2px solid transparent;transition:all 0.15s}
-.rb-memo-color:hover{transform:scale(1.15);border-color:#fff}
+.rb-memo-color:hover,.rb-memo-color:active{transform:scale(1.15);border-color:#fff}
+.rb-memo-color:active{transform:scale(0.92);box-shadow:0 0 0 3px rgba(255,255,255,0.4)}
 .rb-rel-popup{position:absolute;background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:8px;display:flex;flex-wrap:wrap;gap:4px;z-index:100;box-shadow:0 8px 24px rgba(0,0,0,0.15);max-width:240px}
 .rb-rel-btn{padding:4px 10px;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;border:1px solid #e2e8f0;background:#fff;color:#475569;font-family:inherit;transition:all 0.15s}
 .rb-rel-btn:hover{background:#f0f9ff;border-color:#00C8E0;color:#0891b2}
@@ -7987,6 +7990,7 @@ if(!document.getElementById('thkStyle')){
   function makeStyleToolbar(nd,styleField,targetEl){
     const bar=document.createElement('div');bar.className='rb-style-toolbar';
     bar.addEventListener('mousedown',e=>e.stopPropagation());
+    bar.addEventListener('touchstart',e=>e.stopPropagation(),{passive:false});
     if(!nd[styleField])nd[styleField]={};
     const st=nd[styleField];
     // 크기
@@ -8114,8 +8118,8 @@ if(!document.getElementById('thkStyle')){
       function handleTap(e){
         e.stopPropagation();e.preventDefault();
         if(typeof rbDrawMode!=='undefined'&&rbDrawMode==='connect'){rbHandleClick(nd.id,side,h);return;}
-        if(e.type==='touchstart')return;
-        startEdgeDrag(e,nd.id,side);
+        var pt=e.touches?e.touches[0]:e;
+        startEdgeDrag({clientX:pt.clientX,clientY:pt.clientY,preventDefault:function(){e.preventDefault();}},nd.id,side);
       }
       h.addEventListener('mousedown',handleTap);
       h.addEventListener('touchstart',handleTap,{passive:false});
@@ -8294,8 +8298,8 @@ if(!document.getElementById('thkStyle')){
       function handleTap2(e){
         e.stopPropagation();e.preventDefault();
         if(typeof rbDrawMode!=='undefined'&&rbDrawMode==='connect'){rbHandleClick(nd.id,side,h);return;}
-        if(e.type==='touchstart')return;
-        startEdgeDrag(e,nd.id,side);
+        var pt=e.touches?e.touches[0]:e;
+        startEdgeDrag({clientX:pt.clientX,clientY:pt.clientY,preventDefault:function(){e.preventDefault();}},nd.id,side);
       }
       h.addEventListener('mousedown',handleTap2);
       h.addEventListener('touchstart',handleTap2,{passive:false});
@@ -8957,7 +8961,24 @@ function rbSetPenColor(el){
 
 function rbShowMemoColors(){
   var el=document.getElementById('rb-memo-colors');
-  if(el)el.style.display=el.style.display==='none'?'flex':'none';
+  if(!el)return;
+  if(el.style.display!=='none'){el.style.display='none';return;}
+  el.style.display='flex';
+  // 모바일: position:fixed일 때 버튼 위치 기준 배치
+  if(window.innerWidth<=768){
+    var btn=el.parentElement.querySelector('.rbt');
+    if(btn){
+      var r=btn.getBoundingClientRect();
+      el.style.left=Math.max(8,Math.min(r.left,window.innerWidth-el.offsetWidth-8))+'px';
+      el.style.top=Math.max(8,r.top-el.offsetHeight-8)+'px';
+    }
+  }
+  // 외부 클릭/터치 시 닫기
+  setTimeout(function(){
+    function closeMemo(ev){if(!el.contains(ev.target)){el.style.display='none';document.removeEventListener('touchstart',closeMemo);document.removeEventListener('mousedown',closeMemo);}}
+    document.addEventListener('touchstart',closeMemo,{passive:true});
+    document.addEventListener('mousedown',closeMemo);
+  },100);
 }
 
 function rbInitDrawCanvas(){
