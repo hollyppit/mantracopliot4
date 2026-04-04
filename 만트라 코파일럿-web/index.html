@@ -976,21 +976,21 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);back
 #wb-lines{overflow:visible;pointer-events:none}
 .rb-node{position:absolute;user-select:none;z-index:1}
 /* 캐릭터 카드 */
-.rb-char-card{background:#fff;border:2px solid #e2e8f0;border-radius:16px;padding:0;width:160px;box-shadow:0 4px 20px rgba(0,0,0,0.1);cursor:grab;transition:box-shadow 0.2s,border-color 0.2s;position:relative}
+.rb-char-card{background:#fff;border:2px solid #e2e8f0;border-radius:16px;padding:0;width:160px;box-shadow:0 4px 20px rgba(0,0,0,0.1);cursor:grab;transition:box-shadow 0.2s,border-color 0.2s;position:relative;display:flex;flex-direction:column;overflow:hidden}
 .rb-char-card:hover{border-color:#00C8E0;box-shadow:0 8px 32px rgba(0,200,224,0.2)}
 .rb-char-card.dragging-node{cursor:grabbing;box-shadow:0 16px 48px rgba(0,0,0,0.25);border-color:#00C8E0;z-index:100}
-.rb-card-img-wrap{width:100%;height:100px;border-radius:14px 14px 0 0;overflow:hidden;background:linear-gradient(135deg,#e0f7fa,#b2ebf2);display:flex;align-items:center;justify-content:center;flex-shrink:0;position:relative}
+.rb-card-img-wrap{width:100%;flex:0 0 45%;border-radius:14px 14px 0 0;overflow:hidden;background:linear-gradient(135deg,#e0f7fa,#b2ebf2);display:flex;align-items:center;justify-content:center;position:relative}
 .rb-card-img{width:100%;height:100%;object-fit:cover}
 .rb-card-img-placeholder{opacity:0.4}
-.rb-card-body{padding:10px 12px 12px}
+.rb-card-body{padding:10px 12px 12px;flex:1;overflow:hidden}
 .rb-card-name{font-size:14px;font-weight:800;color:#1e293b;margin-bottom:4px;word-break:keep-all;line-height:1.3}
 .rb-card-memo{font-size:11px;color:#64748b;line-height:1.5;word-break:keep-all}
 .rb-card-name-input,.rb-card-memo-input{width:100%;background:#f8fafc;border:1px solid #cbd5e1;border-radius:6px;font-family:inherit;color:#1e293b;outline:none;padding:4px 7px;font-size:13px;box-sizing:border-box;transition:border-color 0.15s}
 .rb-card-name-input:focus,.rb-card-memo-input:focus{border-color:#00C8E0;background:#fff}
 .rb-card-memo-input{font-size:11px;resize:none;min-height:44px;line-height:1.5}
 /* 핸들 */
-.rb-handle{position:absolute;width:12px;height:12px;border-radius:50%;background:#00C8E0;border:2px solid #fff;box-shadow:0 0 0 1px #00C8E0;opacity:0;pointer-events:all;transition:opacity 0.15s;z-index:10;cursor:crosshair}
-.rb-char-card:hover .rb-handle,.rb-memo-card:hover .rb-handle{opacity:1}
+.rb-handle{position:absolute;width:12px;height:12px;border-radius:50%;background:#00C8E0;border:2px solid #fff;box-shadow:0 0 0 1px #00C8E0;opacity:0;pointer-events:none;transition:opacity 0.15s;z-index:10;cursor:crosshair}
+.connect-mode .rb-char-card:hover .rb-handle,.connect-mode .rb-memo-card:hover .rb-handle{opacity:1;pointer-events:all}
 .rb-handle.n{top:-6px;left:50%;transform:translateX(-50%)}
 .rb-handle.s{bottom:-6px;left:50%;transform:translateX(-50%)}
 .rb-handle.e{right:-6px;top:50%;transform:translateY(-50%)}
@@ -1017,7 +1017,7 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);back
 /* 메모 읽기 모드 */
 .rb-memo-text{font-size:13px;color:#4a4000;line-height:1.65;word-break:keep-all;white-space:pre-wrap;min-height:40px}
 .rb-node.group-selected{outline:3px solid #3b82f6;outline-offset:2px;border-radius:16px}
-.connect-mode .rb-handle{opacity:1!important;width:16px!important;height:16px!important;background:#3b82f6!important;cursor:pointer!important;animation:rbHandlePulse 1.5s ease infinite}
+.connect-mode .rb-handle{opacity:1!important;pointer-events:all!important;width:16px!important;height:16px!important;background:#3b82f6!important;cursor:pointer!important;animation:rbHandlePulse 1.5s ease infinite}
 .connect-mode .rb-handle:hover{background:#2563eb!important;transform:scale(1.3)!important}
 .rb-handle.connect-selected{background:#ef4444!important;opacity:1!important;box-shadow:0 0 12px rgba(239,68,68,0.6)!important;width:18px!important;height:18px!important}
 @keyframes rbHandlePulse{0%,100%{box-shadow:0 0 4px rgba(59,130,246,0.4)}50%{box-shadow:0 0 12px rgba(59,130,246,0.8)}}
@@ -1026,7 +1026,7 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);back
 .rb-char-card:hover .rb-del-btn,.rb-memo-card:hover .rb-del-btn{opacity:1}
 .rb-del-btn:hover{background:#dc2626;transform:scale(1.1)}
 /* 포스트잇 */
-.rb-memo-card{background:#FFF9C4;border:1px solid #f0e68c;border-radius:4px;width:160px;min-height:100px;padding:12px;box-shadow:3px 4px 12px rgba(0,0,0,0.12),inset 0 1px 0 rgba(255,255,255,0.6);cursor:grab;position:relative;transform:rotate(-1deg)}
+.rb-memo-card{background:#FFF9C4;border:1px solid #f0e68c;border-radius:4px;width:160px;min-height:100px;padding:12px;box-shadow:3px 4px 12px rgba(0,0,0,0.12),inset 0 1px 0 rgba(255,255,255,0.6);cursor:grab;position:relative;transform:rotate(-1deg);overflow:hidden}
 .rb-memo-card:nth-child(even){transform:rotate(1.2deg)}
 .rb-memo-card.dragging-node{cursor:grabbing;box-shadow:6px 10px 24px rgba(0,0,0,0.22);z-index:100}
 .rb-memo-textarea{width:100%;background:transparent;border:none;outline:none;font-family:inherit;font-size:13px;color:#4a4000;line-height:1.65;resize:none;min-height:80px;box-sizing:border-box}
@@ -2276,6 +2276,23 @@ async function generateFromAI(input) {
 
   // 🔴 2. 최종 fallback (절대 실패 방지)
   return "현재 AI 응답을 생성할 수 없습니다. API 키 또는 네트워크 상태를 확인하세요.";
+}
+
+async function fetchExpertRag(query){
+  try{
+    const kw=query.replace(/[^가-힣a-zA-Z0-9\s]/g,'').split(/\s+/).filter(w=>w.length>=2).slice(0,5);
+    if(!kw.length)return[];
+    const or=kw.map(w=>`content.ilike.%${w}%,keywords.cs.{${w}}`).join(',');
+    const {data,error}=await sb.from('expert_references').select('title,category,content,keywords').or(or).limit(3);
+    if(error){console.error('RAG search error:',error);return[];}
+    return data||[];
+  }catch(e){console.error('fetchExpertRag:',e);return[];}
+}
+
+function buildRagContext(refs){
+  if(!refs||!refs.length)return'';
+  const items=refs.map((r,i)=>`[${i+1}] ${r.title} (${r.category})\n${r.content}\n키워드: ${(r.keywords||[]).join(', ')}`).join('\n\n');
+  return`다음은 실제 전문가 고증 자료입니다. 답변 시 반드시 참고하세요:\n\n${items}\n\n`;
 }
 
 function toggleRag() {
@@ -4684,19 +4701,20 @@ function saveRLEdit(){
   rl[idx].name=$('rle-name').value.trim()||rl[idx].name;
   rl[idx].desc=$('rle-desc').value.trim()||rl[idx].desc;
   if(rlEditAvatar!==null)rl[idx].avatar=rlEditAvatar;
-  rl[idx].steps=rlEditSteps.map(s=>({...s}));
-  // 꾸미기 커스텀 저장
-  rl[idx].custom={
-    avatarVideo:$('cust-avatar-video').value.trim()||'',
+  if(rlEditSteps.length)rl[idx].steps=rlEditSteps.map(s=>({...s}));
+  // 꾸미기 커스텀 저장 — 빈 값은 기본 스타일 적용
+  const prev=rl[idx].custom||{};
+  rl[idx].custom={...prev,
+    avatarVideo:$('cust-avatar-video').value.trim()||prev.avatarVideo||'',
     bgColor:document.querySelector('#cust-bg-colors .cust-color.on')?.dataset.bg||'',
-    bgImage:window._custBgImage||'',
-    bgVideo:$('cust-bg-video').value.trim()||'',
+    bgImage:window._custBgImage||prev.bgImage||'',
+    bgVideo:$('cust-bg-video').value.trim()||prev.bgVideo||'',
     bubbleTheme:getCustChipVal('bubble'),
     fontStyle:getCustChipVal('font'),
-    bgmUrl:$('cust-bgm').value.trim()||'',
+    bgmUrl:$('cust-bgm').value.trim()||prev.bgmUrl||'',
     bubbleShape:getCustChipVal('shape'),
     entryAnimation:getCustChipVal('anim'),
-    coverImage:window._custCoverImage||''
+    coverImage:window._custCoverImage||prev.coverImage||''
   };
   saveRL(rl);closeRLEdit();renderRL();flash('루틴이 저장됐습니다');
 }
@@ -5490,8 +5508,12 @@ async function doXSend(){
   $('xb').appendChild(ld);$('xb').scrollTop=$('xb').scrollHeight;
   const cEl=ld.querySelector('.xc');
   const xs=$('xs');if(xs)xs.disabled=true;
+  let ragPrefix='';
+  if(ragEnabled){
+    try{const refs=await fetchExpertRag(v);ragPrefix=buildRagContext(refs);}catch(e){console.error('RAG fetch failed:',e);}
+  }
   await aiStream(
-    [{role:'system',content:_guidePrompt()+xPersona},...xMsgs],
+    [{role:'system',content:ragPrefix+_guidePrompt()+xPersona},...xMsgs],
     full=>{cEl.innerHTML=md(full)+'<span style="opacity:0.4;animation:flt 0.8s ease-in-out infinite">▋</span>';$('xb').scrollTop=$('xb').scrollHeight;},
     full=>{xMsgs.push({role:'assistant',content:full});cEl.innerHTML=md(full);$('xb').scrollTop=$('xb').scrollHeight;if(xs)xs.disabled=false;}
   );
@@ -7659,11 +7681,19 @@ if(!document.getElementById('thkStyle')){
       e.stopPropagation();e.preventDefault();
       const startX=e.clientX,startY=e.clientY;
       const startW=wrap.offsetWidth,startH=wrap.offsetHeight;
+      const ratio=startW/startH;
       function onMove(ev){
         const dw=(ev.clientX-startX)/rbScale;
         const dh=(ev.clientY-startY)/rbScale;
-        const nw=Math.max(120,Math.round(startW+dw));
-        const nh=Math.max(80,Math.round(startH+dh));
+        // 비율 유지: 더 큰 변위 기준으로 계산
+        let nw,nh;
+        if(Math.abs(dw)>=Math.abs(dh)){
+          nw=Math.max(120,Math.round(startW+dw));
+          nh=Math.max(80,Math.round(nw/ratio));
+        }else{
+          nh=Math.max(80,Math.round(startH+dh));
+          nw=Math.max(120,Math.round(nh*ratio));
+        }
         wrap.style.width=nw+'px';
         if(nd.type==='memo')wrap.style.minHeight=nh+'px';
         else wrap.style.height=nh+'px';
@@ -7825,12 +7855,28 @@ if(!document.getElementById('thkStyle')){
     nameIn.focus();nameIn.select();
 
     function finishEdit(){
+      if(wrap._editDone)return;wrap._editDone=true;
       nd.name=nameIn.value||'이름';
       nd.memo=memoIn.value;
       if(toolbar)toolbar.remove();
       rbRender();
     }
-    wrap.addEventListener('mouseleave',finishEdit,{once:true});
+
+    // 저장/닫기 버튼
+    const btnRow=document.createElement('div');
+    btnRow.style.cssText='display:flex;gap:6px;margin-top:8px;justify-content:flex-end';
+    const saveBtn=document.createElement('button');
+    saveBtn.textContent='✓ 저장';
+    saveBtn.style.cssText='padding:4px 12px;border-radius:6px;font-size:11px;font-weight:700;border:none;background:#0891b2;color:#fff;cursor:pointer;font-family:inherit';
+    saveBtn.addEventListener('mousedown',e=>e.stopPropagation());
+    saveBtn.addEventListener('click',e=>{e.stopPropagation();finishEdit();});
+    const cancelBtn=document.createElement('button');
+    cancelBtn.textContent='✕ 닫기';
+    cancelBtn.style.cssText='padding:4px 12px;border-radius:6px;font-size:11px;font-weight:700;border:1px solid #cbd5e1;background:#f1f5f9;color:#475569;cursor:pointer;font-family:inherit';
+    cancelBtn.addEventListener('mousedown',e=>e.stopPropagation());
+    cancelBtn.addEventListener('click',e=>{e.stopPropagation();finishEdit();});
+    btnRow.appendChild(saveBtn);btnRow.appendChild(cancelBtn);
+    body.appendChild(btnRow);
     memoIn.addEventListener('blur',()=>setTimeout(()=>{if(!wrap.contains(document.activeElement))finishEdit();},200));
     nameIn.addEventListener('blur',()=>setTimeout(()=>{if(!wrap.contains(document.activeElement))finishEdit();},200));
   }
@@ -7960,12 +8006,27 @@ if(!document.getElementById('thkStyle')){
     ta.focus();
 
     function finishMemoEdit(){
+      if(wrap._editDone)return;wrap._editDone=true;
       nd.text=ta.value;
       toolbar.remove();
       rbRender();
     }
-    wrap.addEventListener('mouseleave',finishMemoEdit,{once:true});
-    ta.addEventListener('blur',()=>setTimeout(()=>{if(!wrap.contains(document.activeElement))finishMemoEdit();},200));
+
+    // 저장/닫기 버튼
+    const memoBtnRow=document.createElement('div');memoBtnRow.className='rb-memo-edit-ui';
+    memoBtnRow.style.cssText='display:flex;gap:6px;margin-top:6px;justify-content:flex-end';
+    const memoSaveBtn=document.createElement('button');
+    memoSaveBtn.textContent='✓ 저장';
+    memoSaveBtn.style.cssText='padding:4px 12px;border-radius:4px;font-size:11px;font-weight:700;border:none;background:#4a4000;color:#FFF9C4;cursor:pointer;font-family:inherit';
+    memoSaveBtn.addEventListener('mousedown',e=>e.stopPropagation());
+    memoSaveBtn.addEventListener('click',e=>{e.stopPropagation();finishMemoEdit();});
+    const memoCancelBtn=document.createElement('button');
+    memoCancelBtn.textContent='✕ 닫기';
+    memoCancelBtn.style.cssText='padding:4px 12px;border-radius:4px;font-size:11px;font-weight:700;border:1px solid rgba(0,0,0,0.15);background:rgba(0,0,0,0.05);color:#666;cursor:pointer;font-family:inherit';
+    memoCancelBtn.addEventListener('mousedown',e=>e.stopPropagation());
+    memoCancelBtn.addEventListener('click',e=>{e.stopPropagation();finishMemoEdit();});
+    memoBtnRow.appendChild(memoSaveBtn);memoBtnRow.appendChild(memoCancelBtn);
+    colorRow.insertAdjacentElement('afterend',memoBtnRow);
   }
 
   function deleteNode(id){
@@ -8024,8 +8085,8 @@ if(!document.getElementById('thkStyle')){
         });
       }
       const fx=bestFp.x, fy=bestFp.y, tx=bestTp.x, ty=bestTp.y;
-      const fw=160, fh=fromNode.type==='char'?180:120;
-      const tw=160, th=toNode.type==='char'?180:120;
+      const fw=fromNode.w||160, fh=fromNode.h||(fromNode.type==='char'?180:120);
+      const tw=toNode.w||160, th=toNode.h||(toNode.type==='char'?180:120);
 
       const g=document.createElementNS('http://www.w3.org/2000/svg','g');
       g.classList.add('rb-edge-g');
@@ -8214,8 +8275,8 @@ if(!document.getElementById('thkStyle')){
 
   // ── 엣지 드래그 ──
   function getHandleCenter(nd,side){
-    const w=nd.type==='char'?160:160;
-    const h=nd.type==='char'?180:120;
+    const w=nd.w||(nd.type==='char'?160:160);
+    const h=nd.h||(nd.type==='char'?180:120);
     if(side==='n')return{x:nd.x+w/2,y:nd.y};
     if(side==='s')return{x:nd.x+w/2,y:nd.y+h};
     if(side==='e')return{x:nd.x+w,y:nd.y+h/2};
