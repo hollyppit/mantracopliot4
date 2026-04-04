@@ -7359,7 +7359,7 @@ if(!document.getElementById('thkStyle')){
   function wbRenderBoardList(){
     var body=document.getElementById('wb-bl-body');if(!body)return;
     body.innerHTML='';
-    wbSaveBoards(); // 인메모리 변경사항 저장 후 로드
+    if(wbBoards.length>0)wbSaveBoards(); // 인메모리 변경사항 저장 (폴더 이동 등)
     wbLoadBoards();
     // 폴더 바 or 그리드
     var inFolder=renderFolderOpenBar(body,'wb_folders_v1','wb',wbBoards,'folder',wbRenderBoardList);
