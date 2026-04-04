@@ -2509,14 +2509,16 @@ function editFolderName(key,folderId,renderFn){
   });
 }
 // 폴더 이름 입력 모달
-function openFolderNameModal(defaultVal,callback){
+function openFolderNameModal(defaultVal,callback,title){
+  const modalTitle=title||'폴더 이름';
+  const modalPlaceholder=title?title+'을 입력하세요':'폴더 이름을 입력하세요';
   const existing=$('folder-name-modal');if(existing)existing.remove();
   const modal=document.createElement('div');modal.id='folder-name-modal';
   modal.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:10100;display:flex;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px)';
   modal.onclick=e=>{if(e.target===modal)modal.remove();};
   const box=document.createElement('div');
   box.style.cssText='background:rgba(14,5,28,0.98);border:1px solid var(--border2);border-radius:16px;padding:20px;width:100%;max-width:300px;display:flex;flex-direction:column;gap:12px';
-  box.innerHTML=`<div style="font-size:15px;font-weight:800">폴더 이름</div><input id="folder-name-input" class="rle-input" value="${defaultVal||''}" placeholder="폴더 이름을 입력하세요" autofocus><div style="display:flex;gap:8px;justify-content:flex-end"><button class="rl-btn sec" onclick="$('folder-name-modal').remove()">취소</button><button class="rl-btn pri" id="folder-name-save">확인</button></div>`;
+  box.innerHTML=`<div style="font-size:15px;font-weight:800">${modalTitle}</div><input id="folder-name-input" class="rle-input" value="${defaultVal||''}" placeholder="${modalPlaceholder}" autofocus><div style="display:flex;gap:8px;justify-content:flex-end"><button class="rl-btn sec" onclick="$('folder-name-modal').remove()">취소</button><button class="rl-btn pri" id="folder-name-save">확인</button></div>`;
   modal.appendChild(box);document.body.appendChild(modal);
   const input=$('folder-name-input');
   setTimeout(()=>input.focus(),50);
@@ -7432,7 +7434,7 @@ if(!document.getElementById('thkStyle')){
       wbBoards.push({id:id,name:name,folder:folderId,createdAt:Date.now(),updatedAt:Date.now()});
       wbSaveBoards();
       wbOpenBoard(id);
-    });
+    },'보드 이름');
   }
   function wbDeleteBoard(boardId){
     if(!confirm('이 보드를 삭제할까요?'))return;
@@ -7447,7 +7449,7 @@ if(!document.getElementById('thkStyle')){
     var b=wbBoards.find(function(x){return x.id===boardId;});if(!b)return;
     openFolderNameModal(b.name,function(name){
       b.name=name;wbSaveBoards();wbRenderBoardList();
-    });
+    },'보드 이름');
   }
 
   // 보드 열기
@@ -7455,10 +7457,19 @@ if(!document.getElementById('thkStyle')){
     wbAutoSave(); // 이전 보드 자동 저장
     window.wbCurrentBoardId=boardId;
     wbLoadBoardData(boardId);
-    // 보드명 표시
+    // 보드명 표시 (클릭 시 이름 변경)
     var b=wbBoards.find(function(x){return x.id===boardId;});
     var titleEl=document.querySelector('.rb-toolbar-title');
-    if(titleEl&&b)titleEl.textContent='🕸 '+b.name;
+    if(titleEl&&b){
+      titleEl.textContent='🕸 '+b.name;
+      titleEl.style.cursor='pointer';
+      titleEl.onclick=function(){
+        openFolderNameModal(b.name,function(name){
+          b.name=name;wbSaveBoards();
+          titleEl.textContent='🕸 '+name;
+        },'보드 이름');
+      };
+    }
     // 목록 숨기고 보드 표시
     document.getElementById('wb-board-list').classList.remove('on');
     document.querySelector('.rb-toolbar').style.display='';
