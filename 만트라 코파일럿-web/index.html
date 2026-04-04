@@ -1001,8 +1001,21 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);back
 .rb-handle.sw{bottom:-6px;left:-6px}
 /* 편집 버튼 */
 .rb-edit-btn{position:absolute;top:-8px;right:16px;width:22px;height:22px;border-radius:50%;background:#3b82f6;border:2px solid #fff;color:#fff;font-size:11px;display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:0;transition:opacity 0.15s;z-index:20}
-.rb-char-card:hover .rb-edit-btn{opacity:1}
+.rb-char-card:hover .rb-edit-btn,.rb-memo-card:hover .rb-edit-btn{opacity:1}
 .rb-edit-btn:hover{background:#2563eb;transform:scale(1.1)}
+/* 서식 툴바 */
+.rb-style-toolbar{position:absolute;top:-40px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:3px;background:#1a1a2e;border:1px solid rgba(0,200,224,0.25);border-radius:8px;padding:4px 6px;z-index:30;box-shadow:0 4px 16px rgba(0,0,0,0.3);white-space:nowrap;width:max-content}
+.rb-style-toolbar button{height:24px;min-width:24px;padding:0 5px;border-radius:4px;border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.7);font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;transition:all 0.15s;display:flex;align-items:center;justify-content:center}
+.rb-style-toolbar button:hover{background:rgba(0,200,224,0.15);border-color:rgba(0,200,224,0.4);color:#7FFEFF}
+.rb-style-toolbar button.on{background:rgba(0,200,224,0.25);border-color:rgba(0,200,224,0.5);color:#7FFEFF}
+.rb-style-toolbar .rst-sep{width:1px;height:16px;background:rgba(255,255,255,0.1);flex-shrink:0}
+/* 리사이즈 핸들 */
+.rb-resize-handle{position:absolute;bottom:-4px;right:-4px;width:14px;height:14px;cursor:nwse-resize;z-index:20;opacity:0;transition:opacity 0.15s}
+.rb-resize-handle::after{content:'';position:absolute;bottom:2px;right:2px;width:8px;height:8px;border-right:2px solid rgba(0,0,0,0.3);border-bottom:2px solid rgba(0,0,0,0.3)}
+.rb-char-card:hover .rb-resize-handle,.rb-memo-card:hover .rb-resize-handle{opacity:1}
+.rb-resize-handle:hover::after{border-color:rgba(0,200,224,0.8)}
+/* 메모 읽기 모드 */
+.rb-memo-text{font-size:13px;color:#4a4000;line-height:1.65;word-break:keep-all;white-space:pre-wrap;min-height:40px}
 .rb-node.group-selected{outline:3px solid #3b82f6;outline-offset:2px;border-radius:16px}
 .connect-mode .rb-handle{opacity:1!important;width:16px!important;height:16px!important;background:#3b82f6!important;cursor:pointer!important;animation:rbHandlePulse 1.5s ease infinite}
 .connect-mode .rb-handle:hover{background:#2563eb!important;transform:scale(1.3)!important}
@@ -7584,12 +7597,81 @@ if(!document.getElementById('thkStyle')){
     requestAnimationFrame(()=>renderEdges());
   }
 
+  // ── 공통: 서식 툴바 ──
+  function applyTextStyle(el,style){
+    if(!style)return;
+    if(style.fontSize)el.style.fontSize=style.fontSize+'px';
+    if(style.bold)el.style.fontWeight='bold';
+    if(style.italic)el.style.fontStyle='italic';
+  }
+  function makeStyleToolbar(nd,styleField,targetEl){
+    const bar=document.createElement('div');bar.className='rb-style-toolbar';
+    bar.addEventListener('mousedown',e=>e.stopPropagation());
+    if(!nd[styleField])nd[styleField]={};
+    const st=nd[styleField];
+    // 크기
+    [{label:'작게',v:11},{label:'보통',v:13},{label:'크게',v:16},{label:'특대',v:20}].forEach(s=>{
+      const btn=document.createElement('button');btn.textContent=s.label;
+      if((st.fontSize||13)===s.v)btn.classList.add('on');
+      btn.onclick=e=>{e.stopPropagation();st.fontSize=s.v;
+        bar.querySelectorAll('button').forEach(b=>{if(b.dataset.type==='size')b.classList.remove('on')});
+        btn.classList.add('on');if(targetEl)targetEl.style.fontSize=s.v+'px';};
+      btn.dataset.type='size';bar.appendChild(btn);
+    });
+    // 구분선
+    const sep1=document.createElement('span');sep1.className='rst-sep';bar.appendChild(sep1);
+    // 굵기
+    const bBtn=document.createElement('button');bBtn.innerHTML='<b>B</b>';
+    if(st.bold)bBtn.classList.add('on');
+    bBtn.onclick=e=>{e.stopPropagation();st.bold=!st.bold;bBtn.classList.toggle('on');
+      if(targetEl)targetEl.style.fontWeight=st.bold?'bold':'normal';};
+    bar.appendChild(bBtn);
+    // 기울기
+    const iBtn=document.createElement('button');iBtn.innerHTML='<i>I</i>';iBtn.style.fontStyle='italic';
+    if(st.italic)iBtn.classList.add('on');
+    iBtn.onclick=e=>{e.stopPropagation();st.italic=!st.italic;iBtn.classList.toggle('on');
+      if(targetEl)targetEl.style.fontStyle=st.italic?'italic':'normal';};
+    bar.appendChild(iBtn);
+    return bar;
+  }
+
+  // ── 공통: 리사이즈 핸들 ──
+  function addResizeHandle(wrap,nd){
+    const handle=document.createElement('div');handle.className='rb-resize-handle';
+    handle.addEventListener('mousedown',function(e){
+      e.stopPropagation();e.preventDefault();
+      const startX=e.clientX,startY=e.clientY;
+      const startW=wrap.offsetWidth,startH=wrap.offsetHeight;
+      function onMove(ev){
+        const dw=(ev.clientX-startX)/rbScale;
+        const dh=(ev.clientY-startY)/rbScale;
+        const nw=Math.max(120,Math.round(startW+dw));
+        const nh=Math.max(80,Math.round(startH+dh));
+        wrap.style.width=nw+'px';
+        if(nd.type==='memo')wrap.style.minHeight=nh+'px';
+        else wrap.style.height=nh+'px';
+        nd.w=nw;nd.h=nh;
+      }
+      function onUp(){
+        document.removeEventListener('mousemove',onMove);
+        document.removeEventListener('mouseup',onUp);
+        renderEdges();
+      }
+      document.addEventListener('mousemove',onMove);
+      document.addEventListener('mouseup',onUp);
+    });
+    wrap.appendChild(handle);
+  }
+
   // 캐릭터 카드
   function makeCharCard(nd){
     const wrap=document.createElement('div');
     wrap.className='rb-node rb-char-card';
     wrap.dataset.id=nd.id;
-    wrap.style.cssText=`left:${nd.x}px;top:${nd.y}px`;
+    let sizeStyle='';
+    if(nd.w)sizeStyle+=`width:${nd.w}px;`;
+    if(nd.h)sizeStyle+=`height:${nd.h}px;`;
+    wrap.style.cssText=`left:${nd.x}px;top:${nd.y}px;${sizeStyle}`;
 
     // 이미지
     const imgWrap=document.createElement('div');imgWrap.className='rb-card-img-wrap';
@@ -7605,7 +7687,9 @@ if(!document.getElementById('thkStyle')){
     // 바디
     const body=document.createElement('div');body.className='rb-card-body';
     const nameEl=document.createElement('div');nameEl.className='rb-card-name';nameEl.textContent=nd.name||'캐릭터 이름';
+    applyTextStyle(nameEl,nd.nameStyle);
     const memoEl=document.createElement('div');memoEl.className='rb-card-memo';memoEl.textContent=nd.memo||'더블클릭하여 역할, 성격, 특징 입력';
+    applyTextStyle(memoEl,nd.memoStyle);
     body.appendChild(nameEl);body.appendChild(memoEl);
     wrap.appendChild(body);
 
@@ -7626,6 +7710,9 @@ if(!document.getElementById('thkStyle')){
     editBtn.addEventListener('click',e=>{e.stopPropagation();editCharCard(wrap,nd);});
     wrap.appendChild(editBtn);
 
+    // 리사이즈 핸들
+    addResizeHandle(wrap,nd);
+
     // 연결 핸들 8방향
     ['n','s','e','w','ne','nw','se','sw'].forEach(side=>{
       const h=document.createElement('div');h.className=`rb-handle ${side}`;h.dataset.side=side;h.dataset.nodeId=nd.id;
@@ -7643,7 +7730,7 @@ if(!document.getElementById('thkStyle')){
 
     // 노드 드래그
     wrap.addEventListener('mousedown',e=>{
-      if(e.target.classList.contains('rb-handle')||e.target.classList.contains('rb-del-btn')||e.target.classList.contains('rb-edit-btn'))return;
+      if(e.target.classList.contains('rb-handle')||e.target.classList.contains('rb-del-btn')||e.target.classList.contains('rb-edit-btn')||e.target.classList.contains('rb-resize-handle'))return;
       if(e.button!==0)return;
       e.stopPropagation();
       startNodeDrag(e,wrap,nd.id);
@@ -7663,19 +7750,34 @@ if(!document.getElementById('thkStyle')){
   function editCharCard(wrap,nd){
     const body=wrap.querySelector('.rb-card-body');
     if(!body||wrap.querySelector('.rb-card-name-input'))return;
+    // 기존 서식 툴바 제거
+    const oldTb=wrap.querySelector('.rb-style-toolbar');if(oldTb)oldTb.remove();
     body.innerHTML='';
+
+    // 서식 대상 선택 (이름/메모 전환)
+    let activeStyleField='nameStyle';
 
     const nameIn=document.createElement('input');nameIn.className='rb-card-name-input';
     nameIn.value=nd.name;nameIn.placeholder='캐릭터 이름';
     nameIn.style.marginBottom='6px';
+    applyTextStyle(nameIn,nd.nameStyle);
     nameIn.addEventListener('input',()=>{nd.name=nameIn.value;});
     nameIn.addEventListener('mousedown',e=>e.stopPropagation());
     nameIn.addEventListener('keydown',e=>{if(e.key==='Enter')memoIn.focus();});
+    nameIn.addEventListener('focus',()=>{
+      activeStyleField='nameStyle';
+      updateToolbar();
+    });
 
     const memoIn=document.createElement('textarea');memoIn.className='rb-card-memo-input';
     memoIn.value=nd.memo;memoIn.placeholder='역할, 성격, 특징 등을 입력하세요';
+    applyTextStyle(memoIn,nd.memoStyle);
     memoIn.addEventListener('input',()=>{nd.memo=memoIn.value;});
     memoIn.addEventListener('mousedown',e=>e.stopPropagation());
+    memoIn.addEventListener('focus',()=>{
+      activeStyleField='memoStyle';
+      updateToolbar();
+    });
 
     // 이미지 업로드
     const imgRow=document.createElement('div');imgRow.style.cssText='margin-top:6px';
@@ -7693,16 +7795,27 @@ if(!document.getElementById('thkStyle')){
     };
     imgRow.appendChild(imgBtn);imgRow.appendChild(imgFileIn);
     body.appendChild(nameIn);body.appendChild(memoIn);body.appendChild(imgRow);
+
+    // 서식 툴바
+    let toolbar=null;
+    function updateToolbar(){
+      if(toolbar)toolbar.remove();
+      const targetEl=activeStyleField==='nameStyle'?nameIn:memoIn;
+      toolbar=makeStyleToolbar(nd,activeStyleField,targetEl);
+      wrap.appendChild(toolbar);
+    }
+    updateToolbar();
     nameIn.focus();nameIn.select();
 
     function finishEdit(){
       nd.name=nameIn.value||'이름';
       nd.memo=memoIn.value;
+      if(toolbar)toolbar.remove();
       rbRender();
     }
     wrap.addEventListener('mouseleave',finishEdit,{once:true});
-    memoIn.addEventListener('blur',()=>setTimeout(()=>{if(!wrap.contains(document.activeElement))finishEdit();},150));
-    nameIn.addEventListener('blur',()=>setTimeout(()=>{if(!wrap.contains(document.activeElement))finishEdit();},150));
+    memoIn.addEventListener('blur',()=>setTimeout(()=>{if(!wrap.contains(document.activeElement))finishEdit();},200));
+    nameIn.addEventListener('blur',()=>setTimeout(()=>{if(!wrap.contains(document.activeElement))finishEdit();},200));
   }
 
   // 포스트잇 카드
@@ -7712,7 +7825,10 @@ if(!document.getElementById('thkStyle')){
     wrap.dataset.id=nd.id;
     const memoColor=nd.color||'#FFF9C4';
     const memoBorderColor=memoColor==='#FFF9C4'?'#f0e68c':memoColor==='#F8BBD0'?'#f48fb1':memoColor==='#B3E5FC'?'#81d4fa':memoColor==='#C8E6C9'?'#a5d6a7':memoColor==='#E1BEE7'?'#ce93d8':'#f0e68c';
-    wrap.style.cssText=`left:${nd.x}px;top:${nd.y}px;background:${memoColor};border-color:${memoBorderColor}`;
+    let sizeStyle='';
+    if(nd.w)sizeStyle+=`width:${nd.w}px;`;
+    if(nd.h)sizeStyle+=`min-height:${nd.h}px;`;
+    wrap.style.cssText=`left:${nd.x}px;top:${nd.y}px;background:${memoColor};border-color:${memoBorderColor};${sizeStyle}`;
 
     // 이미지 (있으면 표시)
     if(nd.imgUrl){
@@ -7721,41 +7837,32 @@ if(!document.getElementById('thkStyle')){
       wrap.appendChild(imgEl);
     }
 
-    const ta=document.createElement('textarea');ta.className='rb-memo-textarea';
-    ta.value=nd.text||'';ta.placeholder='메모, 아이디어, 참고사항...';
-    ta.addEventListener('input',()=>{nd.text=ta.value;});
-    ta.addEventListener('mousedown',e=>e.stopPropagation());
-    wrap.appendChild(ta);
+    // 읽기 모드: 텍스트 표시
+    const textDiv=document.createElement('div');textDiv.className='rb-memo-text';
+    textDiv.textContent=nd.text||'더블클릭하여 메모 입력';
+    if(!nd.text)textDiv.style.opacity='0.5';
+    applyTextStyle(textDiv,nd.textStyle);
+    wrap.appendChild(textDiv);
 
-    // 이미지 업로드 버튼
-    const imgBtn=document.createElement('button');
-    imgBtn.style.cssText='width:100%;padding:4px;background:rgba(0,0,0,0.05);border:1px dashed rgba(0,0,0,0.2);border-radius:4px;font-size:10px;font-weight:700;color:#666;cursor:pointer;font-family:inherit;margin-top:4px';
-    imgBtn.textContent=nd.imgUrl?'🖼 이미지 변경':'📷 이미지 추가';
-    const imgFileIn=document.createElement('input');imgFileIn.type='file';imgFileIn.accept='image/*';imgFileIn.style.display='none';
-    imgBtn.onclick=e=>{e.stopPropagation();imgFileIn.click();};
-    imgFileIn.onchange=()=>{
-      const file=imgFileIn.files[0];if(!file)return;
-      const reader=new FileReader();
-      reader.onload=ev=>{nd.imgUrl=ev.target.result;rbRender();};
-      reader.readAsDataURL(file);
-    };
-    wrap.appendChild(imgBtn);wrap.appendChild(imgFileIn);
-
-    // 색상 변경 버튼
-    const colorRow=document.createElement('div');colorRow.style.cssText='display:flex;gap:3px;margin-top:4px;justify-content:center';
-    ['#FFF9C4','#F8BBD0','#B3E5FC','#C8E6C9','#E1BEE7','#FFE0B2','#FFCDD2','#B2DFDB'].forEach(c=>{
-      const dot=document.createElement('span');
-      dot.style.cssText=`width:14px;height:14px;border-radius:50%;background:${c};cursor:pointer;border:${c===memoColor?'2px solid #333':'1px solid rgba(0,0,0,0.15)'}`;
-      dot.onclick=e=>{e.stopPropagation();nd.color=c;rbRender();};
-      colorRow.appendChild(dot);
-    });
-    wrap.appendChild(colorRow);
+    // 더블클릭 편집
+    wrap.addEventListener('dblclick',e=>{e.stopPropagation();editMemoCard(wrap,nd);});
 
     // 삭제 버튼
     const del=document.createElement('div');del.className='rb-del-btn';del.textContent='×';
     del.addEventListener('mousedown',e=>e.stopPropagation());
     del.addEventListener('click',e=>{e.stopPropagation();deleteNode(nd.id);});
     wrap.appendChild(del);
+
+    // 편집 버튼
+    const editBtn=document.createElement('div');
+    editBtn.className='rb-edit-btn';
+    editBtn.textContent='✎';
+    editBtn.addEventListener('mousedown',e=>e.stopPropagation());
+    editBtn.addEventListener('click',e=>{e.stopPropagation();editMemoCard(wrap,nd);});
+    wrap.appendChild(editBtn);
+
+    // 리사이즈 핸들
+    addResizeHandle(wrap,nd);
 
     // 연결 핸들 8방향 (캐릭터와 동일)
     ['n','s','e','w','ne','nw','se','sw'].forEach(side=>{
@@ -7773,12 +7880,75 @@ if(!document.getElementById('thkStyle')){
     });
 
     wrap.addEventListener('mousedown',e=>{
-      if(e.target===ta||e.target===del||e.target===imgBtn)return;
+      if(e.target.classList.contains('rb-handle')||e.target.classList.contains('rb-del-btn')||e.target.classList.contains('rb-edit-btn')||e.target.classList.contains('rb-resize-handle'))return;
       if(e.button!==0)return;
       e.stopPropagation();
       startNodeDrag(e,wrap,nd.id);
     });
     return wrap;
+  }
+
+  // 메모 카드 편집 모드
+  function editMemoCard(wrap,nd){
+    if(wrap.querySelector('.rb-memo-textarea'))return;
+    const oldTb=wrap.querySelector('.rb-style-toolbar');if(oldTb)oldTb.remove();
+    // 텍스트 div → textarea 교체
+    const textDiv=wrap.querySelector('.rb-memo-text');
+    if(textDiv)textDiv.remove();
+    // 이미지/색상 등 기존 편집 UI 제거
+    wrap.querySelectorAll('.rb-memo-edit-ui').forEach(el=>el.remove());
+
+    const ta=document.createElement('textarea');ta.className='rb-memo-textarea rb-memo-edit-ui';
+    ta.value=nd.text||'';ta.placeholder='메모, 아이디어, 참고사항...';
+    applyTextStyle(ta,nd.textStyle);
+    ta.addEventListener('input',()=>{nd.text=ta.value;});
+    ta.addEventListener('mousedown',e=>e.stopPropagation());
+    // 이미지 바로 뒤에 삽입
+    const firstChild=wrap.querySelector('img')||wrap.firstChild;
+    if(wrap.querySelector('img'))wrap.querySelector('img').insertAdjacentElement('afterend',ta);
+    else wrap.insertBefore(ta,wrap.firstChild);
+
+    // 이미지 업로드 버튼
+    const imgBtn=document.createElement('button');imgBtn.className='rb-memo-edit-ui';
+    imgBtn.style.cssText='width:100%;padding:4px;background:rgba(0,0,0,0.05);border:1px dashed rgba(0,0,0,0.2);border-radius:4px;font-size:10px;font-weight:700;color:#666;cursor:pointer;font-family:inherit;margin-top:4px';
+    imgBtn.textContent=nd.imgUrl?'🖼 이미지 변경':'📷 이미지 추가';
+    imgBtn.addEventListener('mousedown',e=>e.stopPropagation());
+    const imgFileIn=document.createElement('input');imgFileIn.className='rb-memo-edit-ui';imgFileIn.type='file';imgFileIn.accept='image/*';imgFileIn.style.display='none';
+    imgBtn.onclick=e=>{e.stopPropagation();imgFileIn.click();};
+    imgFileIn.onchange=()=>{
+      const file=imgFileIn.files[0];if(!file)return;
+      const reader=new FileReader();
+      reader.onload=ev=>{nd.imgUrl=ev.target.result;rbRender();};
+      reader.readAsDataURL(file);
+    };
+    ta.insertAdjacentElement('afterend',imgBtn);
+    imgBtn.insertAdjacentElement('afterend',imgFileIn);
+
+    // 색상 변경
+    const colorRow=document.createElement('div');colorRow.className='rb-memo-edit-ui';
+    colorRow.style.cssText='display:flex;gap:3px;margin-top:4px;justify-content:center';
+    const memoColor=nd.color||'#FFF9C4';
+    ['#FFF9C4','#F8BBD0','#B3E5FC','#C8E6C9','#E1BEE7','#FFE0B2','#FFCDD2','#B2DFDB'].forEach(c=>{
+      const dot=document.createElement('span');
+      dot.style.cssText=`width:14px;height:14px;border-radius:50%;background:${c};cursor:pointer;border:${c===memoColor?'2px solid #333':'1px solid rgba(0,0,0,0.15)'}`;
+      dot.onclick=e=>{e.stopPropagation();nd.color=c;rbRender();};
+      colorRow.appendChild(dot);
+    });
+    imgFileIn.insertAdjacentElement('afterend',colorRow);
+
+    // 서식 툴바
+    const toolbar=makeStyleToolbar(nd,'textStyle',ta);
+    wrap.appendChild(toolbar);
+
+    ta.focus();
+
+    function finishMemoEdit(){
+      nd.text=ta.value;
+      toolbar.remove();
+      rbRender();
+    }
+    wrap.addEventListener('mouseleave',finishMemoEdit,{once:true});
+    ta.addEventListener('blur',()=>setTimeout(()=>{if(!wrap.contains(document.activeElement))finishMemoEdit();},200));
   }
 
   function deleteNode(id){
