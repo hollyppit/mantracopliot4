@@ -7428,13 +7428,12 @@ if(!document.getElementById('thkStyle')){
 
   // 보드 CRUD
   function wbCreateBoard(){
-    openFolderNameModal('',function(name){
-      var id='wb-'+Date.now();
-      var folderId=activeFolders.wb||'';
-      wbBoards.push({id:id,name:name,folder:folderId,createdAt:Date.now(),updatedAt:Date.now()});
-      wbSaveBoards();
-      wbOpenBoard(id);
-    },'보드 이름');
+    var id='wb-'+Date.now();
+    var folderId=activeFolders.wb||'';
+    var num=wbBoards.length+1;
+    wbBoards.push({id:id,name:'화이트보드 '+num,folder:folderId,createdAt:Date.now(),updatedAt:Date.now()});
+    wbSaveBoards();
+    wbOpenBoard(id);
   }
   function wbDeleteBoard(boardId){
     if(!confirm('이 보드를 삭제할까요?'))return;
@@ -7539,7 +7538,7 @@ if(!document.getElementById('thkStyle')){
     }else{
       // 보드가 없으면 자동 생성
       var id='wb-'+Date.now();
-      wbBoards.push({id:id,name:'화이트보드',folder:'',createdAt:Date.now(),updatedAt:Date.now()});
+      wbBoards.push({id:id,name:'화이트보드 1',folder:'',createdAt:Date.now(),updatedAt:Date.now()});
       wbSaveBoards();
       wbOpenBoard(id);
     }
