@@ -846,6 +846,58 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);back
   .ol-sidebar-item span:not(:first-child){display:none}
   .ol-sidebar-item span:first-child{font-size:16px!important}
 }
+
+/* ── 인물관계도 화이트보드 ── */
+#relation-board{position:fixed;inset:0;z-index:9999;background:#fff;display:none;flex-direction:column;overflow:hidden}
+#relation-board.on{display:flex}
+.rb-toolbar{height:52px;background:#1a1a2e;border-bottom:1px solid rgba(0,200,224,0.18);display:flex;align-items:center;gap:8px;padding:0 16px;flex-shrink:0;z-index:2}
+.rb-toolbar-title{font-family:'Black Han Sans',sans-serif;font-size:15px;color:#7FFEFF;letter-spacing:0.04em;margin-right:8px}
+.rbt{height:34px;padding:0 14px;border-radius:8px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;border:1px solid rgba(0,200,224,0.3);background:rgba(0,200,224,0.1);color:#7FFEFF;transition:all 0.2s;white-space:nowrap}
+.rbt:hover{background:rgba(0,200,224,0.22);border-color:rgba(0,200,224,0.55)}
+.rbt.danger{border-color:rgba(252,165,165,0.3);background:rgba(252,165,165,0.08);color:#fca5a5}
+.rbt.danger:hover{background:rgba(252,165,165,0.18)}
+.rbt.close-btn{border-color:rgba(255,255,255,0.15);background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.7);margin-left:auto}
+.rbt.close-btn:hover{background:rgba(255,255,255,0.12);color:#fff}
+.rb-viewport{flex:1;overflow:hidden;position:relative;cursor:default;background:#fff;background-image:radial-gradient(circle,#d0d0d8 1px,transparent 1px);background-size:28px 28px}
+.rb-viewport.panning{cursor:grabbing}
+#board-canvas{position:absolute;top:0;left:0;transform-origin:0 0;width:0;height:0}
+#relation-lines{position:absolute;top:0;left:0;overflow:visible;pointer-events:none;z-index:0}
+.rb-node{position:absolute;user-select:none;z-index:1}
+/* 캐릭터 카드 */
+.rb-char-card{background:#fff;border:2px solid #e2e8f0;border-radius:16px;padding:0;width:160px;box-shadow:0 4px 20px rgba(0,0,0,0.1);cursor:grab;transition:box-shadow 0.2s,border-color 0.2s;position:relative}
+.rb-char-card:hover{border-color:#00C8E0;box-shadow:0 8px 32px rgba(0,200,224,0.2)}
+.rb-char-card.dragging-node{cursor:grabbing;box-shadow:0 16px 48px rgba(0,0,0,0.25);border-color:#00C8E0;z-index:100}
+.rb-card-img-wrap{width:100%;height:100px;border-radius:14px 14px 0 0;overflow:hidden;background:linear-gradient(135deg,#e0f7fa,#b2ebf2);display:flex;align-items:center;justify-content:center;flex-shrink:0;position:relative}
+.rb-card-img{width:100%;height:100%;object-fit:cover}
+.rb-card-img-placeholder{opacity:0.4}
+.rb-card-body{padding:10px 12px 12px}
+.rb-card-name{font-size:14px;font-weight:800;color:#1e293b;margin-bottom:4px;word-break:keep-all;line-height:1.3}
+.rb-card-memo{font-size:11px;color:#64748b;line-height:1.5;word-break:keep-all}
+.rb-card-name-input,.rb-card-memo-input{width:100%;background:#f8fafc;border:1px solid #cbd5e1;border-radius:6px;font-family:inherit;color:#1e293b;outline:none;padding:4px 7px;font-size:13px;box-sizing:border-box;transition:border-color 0.15s}
+.rb-card-name-input:focus,.rb-card-memo-input:focus{border-color:#00C8E0;background:#fff}
+.rb-card-memo-input{font-size:11px;resize:none;min-height:44px;line-height:1.5}
+/* 핸들 */
+.rb-handle{position:absolute;width:12px;height:12px;border-radius:50%;background:#00C8E0;border:2px solid #fff;box-shadow:0 0 0 1px #00C8E0;opacity:0;pointer-events:all;transition:opacity 0.15s;z-index:10;cursor:crosshair}
+.rb-char-card:hover .rb-handle{opacity:1}
+.rb-handle.n{top:-6px;left:50%;transform:translateX(-50%)}
+.rb-handle.s{bottom:-6px;left:50%;transform:translateX(-50%)}
+.rb-handle.e{right:-6px;top:50%;transform:translateY(-50%)}
+.rb-handle.w{left:-6px;top:50%;transform:translateY(-50%)}
+/* 삭제 버튼 */
+.rb-del-btn{position:absolute;top:-8px;right:-8px;width:22px;height:22px;border-radius:50%;background:#ef4444;border:2px solid #fff;color:#fff;font-size:12px;line-height:1;display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:0;transition:opacity 0.15s;z-index:20;font-weight:700}
+.rb-char-card:hover .rb-del-btn,.rb-memo-card:hover .rb-del-btn{opacity:1}
+.rb-del-btn:hover{background:#dc2626;transform:scale(1.1)}
+/* 포스트잇 */
+.rb-memo-card{background:#FFF9C4;border:1px solid #f0e68c;border-radius:4px;width:160px;min-height:100px;padding:12px;box-shadow:3px 4px 12px rgba(0,0,0,0.12),inset 0 1px 0 rgba(255,255,255,0.6);cursor:grab;position:relative;transform:rotate(-1deg)}
+.rb-memo-card:nth-child(even){transform:rotate(1.2deg)}
+.rb-memo-card.dragging-node{cursor:grabbing;box-shadow:6px 10px 24px rgba(0,0,0,0.22);z-index:100}
+.rb-memo-textarea{width:100%;background:transparent;border:none;outline:none;font-family:inherit;font-size:13px;color:#4a4000;line-height:1.65;resize:none;min-height:80px;box-sizing:border-box}
+/* 연결선 라벨 */
+.rb-edge-label{position:absolute;transform:translate(-50%,-50%);background:#fff;border:1px solid #e2e8f0;border-radius:6px;padding:3px 10px;font-size:11px;font-weight:700;color:#475569;cursor:pointer;white-space:nowrap;pointer-events:all;box-shadow:0 2px 8px rgba(0,0,0,0.08);transition:border-color 0.15s}
+.rb-edge-label:hover{border-color:#00C8E0;color:#0891b2}
+.rb-edge-label input{background:none;border:none;outline:none;font-family:inherit;font-size:11px;font-weight:700;color:#0891b2;width:70px;text-align:center;padding:0}
+/* 임시 연결선 */
+#rb-tmp-line{pointer-events:none;stroke:#00C8E0;stroke-width:2;stroke-dasharray:6 4;fill:none}
 </style>
 </head>
 <body>
@@ -885,6 +937,7 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);back
     <div class="ni" id="n-chara" onclick="navTo('chara')"><span class="ic" data-icon="chara"></span>캐릭터 만들기</div>
     <div class="ni" id="n-verify" onclick="navTo('verify')"><span class="ic" data-icon="verify"></span>전문가 고증</div>
     <div class="ni" id="n-market" onclick="navTo('market')"><span class="ic" data-icon="market"></span>루틴 마켓<span class="nb">준비 중</span></div>
+    <div class="ni" onclick="openRelationBoard()" style="margin-top:6px;border-top:1px solid rgba(0,200,224,0.08);padding-top:12px"><span class="ic">🕸</span>인물관계도</div>
   </nav>
   <div class="sb-foot"><button class="nbtn" onclick="openMode()">+ 새 작품 기획하기</button></div>
 </aside>
@@ -6245,7 +6298,440 @@ if(!document.getElementById('thkStyle')){
   document.head.appendChild(st);
 }
 
+// ═══════════════════════════════════════════════════
+// 인물관계도 화이트보드
+// ═══════════════════════════════════════════════════
+(function(){
+  const LS_KEY='rb_data_v1';
+  // 상태
+  let rbNodes=[];   // {id,type,x,y,name,memo,imgUrl}
+  let rbEdges=[];   // {id,from,to,label}
+  let rbPan={x:0,y:0};
+  let rbScale=1;
+  let nodeSeq=0,edgeSeq=0;
+
+  // 드래그 상태
+  let panDrag=null;         // {startX,startY,origPx,origPy}
+  let nodeDrag=null;        // {el,id,startX,startY,origX,origY}
+  let edgeDrag=null;        // {fromId,side,startX,startY}
+
+  // DOM refs
+  function vp(){return document.getElementById('rb-viewport')}
+  function canvas(){return document.getElementById('board-canvas')}
+  function svgLayer(){return document.getElementById('relation-lines')}
+  function tmpLine(){return document.getElementById('rb-tmp-line')}
+
+  // ── 열기/닫기 ──
+  window.openRelationBoard=function(){
+    document.getElementById('relation-board').classList.add('on');
+    rbLoad();
+    rbRender();
+    document.body.style.overflow='hidden';
+  };
+  window.closeRelationBoard=function(){
+    document.getElementById('relation-board').classList.remove('on');
+    document.body.style.overflow='';
+  };
+
+  // ── 저장/로드 ──
+  window.rbSave=function(){
+    localStorage.setItem(LS_KEY,JSON.stringify({nodes:rbNodes,edges:rbEdges,pan:rbPan,scale:rbScale}));
+    if(window.flash)flash('인물관계도 저장 완료 💾');
+  };
+  function rbLoad(){
+    try{
+      const d=JSON.parse(localStorage.getItem(LS_KEY)||'null');
+      if(d){
+        rbNodes=d.nodes||[];rbEdges=d.edges||[];
+        rbPan=d.pan||{x:0,y:0};rbScale=d.scale||1;
+        nodeSeq=rbNodes.reduce((m,n)=>Math.max(m,parseInt(n.id.replace(/\D/g,''))||0),0);
+        edgeSeq=rbEdges.reduce((m,e)=>Math.max(m,parseInt(e.id.replace(/\D/g,''))||0),0);
+      }
+    }catch(e){}
+  }
+  window.rbReset=function(){
+    if(!confirm('모든 노드와 연결선을 삭제하시겠어요?'))return;
+    rbNodes=[];rbEdges=[];rbPan={x:0,y:0};rbScale=1;nodeSeq=0;edgeSeq=0;
+    rbRender();
+  };
+
+  // ── 노드 추가 ──
+  window.rbAddChar=function(){
+    nodeSeq++;
+    const cx=Math.round((vp().clientWidth/2-rbPan.x)/rbScale-80);
+    const cy=Math.round((vp().clientHeight/2-rbPan.y)/rbScale-80);
+    rbNodes.push({id:'n'+nodeSeq,type:'char',x:cx,y:cy,name:'캐릭터',memo:'',imgUrl:''});
+    rbRender();
+  };
+  window.rbAddMemo=function(){
+    nodeSeq++;
+    const cx=Math.round((vp().clientWidth/2-rbPan.x)/rbScale-80);
+    const cy=Math.round((vp().clientHeight/2-rbPan.y)/rbScale-80);
+    rbNodes.push({id:'n'+nodeSeq,type:'memo',x:cx,y:cy,text:'메모'});
+    rbRender();
+  };
+
+  // ── 렌더 ──
+  function rbRender(){
+    const c=canvas();
+    if(!c)return;
+    c.innerHTML='';
+    c.style.transform=`translate(${rbPan.x}px,${rbPan.y}px) scale(${rbScale})`;
+    rbNodes.forEach(nd=>c.appendChild(nd.type==='char'?makeCharCard(nd):makeMemoCard(nd)));
+    renderEdges();
+  }
+
+  // 캐릭터 카드
+  function makeCharCard(nd){
+    const wrap=document.createElement('div');
+    wrap.className='rb-node rb-char-card';
+    wrap.dataset.id=nd.id;
+    wrap.style.cssText=`left:${nd.x}px;top:${nd.y}px`;
+
+    // 이미지
+    const imgWrap=document.createElement('div');imgWrap.className='rb-card-img-wrap';
+    if(nd.imgUrl){
+      const img=document.createElement('img');img.className='rb-card-img';img.src=nd.imgUrl;
+      img.onerror=()=>{img.style.display='none';imgWrap.appendChild(makeSvgAvatar());};
+      imgWrap.appendChild(img);
+    }else{
+      imgWrap.appendChild(makeSvgAvatar());
+    }
+    wrap.appendChild(imgWrap);
+
+    // 바디
+    const body=document.createElement('div');body.className='rb-card-body';
+    const nameEl=document.createElement('div');nameEl.className='rb-card-name';nameEl.textContent=nd.name||'이름';
+    const memoEl=document.createElement('div');memoEl.className='rb-card-memo';memoEl.textContent=nd.memo||'메모를 입력하세요';
+    body.appendChild(nameEl);body.appendChild(memoEl);
+    wrap.appendChild(body);
+
+    // 더블클릭 편집
+    wrap.addEventListener('dblclick',e=>{e.stopPropagation();editCharCard(wrap,nd);});
+
+    // 삭제 버튼
+    const del=document.createElement('div');del.className='rb-del-btn';del.textContent='×';
+    del.addEventListener('mousedown',e=>{e.stopPropagation();});
+    del.addEventListener('click',e=>{e.stopPropagation();deleteNode(nd.id);});
+    wrap.appendChild(del);
+
+    // 연결 핸들 4방향
+    ['n','s','e','w'].forEach(side=>{
+      const h=document.createElement('div');h.className=`rb-handle ${side}`;h.dataset.side=side;
+      h.addEventListener('mousedown',e=>{e.stopPropagation();startEdgeDrag(e,nd.id,side);});
+      wrap.appendChild(h);
+    });
+
+    // 노드 드래그
+    wrap.addEventListener('mousedown',e=>{
+      if(e.target.classList.contains('rb-handle')||e.target.classList.contains('rb-del-btn'))return;
+      if(e.button!==0)return;
+      e.stopPropagation();
+      startNodeDrag(e,wrap,nd.id);
+    });
+
+    return wrap;
+  }
+
+  function makeSvgAvatar(){
+    const d=document.createElementNS('http://www.w3.org/2000/svg','svg');
+    d.setAttribute('viewBox','0 0 40 40');d.setAttribute('width','48');d.setAttribute('height','48');
+    d.classList.add('rb-card-img-placeholder');
+    d.innerHTML=`<circle cx="20" cy="14" r="8" fill="#90a4ae"/><ellipse cx="20" cy="34" rx="13" ry="9" fill="#90a4ae"/>`;
+    return d;
+  }
+
+  function editCharCard(wrap,nd){
+    const body=wrap.querySelector('.rb-card-body');
+    if(!body||wrap.querySelector('.rb-card-name-input'))return;
+    body.innerHTML='';
+
+    const nameIn=document.createElement('input');nameIn.className='rb-card-name-input';
+    nameIn.value=nd.name;nameIn.placeholder='캐릭터 이름';
+    nameIn.style.marginBottom='6px';
+    nameIn.addEventListener('input',()=>{nd.name=nameIn.value;});
+    nameIn.addEventListener('keydown',e=>{if(e.key==='Enter')nameIn.blur();});
+
+    const memoIn=document.createElement('textarea');memoIn.className='rb-card-memo-input';
+    memoIn.value=nd.memo;memoIn.placeholder='메모 (역할, 특징 등)';
+    memoIn.addEventListener('input',()=>{nd.memo=memoIn.value;});
+
+    // 이미지 URL 입력
+    const imgRow=document.createElement('div');imgRow.style.cssText='margin-top:6px;display:flex;gap:4px';
+    const imgIn=document.createElement('input');imgIn.className='rb-card-name-input';
+    imgIn.value=nd.imgUrl;imgIn.placeholder='이미지 URL (선택)';imgIn.style.fontSize='10px';
+    imgIn.addEventListener('input',()=>{nd.imgUrl=imgIn.value;});
+    imgRow.appendChild(imgIn);
+    body.appendChild(nameIn);body.appendChild(memoIn);body.appendChild(imgRow);
+    nameIn.focus();nameIn.select();
+
+    function finishEdit(){
+      nd.name=nameIn.value||'이름';
+      nd.memo=memoIn.value;
+      nd.imgUrl=imgIn.value;
+      rbRender();
+    }
+    wrap.addEventListener('mouseleave',finishEdit,{once:true});
+    memoIn.addEventListener('blur',()=>setTimeout(()=>{if(!wrap.contains(document.activeElement))finishEdit();},150));
+    imgIn.addEventListener('blur',()=>setTimeout(()=>{if(!wrap.contains(document.activeElement))finishEdit();},150));
+    nameIn.addEventListener('blur',()=>setTimeout(()=>{if(!wrap.contains(document.activeElement))finishEdit();},150));
+  }
+
+  // 포스트잇 카드
+  function makeMemoCard(nd){
+    const wrap=document.createElement('div');
+    wrap.className='rb-node rb-memo-card';
+    wrap.dataset.id=nd.id;
+    wrap.style.cssText=`left:${nd.x}px;top:${nd.y}px`;
+
+    const ta=document.createElement('textarea');ta.className='rb-memo-textarea';
+    ta.value=nd.text||'';ta.placeholder='메모 입력...';
+    ta.addEventListener('input',()=>{nd.text=ta.value;});
+    ta.addEventListener('mousedown',e=>e.stopPropagation());
+    wrap.appendChild(ta);
+
+    const del=document.createElement('div');del.className='rb-del-btn';del.textContent='×';
+    del.addEventListener('mousedown',e=>e.stopPropagation());
+    del.addEventListener('click',e=>{e.stopPropagation();deleteNode(nd.id);});
+    wrap.appendChild(del);
+
+    wrap.addEventListener('mousedown',e=>{
+      if(e.target===ta||e.target===del)return;
+      if(e.button!==0)return;
+      e.stopPropagation();
+      startNodeDrag(e,wrap,nd.id);
+    });
+    return wrap;
+  }
+
+  function deleteNode(id){
+    rbNodes=rbNodes.filter(n=>n.id!==id);
+    rbEdges=rbEdges.filter(e=>e.from!==id&&e.to!==id);
+    rbRender();
+  }
+
+  // ── 엣지 렌더 ──
+  function renderEdges(){
+    const svg=svgLayer();
+    if(!svg)return;
+    // 기존 엣지 line/label 제거 (tmp-line 유지)
+    svg.querySelectorAll('.rb-edge-g').forEach(el=>el.remove());
+    // 라벨은 뷰포트에 직접 붙여야 pan 따라가지 않으므로 canvas에 absolute로
+    canvas().querySelectorAll('.rb-edge-label').forEach(el=>el.remove());
+
+    rbEdges.forEach(edge=>{
+      const fromNode=rbNodes.find(n=>n.id===edge.from);
+      const toNode=rbNodes.find(n=>n.id===edge.to);
+      if(!fromNode||!toNode)return;
+
+      const fw=fromNode.type==='char'?160:160;
+      const fh=fromNode.type==='char'?180:120;
+      const tw=toNode.type==='char'?160:160;
+      const th=toNode.type==='char'?180:120;
+
+      const fx=fromNode.x+fw/2, fy=fromNode.y+fh/2;
+      const tx=toNode.x+tw/2, ty=toNode.y+th/2;
+
+      const g=document.createElementNS('http://www.w3.org/2000/svg','g');
+      g.classList.add('rb-edge-g');
+      g.dataset.id=edge.id;
+
+      // 배경 클릭 감지용 두꺼운 투명선
+      const hitLine=document.createElementNS('http://www.w3.org/2000/svg','line');
+      hitLine.setAttribute('x1',fx);hitLine.setAttribute('y1',fy);
+      hitLine.setAttribute('x2',tx);hitLine.setAttribute('y2',ty);
+      hitLine.setAttribute('stroke','transparent');hitLine.setAttribute('stroke-width','12');
+      hitLine.style.pointerEvents='stroke';hitLine.style.cursor='pointer';
+      hitLine.addEventListener('dblclick',e=>{e.stopPropagation();deleteEdge(edge.id);});
+      g.appendChild(hitLine);
+
+      const line=document.createElementNS('http://www.w3.org/2000/svg','line');
+      line.setAttribute('x1',fx);line.setAttribute('y1',fy);
+      line.setAttribute('x2',tx);line.setAttribute('y2',ty);
+      line.setAttribute('stroke','#00C8E0');line.setAttribute('stroke-width','2');
+      line.setAttribute('opacity','0.7');
+      line.setAttribute('marker-end','url(#rb-arrow)');
+      g.appendChild(line);
+
+      svg.appendChild(g);
+
+      // 라벨 (canvas 위 absolute)
+      const mx=(fromNode.x+fw/2+toNode.x+tw/2)/2;
+      const my=(fromNode.y+fh/2+toNode.y+th/2)/2;
+      const lbl=document.createElement('div');lbl.className='rb-edge-label';
+      lbl.style.cssText=`left:${mx}px;top:${my}px`;
+      lbl.textContent=edge.label||'관계';
+      lbl.addEventListener('click',e=>{e.stopPropagation();editEdgeLabel(lbl,edge);});
+      canvas().appendChild(lbl);
+    });
+  }
+
+  function editEdgeLabel(lbl,edge){
+    const inp=document.createElement('input');
+    inp.value=edge.label||'관계';
+    inp.className='';inp.style.cssText='background:none;border:none;outline:none;font-family:inherit;font-size:11px;font-weight:700;color:#0891b2;width:80px;text-align:center';
+    lbl.textContent='';lbl.appendChild(inp);
+    inp.focus();inp.select();
+    function done(){edge.label=inp.value||'관계';rbRender();}
+    inp.addEventListener('blur',done);
+    inp.addEventListener('keydown',e=>{if(e.key==='Enter')inp.blur();});
+  }
+
+  function deleteEdge(id){
+    rbEdges=rbEdges.filter(e=>e.id!==id);
+    rbRender();
+  }
+
+  // ── 노드 드래그 ──
+  function startNodeDrag(e,el,id){
+    const nd=rbNodes.find(n=>n.id===id);if(!nd)return;
+    nodeDrag={el,id,startX:e.clientX,startY:e.clientY,origX:nd.x,origY:nd.y};
+    el.classList.add('dragging-node');
+    e.preventDefault();
+  }
+
+  // ── 엣지 드래그 ──
+  function getHandleCenter(nd,side){
+    const w=nd.type==='char'?160:160;
+    const h=nd.type==='char'?180:120;
+    if(side==='n')return{x:nd.x+w/2,y:nd.y};
+    if(side==='s')return{x:nd.x+w/2,y:nd.y+h};
+    if(side==='e')return{x:nd.x+w,y:nd.y+h/2};
+    return{x:nd.x,y:nd.y+h/2};
+  }
+  function startEdgeDrag(e,fromId,side){
+    const nd=rbNodes.find(n=>n.id===fromId);if(!nd)return;
+    const p=getHandleCenter(nd,side);
+    edgeDrag={fromId,side,startX:e.clientX,startY:e.clientY,origX:p.x,origY:p.y};
+    const tl=tmpLine();
+    tl.setAttribute('x1',p.x);tl.setAttribute('y1',p.y);
+    tl.setAttribute('x2',p.x);tl.setAttribute('y2',p.y);
+    tl.style.display='';
+    e.preventDefault();
+  }
+
+  // canvas 좌표로 변환
+  function toCanvas(cx,cy){
+    return{x:(cx-rbPan.x)/rbScale, y:(cy-rbPan.y)/rbScale};
+  }
+
+  // ── 뷰포트 pan 드래그 ──
+  function vpMousedown(e){
+    if(e.target!==vp()&&!e.target.closest('#rb-viewport>svg')&&e.target.id!=='rb-viewport')return;
+    if(edgeDrag||nodeDrag)return;
+    panDrag={startX:e.clientX,startY:e.clientY,origPx:rbPan.x,origPy:rbPan.y};
+    vp().classList.add('panning');
+    e.preventDefault();
+  }
+
+  function globalMousemove(e){
+    if(nodeDrag){
+      const dx=(e.clientX-nodeDrag.startX)/rbScale;
+      const dy=(e.clientY-nodeDrag.startY)/rbScale;
+      const nd=rbNodes.find(n=>n.id===nodeDrag.id);
+      if(nd){nd.x=Math.round(nodeDrag.origX+dx);nd.y=Math.round(nodeDrag.origY+dy);}
+      nodeDrag.el.style.left=nd.x+'px';nodeDrag.el.style.top=nd.y+'px';
+      renderEdges();
+      return;
+    }
+    if(edgeDrag){
+      const vRect=vp().getBoundingClientRect();
+      const cx=e.clientX-vRect.left, cy=e.clientY-vRect.top;
+      const p=toCanvas(cx,cy);
+      const tl=tmpLine();
+      tl.setAttribute('x2',p.x);tl.setAttribute('y2',p.y);
+      return;
+    }
+    if(panDrag){
+      rbPan.x=panDrag.origPx+(e.clientX-panDrag.startX);
+      rbPan.y=panDrag.origPy+(e.clientY-panDrag.startY);
+      canvas().style.transform=`translate(${rbPan.x}px,${rbPan.y}px) scale(${rbScale})`;
+    }
+  }
+
+  function globalMouseup(e){
+    if(nodeDrag){
+      nodeDrag.el.classList.remove('dragging-node');
+      nodeDrag=null;
+      return;
+    }
+    if(edgeDrag){
+      tmpLine().style.display='none';
+      // 어떤 카드 위에서 드롭했는지 확인
+      const els=document.elementsFromPoint(e.clientX,e.clientY);
+      const targetCard=els.find(el=>el.classList.contains('rb-char-card')&&el.dataset.id!==edgeDrag.fromId);
+      if(targetCard){
+        const toId=targetCard.dataset.id;
+        // 중복 엣지 방지
+        const exists=rbEdges.find(ed=>(ed.from===edgeDrag.fromId&&ed.to===toId)||(ed.from===toId&&ed.to===edgeDrag.fromId));
+        if(!exists){
+          edgeSeq++;
+          rbEdges.push({id:'e'+edgeSeq,from:edgeDrag.fromId,to:toId,label:'관계'});
+          renderEdges();
+        }
+      }
+      edgeDrag=null;
+      return;
+    }
+    if(panDrag){
+      vp().classList.remove('panning');
+      panDrag=null;
+    }
+  }
+
+  // ── 이벤트 바인딩 ──
+  document.addEventListener('DOMContentLoaded',()=>{
+    const vpEl=document.getElementById('rb-viewport');
+    if(!vpEl)return;
+    vpEl.addEventListener('mousedown',vpMousedown);
+    document.addEventListener('mousemove',globalMousemove);
+    document.addEventListener('mouseup',globalMouseup);
+
+    // 휠 줌
+    vpEl.addEventListener('wheel',e=>{
+      if(!document.getElementById('relation-board').classList.contains('on'))return;
+      e.preventDefault();
+      const factor=e.deltaY<0?1.08:0.93;
+      const rect=vpEl.getBoundingClientRect();
+      const mx=e.clientX-rect.left, my=e.clientY-rect.top;
+      rbScale=Math.min(3,Math.max(0.2,rbScale*factor));
+      rbPan.x=mx-(mx-rbPan.x)*factor;
+      rbPan.y=my-(my-rbPan.y)*factor;
+      canvas().style.transform=`translate(${rbPan.x}px,${rbPan.y}px) scale(${rbScale})`;
+      renderEdges();
+    },{passive:false});
+
+    // ESC 닫기
+    document.addEventListener('keydown',e=>{
+      if(e.key==='Escape'&&document.getElementById('relation-board').classList.contains('on')){
+        closeRelationBoard();
+      }
+    });
+  });
+})();
 </script>
+<!-- 인물관계도 화이트보드 -->
+<div id="relation-board">
+  <div class="rb-toolbar">
+    <span class="rb-toolbar-title">🕸 인물관계도</span>
+    <button class="rbt" onclick="rbAddChar()">+ 캐릭터</button>
+    <button class="rbt" onclick="rbAddMemo()">+ 메모</button>
+    <button class="rbt" onclick="rbSave()">💾 저장</button>
+    <button class="rbt danger" onclick="rbReset()">🗑 초기화</button>
+    <button class="rbt close-btn" onclick="closeRelationBoard()">✕ 닫기</button>
+  </div>
+  <div class="rb-viewport" id="rb-viewport">
+    <svg id="relation-lines" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+      <defs>
+        <marker id="rb-arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L8,3 z" fill="#00C8E0" opacity="0.7"/>
+        </marker>
+      </defs>
+      <line id="rb-tmp-line" x1="0" y1="0" x2="0" y2="0" style="display:none"/>
+    </svg>
+    <div id="board-canvas"></div>
+  </div>
+</div>
 <!-- UMA 하단 티커 -->
 <div class="uma-ticker" aria-hidden="true">
   <div class="uma-ticker-track">
