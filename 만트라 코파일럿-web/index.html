@@ -1097,7 +1097,7 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);back
 .rb-char-card:hover .rb-del-btn,.rb-memo-card:hover .rb-del-btn{opacity:1}
 .rb-del-btn:hover{background:#dc2626;transform:scale(1.1)}
 /* 포스트잇 */
-.rb-memo-card{background:#FFF9C4;border:1px solid #f0e68c;border-radius:4px;width:160px;min-height:100px;padding:12px;box-shadow:3px 4px 12px rgba(0,0,0,0.12),inset 0 1px 0 rgba(255,255,255,0.6);cursor:grab;position:relative;transform:rotate(-1deg);overflow:visible}
+.rb-memo-card{background:#FFF9C4;border:1px solid #f0e68c;border-radius:4px;min-width:120px;min-height:60px;padding:12px;box-shadow:3px 4px 12px rgba(0,0,0,0.12),inset 0 1px 0 rgba(255,255,255,0.6);cursor:grab;position:relative;transform:rotate(-1deg);overflow:visible}
 .rb-memo-card:nth-child(even){transform:rotate(1.2deg)}
 .rb-memo-card.dragging-node{cursor:grabbing;box-shadow:6px 10px 24px rgba(0,0,0,0.22);z-index:100}
 .rb-memo-textarea{width:100%;background:transparent;border:none;outline:none;font-family:inherit;font-size:13px;color:#4a4000;line-height:1.65;resize:none;min-height:80px;box-sizing:border-box}
@@ -1150,52 +1150,6 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);back
 .wb-empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;color:rgba(255,255,255,0.25);text-align:center;gap:12px}
 .wb-empty-state .wbe-icon{font-size:48px;opacity:0.5}
 .wb-empty-state .wbe-text{font-size:14px;font-weight:700}
-/* 포인트 주석 */
-.pa-fab{width:100%;padding:10px;background:rgba(255,77,106,0.15);border:1px solid rgba(255,77,106,0.35);color:#FF6B8A;border-radius:100px;font-size:12px;font-weight:800;cursor:grab;font-family:inherit;transition:all 0.25s cubic-bezier(0.16,1,0.3,1);margin-bottom:8px;display:flex;align-items:center;justify-content:center;gap:6px;letter-spacing:0.01em;user-select:none;-webkit-user-select:none}
-.pa-fab:hover{background:rgba(255,77,106,0.25);border-color:rgba(255,77,106,0.6);transform:translateY(-1px);box-shadow:0 6px 20px rgba(255,77,106,0.25)}
-.pa-fab:active{cursor:grabbing}
-.pa-fab-ghost{position:fixed;z-index:99999;pointer-events:none;padding:8px 16px;background:rgba(255,77,106,0.9);color:#fff;border-radius:100px;font-size:12px;font-weight:800;font-family:inherit;box-shadow:0 8px 28px rgba(255,77,106,0.5);display:flex;align-items:center;gap:6px;white-space:nowrap}
-.pa-container{position:absolute;inset:0;pointer-events:none;z-index:90;overflow:visible}
-/* 카드 기본: 잠김 상태 */
-.pa-card{position:absolute;min-width:60px;min-height:28px;border-radius:6px;padding:0;cursor:default;pointer-events:auto;box-shadow:3px 4px 14px rgba(0,0,0,0.25);transition:box-shadow 0.2s;display:flex;flex-direction:column;user-select:none}
-.pa-card:hover{box-shadow:4px 6px 20px rgba(0,0,0,0.35)}
-.pa-card.dragging{cursor:grabbing;box-shadow:6px 8px 28px rgba(0,0,0,0.4);z-index:99;opacity:0.92}
-/* 편집 모드 표시 */
-.pa-card.pa-editing{outline:2px dashed rgba(59,130,246,0.6);outline-offset:2px;cursor:grab}
-/* 카드 위 외부 액션바: 항상 보임 */
-.pa-actions{position:absolute;top:-32px;right:0;display:flex;gap:4px;pointer-events:auto;z-index:10}
-.pa-act-btn{width:26px;height:26px;border:none;border-radius:6px;cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;transition:all 0.15s;box-shadow:0 2px 8px rgba(0,0,0,0.2)}
-.pa-act-edit{background:#3b82f6;color:#fff}
-.pa-act-edit:hover{background:#2563eb;transform:scale(1.08)}
-.pa-act-edit.on{background:#22c55e;color:#fff}
-.pa-act-del{background:#fff;color:#94A3B8}
-.pa-act-del:hover{background:#fee2e2;color:#ef4444;transform:scale(1.08)}
-/* 편집 모드 도구바: 편집 중만 보임 */
-.pa-toolbar{display:none;align-items:center;gap:3px;padding:5px 7px 3px;flex-shrink:0;border-radius:6px 6px 0 0;flex-wrap:wrap}
-.pa-card.pa-editing .pa-toolbar{display:flex}
-.pa-tb{width:22px;height:22px;border:none;border-radius:4px;cursor:pointer;font-size:10px;font-weight:900;display:flex;align-items:center;justify-content:center;transition:all 0.15s;font-family:inherit;padding:0;flex-shrink:0}
-.pa-tb-font{background:rgba(0,0,0,0.12);color:rgba(0,0,0,0.6)}
-.pa-tb-font:hover{background:rgba(0,0,0,0.22)}
-.pa-dot{width:14px;height:14px;border-radius:50%;cursor:pointer;border:2px solid rgba(255,255,255,0.5);transition:transform 0.15s;flex-shrink:0}
-.pa-dot:hover{transform:scale(1.25)}
-.pa-dot.on{border-color:rgba(0,0,0,0.5);box-shadow:0 0 0 1px rgba(0,0,0,0.2)}
-/* 본문 */
-.pa-body{flex:1;padding:8px 10px 10px;font-size:13px;line-height:1.55;overflow-y:auto;word-break:break-word;color:rgba(0,0,0,0.78);outline:none}
-.pa-body:empty::before{content:attr(data-ph);color:rgba(0,0,0,0.35);font-style:italic}
-/* 잠김: 텍스트 선택/편집 불가 */
-.pa-card:not(.pa-editing) .pa-body{cursor:default;-webkit-user-select:none;user-select:none;pointer-events:none}
-/* 편집 중: 텍스트 편집 가능 */
-.pa-card.pa-editing .pa-body{cursor:text;-webkit-user-select:text;user-select:text;pointer-events:auto}
-/* 리사이즈 핸들: 편집 중만 */
-.pa-resize{position:absolute;right:0;bottom:0;width:20px;height:20px;cursor:nwse-resize;pointer-events:auto;display:none;align-items:center;justify-content:center;font-size:10px;color:rgba(0,0,0,0.4)}
-.pa-card.pa-editing .pa-resize{display:flex}
-@media(max-width:768px){
-  .pa-fab{display:none}
-  .pa-mob-fab{display:flex !important}
-}
-.pa-mob-fab{display:none;width:36px;height:36px;border-radius:10px;background:rgba(255,77,106,0.18);border:1px solid rgba(255,77,106,0.35);color:#FF6B8A;font-size:16px;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:all 0.2s;user-select:none;-webkit-user-select:none}
-.pa-mob-fab:hover{background:rgba(255,77,106,0.3)}
-.pa-place-banner{position:fixed;top:60px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.82);color:#fff;padding:10px 24px;border-radius:20px;font-size:13px;font-weight:700;z-index:9999;pointer-events:none;font-family:inherit;white-space:nowrap;display:none}
 /* ── 내 작업실 (Studio) ── */
 .std-ov{position:fixed;inset:0;z-index:9999;display:none;background:#0D0F14}
 .std-ov.on{display:flex}
@@ -1326,7 +1280,6 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);back
 <!-- 모바일 상단 헤더 -->
 <div class="mob-hdr" id="mob-hdr">
   <div class="mob-hdr-logo">✦ Mantra <em>Copilot</em></div>
-  <button class="pa-mob-fab" id="pa-mob-fab-btn" title="주석 달기">📌</button>
   <button class="mob-hdr-action" onclick="toggleDashPanel()">내 대시보드</button>
 </div>
 <!-- 내 대시보드 패널 -->
@@ -1397,10 +1350,9 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);back
     <div class="ni" onclick="openWhiteBoard()" style="margin-top:6px;border-top:1px solid rgba(0,200,224,0.08);padding-top:12px"><span class="ic">🕸</span>화이트보드</div>
     <div class="ni" id="n-studio" onclick="studioOpen()" style="margin-top:2px"><span class="ic">🗂</span>내 작업실</div>
   </nav>
-  <div class="sb-foot"><button class="pa-fab" id="pa-fab-btn">📌 주석 달기</button><button class="nbtn" onclick="openMode()">+ 새 작품 기획하기</button></div>
+  <div class="sb-foot"><button class="nbtn" onclick="openMode()">+ 새 작품 기획하기</button></div>
 </aside>
 <main class="main">
-<div class="pa-container" id="pa-container"></div>
 
   <!-- 홈 뷰 -->
   <section class="view on" id="view-home" style="position:relative">
@@ -2914,7 +2866,6 @@ function navTo(v){
   if(v==='tasks'){
     if(selProj)$('tpn').textContent=selProj.title;
   }
-  if(typeof paLoad==='function')paLoad();
 }
 // ── 작품 연동 모달 탭/기능 ──
 let olSelectSource='ol'; // 'ol'|'ch'|'xc'
@@ -8344,6 +8295,30 @@ if(!document.getElementById('thkStyle')){
     return wrap;
   }
 
+  // 메모 카드 콘텐츠에 맞게 사이즈 자동 조정
+  function autoSizeMemo(nd){
+    // 텍스트 기반 높이 계산
+    const text=nd.text||'';
+    const fontSize=nd.textStyle&&nd.textStyle.fontSize?parseInt(nd.textStyle.fontSize):13;
+    const lineHeight=1.65;
+    const charPerLine=Math.max(1,Math.floor((nd.w||160)/((fontSize*0.6)+0.5)));
+    const lines=text.split('\n');
+    let totalLines=0;
+    lines.forEach(l=>{totalLines+=Math.max(1,Math.ceil((l.length||1)/charPerLine));});
+    const textH=Math.ceil(totalLines*fontSize*lineHeight);
+    // 이미지 있으면 +86px (80px img + 6px margin)
+    const imgH=nd.imgUrl?86:0;
+    // 패딩 24px + 여유 8px
+    const autoH=textH+imgH+32;
+    // 최소 60px, 최대 제한 없음
+    nd.h=Math.max(60,autoH);
+    // 너비: 텍스트 최대 줄 길이에 맞춤 (최소 120px, 최대 300px)
+    let maxLineLen=0;
+    lines.forEach(l=>{maxLineLen=Math.max(maxLineLen,l.length);});
+    const autoW=Math.max(120,Math.min(300,maxLineLen*fontSize*0.6+28));
+    nd.w=Math.round(autoW);
+  }
+
   // 메모 카드 편집 모드
   function editMemoCard(wrap,nd){
     if(wrap.querySelector('.rb-memo-textarea'))return;
@@ -8403,6 +8378,8 @@ if(!document.getElementById('thkStyle')){
     function finishMemoEdit(){
       if(wrap._editDone)return;wrap._editDone=true;
       nd.text=ta.value;
+      // 콘텐츠에 맞게 사이즈 자동 계산
+      autoSizeMemo(nd);
       toolbar.remove();
       rbRender();
     }
@@ -9097,286 +9074,8 @@ function rbClearDraw(){
   flash('그리기 초기화됨');
 }
 
-/* ── 포인트 주석 (Point Annotation) ── */
-const PA_COLORS=['#FF4D6A','#FFF176','#81D4FA','#A5D6A7','#CE93D8'];
-const PA_KEY='pa_notes';
-let _paNotes=[];
-let _paCurView='home';
 
-function _paGetView(){
-  const on=document.querySelector('.view.on');
-  if(!on)return 'home';
-  return on.id.replace('view-','');
-}
-function _paAll(){try{return JSON.parse(localStorage.getItem(PA_KEY)||'[]')}catch(e){return[]}}
-function paSave(){localStorage.setItem(PA_KEY,JSON.stringify(_paNotes))}
 
-function paLoad(){
-  _paCurView=_paGetView();
-  _paNotes=_paAll();
-  const c=$('pa-container');if(!c)return;
-  c.innerHTML='';
-  const viewNotes=_paNotes.filter(n=>n.view===_paCurView);
-  viewNotes.forEach(n=>c.appendChild(_paRenderCard(n)));
-}
-
-// ── 드래그로 주석 생성 ──
-function _paInitFabDrag(fabEl){
-  if(!fabEl)return;
-  let dragging=false,ghost=null,startX,startY;
-
-  function onDown(e){
-    const pt=e.touches?e.touches[0]:e;
-    startX=pt.clientX;startY=pt.clientY;
-    dragging=false;
-    function onMove(ev){
-      const p=ev.touches?ev.touches[0]:ev;
-      if(!dragging&&(Math.abs(p.clientX-startX)>8||Math.abs(p.clientY-startY)>8)){
-        dragging=true;
-        ghost=document.createElement('div');ghost.className='pa-fab-ghost';ghost.textContent='📌 놓을 위치로';
-        document.body.appendChild(ghost);
-        // 배너
-        let banner=document.getElementById('pa-place-banner');
-        if(!banner){banner=document.createElement('div');banner.id='pa-place-banner';banner.className='pa-place-banner';document.body.appendChild(banner);}
-        banner.textContent='📌 원하는 위치에 놓으세요';banner.style.display='block';
-      }
-      if(dragging&&ghost){
-        if(ev.touches)ev.preventDefault();
-        ghost.style.left=(p.clientX-40)+'px';ghost.style.top=(p.clientY-18)+'px';
-      }
-    }
-    function onUp(ev){
-      document.removeEventListener('mousemove',onMove);document.removeEventListener('mouseup',onUp);
-      document.removeEventListener('touchmove',onMove);document.removeEventListener('touchend',onUp);
-      const banner=document.getElementById('pa-place-banner');if(banner)banner.style.display='none';
-      if(ghost){ghost.remove();ghost=null;}
-      if(!dragging){
-        // 짧은 클릭 → 기존 배치 모드
-        paAddClickMode();return;
-      }
-      const p=ev.changedTouches?ev.changedTouches[0]:ev;
-      const c=$('pa-container');if(!c)return;
-      const cRect=c.getBoundingClientRect();
-      const scrollTop=document.querySelector('.view.on')?.scrollTop||0;
-      const px=p.clientX-cRect.left;
-      const py=p.clientY-cRect.top+scrollTop;
-      // 콘텐츠 영역 밖이면 무시
-      if(px<0||py<0||p.clientX<cRect.left||p.clientX>cRect.right)return;
-      _paCurView=_paGetView();_paNotes=_paAll();
-      _paCreateAtPosition(px,py,PA_COLORS[Math.floor(Math.random()*PA_COLORS.length)],'메모',true);
-    }
-    document.addEventListener('mousemove',onMove);document.addEventListener('mouseup',onUp);
-    document.addEventListener('touchmove',onMove,{passive:false});document.addEventListener('touchend',onUp);
-  }
-  fabEl.addEventListener('mousedown',onDown);
-  fabEl.addEventListener('touchstart',onDown,{passive:true});
-}
-
-// 클릭 시 배치 모드 (기존 방식 fallback)
-function paAddClickMode(){
-  _paCurView=_paGetView();_paNotes=_paAll();
-  let banner=document.getElementById('pa-place-banner');
-  if(!banner){banner=document.createElement('div');banner.id='pa-place-banner';banner.className='pa-place-banner';document.body.appendChild(banner);}
-  banner.textContent='📌 주석을 놓을 위치를 클릭하세요';banner.style.display='block';
-  const c=$('pa-container');if(!c)return;
-  let overlay=document.createElement('div');overlay.style.cssText='position:absolute;inset:0;z-index:89;cursor:crosshair;pointer-events:auto';
-  c.appendChild(overlay);
-  function place(e){
-    e.preventDefault();e.stopPropagation();
-    const pt=e.changedTouches?e.changedTouches[0]:(e.touches?e.touches[0]:e);
-    const cRect=c.getBoundingClientRect();
-    const scrollTop=document.querySelector('.view.on')?.scrollTop||0;
-    const px=pt.clientX-cRect.left;
-    const py=pt.clientY-cRect.top+scrollTop;
-    overlay.remove();banner.style.display='none';
-    _paCreateAtPosition(px,py,PA_COLORS[Math.floor(Math.random()*PA_COLORS.length)],'메모',true);
-  }
-  overlay.addEventListener('click',place);
-  overlay.addEventListener('touchend',place,{passive:false});
-  function onEsc(e){if(e.key==='Escape'){overlay.remove();banner.style.display='none';document.removeEventListener('keydown',onEsc);}}
-  document.addEventListener('keydown',onEsc);
-}
-
-function _paCreateAtPosition(px,py,color,text,autoEdit){
-  const id='pa_'+Date.now();
-  const w=160,h=80;
-  const c=$('pa-container');if(!c)return;
-  // 컨테이너 안에서 위치 클램핑 (액션바 32px 상단 여백 확보)
-  const cW=c.offsetWidth||window.innerWidth;
-  px=Math.max(0,Math.min(cW-w,Math.round(px)));
-  py=Math.max(36,Math.round(py));
-  const note={id,view:_paCurView,x:px,y:py,w,h,text,color,fontSize:13,created:Date.now()};
-  _paNotes.push(note);paSave();
-  const card=_paRenderCard(note);
-  c.appendChild(card);
-  if(autoEdit)_paToggleEdit(note.id,card,true);
-}
-
-function paDel(id){
-  _paNotes=_paNotes.filter(n=>n.id!==id);paSave();
-  const el=document.querySelector('[data-pa-id="'+id+'"]');
-  if(el){el.style.transform='scale(0.8)';el.style.opacity='0';setTimeout(()=>el.remove(),150);}
-}
-
-function _paFind(id){return _paNotes.find(n=>n.id===id)}
-function _paUpdate(id,props){const n=_paFind(id);if(n)Object.assign(n,props);paSave();}
-
-// ── 편집 모드 토글 ──
-function _paToggleEdit(id,card,forceOn){
-  const isEditing=card.classList.contains('pa-editing');
-  if(forceOn&&isEditing)return;
-  if(!forceOn&&!isEditing)return;
-  // 다른 카드 편집 중이면 먼저 저장
-  document.querySelectorAll('.pa-card.pa-editing').forEach(c=>{
-    if(c!==card){c.classList.remove('pa-editing');
-      const b=c.querySelector('.pa-body');if(b)b.contentEditable='false';
-      const eb=c.querySelector('.pa-act-edit');if(eb){eb.classList.remove('on');eb.textContent='✏️';}
-    }
-  });
-  if(forceOn){
-    card.classList.add('pa-editing');
-    const b=card.querySelector('.pa-body');if(b){b.contentEditable='true';b.focus();}
-    const eb=card.querySelector('.pa-act-edit');if(eb){eb.classList.add('on');eb.textContent='✓';}
-  }else{
-    card.classList.remove('pa-editing');
-    const b=card.querySelector('.pa-body');if(b){b.contentEditable='false';_paUpdate(id,{text:b.textContent});}
-    const eb=card.querySelector('.pa-act-edit');if(eb){eb.classList.remove('on');eb.textContent='✏️';}
-    // 현재 위치/크기 저장
-    _paUpdate(id,{x:parseInt(card.style.left),y:parseInt(card.style.top),w:card.offsetWidth,h:card.offsetHeight});
-  }
-}
-
-function _paRenderCard(n){
-  const d=document.createElement('div');
-  d.className='pa-card';
-  d.dataset.paId=n.id;
-  const rot=(Math.random()*3-1.5).toFixed(1);
-  d.style.cssText=`left:${n.x}px;top:${n.y}px;width:${n.w}px;height:${n.h}px;background:${n.color};transform:rotate(${rot}deg)`;
-
-  // ── 외부 액션바 (카드 위) ──
-  const actions=document.createElement('div');actions.className='pa-actions';
-  const editBtn=document.createElement('button');editBtn.className='pa-act-btn pa-act-edit';editBtn.textContent='✏️';
-  editBtn.onclick=e=>{e.stopPropagation();
-    const isOn=d.classList.contains('pa-editing');
-    _paToggleEdit(n.id,d,!isOn);
-  };
-  const delBtn=document.createElement('button');delBtn.className='pa-act-btn pa-act-del';delBtn.textContent='✕';
-  delBtn.onclick=e=>{e.stopPropagation();paDel(n.id)};
-  actions.appendChild(editBtn);actions.appendChild(delBtn);
-  d.appendChild(actions);
-
-  // ── 편집 도구바 (편집 모드에서만 보임) ──
-  const tb=document.createElement('div');tb.className='pa-toolbar';
-  const bMinus=document.createElement('button');bMinus.className='pa-tb pa-tb-font';bMinus.textContent='A-';
-  bMinus.onclick=e=>{e.stopPropagation();paFontSize(n.id,-1)};
-  const bPlus=document.createElement('button');bPlus.className='pa-tb pa-tb-font';bPlus.textContent='A+';
-  bPlus.onclick=e=>{e.stopPropagation();paFontSize(n.id,1)};
-  tb.appendChild(bMinus);tb.appendChild(bPlus);
-  PA_COLORS.forEach(c=>{
-    const dot=document.createElement('span');dot.className='pa-dot'+(c===n.color?' on':'');dot.style.background=c;
-    dot.onclick=e=>{e.stopPropagation();paColor(n.id,c)};
-    tb.appendChild(dot);
-  });
-  d.appendChild(tb);
-
-  // ── 본문 ──
-  const body=document.createElement('div');body.className='pa-body';
-  body.contentEditable='false'; // 기본: 잠김
-  body.dataset.ph='메모를 입력하세요';
-  body.style.fontSize=n.fontSize+'px';
-  body.textContent=n.text;
-  body.oninput=()=>{_paUpdate(n.id,{text:body.textContent})};
-  body.onmousedown=e=>e.stopPropagation();
-  body.ontouchstart=e=>e.stopPropagation();
-  d.appendChild(body);
-
-  // ── 리사이즈 핸들 (편집 모드에서만 보임 - CSS) ──
-  const rh=document.createElement('div');rh.className='pa-resize';rh.textContent='◢';
-  rh.onmousedown=e=>{e.preventDefault();e.stopPropagation();_paStartResize(e,n.id,d)};
-  rh.ontouchstart=e=>{e.stopPropagation();_paStartResize(e.touches[0],n.id,d,true)};
-  d.appendChild(rh);
-
-  // ── 편집 모드에서만 드래그 가능 ──
-  d.onmousedown=e=>{
-    if(!d.classList.contains('pa-editing'))return;
-    if(e.target.closest('.pa-actions')||e.target.closest('.pa-toolbar')||e.target.closest('.pa-resize')||e.target.closest('.pa-body'))return;
-    e.preventDefault();_paStartDrag(e,n.id,d);
-  };
-  let _lpTimer=null,_lpActive=false;
-  d.ontouchstart=e=>{
-    if(!d.classList.contains('pa-editing'))return;
-    if(e.target.closest('.pa-actions')||e.target.closest('.pa-toolbar')||e.target.closest('.pa-resize'))return;
-    const t=e.touches[0];const sx=t.clientX,sy=t.clientY;
-    _lpActive=false;
-    _lpTimer=setTimeout(()=>{
-      _lpActive=true;if(navigator.vibrate)navigator.vibrate(30);
-      _paStartDrag({clientX:sx,clientY:sy},n.id,d,true);
-    },200);
-  };
-  d.ontouchmove=e=>{if(!_lpActive&&_lpTimer){clearTimeout(_lpTimer);_lpTimer=null;}};
-  d.ontouchend=e=>{if(_lpTimer){clearTimeout(_lpTimer);_lpTimer=null;}_lpActive=false;};
-
-  return d;
-}
-
-function paColor(id,color){
-  _paUpdate(id,{color});
-  const card=document.querySelector('[data-pa-id="'+id+'"]');
-  if(card){card.style.background=color;card.querySelectorAll('.pa-dot').forEach((dot,i)=>{dot.classList.toggle('on',PA_COLORS[i]===color);});}
-}
-function paFontSize(id,delta){
-  const n=_paFind(id);if(!n)return;
-  const sz=Math.max(10,Math.min(22,n.fontSize+delta));_paUpdate(id,{fontSize:sz});
-  const card=document.querySelector('[data-pa-id="'+id+'"]');if(card){card.querySelector('.pa-body').style.fontSize=sz+'px';}
-}
-
-function _paStartDrag(e,id,el,touch){
-  const container=$('pa-container');const cRect=container.getBoundingClientRect();
-  const rect=el.getBoundingClientRect();
-  const ox=e.clientX-rect.left,oy=e.clientY-rect.top;
-  const cardW=el.offsetWidth,cardH=el.offsetHeight;
-  el.classList.add('dragging');
-  function move(ev){
-    if(touch)ev.preventDefault();
-    const p=touch?ev.touches[0]:ev;
-    const curScroll=document.querySelector('.view.on')?.scrollTop||0;
-    let nx=p.clientX-cRect.left-ox;let ny=p.clientY-cRect.top-oy+curScroll;
-    // 좌우 + 상단(액션바 32px 여백) 클램핑
-    nx=Math.max(0,Math.min(cRect.width-cardW,nx));
-    ny=Math.max(36,ny);
-    el.style.left=nx+'px';el.style.top=ny+'px';
-  }
-  function up(){
-    el.classList.remove('dragging');
-    _paUpdate(id,{x:parseInt(el.style.left),y:parseInt(el.style.top)});
-    if(touch){document.removeEventListener('touchmove',move);document.removeEventListener('touchend',up);}
-    else{document.removeEventListener('mousemove',move);document.removeEventListener('mouseup',up);}
-  }
-  if(touch){document.addEventListener('touchmove',move,{passive:false});document.addEventListener('touchend',up);}
-  else{document.addEventListener('mousemove',move);document.addEventListener('mouseup',up);}
-}
-function _paStartResize(e,id,el,touch){
-  const startW=el.offsetWidth,startH=el.offsetHeight,startX=e.clientX,startY=e.clientY;
-  function move(ev){
-    const p=touch?ev.touches[0]:ev;
-    el.style.width=Math.max(80,startW+(p.clientX-startX))+'px';
-    el.style.height=Math.max(50,startH+(p.clientY-startY))+'px';
-  }
-  function up(){
-    _paUpdate(id,{w:el.offsetWidth,h:el.offsetHeight});
-    if(touch){document.removeEventListener('touchmove',move);document.removeEventListener('touchend',up);}
-    else{document.removeEventListener('mousemove',move);document.removeEventListener('mouseup',up);}
-  }
-  if(touch){document.addEventListener('touchmove',move,{passive:false});document.addEventListener('touchend',up);}
-  else{document.addEventListener('mousemove',move);document.addEventListener('mouseup',up);}
-}
-
-// 초기화
-document.addEventListener('DOMContentLoaded',()=>{
-  setTimeout(paLoad,300);
-  _paInitFabDrag(document.getElementById('pa-fab-btn'));
-  _paInitFabDrag(document.getElementById('pa-mob-fab-btn'));
-});
 </script>
 <!-- 화이트보드 화이트보드 -->
 <div id="white-board">
