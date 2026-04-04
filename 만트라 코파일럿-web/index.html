@@ -1039,6 +1039,32 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);back
 .rb-rel-btn:hover{background:#f0f9ff;border-color:#00C8E0;color:#0891b2}
 #rb-draw-canvas{position:absolute;top:0;left:0;z-index:0;pointer-events:none;transform-origin:0 0}
 #rb-tmp-line{pointer-events:none;stroke:#00C8E0;stroke-width:2;stroke-dasharray:6 4;fill:none}
+/* ── 화이트보드 보드 목록 ── */
+.wb-board-list{position:absolute;inset:0;background:#0f0f23;z-index:10;display:none;flex-direction:column;overflow:hidden}
+.wb-board-list.on{display:flex}
+.wb-bl-header{min-height:52px;background:#1a1a2e;border-bottom:1px solid rgba(0,200,224,0.18);display:flex;align-items:center;gap:10px;padding:8px 16px;flex-shrink:0}
+.wb-bl-title{font-family:'Black Han Sans',sans-serif;font-size:15px;color:#7FFEFF;letter-spacing:0.04em;flex:1}
+.wb-bl-body{flex:1;overflow-y:auto;padding:20px 24px}
+.wb-board-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;margin-top:8px}
+.wb-board-card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:16px;cursor:pointer;transition:all 0.2s;position:relative}
+.wb-board-card:hover{border-color:rgba(0,200,224,0.4);background:rgba(0,200,224,0.04);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,0.3)}
+.wb-board-card .wbc-name{font-size:14px;font-weight:800;color:#e2e8f0;margin-bottom:6px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.wb-board-card .wbc-meta{font-size:11px;color:rgba(255,255,255,0.35)}
+.wb-board-card .wbc-actions{position:absolute;top:8px;right:8px;display:flex;gap:4px;opacity:0;transition:opacity 0.15s}
+.wb-board-card:hover .wbc-actions{opacity:1}
+.wb-board-card .wbc-act{width:26px;height:26px;border-radius:50%;border:none;background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.6);font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.15s}
+.wb-board-card .wbc-act:hover{background:rgba(0,200,224,0.2);color:#7FFEFF}
+.wb-board-card .wbc-act.del:hover{background:rgba(239,68,68,0.2);color:#fca5a5}
+.wb-board-card .wbc-thumb{height:80px;border-radius:8px;margin-bottom:10px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.04);display:flex;align-items:center;justify-content:center;font-size:28px;color:rgba(255,255,255,0.08);overflow:hidden}
+.wb-add-board{background:none;border:2px dashed rgba(255,255,255,0.1);border-radius:14px;padding:16px;cursor:pointer;transition:all 0.2s;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:140px;gap:8px;color:rgba(255,255,255,0.3);font-family:inherit}
+.wb-add-board:hover{border-color:rgba(0,200,224,0.4);color:#7FFEFF;background:rgba(0,200,224,0.04)}
+.wb-add-board .wba-icon{font-size:28px}
+.wb-add-board .wba-label{font-size:12px;font-weight:700}
+.wb-back-btn{height:34px;padding:0 14px;border-radius:8px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;border:1px solid rgba(0,200,224,0.3);background:rgba(0,200,224,0.1);color:#7FFEFF;transition:all 0.2s;white-space:nowrap;margin-right:4px}
+.wb-back-btn:hover{background:rgba(0,200,224,0.22);border-color:rgba(0,200,224,0.55)}
+.wb-empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;color:rgba(255,255,255,0.25);text-align:center;gap:12px}
+.wb-empty-state .wbe-icon{font-size:48px;opacity:0.5}
+.wb-empty-state .wbe-text{font-size:14px;font-weight:700}
 </style>
 </head>
 <body>
@@ -2443,7 +2469,7 @@ const md=t=>{
   return t;
 };
 // ── 폴더 + 드래그 시스템 (아이콘 기반) ──
-let activeFolders={mp:null,ol:null,ch:null};
+let activeFolders={mp:null,ol:null,ch:null,wb:null};
 function loadFolders(key){return JSON.parse(localStorage.getItem(key)||'[]');}
 function saveFolders(key,folders){localStorage.setItem(key,JSON.stringify(folders));}
 function addFolder(key,renderFn){
@@ -7263,13 +7289,205 @@ if(!document.getElementById('thkStyle')){
 // 화이트보드 화이트보드
 // ═══════════════════════════════════════════════════
 (function(){
-  const LS_KEY='rb_data_v1';
   // 상태
   let rbNodes=[];   // {id,type,x,y,name,memo,imgUrl}
   let rbEdges=[];   // {id,from,to,label}
   let rbPan={x:0,y:0};
   let rbScale=1;
   let nodeSeq=0,edgeSeq=0;
+
+  // ── 보드 관리 시스템 ──
+  let wbBoards=[];
+  window.wbCurrentBoardId=null;
+  let wbAutoSaveTimer=null;
+
+  function wbLoadBoards(){wbBoards=JSON.parse(localStorage.getItem('wb_boards_v1')||'[]');}
+  function wbSaveBoards(){localStorage.setItem('wb_boards_v1',JSON.stringify(wbBoards));}
+
+  function wbLoadBoardData(boardId){
+    try{
+      const d=JSON.parse(localStorage.getItem('wb_data_'+boardId)||'null');
+      if(d){
+        rbNodes=d.nodes||[];rbEdges=d.edges||[];
+        rbPan=d.pan||{x:0,y:0};rbScale=d.scale||1;
+        nodeSeq=rbNodes.reduce((m,n)=>Math.max(m,parseInt(n.id.replace(/\D/g,''))||0),0);
+        edgeSeq=rbEdges.reduce((m,e)=>Math.max(m,parseInt(e.id.replace(/\D/g,''))||0),0);
+      }else{
+        rbNodes=[];rbEdges=[];rbPan={x:0,y:0};rbScale=1;nodeSeq=0;edgeSeq=0;
+      }
+    }catch(e){rbNodes=[];rbEdges=[];rbPan={x:0,y:0};rbScale=1;nodeSeq=0;edgeSeq=0;}
+  }
+  function wbSaveBoardData(boardId){
+    if(!boardId)return;
+    localStorage.setItem('wb_data_'+boardId,JSON.stringify({nodes:rbNodes,edges:rbEdges,pan:rbPan,scale:rbScale}));
+    var drawCanvas=document.getElementById('rb-draw-canvas');
+    if(drawCanvas){try{localStorage.setItem('wb_draw_'+boardId,drawCanvas.toDataURL());}catch(e){}}
+    var b=wbBoards.find(function(x){return x.id===boardId});
+    if(b){b.updatedAt=Date.now();wbSaveBoards();}
+  }
+  function wbAutoSave(){if(window.wbCurrentBoardId)wbSaveBoardData(window.wbCurrentBoardId);}
+
+  // 레거시 마이그레이션
+  function wbMigrateLegacy(){
+    if(localStorage.getItem('wb_migrated'))return;
+    var old=localStorage.getItem('rb_data_v1');
+    var oldDraw=localStorage.getItem('rb_drawing_v1');
+    if(old||oldDraw){
+      var id='wb-'+Date.now();
+      wbBoards.push({id:id,name:'기존 화이트보드',folder:'',createdAt:Date.now(),updatedAt:Date.now()});
+      if(old)localStorage.setItem('wb_data_'+id,old);
+      if(oldDraw)localStorage.setItem('wb_draw_'+id,oldDraw);
+      wbSaveBoards();
+    }
+    localStorage.setItem('wb_migrated','1');
+  }
+
+  // 보드 목록 렌더링
+  function wbRenderBoardList(){
+    var body=document.getElementById('wb-bl-body');if(!body)return;
+    body.innerHTML='';
+    wbSaveBoards(); // 인메모리 변경사항 저장 후 로드
+    wbLoadBoards();
+    // 폴더 바 or 그리드
+    var inFolder=renderFolderOpenBar(body,'wb_folders_v1','wb',wbBoards,'folder',wbRenderBoardList);
+    if(!inFolder){
+      renderFolderIconGrid(body,'wb_folders_v1','wb',wbBoards,'folder',wbRenderBoardList);
+    }
+    // 필터: 현재 폴더의 보드만
+    var folderId=activeFolders.wb||'';
+    var filtered=wbBoards.filter(function(b){return (b.folder||'')===(folderId||'');});
+    if(filtered.length===0&&!inFolder){
+      var empty=document.createElement('div');empty.className='wb-empty-state';
+      empty.innerHTML='<div class="wbe-icon">🕸</div><div class="wbe-text">아직 보드가 없습니다</div><div style="font-size:12px;color:rgba(255,255,255,0.2)">새 보드를 만들어 시작해보세요</div>';
+      body.appendChild(empty);
+    }
+    var grid=document.createElement('div');grid.className='wb-board-grid';
+    // 보드 인덱스 매핑 (드래그용)
+    filtered.forEach(function(board,fi){
+      var globalIdx=wbBoards.indexOf(board);
+      var card=document.createElement('div');card.className='wb-board-card';
+      // 썸네일
+      var thumb=document.createElement('div');thumb.className='wbc-thumb';
+      thumb.textContent='🕸';
+      card.appendChild(thumb);
+      // 이름
+      var name=document.createElement('div');name.className='wbc-name';
+      name.textContent=board.name||'무제';
+      card.appendChild(name);
+      // 메타
+      var meta=document.createElement('div');meta.className='wbc-meta';
+      var d=new Date(board.updatedAt||board.createdAt);
+      meta.textContent=d.getFullYear()+'.'+(d.getMonth()+1)+'.'+d.getDate()+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+      card.appendChild(meta);
+      // 액션 버튼
+      var actions=document.createElement('div');actions.className='wbc-actions';
+      var editBtn=document.createElement('button');editBtn.className='wbc-act';editBtn.textContent='✏️';editBtn.title='이름 변경';
+      editBtn.onclick=function(e){e.stopPropagation();wbRenameBoard(board.id);};
+      var delBtn=document.createElement('button');delBtn.className='wbc-act del';delBtn.textContent='🗑';delBtn.title='삭제';
+      delBtn.onclick=function(e){e.stopPropagation();wbDeleteBoard(board.id);};
+      actions.appendChild(editBtn);actions.appendChild(delBtn);
+      card.appendChild(actions);
+      // 클릭으로 보드 열기
+      card.onclick=function(){wbOpenBoard(board.id);};
+      // 드래그
+      makeDraggable(card,globalIdx);
+      card.addEventListener('drop',function(e){
+        e.preventDefault();e.stopPropagation();card.classList.remove('item-drag-over');
+        var srcIdx=parseInt(e.dataTransfer.getData('text/plain'));
+        if(isNaN(srcIdx)||srcIdx===globalIdx||!wbBoards[srcIdx])return;
+        var moved=wbBoards.splice(srcIdx,1)[0];
+        var targetIdx=wbBoards.indexOf(board);
+        wbBoards.splice(targetIdx,0,moved);
+        wbSaveBoards();wbRenderBoardList();
+      });
+      grid.appendChild(card);
+    });
+    // + 새 보드 카드
+    var addCard=document.createElement('div');addCard.className='wb-add-board';
+    addCard.innerHTML='<div class="wba-icon">+</div><div class="wba-label">새 보드</div>';
+    addCard.onclick=function(){wbCreateBoard();};
+    grid.appendChild(addCard);
+    body.appendChild(grid);
+  }
+  window.wbRenderBoardList=wbRenderBoardList;
+
+  // 보드 CRUD
+  function wbCreateBoard(){
+    openFolderNameModal('',function(name){
+      var id='wb-'+Date.now();
+      var folderId=activeFolders.wb||'';
+      wbBoards.push({id:id,name:name,folder:folderId,createdAt:Date.now(),updatedAt:Date.now()});
+      wbSaveBoards();
+      wbOpenBoard(id);
+    });
+  }
+  function wbDeleteBoard(boardId){
+    if(!confirm('이 보드를 삭제할까요?'))return;
+    wbBoards=wbBoards.filter(function(b){return b.id!==boardId;});
+    wbSaveBoards();
+    localStorage.removeItem('wb_data_'+boardId);
+    localStorage.removeItem('wb_draw_'+boardId);
+    if(window.wbCurrentBoardId===boardId){window.wbCurrentBoardId=null;}
+    wbRenderBoardList();
+  }
+  function wbRenameBoard(boardId){
+    var b=wbBoards.find(function(x){return x.id===boardId;});if(!b)return;
+    openFolderNameModal(b.name,function(name){
+      b.name=name;wbSaveBoards();wbRenderBoardList();
+    });
+  }
+
+  // 보드 열기
+  function wbOpenBoard(boardId){
+    wbAutoSave(); // 이전 보드 자동 저장
+    window.wbCurrentBoardId=boardId;
+    wbLoadBoardData(boardId);
+    // 보드명 표시
+    var b=wbBoards.find(function(x){return x.id===boardId;});
+    var titleEl=document.querySelector('.rb-toolbar-title');
+    if(titleEl&&b)titleEl.textContent='🕸 '+b.name;
+    // 목록 숨기고 보드 표시
+    document.getElementById('wb-board-list').classList.remove('on');
+    document.querySelector('.rb-toolbar').style.display='';
+    document.getElementById('rb-viewport').style.display='';
+    rbRender();
+    // 드로잉 캔버스 초기화
+    var drawCanvas=document.getElementById('rb-draw-canvas');
+    if(drawCanvas){
+      var ctx=drawCanvas.getContext('2d');
+      ctx.clearRect(0,0,drawCanvas.width,drawCanvas.height);
+    }
+    setTimeout(function(){
+      rbInitDrawCanvas();
+      // 보드별 드로잉 로드
+      var savedDraw=localStorage.getItem('wb_draw_'+boardId);
+      if(savedDraw){
+        var drawC=document.getElementById('rb-draw-canvas');
+        if(drawC){var cx=drawC.getContext('2d');var img=new Image();img.onload=function(){cx.drawImage(img,0,0)};img.src=savedDraw;}
+      }
+    },100);
+    // 자동 저장 타이머
+    if(wbAutoSaveTimer)clearInterval(wbAutoSaveTimer);
+    wbAutoSaveTimer=setInterval(wbAutoSave,30000);
+  }
+  window.wbOpenBoard=wbOpenBoard;
+
+  // 목록으로 돌아가기
+  function wbBackToListFn(){
+    wbAutoSave();
+    if(wbAutoSaveTimer){clearInterval(wbAutoSaveTimer);wbAutoSaveTimer=null;}
+    window.wbCurrentBoardId=null;
+    rbNodes=[];rbEdges=[];rbPan={x:0,y:0};rbScale=1;nodeSeq=0;edgeSeq=0;
+    // 캔버스 정리
+    var drawCanvas=document.getElementById('rb-draw-canvas');
+    if(drawCanvas){drawCanvas.getContext('2d').clearRect(0,0,drawCanvas.width,drawCanvas.height);}
+    canvas().innerHTML='<svg id="wb-lines" xmlns="http://www.w3.org/2000/svg" width="4000" height="4000" style="position:absolute;top:0;left:0;overflow:visible;pointer-events:none;z-index:0"><defs><marker id="rb-arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#00C8E0" opacity="0.7"/></marker></defs><line id="rb-tmp-line" x1="0" y1="0" x2="0" y2="0" style="display:none"/></svg>';
+    document.getElementById('wb-board-list').classList.add('on');
+    document.querySelector('.rb-toolbar').style.display='none';
+    document.getElementById('rb-viewport').style.display='none';
+    wbRenderBoardList();
+  }
+  window.wbBackToList=wbBackToListFn;
 
   // 드래그 상태
   let panDrag=null;         // {startX,startY,origPx,origPy}
@@ -7285,41 +7503,45 @@ if(!document.getElementById('thkStyle')){
   // ── 열기/닫기 ──
   window.openWhiteBoard=function(){
     document.getElementById('white-board').classList.add('on');
-    rbLoad();
-    rbRender();
     document.body.style.overflow='hidden';
-    setTimeout(rbInitDrawCanvas,100);
+    wbLoadBoards();
+    wbMigrateLegacy();
+    wbLoadBoards(); // 마이그레이션 후 다시 로드
+    // 보드 목록 표시
+    document.getElementById('wb-board-list').classList.add('on');
+    document.querySelector('.rb-toolbar').style.display='none';
+    document.getElementById('rb-viewport').style.display='none';
+    wbRenderBoardList();
   };
   window.closeWhiteBoard=function(){
+    wbAutoSave();
+    if(wbAutoSaveTimer){clearInterval(wbAutoSaveTimer);wbAutoSaveTimer=null;}
+    window.wbCurrentBoardId=null;
     document.getElementById('white-board').classList.remove('on');
     document.body.style.overflow='';
   };
 
   // ── 저장/로드 ──
   window.rbSave=function(){
-    localStorage.setItem(LS_KEY,JSON.stringify({nodes:rbNodes,edges:rbEdges,pan:rbPan,scale:rbScale}));
-    rbSaveDrawing();
-    if(window.flash)flash('화이트보드 저장 완료 💾');
+    if(window.wbCurrentBoardId){
+      wbSaveBoardData(window.wbCurrentBoardId);
+      if(window.flash)flash('화이트보드 저장 완료');
+    }
   };
-  function rbLoad(){
-    try{
-      const d=JSON.parse(localStorage.getItem(LS_KEY)||'null');
-      if(d){
-        rbNodes=d.nodes||[];rbEdges=d.edges||[];
-        rbPan=d.pan||{x:0,y:0};rbScale=d.scale||1;
-        nodeSeq=rbNodes.reduce((m,n)=>Math.max(m,parseInt(n.id.replace(/\D/g,''))||0),0);
-        edgeSeq=rbEdges.reduce((m,e)=>Math.max(m,parseInt(e.id.replace(/\D/g,''))||0),0);
-      }
-    }catch(e){}
-  }
   window.rbReset=function(){
-    if(!confirm('모든 노드와 연결선을 삭제하시겠어요?'))return;
+    if(!confirm('현재 보드의 모든 노드와 연결선을 삭제하시겠어요?'))return;
     rbNodes=[];rbEdges=[];rbPan={x:0,y:0};rbScale=1;nodeSeq=0;edgeSeq=0;
     const drawCanvas=document.getElementById('rb-draw-canvas');
     if(drawCanvas){drawCanvas.getContext('2d').clearRect(0,0,drawCanvas.width,drawCanvas.height);}
-    localStorage.removeItem('rb_drawing_v1');
+    if(window.wbCurrentBoardId){
+      localStorage.removeItem('wb_draw_'+window.wbCurrentBoardId);
+      wbSaveBoardData(window.wbCurrentBoardId);
+    }
     rbRender();
   };
+
+  // beforeunload 자동 저장
+  window.addEventListener('beforeunload',function(){wbAutoSave();});
 
   // ── 노드 추가 ──
   window.rbAddChar=function(){
@@ -7940,10 +8162,11 @@ if(!document.getElementById('thkStyle')){
       renderEdges();
     },{passive:false});
 
-    // ESC 닫기
+    // ESC: 보드 열려있으면 → 목록, 목록이면 → 닫기
     document.addEventListener('keydown',e=>{
       if(e.key==='Escape'&&document.getElementById('white-board').classList.contains('on')){
-        closeWhiteBoard();
+        if(window.wbCurrentBoardId){wbBackToList();}
+        else{closeWhiteBoard();}
       }
     });
   });
@@ -8063,8 +8286,9 @@ function rbInitDrawCanvas(){
   if(!canvas||!vpEl)return;
   canvas.width=4000;canvas.height=4000;
   var ctx=canvas.getContext('2d');
-  // 저장된 드로잉 복원
-  var saved=localStorage.getItem('rb_drawing_v1');
+  // 저장된 드로잉 복원 (보드별)
+  var drawKey=window.wbCurrentBoardId?'wb_draw_'+window.wbCurrentBoardId:'rb_drawing_v1';
+  var saved=localStorage.getItem(drawKey);
   if(saved){
     var img=new Image();
     img.onload=function(){ctx.drawImage(img,0,0)};
@@ -8115,7 +8339,8 @@ function rbInitDrawCanvas(){
 function rbSaveDrawing(){
   var canvas=document.getElementById('rb-draw-canvas');
   if(canvas){
-    try{localStorage.setItem('rb_drawing_v1',canvas.toDataURL());}catch(e){}
+    var drawKey=window.wbCurrentBoardId?'wb_draw_'+window.wbCurrentBoardId:'rb_drawing_v1';
+    try{localStorage.setItem(drawKey,canvas.toDataURL());}catch(e){}
   }
 }
 function rbUndo(){
@@ -8132,13 +8357,23 @@ function rbClearDraw(){
   var canvas=document.getElementById('rb-draw-canvas');if(!canvas)return;
   canvas.getContext('2d').clearRect(0,0,canvas.width,canvas.height);
   rbUndoStack=[];
-  localStorage.removeItem('rb_drawing_v1');
+  var drawKey=window.wbCurrentBoardId?'wb_draw_'+window.wbCurrentBoardId:'rb_drawing_v1';
+  localStorage.removeItem(drawKey);
   flash('그리기 초기화됨');
 }
 </script>
 <!-- 화이트보드 화이트보드 -->
 <div id="white-board">
+  <!-- 보드 목록 뷰 -->
+  <div id="wb-board-list" class="wb-board-list on">
+    <div class="wb-bl-header">
+      <span class="wb-bl-title">🕸 화이트보드</span>
+      <button class="rbt close-btn" onclick="closeWhiteBoard()">✕ 닫기</button>
+    </div>
+    <div class="wb-bl-body" id="wb-bl-body"></div>
+  </div>
   <div class="rb-toolbar">
+    <button class="wb-back-btn" onclick="wbBackToList()">← 목록</button>
     <span class="rb-toolbar-title">🕸 화이트보드</span>
     <div class="rbt-group">
       <button class="rbt mode on" id="rb-mode-select" onclick="rbSetMode('select')" title="이동">🤚 이동</button>
