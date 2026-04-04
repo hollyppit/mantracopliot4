@@ -602,11 +602,6 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);back
 /* ── UMA 배경 타이포 ── */
 .home-bg-typo{position:absolute;top:50%;left:50%;transform:translate(-50%,-52%);font-family:'Black Han Sans',sans-serif;font-size:clamp(100px,22vw,260px);font-weight:400;color:rgba(0,200,224,0.04);white-space:nowrap;pointer-events:none;user-select:none;z-index:0;letter-spacing:0.04em;line-height:1}
 /* ── UMA 하단 티커 ── */
-.uma-ticker{position:fixed;bottom:0;left:0;right:0;z-index:200;height:36px;background:#D4FF00;overflow:hidden;display:flex;align-items:center}
-.uma-ticker-track{display:flex;gap:0;white-space:nowrap;animation:tickerScroll 28s linear infinite;will-change:transform}
-.uma-ticker-item{font-family:'Anton',sans-serif;font-size:13px;font-weight:400;letter-spacing:0.12em;color:#02111E;padding:0 28px;text-transform:uppercase;display:flex;align-items:center;gap:28px;flex-shrink:0}
-.uma-ticker-item::after{content:'•';color:rgba(2,17,30,0.5)}
-@keyframes tickerScroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
 /* ── [SYS] 섹션 라벨 ── */
 .sys-label{font-family:'Anton',sans-serif;font-size:10px;font-weight:400;letter-spacing:0.2em;color:var(--gold);text-transform:uppercase;display:inline-flex;align-items:center;gap:6px;margin-bottom:10px}
 .sys-label::before{content:'';display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--gold);box-shadow:0 0 8px rgba(212,255,0,0.8)}
@@ -1003,9 +998,10 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);back
   .rb-toolbar{gap:4px;padding:6px 8px;overflow-x:auto;flex-wrap:nowrap;-webkit-overflow-scrolling:touch;scrollbar-width:none}
   .rb-toolbar::-webkit-scrollbar{display:none}
   .rb-toolbar-title{display:none}
-  .rbt{height:32px;padding:0 8px;font-size:11px;flex-shrink:0}
-  .rbt.mode{padding:0 6px;min-width:32px;font-size:11px}
-  .rbt-group{gap:1px}
+  .rbt{height:36px;padding:0 10px;font-size:11px;flex-shrink:0}
+  .rbt.mode{padding:0;width:38px;min-width:38px;font-size:15px;justify-content:center;display:flex;align-items:center}
+  .rbt.mode .rb-mode-text{display:none}
+  .rbt-group{gap:2px}
   .rbt-pen-opts{gap:3px;flex-shrink:0}
   .rb-pen-color{width:16px;height:16px}
   #rb-pen-size-slider{width:50px}
@@ -1039,8 +1035,14 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);back
 .rbt.close-btn{border-color:rgba(255,255,255,0.15);background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.7);margin-left:auto}
 .rbt.close-btn:hover{background:rgba(255,255,255,0.12);color:#fff}
 .rb-viewport{flex:1;overflow:hidden;position:relative;cursor:default;background:#fff;background-image:radial-gradient(circle,#d0d0d8 1px,transparent 1px);background-size:28px 28px;touch-action:none}
+.rb-close-fab{position:absolute;right:16px;bottom:16px;z-index:50;width:44px;height:44px;border-radius:50%;background:rgba(30,30,50,0.85);border:1.5px solid rgba(255,255,255,0.2);color:#fff;font-size:18px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(0,0,0,0.3);transition:all 0.2s;backdrop-filter:blur(4px)}
+.rb-close-fab:hover{background:rgba(220,40,40,0.8);transform:scale(1.1)}
+.rb-close-fab:active{transform:scale(0.95)}
 .rb-viewport.panning{cursor:grabbing}
 #board-canvas{position:absolute;top:0;left:0;transform-origin:0 0;width:4000px;height:4000px;overflow:visible}
+#white-board.pen-active .rb-node{pointer-events:none !important}
+#white-board.pen-active #rb-draw-canvas{z-index:10 !important}
+#white-board.pen-active .rb-close-fab{z-index:50}
 #wb-lines{overflow:visible;pointer-events:none}
 .rb-node{position:absolute;user-select:none;z-index:1;touch-action:none}
 /* 캐릭터 카드 */
@@ -1150,14 +1152,13 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);back
 /* 포인트 주석 */
 .pa-fab{width:100%;padding:10px;background:rgba(255,77,106,0.15);border:1px solid rgba(255,77,106,0.35);color:#FF6B8A;border-radius:100px;font-size:12px;font-weight:800;cursor:pointer;font-family:inherit;transition:all 0.25s cubic-bezier(0.16,1,0.3,1);margin-bottom:8px;display:flex;align-items:center;justify-content:center;gap:6px;letter-spacing:0.01em}
 .pa-fab:hover{background:rgba(255,77,106,0.25);border-color:rgba(255,77,106,0.6);transform:translateY(-1px);box-shadow:0 6px 20px rgba(255,77,106,0.25)}
-.pa-container{position:absolute;inset:0;pointer-events:none;z-index:90;overflow:hidden}
-.pa-card{position:absolute;min-width:140px;min-height:90px;border-radius:6px;padding:0;cursor:default;pointer-events:auto;box-shadow:3px 4px 14px rgba(0,0,0,0.25);transition:box-shadow 0.2s;display:flex;flex-direction:column;user-select:none}
+.pa-container{position:absolute;inset:0;pointer-events:none;z-index:90;overflow:visible}
+.pa-card{position:absolute;min-width:60px;min-height:28px;border-radius:6px;padding:0;cursor:default;pointer-events:auto;box-shadow:3px 4px 14px rgba(0,0,0,0.25);transition:box-shadow 0.2s;display:flex;flex-direction:column;user-select:none}
 .pa-card:hover{box-shadow:4px 6px 20px rgba(0,0,0,0.35)}
 .pa-card.dragging{cursor:grabbing;box-shadow:6px 8px 28px rgba(0,0,0,0.4);z-index:99;opacity:0.92}
-.pa-card.pa-edit-mode{cursor:grab;outline:2px solid rgba(0,0,0,0.25);outline-offset:1px}
-.pa-card.pa-edit-mode.dragging{cursor:grabbing}
+.pa-card.dragging{cursor:grabbing}
 .pa-toolbar{display:flex;align-items:center;gap:3px;padding:5px 7px 3px;opacity:0;transition:opacity 0.15s;flex-shrink:0;border-radius:6px 6px 0 0}
-.pa-card:hover .pa-toolbar,.pa-card.pa-edit-mode .pa-toolbar{opacity:1}
+.pa-card:hover .pa-toolbar,.pa-card.pa-dragging-active .pa-toolbar{opacity:1}
 .pa-tb{width:22px;height:22px;border:none;border-radius:4px;cursor:pointer;font-size:10px;font-weight:900;display:flex;align-items:center;justify-content:center;transition:all 0.15s;font-family:inherit;padding:0;flex-shrink:0}
 .pa-tb-font{background:rgba(0,0,0,0.12);color:rgba(0,0,0,0.6)}
 .pa-tb-font:hover{background:rgba(0,0,0,0.22)}
@@ -1171,9 +1172,8 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);back
 .pa-tb-edit.on{background:rgba(59,130,246,0.35);color:#1d4ed8;box-shadow:0 0 0 1px rgba(59,130,246,0.5)}
 .pa-body{flex:1;padding:8px 10px 10px;font-size:13px;line-height:1.55;outline:none;overflow-y:auto;word-break:break-word;color:rgba(0,0,0,0.78);cursor:text}
 .pa-body:empty::before{content:attr(data-ph);color:rgba(0,0,0,0.35);font-style:italic}
-.pa-card.pa-edit-mode .pa-body{pointer-events:none;cursor:grab}
-.pa-resize{position:absolute;right:0;bottom:0;width:16px;height:16px;cursor:nwse-resize;opacity:0;pointer-events:none;transition:opacity 0.15s;display:flex;align-items:center;justify-content:center;font-size:9px;color:rgba(0,0,0,0.4)}
-.pa-card.pa-edit-mode .pa-resize{opacity:0.7;pointer-events:auto;width:24px;height:24px;font-size:12px}
+.pa-resize{position:absolute;right:0;bottom:0;width:20px;height:20px;cursor:nwse-resize;opacity:0.5;pointer-events:auto;transition:opacity 0.15s;display:flex;align-items:center;justify-content:center;font-size:10px;color:rgba(0,0,0,0.4)}
+.pa-card:hover .pa-resize{opacity:0.8}
 /* 모바일 편집 버튼 항상 표시 */
 .pa-edit-fab{position:absolute;top:-10px;right:-10px;width:28px;height:28px;border-radius:50%;background:#3b82f6;border:2px solid #fff;color:#fff;font-size:13px;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:10;box-shadow:0 2px 8px rgba(0,0,0,0.2);transition:all 0.15s;line-height:1}
 .pa-edit-fab:hover{background:#2563eb;transform:scale(1.1)}
@@ -1184,6 +1184,8 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);back
 }
 .pa-mob-fab{display:none;width:36px;height:36px;border-radius:10px;background:rgba(255,77,106,0.18);border:1px solid rgba(255,77,106,0.35);color:#FF6B8A;font-size:16px;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:all 0.2s}
 .pa-mob-fab:hover{background:rgba(255,77,106,0.3)}
+.pa-place-banner{position:fixed;top:60px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.82);color:#fff;padding:10px 24px;border-radius:20px;font-size:13px;font-weight:700;z-index:9999;pointer-events:none;font-family:inherit;white-space:nowrap;display:none}
+.pa-place-overlay{position:absolute;inset:0;z-index:89;cursor:crosshair;pointer-events:auto}
 /* ── 내 작업실 (Studio) ── */
 .std-ov{position:fixed;inset:0;z-index:9999;display:none;background:#0D0F14}
 .std-ov.on{display:flex}
@@ -7953,7 +7955,8 @@ if(!document.getElementById('thkStyle')){
     const cy=Math.round((vp().clientHeight/2-rbPan.y)/rbScale-80);
     rbNodes.push({id:'n'+nodeSeq,type:'memo',x:cx,y:cy,text:'메모',color:color||'#FFF9C4'});
     rbRender();
-    // 메모 색상 팝업 닫기
+    // 메모 색상 팝업 닫기 + 리스너 정리
+    _rbRemoveMemoClose();
     const mc=document.getElementById('rb-memo-colors');
     if(mc)mc.style.display='none';
   };
@@ -8877,9 +8880,12 @@ function rbSetMode(mode){
   if(canvas)canvas.style.pointerEvents=(mode==='pen'||mode==='eraser')?'auto':'none';
   var vpEl=document.getElementById('rb-viewport');
   if(vpEl)vpEl.style.cursor=(mode==='pen')?'crosshair':(mode==='eraser')?'cell':(mode==='group')?'copy':(mode==='connect')?'crosshair':'default';
-  // 연결 모드 클래스 토글
+  // 펜/지우개 모드: 카드 위에서도 그리기 가능하도록
   var wb=document.getElementById('white-board');
-  if(wb){if(mode==='connect')wb.classList.add('connect-mode');else wb.classList.remove('connect-mode');}
+  if(wb){
+    if(mode==='pen'||mode==='eraser')wb.classList.add('pen-active');else wb.classList.remove('pen-active');
+    if(mode==='connect')wb.classList.add('connect-mode');else wb.classList.remove('connect-mode');
+  }
   // 연결 모드 해제 시 초기화
   if(mode!=='connect'){rbConnectFrom=null;document.querySelectorAll('.rb-handle.connect-selected').forEach(function(h){h.classList.remove('connect-selected');});}
   else{flash('연결할 첫 번째 카드의 연결점(파란 점)을 터치하세요');}
@@ -8959,9 +8965,16 @@ function rbSetPenColor(el){
   el.classList.add('on');
 }
 
+var _closeMemoTouchFn=null,_closeMemoMouseFn=null;
+function _rbRemoveMemoClose(){
+  if(_closeMemoTouchFn){document.removeEventListener('touchstart',_closeMemoTouchFn);_closeMemoTouchFn=null;}
+  if(_closeMemoMouseFn){document.removeEventListener('mousedown',_closeMemoMouseFn);_closeMemoMouseFn=null;}
+}
 function rbShowMemoColors(){
   var el=document.getElementById('rb-memo-colors');
   if(!el)return;
+  // 기존 리스너 정리
+  _rbRemoveMemoClose();
   if(el.style.display!=='none'){el.style.display='none';return;}
   el.style.display='flex';
   // 모바일: position:fixed일 때 버튼 위치 기준 배치
@@ -8975,7 +8988,8 @@ function rbShowMemoColors(){
   }
   // 외부 클릭/터치 시 닫기
   setTimeout(function(){
-    function closeMemo(ev){if(!el.contains(ev.target)){el.style.display='none';document.removeEventListener('touchstart',closeMemo);document.removeEventListener('mousedown',closeMemo);}}
+    function closeMemo(ev){if(!el.contains(ev.target)){el.style.display='none';_rbRemoveMemoClose();}}
+    _closeMemoTouchFn=closeMemo;_closeMemoMouseFn=closeMemo;
     document.addEventListener('touchstart',closeMemo,{passive:true});
     document.addEventListener('mousedown',closeMemo);
   },100);
@@ -9087,18 +9101,123 @@ function paLoad(){
   viewNotes.forEach(n=>c.appendChild(_paRenderCard(n)));
 }
 
+let _paPlaceMode=false;
 function paAdd(){
   _paCurView=_paGetView();
   _paNotes=_paAll();
+  // 배치 모드 진입
+  _paPlaceMode=true;
+  // 안내 배너
+  let banner=document.getElementById('pa-place-banner');
+  if(!banner){
+    banner=document.createElement('div');banner.id='pa-place-banner';banner.className='pa-place-banner';
+    document.body.appendChild(banner);
+  }
+  banner.textContent='📌 주석을 놓을 위치를 터치하세요';
+  banner.style.display='block';
+  // 클릭 가능한 투명 오버레이
+  const c=$('pa-container');if(!c)return;
+  let overlay=document.getElementById('pa-place-overlay');
+  if(overlay)overlay.remove();
+  overlay=document.createElement('div');overlay.id='pa-place-overlay';overlay.className='pa-place-overlay';
+  c.appendChild(overlay);
+  function onPlace(e){
+    e.preventDefault();e.stopPropagation();
+    const pt=e.touches?e.touches[0]:e;
+    const cRect=c.getBoundingClientRect();
+    const scrollTop=document.querySelector('.view.on')?.scrollTop||0;
+    const px=pt.clientX-cRect.left;
+    const py=pt.clientY-cRect.top+scrollTop;
+    _paCancelPlace();
+    _paShowInputOverlay(px,py);
+  }
+  overlay.addEventListener('click',onPlace);
+  overlay.addEventListener('touchend',e=>{
+    e.preventDefault();e.stopPropagation();
+    const pt=e.changedTouches[0];
+    const cRect=c.getBoundingClientRect();
+    const scrollTop=document.querySelector('.view.on')?.scrollTop||0;
+    const px=pt.clientX-cRect.left;
+    const py=pt.clientY-cRect.top+scrollTop;
+    _paCancelPlace();
+    _paShowInputOverlay(px,py);
+  },{passive:false});
+  // ESC 취소
+  function onEsc(e){if(e.key==='Escape'){_paCancelPlace();document.removeEventListener('keydown',onEsc);}}
+  document.addEventListener('keydown',onEsc);
+}
+function _paCancelPlace(){
+  _paPlaceMode=false;
+  const banner=document.getElementById('pa-place-banner');
+  if(banner)banner.style.display='none';
+  const overlay=document.getElementById('pa-place-overlay');
+  if(overlay)overlay.remove();
+}
+function _paShowInputOverlay(px,py){
+  let ov=document.getElementById('pa-input-overlay');
+  if(ov)ov.remove();
+  ov=document.createElement('div');ov.id='pa-input-overlay';
+  ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:10000;display:flex;align-items:center;justify-content:center';
+  const box=document.createElement('div');
+  box.style.cssText='background:#fff;border-radius:12px;padding:20px;width:min(320px,90vw);box-shadow:0 8px 32px rgba(0,0,0,0.3);font-family:inherit';
+  const title=document.createElement('div');title.textContent='📌 주석 입력';
+  title.style.cssText='font-size:14px;font-weight:700;margin-bottom:10px;color:#333';
+  box.appendChild(title);
+  // 색상 선택
+  const colorRow=document.createElement('div');
+  colorRow.style.cssText='display:flex;gap:6px;margin-bottom:10px';
+  let selColor=PA_COLORS[0];
+  PA_COLORS.forEach(c=>{
+    const dot=document.createElement('span');
+    dot.style.cssText=`width:24px;height:24px;border-radius:50%;background:${c};cursor:pointer;border:${c===selColor?'3px solid #333':'2px solid rgba(0,0,0,0.15)'};box-sizing:border-box;transition:all 0.15s`;
+    dot.onclick=()=>{selColor=c;colorRow.querySelectorAll('span').forEach(d=>{d.style.border=d===dot?'3px solid #333':'2px solid rgba(0,0,0,0.15)';});};
+    colorRow.appendChild(dot);
+  });
+  box.appendChild(colorRow);
+  const ta=document.createElement('textarea');
+  ta.placeholder='메모, 아이디어, 참고사항...';
+  ta.style.cssText='width:100%;min-height:80px;border:1px solid #ddd;border-radius:8px;padding:10px;font-family:inherit;font-size:13px;resize:none;box-sizing:border-box;outline:none;line-height:1.6';
+  ta.addEventListener('input',()=>{ta.style.height='auto';ta.style.height=Math.min(200,ta.scrollHeight)+'px';});
+  box.appendChild(ta);
+  const btnRow=document.createElement('div');
+  btnRow.style.cssText='display:flex;gap:8px;margin-top:12px;justify-content:flex-end';
+  const cancelBtn=document.createElement('button');
+  cancelBtn.textContent='취소';
+  cancelBtn.style.cssText='padding:8px 16px;border-radius:8px;border:1px solid #ddd;background:#fff;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;color:#666';
+  cancelBtn.onclick=()=>ov.remove();
+  const okBtn=document.createElement('button');
+  okBtn.textContent='추가';
+  okBtn.style.cssText='padding:8px 16px;border-radius:8px;border:none;background:#FF4D6A;color:#fff;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit';
+  okBtn.onclick=()=>{
+    const text=ta.value.trim()||'메모';
+    ov.remove();
+    _paCreateAtPosition(px,py,selColor,text);
+  };
+  btnRow.appendChild(cancelBtn);btnRow.appendChild(okBtn);
+  box.appendChild(btnRow);
+  ov.appendChild(box);
+  ov.addEventListener('mousedown',e=>{if(e.target===ov)ov.remove();});
+  ov.addEventListener('touchstart',e=>{if(e.target===ov)ov.remove();},{passive:true});
+  document.body.appendChild(ov);
+  setTimeout(()=>ta.focus(),100);
+  ta.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();okBtn.click();}});
+}
+function _paCreateAtPosition(px,py,color,text){
   const id='pa_'+Date.now();
-  const scrollTop=document.querySelector('.view.on')?.scrollTop||0;
-  const note={id,view:_paCurView,x:60+Math.random()*120,y:scrollTop+80+Math.random()*60,w:190,h:130,text:'',color:'#FF4D6A',fontSize:13,created:Date.now()};
+  // 텍스트에 맞게 크기 계산
+  const charPerLine=14;
+  const lines=text.split('\n');
+  let maxLen=0;
+  lines.forEach(l=>{maxLen=Math.max(maxLen,l.length);});
+  const w=Math.max(80,Math.min(220,maxLen*10+24));
+  const wrapLines=Math.ceil(text.length/charPerLine);
+  const totalLines=Math.max(lines.length,wrapLines);
+  const h=Math.max(36,totalLines*22+24);
+  const note={id,view:_paCurView,x:Math.round(px),y:Math.round(py),w,h,text,color,fontSize:13,created:Date.now()};
   _paNotes.push(note);
   paSave();
   const c=$('pa-container');if(!c)return;
-  const card=_paRenderCard(note);
-  c.appendChild(card);
-  card.querySelector('.pa-body').focus();
+  c.appendChild(_paRenderCard(note));
 }
 
 function paDel(id){
@@ -9116,24 +9235,6 @@ function _paRenderCard(n){
   d.className='pa-card';
   d.dataset.paId=n.id;
   d.style.cssText=`left:${n.x}px;top:${n.y}px;width:${n.w}px;height:${n.h}px;background:${n.color};transform:rotate(${(Math.random()*3-1.5).toFixed(1)}deg)`;
-
-  // 편집(이동/리사이즈) 모드 FAB 버튼
-  const editFab=document.createElement('div');
-  editFab.className='pa-edit-fab';
-  editFab.textContent='✎';
-  editFab.title='이동/크기 조정';
-  function toggleEditMode(e){
-    e.stopPropagation();e.preventDefault();
-    const isOn=d.classList.toggle('pa-edit-mode');
-    editFab.classList.toggle('on',isOn);
-    editFab.textContent=isOn?'✓':'✎';
-    editFab.title=isOn?'편집 완료':'이동/크기 조정';
-  }
-  editFab.addEventListener('click',toggleEditMode);
-  editFab.addEventListener('touchend',e=>{e.stopPropagation();e.preventDefault();toggleEditMode(e);});
-  editFab.addEventListener('mousedown',e=>e.stopPropagation());
-  editFab.addEventListener('touchstart',e=>e.stopPropagation());
-  d.appendChild(editFab);
 
   // toolbar
   const tb=document.createElement('div');
@@ -9179,16 +9280,30 @@ function _paRenderCard(n){
 
   d.appendChild(tb);d.appendChild(body);d.appendChild(rh);
 
-  // drag — 편집 모드일 때만 드래그 가능
+  // 데스크톱: 마우스로 드래그
   d.onmousedown=e=>{
-    if(!d.classList.contains('pa-edit-mode'))return;
-    if(e.target.closest('.pa-toolbar')||e.target.closest('.pa-edit-fab')||e.target.closest('.pa-resize'))return;
+    if(e.target.closest('.pa-toolbar')||e.target.closest('.pa-resize')||e.target.closest('.pa-body'))return;
     e.preventDefault();_paStartDrag(e,n.id,d);
   };
+  // 모바일: long press(200ms) 후 드래그 시작
+  let _lpTimer=null,_lpActive=false;
   d.ontouchstart=e=>{
-    if(!d.classList.contains('pa-edit-mode'))return;
-    if(e.target.closest('.pa-toolbar')||e.target.closest('.pa-edit-fab')||e.target.closest('.pa-resize'))return;
-    _paStartDrag(e.touches[0],n.id,d,true);
+    if(e.target.closest('.pa-toolbar')||e.target.closest('.pa-resize'))return;
+    const t=e.touches[0];
+    const sx=t.clientX,sy=t.clientY;
+    _lpActive=false;
+    _lpTimer=setTimeout(()=>{
+      _lpActive=true;
+      if(navigator.vibrate)navigator.vibrate(30);
+      _paStartDrag({clientX:sx,clientY:sy},n.id,d,true);
+    },200);
+  };
+  d.ontouchmove=e=>{
+    if(!_lpActive&&_lpTimer){clearTimeout(_lpTimer);_lpTimer=null;}
+  };
+  d.ontouchend=e=>{
+    if(_lpTimer){clearTimeout(_lpTimer);_lpTimer=null;}
+    _lpActive=false;
   };
 
   return d;
@@ -9217,13 +9332,16 @@ function _paStartDrag(e,id,el,touch){
   const rect=el.getBoundingClientRect();
   const container=$('pa-container');
   const cRect=container.getBoundingClientRect();
+  const scrollTop=document.querySelector('.view.on')?.scrollTop||0;
   const ox=e.clientX-rect.left,oy=e.clientY-rect.top;
   el.classList.add('dragging');
 
   function move(ev){
+    if(touch)ev.preventDefault(); // 화면 스크롤 방지
     const p=touch?ev.touches[0]:ev;
+    const curScroll=document.querySelector('.view.on')?.scrollTop||0;
     let nx=p.clientX-cRect.left-ox;
-    let ny=p.clientY-cRect.top-oy;
+    let ny=p.clientY-cRect.top-oy+curScroll;
     nx=Math.max(0,Math.min(cRect.width-40,nx));
     ny=Math.max(0,ny);
     el.style.left=nx+'px';el.style.top=ny+'px';
@@ -9274,10 +9392,10 @@ document.addEventListener('DOMContentLoaded',()=>setTimeout(paLoad,300));
     <button class="wb-back-btn" onclick="wbBackToList()">← 목록</button>
     <span class="rb-toolbar-title">🕸 화이트보드</span>
     <div class="rbt-group">
-      <button class="rbt mode on" id="rb-mode-select" onclick="rbSetMode('select')" title="이동">🤚 이동</button>
-      <button class="rbt mode" id="rb-mode-connect" onclick="rbSetMode('connect')" title="카드 연결">🔗 연결</button>
-      <button class="rbt mode" id="rb-mode-pen" onclick="rbSetMode('pen')" title="펜 그리기">✏️ 펜</button>
-      <button class="rbt mode" id="rb-mode-eraser" onclick="rbSetMode('eraser')" title="지우개"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20H7L3 16l10-10 7 7-3 3"/><path d="M6.5 13.5l5 5"/></svg> 지우개</button>
+      <button class="rbt mode on" id="rb-mode-select" onclick="rbSetMode('select')" title="이동">🤚<span class="rb-mode-text"> 이동</span></button>
+      <button class="rbt mode" id="rb-mode-connect" onclick="rbSetMode('connect')" title="카드 연결">🔗<span class="rb-mode-text"> 연결</span></button>
+      <button class="rbt mode" id="rb-mode-pen" onclick="rbSetMode('pen')" title="펜 그리기">✏️<span class="rb-mode-text"> 펜</span></button>
+      <button class="rbt mode" id="rb-mode-eraser" onclick="rbSetMode('eraser')" title="지우개"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20H7L3 16l10-10 7 7-3 3"/><path d="M6.5 13.5l5 5"/></svg><span class="rb-mode-text"> 지우개</span></button>
     </div>
     <div class="rbt-pen-opts" id="rb-pen-opts" style="display:none">
       <span class="rb-pen-color on" data-color="#1e293b" style="background:#1e293b" onclick="rbSetPenColor(this)"></span>
@@ -9295,7 +9413,7 @@ document.addEventListener('DOMContentLoaded',()=>setTimeout(paLoad,300));
       <button class="rbt" onclick="rbUndo()" title="뒤로가기" style="padding:0 8px;min-width:32px">↩</button>
       <button class="rbt danger" onclick="rbClearDraw()" title="그리기 초기화" style="padding:0 8px;min-width:32px;font-size:12px">🗑</button>
     </div>
-    <button class="rbt mode" id="rb-mode-group" onclick="rbSetMode('group')" title="여러 카드 선택 후 함께 이동">👆 그룹</button>
+    <button class="rbt mode" id="rb-mode-group" onclick="rbSetMode('group')" title="여러 카드 선택 후 함께 이동">👆<span class="rb-mode-text"> 그룹</span></button>
     <button class="rbt" onclick="rbAddChar()">+ 캐릭터</button>
     <div class="rbt-memo-group">
       <button class="rbt" onclick="rbShowMemoColors()">+ 메모</button>
@@ -9309,9 +9427,9 @@ document.addEventListener('DOMContentLoaded',()=>setTimeout(paLoad,300));
     </div>
     <button class="rbt" onclick="rbSave()">💾 저장</button>
     <button class="rbt danger" onclick="rbReset()">🗑 초기화</button>
-    <button class="rbt close-btn" onclick="closeWhiteBoard()">✕ 닫기</button>
   </div>
   <div class="rb-viewport" id="rb-viewport">
+    <button class="rb-close-fab" onclick="closeWhiteBoard()" title="닫기">✕</button>
     <div id="board-canvas">
       <svg id="wb-lines" xmlns="http://www.w3.org/2000/svg" width="4000" height="4000" style="position:absolute;top:0;left:0;overflow:visible;pointer-events:none;z-index:0">
         <defs>
@@ -9977,25 +10095,5 @@ document.addEventListener('DOMContentLoaded',()=>setTimeout(paLoad,300));
 })();
 </script>
 <!-- UMA 하단 티커 -->
-<div class="uma-ticker" aria-hidden="true">
-  <div class="uma-ticker-track">
-    <span class="uma-ticker-item">만트라 코파일럿</span>
-    <span class="uma-ticker-item">AI 창작 파트너</span>
-    <span class="uma-ticker-item">스토리텔링 시스템</span>
-    <span class="uma-ticker-item">기획 · 검증 · 루틴</span>
-    <span class="uma-ticker-item">Mantra Copilot</span>
-    <span class="uma-ticker-item">Creative Agent</span>
-    <span class="uma-ticker-item">웹소설 · 시나리오</span>
-    <span class="uma-ticker-item">캐릭터 · 세계관</span>
-    <span class="uma-ticker-item">만트라 코파일럿</span>
-    <span class="uma-ticker-item">AI 창작 파트너</span>
-    <span class="uma-ticker-item">스토리텔링 시스템</span>
-    <span class="uma-ticker-item">기획 · 검증 · 루틴</span>
-    <span class="uma-ticker-item">Mantra Copilot</span>
-    <span class="uma-ticker-item">Creative Agent</span>
-    <span class="uma-ticker-item">웹소설 · 시나리오</span>
-    <span class="uma-ticker-item">캐릭터 · 세계관</span>
-  </div>
-</div>
 </body>
 </html>
