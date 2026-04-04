@@ -2512,7 +2512,7 @@ function editFolderName(key,folderId,renderFn){
 function openFolderNameModal(defaultVal,callback){
   const existing=$('folder-name-modal');if(existing)existing.remove();
   const modal=document.createElement('div');modal.id='folder-name-modal';
-  modal.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:700;display:flex;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px)';
+  modal.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:10100;display:flex;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px)';
   modal.onclick=e=>{if(e.target===modal)modal.remove();};
   const box=document.createElement('div');
   box.style.cssText='background:rgba(14,5,28,0.98);border:1px solid var(--border2);border-radius:16px;padding:20px;width:100%;max-width:300px;display:flex;flex-direction:column;gap:12px';
@@ -7519,12 +7519,19 @@ if(!document.getElementById('thkStyle')){
     document.body.style.overflow='hidden';
     wbLoadBoards();
     wbMigrateLegacy();
-    wbLoadBoards(); // 마이그레이션 후 다시 로드
-    // 보드 목록 표시
-    document.getElementById('wb-board-list').classList.add('on');
-    document.querySelector('.rb-toolbar').style.display='none';
-    document.getElementById('rb-viewport').style.display='none';
-    wbRenderBoardList();
+    wbLoadBoards();
+    // 바로 보드 진입: 마지막 보드 또는 자동 생성
+    if(wbBoards.length>0){
+      // 가장 최근 업데이트된 보드 열기
+      var sorted=wbBoards.slice().sort(function(a,b){return (b.updatedAt||0)-(a.updatedAt||0);});
+      wbOpenBoard(sorted[0].id);
+    }else{
+      // 보드가 없으면 자동 생성
+      var id='wb-'+Date.now();
+      wbBoards.push({id:id,name:'화이트보드',folder:'',createdAt:Date.now(),updatedAt:Date.now()});
+      wbSaveBoards();
+      wbOpenBoard(id);
+    }
   };
   window.closeWhiteBoard=function(){
     wbAutoSave();
