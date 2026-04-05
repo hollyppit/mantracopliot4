@@ -219,17 +219,27 @@ async function handleUpload(request, env, cors) {
   else if (file) text = await file.text();
   if (!text.trim()) return json({ error: '텍스트 또는 파일을 입력하세요.' }, 400, adminCors);
 
-  const systemPrompt = `다음은 스토리 창작용 전문가 고증 자료입니다. JSON만 응답하세요.\n{ "title": "자료 제목", "category": "격투기기술/설화전설/시대배경/인물설정/기타 중 택1", "content": "300자 이내 요약", "keywords": ["키워드1", "키워드2"] }`;
+  const metaPrompt = `다음은 스토리 창작용 전문가 고증 자료입니다. 제목, 카테고리, 키워드만 추출하세요. JSON만 응답하세요.\n{ "title": "자료 제목", "category": "격투기기술/설화전설/시대배경/인물설정/기타 중 택1", "keywords": ["키워드1", "키워드2", "키워드3"] }`;
+  const cleanPrompt = `다음 텍스트를 정갈하게 정리해주세요. 규칙:\n1. 내용을 절대 생략하거나 요약하지 마세요. 모든 정보를 빠짐없이 포함하세요.\n2. 문단과 소제목을 적절히 나누어 가독성을 높이세요.\n3. 오탈자를 교정하고 문장을 매끄럽게 다듬으세요.\n4. 불필요한 반복이나 군더더기만 제거하세요.\n5. 정리된 텍스트만 출력하세요. 설명이나 메타 코멘트는 붙이지 마세요.`;
   let parsed = null;
+  let cleanedText = text; // 기본값: 원문 그대로
 
   if (env.ANTHROPIC_API_KEY) {
     try {
+      // 메타데이터 추출
       const res = await fetch('https://api.anthropic.com/v1/messages', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'x-api-key': env.ANTHROPIC_API_KEY, 'anthropic-version': '2023-06-01' },
-        body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 1024, system: systemPrompt, messages: [{ role: 'user', content: text }] }),
+        body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 512, system: metaPrompt, messages: [{ role: 'user', content: text }] }),
       });
       if (res.ok) { const data = await res.json(); parsed = extractJSON(data.content?.[0]?.text || ''); }
+      // 원문 정리 (별도 호출)
+      const res2 = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-api-key': env.ANTHROPIC_API_KEY, 'anthropic-version': '2023-06-01' },
+        body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 8192, system: cleanPrompt, messages: [{ role: 'user', content: text }] }),
+      });
+      if (res2.ok) { const d2 = await res2.json(); const ct = d2.content?.[0]?.text; if (ct && ct.length > 20) cleanedText = ct; }
     } catch (e) { console.error('Claude error:', e); }
   }
   if (!parsed && env.OPENAI_API_KEY) {
@@ -237,9 +247,16 @@ async function handleUpload(request, env, cors) {
       const res = await fetch('https://api.openai.com/v1/chat/completions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${env.OPENAI_API_KEY}` },
-        body: JSON.stringify({ model: 'gpt-4o-mini', messages: [{ role: 'system', content: systemPrompt }, { role: 'user', content: text }] }),
+        body: JSON.stringify({ model: 'gpt-4o-mini', messages: [{ role: 'system', content: metaPrompt }, { role: 'user', content: text }] }),
       });
       if (res.ok) { const data = await res.json(); parsed = extractJSON(data.choices?.[0]?.message?.content || ''); }
+      // 원문 정리
+      const res2 = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${env.OPENAI_API_KEY}` },
+        body: JSON.stringify({ model: 'gpt-4o-mini', max_tokens: 8192, messages: [{ role: 'system', content: cleanPrompt }, { role: 'user', content: text }] }),
+      });
+      if (res2.ok) { const d2 = await res2.json(); const ct = d2.choices?.[0]?.message?.content; if (ct && ct.length > 20) cleanedText = ct; }
     } catch (e) { console.error('OpenAI error:', e); }
   }
   if (!parsed) return json({ error: 'AI 분석 결과를 파싱할 수 없습니다.' }, 500, adminCors);
@@ -248,7 +265,7 @@ async function handleUpload(request, env, cors) {
     const sbRes = await fetch(`${env.SUPABASE_URL}/rest/v1/expert_references`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'apikey': env.SUPABASE_SERVICE_KEY, 'Authorization': `Bearer ${env.SUPABASE_SERVICE_KEY}`, 'Prefer': 'return=representation' },
-      body: JSON.stringify({ title: parsed.title, category: parsed.category, content: parsed.content, keywords: parsed.keywords, source_filename: sourceFilename }),
+      body: JSON.stringify({ title: parsed.title, category: parsed.category, content: cleanedText, keywords: parsed.keywords, source_filename: sourceFilename }),
     });
     if (!sbRes.ok) return json({ error: 'DB 저장 실패', detail: await sbRes.text() }, 500, adminCors);
     return json({ ok: true, data: await sbRes.json() }, 200, adminCors);
