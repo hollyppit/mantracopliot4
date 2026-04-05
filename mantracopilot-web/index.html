@@ -300,6 +300,10 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);back
 .xc{font-size:14px;line-height:1.75;color:var(--text);word-break:keep-all}
 /* 입력창 */
 .xiw{padding:12px 20px 16px;border-top:1px solid var(--border);flex-shrink:0;display:flex;flex-direction:column;gap:8px;background:rgba(7,7,15,0.6);backdrop-filter:blur(20px)}
+/* 데스크톱: 옵션 토글 숨기고 옵션은 항상 표시 */
+.xiw-opts-toggle,.gm-opts-toggle{display:none}
+.xiw-opts{display:flex!important;flex-direction:column;gap:5px}
+.gm-opts{display:flex!important}
 .xlink-row{display:flex;gap:8px;flex-wrap:wrap}
 .xlink-btn{font-size:12px;font-weight:700;padding:5px 12px;border-radius:20px;border:1px solid var(--border);background:var(--surface);color:var(--text-dim);cursor:pointer;font-family:inherit;transition:all 0.2s;white-space:nowrap}
 .xlink-btn:hover{border-color:var(--purple-light);color:var(--purple-light);background:rgba(0,200,224,0.08)}
@@ -860,6 +864,26 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);back
   .rle-box{padding:20px 18px}
   /* 키보드 단축키 힌트 숨김 (모바일에서 불필요) */
   .gm-hint-keyboard{display:none}
+  /* 전문가 고증 — 옵션바 접기 */
+  .xiw{padding:8px 16px 12px;gap:6px}
+  .xiw-opts{display:none!important;flex-direction:column;gap:5px}
+  .xiw-opts.open{display:flex!important}
+  .xiw-opts-toggle{display:flex!important;align-items:center;justify-content:center;gap:5px;padding:4px 0;cursor:pointer;font-size:11px;font-weight:700;color:var(--text-faint);border:none;background:none;font-family:inherit;width:100%;transition:color 0.2s}
+  .xiw-opts-toggle:active{color:var(--text)}
+  .xiw-opts-toggle .arrow{font-size:9px;transition:transform 0.2s}
+  .xiw-opts-toggle.open .arrow{transform:rotate(180deg)}
+  /* 아바타 패널 모바일 축소 */
+  #xc-avatar-panel{padding:12px 16px 0!important;gap:12px!important}
+  #xc-avatar-panel img{width:52px!important;height:52px!important}
+  #xc-avatar-panel div[id$="-name"]{font-size:13px!important}
+  #xc-avatar-panel div[id$="-desc"]{font-size:11px!important;max-width:none!important}
+  /* 창작 에이전트 — 옵션바 접기 */
+  .gm-opts{display:none!important;padding:6px 4px 4px}
+  .gm-opts.open{display:flex!important}
+  .gm-opts-toggle{display:flex!important;align-items:center;justify-content:center;gap:5px;padding:3px 0 6px;cursor:pointer;font-size:11px;font-weight:700;color:var(--text-faint);border:none;background:none;font-family:inherit;width:100%;transition:color 0.2s}
+  .gm-opts-toggle:active{color:var(--text)}
+  .gm-opts-toggle .arrow{font-size:9px;transition:transform 0.2s}
+  .gm-opts-toggle.open .arrow{transform:rotate(180deg)}
   /* 뷰 하단 패딩 제거 — 모바일은 mob-nav가 공간 확보 */
   .view{padding-bottom:0}
   /* 기획 목차 헤더 패딩 · 제목 · 버튼 */
@@ -1558,8 +1582,11 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);back
       </div>
       <!-- 입력창 -->
       <div style="padding:0 20px 18px;border-top:1px solid var(--border);flex-shrink:0;background:rgba(7,7,15,0.6);backdrop-filter:blur(20px)">
-        <!-- RAG 토글 바 (입력창 위) -->
-        <div style="display:flex;align-items:center;gap:12px;padding:10px 4px 8px;justify-content:flex-end">
+        <!-- RAG 토글 바 (입력창 위) — 모바일에서 접기 가능 -->
+        <button class="gm-opts-toggle" id="gm-opts-toggle" onclick="toggleGmOpts()">
+          <span>옵션</span><span class="arrow">▼</span>
+        </button>
+        <div class="gm-opts" id="gm-opts" style="display:flex;align-items:center;gap:12px;padding:10px 4px 8px;justify-content:flex-end">
           <div id="gm-rag-toggle" onclick="gmToggleRag()" style="display:flex;align-items:center;gap:6px;cursor:pointer;user-select:none" title="전문가 고증 자료 기반 답변">
             <span style="font-size:12px;font-weight:700;color:#6EE7B7" id="gm-rag-label">📚 실제 자료 검증</span>
             <div id="gm-rag-sw" style="width:36px;height:20px;border-radius:10px;background:rgba(16,185,129,0.35);border:1px solid #10B981;position:relative;transition:all .2s;flex-shrink:0">
@@ -1846,32 +1873,37 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);back
       </div>
       <div class="xb" id="xb"></div>
       <div class="xiw">
-        <div id="rag-toggle-bar" style="display:flex;align-items:center;gap:8px;padding:6px 16px 0;font-size:12px;color:var(--text-faint);flex-wrap:wrap">
-          <span>실제 자료 기반 고증 (RAG)</span>
-          <button id="rag-toggle-btn" onclick="toggleRag()" style="
-            padding:3px 10px;border-radius:20px;border:1px solid var(--accent,#7c5cfc);
-            background:var(--accent,#7c5cfc);color:#fff;
-            font-size:11px;font-weight:700;cursor:pointer;transition:all 0.2s;
-          ">ON</button>
-          <span style="margin-left:8px">🗂 내 자료 참고</span>
-          <button id="prag-toggle-btn" onclick="togglePersonalRag()" style="
-            padding:3px 10px;border-radius:20px;border:1px solid var(--border);
-            background:var(--surface2);color:var(--text-faint);
-            font-size:11px;font-weight:700;cursor:pointer;transition:all 0.2s;
-          ">OFF</button>
-        </div>
-        <div class="guide-bar">
-          <span style="font-size:11px;color:var(--text-faint);white-space:nowrap">작성 스타일:</span>
-          <div class="guide-wrap">
-            <button class="guide-sel-btn" id="guide-sel-btn" onclick="toggleGuideDropdown()">
-              <span id="guide-sel-label">기본</span>
-              <span class="gs-arrow">▼</span>
-            </button>
-            <div class="guide-dropdown" id="guide-dropdown"></div>
+        <button class="xiw-opts-toggle" id="xiw-opts-toggle" onclick="toggleXiwOpts()">
+          <span>옵션</span><span class="arrow">▼</span>
+        </button>
+        <div class="xiw-opts" id="xiw-opts">
+          <div id="rag-toggle-bar" style="display:flex;align-items:center;gap:8px;padding:2px 0;font-size:12px;color:var(--text-faint);flex-wrap:wrap">
+            <span>실제 자료 기반 고증 (RAG)</span>
+            <button id="rag-toggle-btn" onclick="toggleRag()" style="
+              padding:3px 10px;border-radius:20px;border:1px solid var(--accent,#7c5cfc);
+              background:var(--accent,#7c5cfc);color:#fff;
+              font-size:11px;font-weight:700;cursor:pointer;transition:all 0.2s;
+            ">ON</button>
+            <span style="margin-left:8px">🗂 내 자료 참고</span>
+            <button id="prag-toggle-btn" onclick="togglePersonalRag()" style="
+              padding:3px 10px;border-radius:20px;border:1px solid var(--border);
+              background:var(--surface2);color:var(--text-faint);
+              font-size:11px;font-weight:700;cursor:pointer;transition:all 0.2s;
+            ">OFF</button>
           </div>
-        </div>
-        <div class="xlink-row" id="xlink-row">
-          <span style="font-size:11px;color:var(--text-faint);align-self:center;white-space:nowrap">내 작품 연동:</span>
+          <div class="guide-bar">
+            <span style="font-size:11px;color:var(--text-faint);white-space:nowrap">작성 스타일:</span>
+            <div class="guide-wrap">
+              <button class="guide-sel-btn" id="guide-sel-btn" onclick="toggleGuideDropdown()">
+                <span id="guide-sel-label">기본</span>
+                <span class="gs-arrow">▼</span>
+              </button>
+              <div class="guide-dropdown" id="guide-dropdown"></div>
+            </div>
+          </div>
+          <div class="xlink-row" id="xlink-row">
+            <span style="font-size:11px;color:var(--text-faint);align-self:center;white-space:nowrap">내 작품 연동:</span>
+          </div>
         </div>
         <div class="xiw-row">
           <textarea class="xi" id="xi" placeholder="원고나 설정을 입력하세요..."
@@ -3260,6 +3292,20 @@ async function handleSynPdfUpload(input) {
 const openOv=id=>$(id).classList.add('on');
 const closeOv=id=>$(id).classList.remove('on');
 function goHome(){navTo('home');}
+
+// 모바일 옵션바 접기/펼치기
+function toggleXiwOpts(){
+  const opts=$('xiw-opts'),btn=$('xiw-opts-toggle');
+  if(!opts||!btn)return;
+  opts.classList.toggle('open');
+  btn.classList.toggle('open');
+}
+function toggleGmOpts(){
+  const opts=$('gm-opts'),btn=$('gm-opts-toggle');
+  if(!opts||!btn)return;
+  opts.classList.toggle('open');
+  btn.classList.toggle('open');
+}
 document.addEventListener('DOMContentLoaded',()=>{
   const ta=$('im-ta');if(ta)ta.addEventListener('keydown',e=>{if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)){e.preventDefault();saveItemModal();}});
   initIcons();
