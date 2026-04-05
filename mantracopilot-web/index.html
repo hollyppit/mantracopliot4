@@ -1104,7 +1104,7 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);back
 .rb-char-card:hover .rb-del-btn,.rb-memo-card:hover .rb-del-btn{opacity:1}
 .rb-del-btn:hover{background:#dc2626;transform:scale(1.1)}
 /* 포스트잇 */
-.rb-memo-card{background:#FFF9C4;border:1px solid #f0e68c;border-radius:4px;min-width:120px;min-height:60px;padding:12px;box-shadow:3px 4px 12px rgba(0,0,0,0.12),inset 0 1px 0 rgba(255,255,255,0.6);cursor:grab;position:relative;transform:rotate(-1deg);overflow:visible}
+.rb-memo-card{background:#FFF9C4;border:1px solid #f0e68c;border-radius:4px;width:160px;min-width:120px;min-height:60px;padding:12px;box-shadow:3px 4px 12px rgba(0,0,0,0.12),inset 0 1px 0 rgba(255,255,255,0.6);cursor:grab;position:relative;transform:rotate(-1deg);overflow:visible}
 .rb-memo-card:nth-child(even){transform:rotate(1.2deg)}
 .rb-memo-card.dragging-node{cursor:grabbing;box-shadow:6px 10px 24px rgba(0,0,0,0.22);z-index:100}
 .rb-memo-textarea{width:100%;background:transparent;border:none;outline:none;font-family:inherit;font-size:13px;color:#4a4000;line-height:1.65;resize:none;min-height:80px;box-sizing:border-box}
@@ -7640,7 +7640,7 @@ async function appendGmExtras(featureResult, ytKeyword) {
   if (videos.length > 0) {
     const ytWrap = document.createElement('div');
     ytWrap.style.cssText = 'display:flex;flex-direction:column;gap:7px';
-    ytWrap.innerHTML = renderVideoPanel(feature ? 'problem' : 'result', videos);
+    ytWrap.innerHTML = renderVideoPanel(featureResult ? 'problem' : 'result', videos);
     wrap.appendChild(ytWrap);
   }
 
