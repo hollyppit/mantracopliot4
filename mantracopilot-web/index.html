@@ -1481,9 +1481,12 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);back
             <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:currentColor;margin-left:2px"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
           </button>
         </div>
-        <div class="gm-hint-row" style="font-size:11px;color:var(--text-faint);margin-top:7px;display:flex;gap:14px;padding:0 4px">
-          <span>✦ 창작 에이전트가 함께합니다</span>
-          <span class="gm-hint-keyboard">Shift+Enter 줄바꿈</span>
+        <div style="display:flex;align-items:center;gap:8px;margin-top:7px;padding:0 4px;flex-wrap:wrap">
+          <span style="font-size:11px;color:var(--text-faint)">✦ 창작 에이전트가 함께합니다</span>
+          <span style="margin-left:auto;display:flex;gap:6px;align-items:center">
+            <button id="gm-rag-btn" onclick="gmToggleRag()" style="font-size:10px;font-weight:700;padding:3px 10px;border-radius:12px;border:1px solid var(--border);background:var(--surface);color:var(--text-faint);cursor:pointer;font-family:inherit;transition:all .15s;white-space:nowrap" title="전문가 고증 자료 기반 답변">📚 고증 RAG</button>
+            <button id="gm-prag-btn" onclick="gmTogglePrag()" style="font-size:10px;font-weight:700;padding:3px 10px;border-radius:12px;border:1px solid var(--border);background:var(--surface);color:var(--text-faint);cursor:pointer;font-family:inherit;transition:all .15s;white-space:nowrap" title="내 작업 데이터 기반 답변">🗂 내 정보</button>
+          </span>
         </div>
       </div>
     </div>
@@ -7511,6 +7514,19 @@ function extractYTKeyword(userText, replyText) {
 }
 
 let gmMsgs=[], gmLoading=false;
+let gmRagOn=false, gmPragOn=false;
+function gmToggleRag(){
+  gmRagOn=!gmRagOn;
+  const btn=$('gm-rag-btn');if(!btn)return;
+  if(gmRagOn){btn.style.background='rgba(16,185,129,0.2)';btn.style.borderColor='#10B981';btn.style.color='#6EE7B7';}
+  else{btn.style.background='var(--surface)';btn.style.borderColor='var(--border)';btn.style.color='var(--text-faint)';}
+}
+function gmTogglePrag(){
+  gmPragOn=!gmPragOn;
+  const btn=$('gm-prag-btn');if(!btn)return;
+  if(gmPragOn){btn.style.background='rgba(0,200,224,0.2)';btn.style.borderColor='#00C8E0';btn.style.color='#7FFEFF';}
+  else{btn.style.background='var(--surface)';btn.style.borderColor='var(--border)';btn.style.color='var(--text-faint)';}
+}
 function gmFill(t){
   const ta=$('gm-ta'); if(!ta) return;
   ta.value=t; ta.style.height='44px';
@@ -7528,7 +7544,23 @@ async function gmSend(){
   const lid = appendGmLoading();
   // 만트라 에이전트: 항상 project 데이터 기반으로 응답
   const gmPsCtx = buildContext(window.currentProject);
-  const gmSystemPrompt = `당신은 웹툰·웹소설 창작자를 위한 전문 AI 코파일럿 '만트라 에이전트'입니다. 스토리텔링, 장르물, 캐릭터, 플롯, 대사, 연출 등 창작 전반에 깊은 식견을 가지고 있습니다. 친근하지만 전문적으로, 구체적이고 실용적인 조언을 제공하세요. 답변은 400자 내외로 간결하게. 마크다운 형식(굵게, 목록 등)을 자유롭게 사용하세요.${gmPsCtx ? `\n\n아래는 현재 작가가 작업 중인 프로젝트 데이터입니다. 이 내용을 기반으로 일관된 조언을 제공하세요:\n\n${gmPsCtx}` : ''}`;
+  // RAG: 전문가 고증 자료
+  let gmRagCtx='';
+  if(gmRagOn&&typeof fetchExpertRag==='function'){
+    try{const refs=await fetchExpertRag(userText);gmRagCtx=buildRagContext(refs);}catch(e){console.error('GM RAG:',e);}
+  }
+  // Personal RAG: 내 작업 데이터 (서버 사이드)
+  let gmPragCtx='';
+  if(gmPragOn){
+    try{
+      const token=(typeof sb!=='undefined'&&sb.auth)?((await sb.auth.getSession())?.data?.session?.access_token||''):'';
+      if(token){
+        const pRes=await fetch('/api/rag-chat',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({message:userText,messages:[]})});
+        if(pRes.ok){const pData=await pRes.json();if(pData.referenced&&pData.referenced.length)gmPragCtx='\n\n[내 작업실 참고 자료]\n'+pData.referenced.map(r=>`- (${r.source}) ${r.title}`).join('\n');}
+      }
+    }catch(e){console.error('GM PRAG:',e);}
+  }
+  const gmSystemPrompt = `당신은 웹툰·웹소설 창작자를 위한 전문 AI 코파일럿 '만트라 에이전트'입니다. 스토리텔링, 장르물, 캐릭터, 플롯, 대사, 연출 등 창작 전반에 깊은 식견을 가지고 있습니다. 친근하지만 전문적으로, 구체적이고 실용적인 조언을 제공하세요. 답변은 400자 내외로 간결하게. 마크다운 형식(굵게, 목록 등)을 자유롭게 사용하세요.${gmRagCtx}${gmPragCtx}${gmPsCtx ? `\n\n아래는 현재 작가가 작업 중인 프로젝트 데이터입니다. 이 내용을 기반으로 일관된 조언을 제공하세요:\n\n${gmPsCtx}` : ''}`;
 
   try{
     const reply = await ai([
