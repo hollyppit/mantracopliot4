@@ -19,6 +19,10 @@ export default {
     if (path === '/api/chat' && request.method === 'POST') return handleChat(request, env, cors);
     if (path === '/api/youtube' && request.method === 'GET') return handleYoutube(url, env, cors);
 
+    // 관리자 API
+    if (path === '/api/references' && request.method === 'GET') return handleReferences(request, env, cors);
+    if (path === '/api/upload' && request.method === 'POST') return handleUpload(request, env, cors);
+
     if (path.startsWith('/api/')) {
       const userId = await verifyJWT(request, env);
       if (path === '/api/project/save' && request.method === 'POST') {
@@ -177,6 +181,88 @@ async function handleDelete(request, env, userId, cors) {
   if (!pid) return json({ error: 'pid 필요' }, 400, cors);
   await sbReq(env, 'DELETE', 'projects', { filter: `id=eq.${pid}&user_id=eq.${userId}` });
   return json({ ok: true }, 200, cors);
+}
+
+// ── 관리자: 고증 자료 목록 ──
+async function handleReferences(request, env, cors) {
+  const adminCors = { ...cors, 'Access-Control-Allow-Headers': 'Content-Type, x-admin-password' };
+  const password = request.headers.get('x-admin-password');
+  if (!password || password !== env.ADMIN_PASSWORD) {
+    return json({ error: '인증 실패' }, 401, adminCors);
+  }
+  try {
+    const res = await fetch(
+      `${env.SUPABASE_URL}/rest/v1/expert_references?select=*&order=created_at.desc&limit=100`,
+      { headers: { 'apikey': env.SUPABASE_SERVICE_KEY, 'Authorization': `Bearer ${env.SUPABASE_SERVICE_KEY}` } }
+    );
+    if (!res.ok) return json({ error: '조회 실패', detail: await res.text() }, 500, adminCors);
+    return json({ data: await res.json() }, 200, adminCors);
+  } catch (e) {
+    return json({ error: '조회 중 오류', detail: e.message }, 500, adminCors);
+  }
+}
+
+// ── 관리자: 고증 자료 업로드 ──
+async function handleUpload(request, env, cors) {
+  const adminCors = { ...cors, 'Access-Control-Allow-Headers': 'Content-Type, x-admin-password' };
+  const password = request.headers.get('x-admin-password');
+  if (!password || password !== env.ADMIN_PASSWORD) {
+    return json({ error: '관리자 비밀번호가 올바르지 않습니다.' }, 401, adminCors);
+  }
+  let formData;
+  try { formData = await request.formData(); } catch { return json({ error: 'FormData 파싱 실패' }, 400, adminCors); }
+  const directText = formData.get('text');
+  const file = formData.get('file');
+  const sourceFilename = formData.get('filename') || (file ? file.name : '직접입력');
+  let text = '';
+  if (directText && directText.trim()) text = directText.trim();
+  else if (file) text = await file.text();
+  if (!text.trim()) return json({ error: '텍스트 또는 파일을 입력하세요.' }, 400, adminCors);
+
+  const systemPrompt = `다음은 스토리 창작용 전문가 고증 자료입니다. JSON만 응답하세요.\n{ "title": "자료 제목", "category": "격투기기술/설화전설/시대배경/인물설정/기타 중 택1", "content": "300자 이내 요약", "keywords": ["키워드1", "키워드2"] }`;
+  let parsed = null;
+
+  if (env.ANTHROPIC_API_KEY) {
+    try {
+      const res = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-api-key': env.ANTHROPIC_API_KEY, 'anthropic-version': '2023-06-01' },
+        body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 1024, system: systemPrompt, messages: [{ role: 'user', content: text }] }),
+      });
+      if (res.ok) { const data = await res.json(); parsed = extractJSON(data.content?.[0]?.text || ''); }
+    } catch (e) { console.error('Claude error:', e); }
+  }
+  if (!parsed && env.OPENAI_API_KEY) {
+    try {
+      const res = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${env.OPENAI_API_KEY}` },
+        body: JSON.stringify({ model: 'gpt-4o-mini', messages: [{ role: 'system', content: systemPrompt }, { role: 'user', content: text }] }),
+      });
+      if (res.ok) { const data = await res.json(); parsed = extractJSON(data.choices?.[0]?.message?.content || ''); }
+    } catch (e) { console.error('OpenAI error:', e); }
+  }
+  if (!parsed) return json({ error: 'AI 분석 결과를 파싱할 수 없습니다.' }, 500, adminCors);
+
+  try {
+    const sbRes = await fetch(`${env.SUPABASE_URL}/rest/v1/expert_references`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'apikey': env.SUPABASE_SERVICE_KEY, 'Authorization': `Bearer ${env.SUPABASE_SERVICE_KEY}`, 'Prefer': 'return=representation' },
+      body: JSON.stringify({ title: parsed.title, category: parsed.category, content: parsed.content, keywords: parsed.keywords, source_filename: sourceFilename }),
+    });
+    if (!sbRes.ok) return json({ error: 'DB 저장 실패', detail: await sbRes.text() }, 500, adminCors);
+    return json({ ok: true, data: await sbRes.json() }, 200, adminCors);
+  } catch (e) {
+    return json({ error: 'DB 저장 중 오류', detail: e.message }, 500, adminCors);
+  }
+}
+
+function extractJSON(raw) {
+  try { return JSON.parse(raw); } catch {
+    const m = raw.match(/\{[\s\S]*\}/);
+    if (m) { try { return JSON.parse(m[0]); } catch { return null; } }
+    return null;
+  }
 }
 
 function json(data, status = 200, extra = {}) {
