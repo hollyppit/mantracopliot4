@@ -2977,8 +2977,7 @@ function openFolderNameModal(defaultVal,callback,title){
   setTimeout(()=>input.focus(),50);
   input.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();$('folder-name-save').click();}};
   $('folder-name-save').onclick=()=>{
-    const val=input.value.trim();
-    if(!val){flash('이름을 입력해주세요');return;}
+    const val=input.value.trim()||'새 폴더';
     modal.remove();callback(val);
   };
 }
