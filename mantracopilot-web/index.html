@@ -1470,7 +1470,22 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);back
         </div>
       </div>
       <!-- 입력창 -->
-      <div style="padding:12px 20px 18px;border-top:1px solid var(--border);flex-shrink:0;background:rgba(7,7,15,0.6);backdrop-filter:blur(20px)">
+      <div style="padding:0 20px 18px;border-top:1px solid var(--border);flex-shrink:0;background:rgba(7,7,15,0.6);backdrop-filter:blur(20px)">
+        <!-- RAG 토글 바 (입력창 위) -->
+        <div style="display:flex;align-items:center;gap:12px;padding:10px 4px 8px;justify-content:flex-end">
+          <div id="gm-rag-toggle" onclick="gmToggleRag()" style="display:flex;align-items:center;gap:6px;cursor:pointer;user-select:none" title="전문가 고증 자료 기반 답변">
+            <span style="font-size:12px;font-weight:700;color:var(--text-faint)" id="gm-rag-label">📚 실제 자료 검증</span>
+            <div id="gm-rag-sw" style="width:36px;height:20px;border-radius:10px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);position:relative;transition:all .2s;flex-shrink:0">
+              <div style="width:16px;height:16px;border-radius:50%;background:#475569;position:absolute;top:1px;left:1px;transition:all .2s" id="gm-rag-dot"></div>
+            </div>
+          </div>
+          <div id="gm-prag-toggle" onclick="gmTogglePrag()" style="display:flex;align-items:center;gap:6px;cursor:pointer;user-select:none" title="내 작품 데이터 기반 답변">
+            <span style="font-size:12px;font-weight:700;color:var(--text-faint)" id="gm-prag-label">🗂 내 작품 참고</span>
+            <div id="gm-prag-sw" style="width:36px;height:20px;border-radius:10px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);position:relative;transition:all .2s;flex-shrink:0">
+              <div style="width:16px;height:16px;border-radius:50%;background:#475569;position:absolute;top:1px;left:1px;transition:all .2s" id="gm-prag-dot"></div>
+            </div>
+          </div>
+        </div>
         <div id="gm-input-wrap" style="background:rgba(15,15,28,0.6);border:1px solid var(--border);border-radius:24px;padding:10px 10px 10px 20px;display:flex;gap:10px;align-items:flex-end;transition:border-color 0.3s">
           <textarea id="gm-ta" rows="1"
             style="flex:1;background:none;border:none;color:var(--text);font-family:inherit;font-size:15px;font-weight:500;line-height:1.6;resize:none;outline:none;height:44px;max-height:130px;padding:4px 0"
@@ -1481,12 +1496,9 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);back
             <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:currentColor;margin-left:2px"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
           </button>
         </div>
-        <div style="display:flex;align-items:center;gap:8px;margin-top:7px;padding:0 4px;flex-wrap:wrap">
-          <span style="font-size:11px;color:var(--text-faint)">✦ 창작 에이전트가 함께합니다</span>
-          <span style="margin-left:auto;display:flex;gap:6px;align-items:center">
-            <button id="gm-rag-btn" onclick="gmToggleRag()" style="font-size:10px;font-weight:700;padding:3px 10px;border-radius:12px;border:1px solid var(--border);background:var(--surface);color:var(--text-faint);cursor:pointer;font-family:inherit;transition:all .15s;white-space:nowrap" title="전문가 고증 자료 기반 답변">📚 실제 자료 검증</button>
-            <button id="gm-prag-btn" onclick="gmTogglePrag()" style="font-size:10px;font-weight:700;padding:3px 10px;border-radius:12px;border:1px solid var(--border);background:var(--surface);color:var(--text-faint);cursor:pointer;font-family:inherit;transition:all .15s;white-space:nowrap" title="내 작품 데이터 기반 답변">🗂 내 작품 참고</button>
-          </span>
+        <div style="font-size:11px;color:var(--text-faint);margin-top:7px;padding:0 4px">
+          <span>✦ 창작 에이전트가 함께합니다</span>
+          <span style="margin-left:12px" class="gm-hint-keyboard">Shift+Enter 줄바꿈</span>
         </div>
       </div>
     </div>
@@ -7517,15 +7529,17 @@ let gmMsgs=[], gmLoading=false;
 let gmRagOn=false, gmPragOn=false;
 function gmToggleRag(){
   gmRagOn=!gmRagOn;
-  const btn=$('gm-rag-btn');if(!btn)return;
-  if(gmRagOn){btn.style.background='rgba(16,185,129,0.2)';btn.style.borderColor='#10B981';btn.style.color='#6EE7B7';}
-  else{btn.style.background='var(--surface)';btn.style.borderColor='var(--border)';btn.style.color='var(--text-faint)';}
+  const sw=$('gm-rag-sw'),dot=$('gm-rag-dot'),label=$('gm-rag-label');
+  if(!sw)return;
+  if(gmRagOn){sw.style.background='rgba(16,185,129,0.35)';sw.style.borderColor='#10B981';dot.style.background='#10B981';dot.style.left='17px';if(label)label.style.color='#6EE7B7';}
+  else{sw.style.background='rgba(255,255,255,0.08)';sw.style.borderColor='rgba(255,255,255,0.12)';dot.style.background='#475569';dot.style.left='1px';if(label)label.style.color='var(--text-faint)';}
 }
 function gmTogglePrag(){
   gmPragOn=!gmPragOn;
-  const btn=$('gm-prag-btn');if(!btn)return;
-  if(gmPragOn){btn.style.background='rgba(0,200,224,0.2)';btn.style.borderColor='#00C8E0';btn.style.color='#7FFEFF';}
-  else{btn.style.background='var(--surface)';btn.style.borderColor='var(--border)';btn.style.color='var(--text-faint)';}
+  const sw=$('gm-prag-sw'),dot=$('gm-prag-dot'),label=$('gm-prag-label');
+  if(!sw)return;
+  if(gmPragOn){sw.style.background='rgba(0,200,224,0.35)';sw.style.borderColor='#00C8E0';dot.style.background='#00C8E0';dot.style.left='17px';if(label)label.style.color='#7FFEFF';}
+  else{sw.style.background='rgba(255,255,255,0.08)';sw.style.borderColor='rgba(255,255,255,0.12)';dot.style.background='#475569';dot.style.left='1px';if(label)label.style.color='var(--text-faint)';}
 }
 function gmFill(t){
   const ta=$('gm-ta'); if(!ta) return;
