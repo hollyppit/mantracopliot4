@@ -7669,11 +7669,12 @@ function selectScript(id){
   renderScMain();
 }
 
-// ── 개요 연결 모달 ──
+// ── 개요 연결 모달 (폴더별 표시) ──
 function scOpenLinkModal(){
   const sc=_getScript(scSelectedId);if(!sc) return;
   const eps=_getScEpisodes();
-  let html=`<div style="display:flex;flex-direction:column;gap:8px;margin-top:12px;max-height:340px;overflow-y:auto">`;
+  const olFolders=loadFolders('ol_folders');
+  let html=`<div style="display:flex;flex-direction:column;gap:8px;margin-top:12px;max-height:400px;overflow-y:auto">`;
   if(eps.length===0){
     html+=`<div style="font-size:13px;color:var(--text-faint);padding:12px">회차 개요에서 회차를 먼저 추가해야 합니다.</div>`;
   } else {
@@ -7681,16 +7682,57 @@ function scOpenLinkModal(){
     html+=`<div class="ol-proj-item" onclick="scLinkEp(null)" style="border-color:${!sc.linkedEp?'var(--purple-light)':'var(--border)'}">
       <div><div class="opp-title" style="font-size:13px">연결 해제</div><div class="opp-meta">대본을 독립으로 사용</div></div>
     </div>`;
-    eps.forEach(ep=>{
-      const num=ep.num||0;
-      const isLinked=sc.linkedEp===num;
-      html+=`<div class="ol-proj-item" onclick="scLinkEp(${num})" style="border-color:${isLinked?'var(--purple-light)':'var(--border)'}">
-        <div>
-          <div class="opp-title" style="font-size:13px">${num}화 — ${ep.title||ep.keyword||'제목 없음'}</div>
-          <div class="opp-meta">${ep.synopsis?ep.synopsis.slice(0,60)+'...':'개요 없음'}</div>
-        </div>
-      </div>`;
-    });
+
+    // 폴더별로 회차 분류
+    if(olFolders.length>0){
+      // 폴더에 속한 회차
+      olFolders.forEach(folder=>{
+        const folderEps=eps.filter(ep=>ep.folder===folder.id);
+        if(folderEps.length===0) return;
+        html+=`<div style="margin-top:6px">
+          <div style="font-size:12px;font-weight:700;color:var(--purple-light);padding:4px 8px;display:flex;align-items:center;gap:4px">📁 ${folder.name||'폴더'}</div>`;
+        folderEps.forEach(ep=>{
+          const num=ep.num||0;
+          const isLinked=sc.linkedEp===num;
+          html+=`<div class="ol-proj-item" onclick="scLinkEp(${num})" style="border-color:${isLinked?'var(--purple-light)':'var(--border)'};margin-left:12px">
+            <div>
+              <div class="opp-title" style="font-size:13px">${num}화 — ${ep.title||ep.keyword||'제목 없음'}</div>
+              <div class="opp-meta">${ep.synopsis?ep.synopsis.slice(0,60)+'...':'개요 없음'}</div>
+            </div>
+          </div>`;
+        });
+        html+=`</div>`;
+      });
+      // 미분류 회차
+      const unfolderedEps=eps.filter(ep=>!ep.folder||!olFolders.find(f=>f.id===ep.folder));
+      if(unfolderedEps.length>0){
+        html+=`<div style="margin-top:6px">
+          <div style="font-size:12px;font-weight:700;color:var(--text-faint);padding:4px 8px">미분류</div>`;
+        unfolderedEps.forEach(ep=>{
+          const num=ep.num||0;
+          const isLinked=sc.linkedEp===num;
+          html+=`<div class="ol-proj-item" onclick="scLinkEp(${num})" style="border-color:${isLinked?'var(--purple-light)':'var(--border)'};margin-left:12px">
+            <div>
+              <div class="opp-title" style="font-size:13px">${num}화 — ${ep.title||ep.keyword||'제목 없음'}</div>
+              <div class="opp-meta">${ep.synopsis?ep.synopsis.slice(0,60)+'...':'개요 없음'}</div>
+            </div>
+          </div>`;
+        });
+        html+=`</div>`;
+      }
+    } else {
+      // 폴더 없으면 기존처럼 플랫 목록
+      eps.forEach(ep=>{
+        const num=ep.num||0;
+        const isLinked=sc.linkedEp===num;
+        html+=`<div class="ol-proj-item" onclick="scLinkEp(${num})" style="border-color:${isLinked?'var(--purple-light)':'var(--border)'}">
+          <div>
+            <div class="opp-title" style="font-size:13px">${num}화 — ${ep.title||ep.keyword||'제목 없음'}</div>
+            <div class="opp-meta">${ep.synopsis?ep.synopsis.slice(0,60)+'...':'개요 없음'}</div>
+          </div>
+        </div>`;
+      });
+    }
   }
   html+=`</div>`;
   const modal=document.createElement('div');
@@ -7775,6 +7817,9 @@ function renderScMain(){
     <button class="sc-add-btn" onclick="scAddScene()" style="flex:1">+ 장면 추가</button>
     <button class="sc-add-group-btn" onclick="scAddGroup()" style="flex:1">+ 그룹 추가</button>
     <button class="sc-add-btn" id="sc-bulk-btn" onclick="scBulkAddScenes()" style="flex:1;background:rgba(244,114,182,0.12);border-color:rgba(244,114,182,0.3);color:#F472B6">🤖 장면 일괄 추가</button>
+  </div>
+  <div class="sc-actions-bar" style="margin-top:4px">
+    <button class="sc-add-btn" id="sc-work-link-btn" onclick="scWorkIntegration()" style="flex:1;background:rgba(0,200,224,0.10);border-color:rgba(0,200,224,0.3);color:var(--purple-light)">📖 작품 연동하기</button>
   </div>`;
 
   // 그룹 + ungrouped 렌더
@@ -8116,6 +8161,149 @@ ${mediaLabel==='뮤지컬'||mediaLabel==='연극'?'무대 연출 지시와 대�
     flash('AI 호출 오류: '+e.message);
   }
   if(btn){btn.disabled=false;btn.textContent='🤖 장면 일괄 추가';}
+}
+
+// ── 작품 연동하기 (폴더 내 회차 개요 종합 → AI 장면 일괄 생성) ──
+async function scWorkIntegration(){
+  const sc=_getScript(scSelectedId);if(!sc)return;
+  const eps=_getScEpisodes();
+  const olFolders=loadFolders('ol_folders');
+  const mediaLabel=_SC_MEDIA_LABELS[sc.mediaType]||'';
+
+  // 폴더 선택 모달 표시
+  let folderOptions=[];
+  if(olFolders.length>0){
+    olFolders.forEach(folder=>{
+      const folderEps=eps.filter(ep=>ep.folder===folder.id);
+      if(folderEps.length>0) folderOptions.push({folder,eps:folderEps});
+    });
+  }
+  // 미분류 회차
+  const unfolderedEps=olFolders.length>0
+    ? eps.filter(ep=>!ep.folder||!olFolders.find(f=>f.id===ep.folder))
+    : eps;
+
+  if(folderOptions.length===0 && unfolderedEps.length===0){
+    flash('회차 개요에서 회차를 먼저 추가해야 합니다');return;
+  }
+
+  // 폴더가 1개뿐이고 미분류 없으면 바로 실행
+  if(folderOptions.length===1 && unfolderedEps.length===0){
+    _scRunWorkIntegration(sc,folderOptions[0].eps,folderOptions[0].folder.name,mediaLabel);
+    return;
+  }
+  // 폴더가 없고 미분류만 있으면 바로 실행
+  if(folderOptions.length===0 && unfolderedEps.length>0){
+    _scRunWorkIntegration(sc,unfolderedEps,'전체',mediaLabel);
+    return;
+  }
+
+  // 폴더 선택 모달
+  let html=`<div style="display:flex;flex-direction:column;gap:8px;margin-top:12px;max-height:340px;overflow-y:auto">`;
+  folderOptions.forEach(opt=>{
+    html+=`<div class="ol-proj-item" onclick="_scRunWorkIntegration(_getScript('${sc.id}'),_getScEpisodes().filter(e=>e.folder==='${opt.folder.id}'),'${(opt.folder.name||'폴더').replace(/'/g,"\\'")}','${mediaLabel}');document.getElementById('sc-work-modal').remove()" style="cursor:pointer">
+      <div>
+        <div class="opp-title" style="font-size:13px">📁 ${opt.folder.name||'폴더'}</div>
+        <div class="opp-meta">${opt.eps.length}개 회차 — ${opt.eps.map(e=>(e.num||0)+'화').join(', ')}</div>
+      </div>
+    </div>`;
+  });
+  if(unfolderedEps.length>0){
+    html+=`<div class="ol-proj-item" onclick="_scRunWorkIntegration(_getScript('${sc.id}'),_getScEpisodes().filter(e=>!e.folder||!loadFolders('ol_folders').find(f=>f.id===e.folder)),'미분류','${mediaLabel}');document.getElementById('sc-work-modal').remove()" style="cursor:pointer">
+      <div>
+        <div class="opp-title" style="font-size:13px">미분류</div>
+        <div class="opp-meta">${unfolderedEps.length}개 회차</div>
+      </div>
+    </div>`;
+  }
+  html+=`</div>`;
+
+  const modal=document.createElement('div');
+  modal.id='sc-work-modal';
+  modal.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:600;display:flex;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px)';
+  modal.onclick=e=>{if(e.target===modal)modal.remove();};
+  const box=document.createElement('div');
+  box.style.cssText='background:rgba(14,5,28,0.98);border:1px solid var(--border2);border-radius:18px;padding:24px;width:100%;max-width:420px;display:flex;flex-direction:column;gap:8px';
+  box.innerHTML=`<div style="font-size:16px;font-weight:900">작품 연동하기</div>
+    <div style="font-size:11px;color:var(--text-faint)">연동할 폴더를 선택하세요. 해당 폴더의 모든 회차 개요를 AI가 종합 분석하여 장면을 자동 생성합니다.</div>${html}
+    <button onclick="document.getElementById('sc-work-modal').remove()" class="ol-btn" style="margin-top:8px;align-self:flex-end">닫기</button>`;
+  modal.appendChild(box);
+  document.body.appendChild(modal);
+}
+
+async function _scRunWorkIntegration(sc,folderEps,folderName,mediaLabel){
+  if(!sc||!folderEps||folderEps.length===0){flash('회차가 없습니다');return;}
+
+  const btn=$('sc-work-link-btn');
+  if(btn){btn.disabled=true;btn.textContent='⏳ AI 분석 중...';}
+
+  // 회차 개요 종합 텍스트 생성
+  const sortedEps=[...folderEps].sort((a,b)=>(a.num||0)-(b.num||0));
+  let synopsisText=`[폴더: ${folderName}] — 총 ${sortedEps.length}개 회차\n\n`;
+  sortedEps.forEach(ep=>{
+    synopsisText+=`── ${ep.num||'?'}화: ${ep.title||ep.keyword||'제목 없음'} ──\n`;
+    if(ep.keyword) synopsisText+=`키워드: ${ep.keyword}\n`;
+    if(ep.synopsis) synopsisText+=`시놉시스: ${ep.synopsis}\n`;
+    if(ep.funPoint) synopsisText+=`재미 포인트: ${ep.funPoint}\n`;
+    if(ep.lastPanel) synopsisText+=`막컷 임팩트: ${ep.lastPanel}\n`;
+    if(ep.type) synopsisText+=`유형: ${ep.type}\n`;
+    synopsisText+=`\n`;
+  });
+
+  const ctx=typeof buildContext==='function'?buildContext():'';
+
+  const sysPrompt=`당신은 ${mediaLabel||'콘텐츠'} 대본 전문가입니다.
+사용자가 제공한 여러 회차의 개요를 종합적으로 분석하여, 전체 흐름과 서사 구조를 파악한 뒤, 각 회차별로 장면을 구성합니다.
+반드시 JSON 배열만 응답하세요. 다른 텍스트 없이 순수 JSON만 출력하세요.
+형식: [{"title":"장면 제목","content":"장면 내용 (대사, 지문, 연출 포함)","note":"연출 메모"}]
+${mediaLabel==='웹툰'?'웹툰 특성에 맞게 컷 단위로 장면을 나누고, 대사와 나레이션을 구분하세요.':''}
+${mediaLabel==='웹소설'?'웹소설 특성에 맞게 1인칭/3인칭 시점의 서술과 대화를 풍부하게 작성하세요.':''}
+${mediaLabel==='드라마'||mediaLabel==='영화'?'S#(씬 넘버) 형식으로, 장소/시간 지정 후 대사와 지문을 작성하세요.':''}
+${mediaLabel==='뮤지컬'||mediaLabel==='연극'?'무대 연출 지시와 대사, 넘버(노래) 위치를 포함하세요.':''}
+전체 회차의 흐름을 연결하여 자연스러운 서사가 되도록 장면을 구성하세요.
+각 회차당 3~6개 장면으로, 전체적으로 충분한 장면을 생성하세요.`;
+
+  const userPrompt=`${ctx?'[작품 컨텍스트]\n'+ctx+'\n\n':''}[회차 개요 종합]\n${synopsisText}\n[요청]\n위 회차 개요들을 종합 분석하여, 전체 서사 흐름에 맞는 장면들을 일괄 생성해주세요. 각 회차의 핵심 내용과 재미 포인트를 반영하세요.${mediaLabel?' 매체: '+mediaLabel:''}`;
+
+  try{
+    const result=await ai([
+      {role:'system',content:sysPrompt},
+      {role:'user',content:userPrompt}
+    ],{max_tokens:8192});
+
+    let scenes=[];
+    try{
+      const jsonStr=result.replace(/```json\s*/g,'').replace(/```/g,'').trim();
+      scenes=JSON.parse(jsonStr);
+    }catch(e){
+      const match=result.match(/\[[\s\S]*\]/);
+      if(match)try{scenes=JSON.parse(match[0]);}catch(e2){}
+    }
+
+    if(!Array.isArray(scenes)||scenes.length===0){
+      flash('AI 응답을 파싱할 수 없습니다');
+      if(btn){btn.disabled=false;btn.textContent='📖 작품 연동하기';}
+      return;
+    }
+
+    const group={
+      id:'g_'+Date.now()+'_'+Math.random().toString(36).slice(2,6),
+      title:`📁 ${folderName} — AI 연동 장면`,
+      collapsed:false,
+      scenes:scenes.map(s=>({
+        id:'s_'+Date.now()+'_'+Math.random().toString(36).slice(2,6)+'_'+Math.random().toString(36).slice(2,4),
+        title:s.title||'장면',
+        content:s.content||'',
+        note:s.note||''
+      }))
+    };
+    sc.groups.push(group);
+    _scAutoSave();renderScMain();renderScSidebar();
+    flash(`${scenes.length}개 장면이 생성되었습니다 (${folderName} 연동)`);
+  }catch(e){
+    flash('AI 호출 오류: '+e.message);
+  }
+  if(btn){btn.disabled=false;btn.textContent='📖 작품 연동하기';}
 }
 
 async function saveScriptData(){
