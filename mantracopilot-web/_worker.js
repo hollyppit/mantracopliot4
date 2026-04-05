@@ -9,8 +9,8 @@ export default {
     const path = url.pathname;
     const cors = {
       'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET, POST, DELETE, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+      'Access-Control-Allow-Methods': 'GET, POST, PATCH, DELETE, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization, x-admin-password',
     };
 
     if (request.method === 'OPTIONS') return new Response(null, { headers: cors });
@@ -22,6 +22,12 @@ export default {
     // 관리자 API
     if (path === '/api/references' && request.method === 'GET') return handleReferences(request, env, cors);
     if (path === '/api/upload' && request.method === 'POST') return handleUpload(request, env, cors);
+    // 관리자 수정/삭제 (/api/references/:id)
+    const refMatch = path.match(/^\/api\/references\/([^/]+)$/);
+    if (refMatch) {
+      if (request.method === 'PATCH') return handleRefUpdate(request, env, cors, refMatch[1]);
+      if (request.method === 'DELETE') return handleRefDelete(request, env, cors, refMatch[1]);
+    }
 
     if (path.startsWith('/api/')) {
       const userId = await verifyJWT(request, env);
@@ -272,6 +278,37 @@ async function handleUpload(request, env, cors) {
   } catch (e) {
     return json({ error: 'DB 저장 중 오류', detail: e.message }, 500, adminCors);
   }
+}
+
+// ── 관리자: 고증 자료 수정 ──
+async function handleRefUpdate(request, env, cors, id) {
+  const adminCors = { ...cors, 'Access-Control-Allow-Headers': 'Content-Type, x-admin-password' };
+  const password = request.headers.get('x-admin-password');
+  if (!password || password !== env.ADMIN_PASSWORD) return json({ error: '인증 실패' }, 401, adminCors);
+  const body = await request.json();
+  try {
+    const res = await fetch(
+      `${env.SUPABASE_URL}/rest/v1/expert_references?id=eq.${id}`,
+      { method: 'PATCH', headers: { 'Content-Type': 'application/json', 'apikey': env.SUPABASE_SERVICE_KEY, 'Authorization': `Bearer ${env.SUPABASE_SERVICE_KEY}`, 'Prefer': 'return=minimal' }, body: JSON.stringify(body) }
+    );
+    if (!res.ok) return json({ error: '수정 실패', detail: await res.text() }, 500, adminCors);
+    return json({ ok: true }, 200, adminCors);
+  } catch (e) { return json({ error: '수정 중 오류', detail: e.message }, 500, adminCors); }
+}
+
+// ── 관리자: 고증 자료 삭제 ──
+async function handleRefDelete(request, env, cors, id) {
+  const adminCors = { ...cors, 'Access-Control-Allow-Headers': 'Content-Type, x-admin-password' };
+  const password = request.headers.get('x-admin-password');
+  if (!password || password !== env.ADMIN_PASSWORD) return json({ error: '인증 실패' }, 401, adminCors);
+  try {
+    const res = await fetch(
+      `${env.SUPABASE_URL}/rest/v1/expert_references?id=eq.${id}`,
+      { method: 'DELETE', headers: { 'apikey': env.SUPABASE_SERVICE_KEY, 'Authorization': `Bearer ${env.SUPABASE_SERVICE_KEY}` } }
+    );
+    if (!res.ok) return json({ error: '삭제 실패', detail: await res.text() }, 500, adminCors);
+    return json({ ok: true }, 200, adminCors);
+  } catch (e) { return json({ error: '삭제 중 오류', detail: e.message }, 500, adminCors); }
 }
 
 function extractJSON(raw) {

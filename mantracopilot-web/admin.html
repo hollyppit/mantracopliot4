@@ -84,8 +84,33 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);colo
 .ref-keywords{display:flex;flex-wrap:wrap;gap:5px}
 .ref-kw{font-size:11px;padding:2px 8px;border-radius:6px;background:var(--surface2);color:var(--text-faint);border:1px solid var(--border)}
 .ref-meta{font-size:11px;color:var(--text-faint);margin-top:8px}
+.ref-actions{display:flex;gap:6px;margin-top:10px;justify-content:flex-end}
+.ref-act{padding:5px 12px;border-radius:8px;font-size:11px;font-weight:700;font-family:inherit;cursor:pointer;transition:all 0.15s;border:1px solid var(--border);background:var(--surface2);color:var(--text-dim)}
+.ref-act:hover{border-color:var(--purple);color:var(--purple-light)}
+.ref-act.del{color:var(--text-faint)}
+.ref-act.del:hover{border-color:var(--red);color:var(--red);background:rgba(248,113,113,0.08)}
 .ref-empty{text-align:center;padding:60px 20px;color:var(--text-faint);font-size:14px}
 .ref-loading{text-align:center;padding:40px;color:var(--text-dim);font-size:13px}
+/* 편집 모달 */
+.edit-ov{position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,0.7);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;padding:20px}
+.edit-ov.on{display:flex}
+.edit-box{background:#0D0F14;border:1px solid var(--border);border-radius:16px;width:100%;max-width:600px;max-height:85vh;overflow-y:auto;padding:24px}
+.edit-box h3{font-size:16px;font-weight:800;margin-bottom:16px}
+.edit-field{margin-bottom:14px}
+.edit-field label{display:block;font-size:11px;font-weight:700;color:var(--text-faint);margin-bottom:5px;letter-spacing:0.04em}
+.edit-field input,.edit-field textarea{width:100%;padding:10px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:13px;font-family:inherit;outline:none;transition:border-color 0.2s;box-sizing:border-box}
+.edit-field input:focus,.edit-field textarea:focus{border-color:rgba(16,185,129,0.5)}
+.edit-field textarea{min-height:200px;resize:vertical;line-height:1.7}
+.edit-btns{display:flex;gap:8px;justify-content:flex-end;margin-top:18px}
+.edit-btns button{padding:8px 20px;border-radius:10px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;transition:all 0.15s}
+.edit-save{background:var(--purple);border:none;color:#fff}
+.edit-save:hover{filter:brightness(1.15)}
+.edit-cancel{background:var(--surface2);border:1px solid var(--border);color:var(--text-dim)}
+.edit-cancel:hover{border-color:var(--text-faint);color:var(--text)}
+/* 출처 입력 필드 */
+.source-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px;margin-bottom:4px}
+.source-input{width:100%;padding:10px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:13px;font-family:inherit;outline:none;transition:border-color 0.2s}
+.source-input:focus{border-color:rgba(16,185,129,0.5)}
 </style>
 </head>
 <body>
@@ -138,6 +163,10 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);colo
         <div class="file-name" id="file-name"></div>
       </div>
 
+      <div class="source-row">
+        <input class="source-input" id="source-book" placeholder="책 이름 (선택)">
+        <input class="source-input" id="source-author" placeholder="저자 (선택)">
+      </div>
       <div class="submit-row">
         <button class="submit-btn" id="submit-btn" onclick="doUpload()">업로드 & AI 분석</button>
       </div>
@@ -149,6 +178,23 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);colo
   <div class="tab-panel" id="panel-list">
     <div id="ref-container">
       <div class="ref-loading">불러오는 중...</div>
+    </div>
+  </div>
+</div>
+
+<!-- 편집 모달 -->
+<div class="edit-ov" id="edit-ov" onclick="if(event.target===this)closeEdit()">
+  <div class="edit-box">
+    <h3 id="edit-title">자료 편집</h3>
+    <input type="hidden" id="edit-id">
+    <div class="edit-field"><label>제목</label><input id="edit-f-title"></div>
+    <div class="edit-field"><label>카테고리</label><input id="edit-f-category"></div>
+    <div class="edit-field"><label>출처</label><input id="edit-f-source" placeholder="책이름 — 저자"></div>
+    <div class="edit-field"><label>키워드 (쉼표 구분)</label><input id="edit-f-keywords"></div>
+    <div class="edit-field"><label>본문</label><textarea id="edit-f-content"></textarea></div>
+    <div class="edit-btns">
+      <button class="edit-cancel" onclick="closeEdit()">취소</button>
+      <button class="edit-save" onclick="saveEdit()">저장</button>
     </div>
   </div>
 </div>
@@ -271,6 +317,13 @@ async function doUpload() {
     if (!content.trim()) { showStatus('err', '파일 내용이 비어있습니다.'); return; }
   }
 
+  // 출처 조합
+  const srcBook = document.getElementById('source-book').value.trim();
+  const srcAuthor = document.getElementById('source-author').value.trim();
+  if (srcBook || srcAuthor) {
+    filename = [srcBook, srcAuthor].filter(Boolean).join(' — ');
+  }
+
   btn.disabled = true;
   showStatus('loading', '⏳ AI 분석 중… 잠시만 기다려주세요.');
 
@@ -292,12 +345,14 @@ async function doUpload() {
       '✅ 저장 완료!\n' +
       '제목: ' + (d.title || '') + '\n' +
       '카테고리: ' + (d.category || '') + '\n' +
-      '요약: ' + (d.content || '') + '\n' +
+      '출처: ' + (d.source_filename || '') + '\n' +
       '키워드: ' + (d.keywords || []).join(', ')
     );
 
     // 초기화
     document.getElementById('text-input').value = '';
+    document.getElementById('source-book').value = '';
+    document.getElementById('source-author').value = '';
     selectedFile = null;
     document.getElementById('file-name').style.display = 'none';
     document.getElementById('file-real').value = '';
@@ -331,22 +386,77 @@ async function loadReferences() {
     }
 
     container.innerHTML = '<div class="ref-list">' + list.map(r => `
-      <div class="ref-card">
+      <div class="ref-card" data-id="${esc(r.id)}">
         <div class="ref-head">
           <div class="ref-title">${esc(r.title)}</div>
           <span class="ref-cat">${esc(r.category)}</span>
         </div>
-        <div class="ref-content">${esc(r.content)}</div>
+        <div class="ref-content">${esc((r.content||'').substring(0,300))}${(r.content||'').length>300?'…':''}</div>
         <div class="ref-keywords">${(r.keywords||[]).map(k=>'<span class="ref-kw">'+esc(k)+'</span>').join('')}</div>
         ${r.source_filename ? '<div class="ref-meta">출처: '+esc(r.source_filename)+'</div>' : ''}
+        <div class="ref-actions">
+          <button class="ref-act" onclick="openEdit('${r.id}')">수정</button>
+          <button class="ref-act del" onclick="deleteRef('${r.id}','${esc(r.title)}')">삭제</button>
+        </div>
       </div>
     `).join('') + '</div>';
+    // 데이터 저장 (편집용)
+    window._refData = {};
+    list.forEach(r => window._refData[r.id] = r);
   } catch (e) {
     container.innerHTML = '<div class="ref-empty">오류: ' + esc(e.message) + '</div>';
   }
 }
 
 function esc(s) { const d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML; }
+
+// 편집 모달
+function openEdit(id) {
+  const r = window._refData?.[id];
+  if (!r) return;
+  document.getElementById('edit-id').value = id;
+  document.getElementById('edit-f-title').value = r.title || '';
+  document.getElementById('edit-f-category').value = r.category || '';
+  document.getElementById('edit-f-source').value = r.source_filename || '';
+  document.getElementById('edit-f-keywords').value = (r.keywords || []).join(', ');
+  document.getElementById('edit-f-content').value = r.content || '';
+  document.getElementById('edit-ov').classList.add('on');
+}
+function closeEdit() {
+  document.getElementById('edit-ov').classList.remove('on');
+}
+async function saveEdit() {
+  const id = document.getElementById('edit-id').value;
+  const body = {
+    title: document.getElementById('edit-f-title').value.trim(),
+    category: document.getElementById('edit-f-category').value.trim(),
+    source_filename: document.getElementById('edit-f-source').value.trim(),
+    keywords: document.getElementById('edit-f-keywords').value.split(',').map(k=>k.trim()).filter(Boolean),
+    content: document.getElementById('edit-f-content').value,
+  };
+  try {
+    const res = await fetch('/api/references/' + id, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json', 'x-admin-password': adminPassword },
+      body: JSON.stringify(body),
+    });
+    if (res.ok) { closeEdit(); loadReferences(); }
+    else { alert('수정 실패: ' + (await res.json()).error); }
+  } catch (e) { alert('네트워크 오류: ' + e.message); }
+}
+
+// 삭제
+async function deleteRef(id, title) {
+  if (!confirm('"' + title + '" 자료를 삭제하시겠습니까?')) return;
+  try {
+    const res = await fetch('/api/references/' + id, {
+      method: 'DELETE',
+      headers: { 'x-admin-password': adminPassword },
+    });
+    if (res.ok) loadReferences();
+    else alert('삭제 실패: ' + (await res.json()).error);
+  } catch (e) { alert('네트워크 오류: ' + e.message); }
+}
 </script>
 </body>
 </html>
