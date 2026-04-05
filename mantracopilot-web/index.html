@@ -3810,6 +3810,7 @@ function renderProgressPanel() {
 
     const hasSynopsis = (proj.synopsis || '').trim().length > 10;
     const epCount    = (proj.episodes   || []).length;
+    const scriptCount= (proj.scripts    || []).length;
     const charCount  = (proj.characters || []).length;
 
     return `
@@ -3821,6 +3822,9 @@ function renderProgressPanel() {
           </div>
           <div class="pp-stat ${epCount > 0 ? 'done' : 'todo'}">
             ${epCount > 0 ? epCount + '화' : '○'} 회차 개요
+          </div>
+          <div class="pp-stat ${scriptCount > 0 ? 'done' : 'todo'}">
+            ${scriptCount > 0 ? scriptCount + '편' : '○'} 대본
           </div>
           <div class="pp-stat ${charCount > 0 ? 'done' : 'todo'}">
             ${charCount > 0 ? charCount + '명' : '○'} 캐릭터
