@@ -1474,9 +1474,9 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);back
         <!-- RAG 토글 바 (입력창 위) -->
         <div style="display:flex;align-items:center;gap:12px;padding:10px 4px 8px;justify-content:flex-end">
           <div id="gm-rag-toggle" onclick="gmToggleRag()" style="display:flex;align-items:center;gap:6px;cursor:pointer;user-select:none" title="전문가 고증 자료 기반 답변">
-            <span style="font-size:12px;font-weight:700;color:var(--text-faint)" id="gm-rag-label">📚 실제 자료 검증</span>
-            <div id="gm-rag-sw" style="width:36px;height:20px;border-radius:10px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);position:relative;transition:all .2s;flex-shrink:0">
-              <div style="width:16px;height:16px;border-radius:50%;background:#475569;position:absolute;top:1px;left:1px;transition:all .2s" id="gm-rag-dot"></div>
+            <span style="font-size:12px;font-weight:700;color:#6EE7B7" id="gm-rag-label">📚 실제 자료 검증</span>
+            <div id="gm-rag-sw" style="width:36px;height:20px;border-radius:10px;background:rgba(16,185,129,0.35);border:1px solid #10B981;position:relative;transition:all .2s;flex-shrink:0">
+              <div style="width:16px;height:16px;border-radius:50%;background:#10B981;position:absolute;top:1px;left:17px;transition:all .2s" id="gm-rag-dot"></div>
             </div>
           </div>
           <div id="gm-prag-toggle" onclick="gmTogglePrag()" style="display:flex;align-items:center;gap:6px;cursor:pointer;user-select:none" title="내 작품 데이터 기반 답변">
@@ -1738,10 +1738,10 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);back
         <div id="rag-toggle-bar" style="display:flex;align-items:center;gap:8px;padding:6px 16px 0;font-size:12px;color:var(--text-faint);flex-wrap:wrap">
           <span>실제 자료 기반 고증 (RAG)</span>
           <button id="rag-toggle-btn" onclick="toggleRag()" style="
-            padding:3px 10px;border-radius:20px;border:1px solid var(--border);
-            background:var(--surface2);color:var(--text-faint);
+            padding:3px 10px;border-radius:20px;border:1px solid var(--accent,#7c5cfc);
+            background:var(--accent,#7c5cfc);color:#fff;
             font-size:11px;font-weight:700;cursor:pointer;transition:all 0.2s;
-          ">OFF</button>
+          ">ON</button>
           <span style="margin-left:8px">🗂 내 자료 참고</span>
           <button id="prag-toggle-btn" onclick="togglePersonalRag()" style="
             padding:3px 10px;border-radius:20px;border:1px solid var(--border);
@@ -2580,7 +2580,7 @@ async function runExpert(type) {
 }
 
 // ── 상태 ──
-let ragEnabled = false;
+let ragEnabled = true;
 let user=null,projects=[],selProj=null,steps=[],step=0,hist=[],charName='조수 T형',xMsgs=[],xPersona='',xPersonaBase='',xLinkedProj=null;
 // ── 루틴 데이터 ──
 const LONG=[
@@ -7526,7 +7526,7 @@ function extractYTKeyword(userText, replyText) {
 }
 
 let gmMsgs=[], gmLoading=false;
-let gmRagOn=false, gmPragOn=false;
+let gmRagOn=true, gmPragOn=false;
 function gmToggleRag(){
   gmRagOn=!gmRagOn;
   const sw=$('gm-rag-sw'),dot=$('gm-rag-dot'),label=$('gm-rag-label');
