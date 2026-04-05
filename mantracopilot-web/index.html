@@ -669,6 +669,12 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);back
 .folder-icon-card .fic-icon{position:relative}
 .folder-icon-card.add-card .fic-icon{background:none;border-style:dashed;border-color:var(--border2);font-size:18px;color:var(--text-faint)}
 .folder-icon-card.add-card:hover .fic-icon{border-color:var(--cyan);color:var(--cyan)}
+/* 모바일 전용 폴더 바 */
+.mob-folder-bar{display:none;padding:8px 16px;border-bottom:1px solid var(--border);overflow-x:auto;-webkit-overflow-scrolling:touch;flex-shrink:0}
+.mob-folder-bar .folder-grid{flex-wrap:nowrap;gap:8px;margin-bottom:0;padding:0}
+.mob-folder-bar .folder-icon-card{width:64px;flex-shrink:0}
+.mob-folder-bar .folder-icon-card .fic-icon{width:40px;height:40px;font-size:18px}
+.mob-folder-bar .folder-open-bar{margin-bottom:8px}
 .folder-open-bar{display:flex;align-items:center;gap:8px;padding:8px 12px;background:rgba(0,200,224,0.06);border:1px solid rgba(0,200,224,0.12);border-radius:12px;margin-bottom:12px}
 .folder-open-bar .fob-back{background:none;border:none;color:var(--cyan);cursor:pointer;font-size:13px;font-weight:700;font-family:inherit;padding:4px 8px;border-radius:8px}
 .folder-open-bar .fob-back:hover{background:rgba(0,200,224,0.1)}
@@ -846,6 +852,7 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);back
   .proj-detail-header{padding:12px 16px;flex-wrap:wrap;gap:8px}
   .proj-detail-header>div:first-of-type{font-size:17px!important}
   .chara-sidebar{display:none}
+  .mob-folder-bar{display:block}
   .chara-main{padding:16px 18px}
   .proj-detail-tabs{overflow-x:auto;-webkit-overflow-scrolling:touch;padding:0 16px}
   .proj-tab{white-space:nowrap;flex-shrink:0;padding:12px 14px}
@@ -1718,6 +1725,7 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);back
         <div class="chara-sidebar" id="chara-sidebar"></div>
         <!-- 오른쪽 메인: 선택한 작품의 캐릭터 -->
         <div class="chara-main">
+          <div class="mob-folder-bar" id="ch-mob-folders"></div>
           <div class="chara-main-proj" id="chara-main-title" style="display:none"></div>
           <div class="char-grid" id="char-grid-standalone"></div>
           <button class="char-add-btn" onclick="addCharCard()" id="chara-add-btn" style="display:none">+ 캐릭터 직접 추가</button>
@@ -1767,6 +1775,7 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);back
         <div class="ol-sidebar" id="ol-sidebar"></div>
         <!-- 오른쪽: 막 필터 + 회차 목록 -->
         <div class="ol-main">
+          <div class="mob-folder-bar" id="ol-mob-folders"></div>
           <!-- 막 필터 -->
           <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap;padding:12px 24px 0">
             <span style="font-size:11px;color:var(--text-faint)">막 보기:</span>
@@ -1796,10 +1805,13 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);back
       </div>
       <div class="sc-layout">
         <div class="sc-sidebar" id="sc-sidebar"></div>
-        <div class="sc-main" id="sc-main">
-          <div class="sc-empty" id="sc-empty">
-            <div class="sc-empty-icon">📝</div>
-            <div class="sc-empty-text">작품을 연동하면 회차 타임라인이 표시됩니다.<br>왼쪽에서 회차를 선택해 대본을 작성하세요.</div>
+        <div style="flex:1;display:flex;flex-direction:column;min-width:0;overflow:hidden">
+          <div class="mob-folder-bar" id="sc-mob-folders"></div>
+          <div class="sc-main" id="sc-main" style="flex:1;overflow-y:auto">
+            <div class="sc-empty" id="sc-empty">
+              <div class="sc-empty-icon">📝</div>
+              <div class="sc-empty-text">작품을 연동하면 회차 타임라인이 표시됩니다.<br>왼쪽에서 회차를 선택해 대본을 작성하세요.</div>
+            </div>
           </div>
         </div>
       </div>
@@ -3079,6 +3091,14 @@ function renderFolderOpenBar(container,key,viewKey,items,folderField,renderFn){
   bar.appendChild(editBtn);bar.appendChild(delBtn);
   container.appendChild(bar);
   return true;
+}
+// ── 모바일 전용 폴더 바 (메인 콘텐츠 상단) ──
+function renderMobileFolderBar(containerId,key,viewKey,items,folderField,renderFn){
+  const el=$(containerId);if(!el)return;
+  el.innerHTML='';
+  const af=activeFolders[viewKey];
+  if(af) renderFolderOpenBar(el,key,viewKey,items,folderField,renderFn);
+  renderFolderIconGrid(el,key,viewKey,items,folderField,renderFn);
 }
 function makeDraggable(el,idx){
   el.draggable=true;
@@ -4547,6 +4567,8 @@ function renderCharCards(){
     displayChars=_chFolders.length>0?pdChars.filter(ch=>!ch.folder||!_chFolders.find(f=>f.id===ch.folder)):pdChars;
   }
   displayChars.forEach(ch=>{const i=pdChars.indexOf(ch);_renderCharCard(target,ch,i);});
+  // 모바일 폴더 바 갱신
+  renderMobileFolderBar('ch-mob-folders',_CHAR_FOLDER_KEY,'ch',pdChars,'folder',renderCharCards);
 }
 
 function addCharCard(){
@@ -7000,6 +7022,8 @@ function renderEpList(){
     renderFolderIconGrid(folderDiv,'ol_folders','ol',olEpisodes,'folder',_olRenderFnSB);
     sidebar.appendChild(folderDiv);
   }
+  // 모바일 폴더 바 갱신
+  renderMobileFolderBar('ol-mob-folders','ol_folders','ol',olEpisodes,'folder',function(){renderEpList();drawTensionGraph();});
 
   // 우측 회차 목록 렌더링
   if(!allProjs.length){
@@ -7626,6 +7650,8 @@ function renderScSidebar(){
       sidebar.appendChild(item);
     });
   }
+  // 모바일 폴더 바 갱신
+  renderMobileFolderBar('sc-mob-folders',_SC_FOLDER_KEY,'sc',scScripts,'folder',()=>{_scAutoSave();renderScSidebar();});
 }
 
 // ── 대본 추가/삭제 ──
