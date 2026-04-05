@@ -4456,6 +4456,7 @@ async function resetChars() {
 
 function escH(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 
+const _CHAR_FOLDER_KEY='ch_folders';
 function renderCharCards(){
   const isStandalone = $('view-chara').classList.contains('on');
   const target = isStandalone ? $('char-grid-standalone') : $('char-grid');
@@ -4477,7 +4478,6 @@ function renderCharCards(){
   }
   target.innerHTML='';
   const ROLES=['주인공','히로인','조력자','악당','빌런','조연'];
-  const _CHAR_FOLDER_KEY='ch_folders';
   function _renderCharCard(container,ch,i){
     const card=document.createElement('div');card.className='char-card';
     makeDraggable(card,i);
@@ -4550,7 +4550,10 @@ function renderCharCards(){
 }
 
 function addCharCard(){
-  pdChars.push({name:'',role:'조연',appearance:'',personality:'',goal:'',relation:''});
+  const newChar={name:'',role:'조연',appearance:'',personality:'',goal:'',relation:''};
+  // 현재 열린 폴더에 자동 배정
+  if(activeFolders.ch) newChar.folder=activeFolders.ch;
+  pdChars.push(newChar);
   // projectStore 동기화: project 객체 기반으로 character 추가
   if(window.currentProject && window.PS) {
     window.PS.addCharacter(window.currentProject, '');
