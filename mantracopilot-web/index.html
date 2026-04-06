@@ -1777,7 +1777,10 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);back
       </div>
       <!-- 작품 목록 (사이드바 + 메인) -->
       <div style="display:flex;gap:0;width:100%">
-        <div class="ol-sidebar" id="mp-sidebar" style="min-height:200px"></div>
+        <div class="sidebar-wrap" id="mp-sb-wrap">
+          <div class="ol-sidebar" id="mp-sidebar" style="min-height:200px"></div>
+        </div>
+        <button class="sb-toggle" id="mp-sb-toggle" onclick="toggleSidebar('mp')" title="사이드바 접기">◂</button>
         <div style="flex:1;min-width:0;padding:0 24px">
           <div style="font-size:11px;font-weight:700;letter-spacing:0.1em;color:var(--text-faint);text-transform:uppercase;margin-bottom:16px" id="myplan-list-label">내 작품</div>
           <div id="myplan-grid" class="pg"></div>
@@ -3359,7 +3362,7 @@ function toggleSidebar(prefix){
   try{localStorage.setItem('sb_'+prefix+'_collapsed',collapsed?'1':'');}catch(e){}
 }
 function initSidebarStates(){
-  ['ol','sc','ch'].forEach(prefix=>{
+  ['ol','sc','ch','mp'].forEach(prefix=>{
     let collapsed=false;
     try{collapsed=localStorage.getItem('sb_'+prefix+'_collapsed')==='1';}catch(e){}
     if(!collapsed)return;
