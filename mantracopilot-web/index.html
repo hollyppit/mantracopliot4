@@ -852,7 +852,16 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);back
   .proj-detail-header{padding:12px 16px;flex-wrap:wrap;gap:8px}
   .proj-detail-header>div:first-of-type{font-size:17px!important}
   .chara-sidebar{display:none}
-  .mob-folder-bar{display:block}
+  /* mob-folder-bar → 모바일 수직 왼쪽 사이드바 */
+  .mob-folder-bar{display:flex;flex-direction:column;width:68px;min-width:68px;flex-shrink:0;border-right:1px solid var(--border);border-bottom:none;overflow-y:auto;overflow-x:hidden;padding:6px 0;background:rgba(255,255,255,0.015);-webkit-overflow-scrolling:touch}
+  .mob-folder-bar .folder-grid{flex-direction:column;flex-wrap:nowrap;gap:4px;margin:0;padding:4px}
+  .mob-folder-bar .folder-icon-card{width:100%;flex-shrink:0}
+  .mob-folder-bar .folder-icon-card .fic-icon{width:42px;height:42px;font-size:20px}
+  .mob-folder-bar .folder-icon-card .fic-name{max-width:58px}
+  .mob-folder-bar .folder-open-bar{flex-direction:column;align-items:center;padding:6px 4px;gap:3px;margin:4px;border-radius:8px;min-width:0}
+  .mob-folder-bar .fob-back{font-size:10px;padding:3px 4px;width:100%;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .mob-folder-bar .fob-name{font-size:9px;flex:none;max-width:56px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:center}
+  .mob-folder-bar .fob-action{font-size:11px;padding:2px 4px}
   .chara-main{padding:16px 18px}
   .proj-detail-tabs{overflow-x:auto;-webkit-overflow-scrolling:touch;padding:0 16px}
   .proj-tab{white-space:nowrap;flex-shrink:0;padding:12px 14px}
@@ -1101,8 +1110,9 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);back
   .ol-sidebar-item{justify-content:center;padding:10px 4px}
   .ol-sidebar-item span:not(:first-child){display:none}
   .ol-sidebar-item span:first-child{font-size:16px!important}
-  /* 대본 작성 사이드바 축소 */
+  /* 대본 작성 사이드바 축소 + sc-sidebar 내 폴더 그리드 숨김 (mob-folder-bar가 담당) */
   .sc-sidebar{width:60px;min-width:60px}
+  .sc-sidebar .folder-grid,.sc-sidebar .folder-open-bar{display:none}
   .sc-ep-title{display:none}
   .sc-ep-item{justify-content:center;padding:10px 6px}
   .sc-ep-num{min-width:auto}
@@ -1723,9 +1733,10 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);back
       <div class="chara-layout">
         <!-- 왼쪽 사이드바: 작품별 폴더 -->
         <div class="chara-sidebar" id="chara-sidebar"></div>
+        <!-- 모바일 폴더 사이드바 (모바일 전용) -->
+        <div class="mob-folder-bar" id="ch-mob-folders"></div>
         <!-- 오른쪽 메인: 선택한 작품의 캐릭터 -->
         <div class="chara-main">
-          <div class="mob-folder-bar" id="ch-mob-folders"></div>
           <div class="chara-main-proj" id="chara-main-title" style="display:none"></div>
           <div class="char-grid" id="char-grid-standalone"></div>
           <button class="char-add-btn" onclick="addCharCard()" id="chara-add-btn" style="display:none">+ 캐릭터 직접 추가</button>
@@ -1773,9 +1784,10 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);back
       <div class="ol-layout">
         <!-- 왼쪽: 작품 사이드바 -->
         <div class="ol-sidebar" id="ol-sidebar"></div>
+        <!-- 모바일 폴더 사이드바 (모바일 전용) -->
+        <div class="mob-folder-bar" id="ol-mob-folders"></div>
         <!-- 오른쪽: 막 필터 + 회차 목록 -->
         <div class="ol-main">
-          <div class="mob-folder-bar" id="ol-mob-folders"></div>
           <!-- 막 필터 -->
           <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap;padding:12px 24px 0">
             <span style="font-size:11px;color:var(--text-faint)">막 보기:</span>
@@ -1805,8 +1817,9 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);back
       </div>
       <div class="sc-layout">
         <div class="sc-sidebar" id="sc-sidebar"></div>
+        <!-- 모바일 폴더 사이드바 (모바일 전용) -->
+        <div class="mob-folder-bar" id="sc-mob-folders"></div>
         <div style="flex:1;display:flex;flex-direction:column;min-width:0;overflow:hidden">
-          <div class="mob-folder-bar" id="sc-mob-folders"></div>
           <div class="sc-main" id="sc-main" style="flex:1;overflow-y:auto">
             <div class="sc-empty" id="sc-empty">
               <div class="sc-empty-icon">📝</div>
