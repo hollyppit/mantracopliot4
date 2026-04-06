@@ -720,6 +720,11 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);back
 .folder-icon-card:active{transform:scale(0.95)}
 .folder-icon-card .fic-icon{width:48px;height:48px;background:rgba(0,200,224,0.08);border:1px solid rgba(0,200,224,0.15);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:22px;transition:all 0.2s}
 .folder-icon-card.drag-over .fic-icon{background:rgba(0,200,224,0.2);border-color:var(--cyan);box-shadow:0 0 16px rgba(0,200,224,0.3);transform:scale(1.08)}
+.folder-icon-card.folder-drop-before{box-shadow:-3px 0 0 0 var(--cyan),inset 0 0 0 1px rgba(0,200,224,0.2);background:rgba(0,200,224,0.05)}
+.folder-icon-card.folder-drop-after{box-shadow:3px 0 0 0 var(--cyan),inset 0 0 0 1px rgba(0,200,224,0.2);background:rgba(0,200,224,0.05)}
+.folder-icon-card.item-dragging{opacity:0.4;transform:scale(0.92)}
+.folder-grid.col-drag .folder-icon-card.folder-drop-before{box-shadow:0 -3px 0 0 var(--cyan),inset 0 0 0 1px rgba(0,200,224,0.2)}
+.folder-grid.col-drag .folder-icon-card.folder-drop-after{box-shadow:0 3px 0 0 var(--cyan),inset 0 0 0 1px rgba(0,200,224,0.2)}
 .folder-icon-card .fic-name{font-size:10px;font-weight:700;color:var(--text-dim);text-align:center;max-width:72px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .folder-icon-card .fic-count{font-size:9px;color:var(--text-faint)}
 .fic-del{position:absolute;top:-4px;right:-4px;width:18px;height:18px;border-radius:50%;background:rgba(239,68,68,0.8);border:none;color:#fff;font-size:9px;cursor:pointer;display:none;align-items:center;justify-content:center;line-height:1}
@@ -1479,17 +1484,48 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);back
 .std-folder-modal-btns button{padding:8px 18px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s}
 /* 모바일 */
 @media(max-width:768px){
-  .std-side{width:100%;min-width:0;position:absolute;z-index:2;height:100%;transform:translateX(0);transition:transform .25s}
+  .std-side{width:82%;max-width:300px;min-width:0;position:absolute;z-index:4;height:100%;transform:translateX(0);transition:transform .28s cubic-bezier(0.16,1,0.3,1);box-shadow:8px 0 40px rgba(0,0,0,0.6)}
   .std-side.hidden{transform:translateX(-100%)}
+  .std-backdrop{display:block !important}
+  .std-side.hidden~.std-backdrop{display:none !important}
   .std-main{width:100%}
-  .std-mob-toggle{display:flex !important}
-  .std-summary{padding:12px 16px;gap:16px;flex-wrap:wrap}
-  .std-dash-sections{padding:16px}
-  .std-dash-sec-hdr{padding:12px 14px;flex-wrap:wrap}
-  .std-dash-sec-body{padding:12px 14px}
-  .std-dash-card{width:140px;min-width:140px;height:110px}
+  .std-mob-toggle{display:flex !important;width:46px;height:46px;font-size:21px;border-radius:12px;top:12px;left:12px}
+  /* 사이드바 내부 크기 */
+  .std-side-hdr{padding:20px 18px 15px}
+  .std-side-hdr h3{font-size:17px}
+  .std-back-btn{font-size:22px;min-width:46px;min-height:46px;padding:6px;border-radius:10px}
+  .std-close-btn{font-size:22px;min-width:46px;min-height:46px;padding:6px;border-radius:10px}
+  .std-sec-hdr{padding:13px 18px;font-size:14px}
+  .std-sec-item{padding:13px 16px;font-size:15px;min-height:46px}
+  .std-folder-hdr{padding:13px 18px}
+  .std-folder-hdr span{font-size:13px}
+  .std-new-folder-btn{font-size:14px;padding:9px 18px;border-radius:8px}
+  .std-folder-item{padding:13px 18px;font-size:15px;min-height:46px}
+  .std-memo-hdr{padding:13px 18px}
+  .std-memo-hdr span{font-size:13px}
+  .std-new-memo-btn{font-size:14px;padding:9px 18px;border-radius:8px}
+  .std-memo-item{padding:13px 18px;font-size:15px;min-height:46px}
+  .std-memo-icon{font-size:18px}
+  .std-memo-preview{font-size:14px}
+  /* 대시보드 크기 */
+  .std-summary{padding:18px 20px;gap:22px;flex-wrap:wrap}
+  .std-summary-item .std-sum-label{font-size:13px}
+  .std-summary-item .std-sum-value{font-size:26px}
+  .std-dash-sections{padding:16px 14px 48px}
+  .std-dash-sec-hdr{padding:15px 18px;flex-wrap:wrap}
+  .std-dash-sec-hdr .std-sec-name{font-size:16px}
+  .std-dash-sec-hdr .std-sec-add{padding:10px 18px;font-size:14px;min-height:42px;border-radius:9px}
+  .std-dash-sec-body{padding:14px 16px;gap:14px}
+  .std-dash-card{width:172px;min-width:172px;height:140px}
+  .std-dash-card-bar{height:5px}
+  .std-dash-card-body{padding:12px 14px 10px}
+  .std-dash-card-title{font-size:14px}
+  .std-dash-card-meta{font-size:11px}
+  .std-dash-sec-empty{min-height:120px;font-size:15px}
+  .std-dash-sec-empty button{padding:11px 22px;font-size:14px;border-radius:9px}
 }
-.std-mob-toggle{display:none;position:absolute;top:12px;left:12px;z-index:10;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.1);width:36px;height:36px;border-radius:8px;align-items:center;justify-content:center;font-size:16px;cursor:pointer;color:#E2E8F0}
+.std-mob-toggle{display:none;position:absolute;top:12px;left:12px;z-index:10;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.14);width:36px;height:36px;border-radius:8px;align-items:center;justify-content:center;font-size:16px;cursor:pointer;color:#E2E8F0;-webkit-tap-highlight-color:transparent}
+.std-backdrop{display:none;position:absolute;inset:0;z-index:3;background:rgba(0,0,0,0.48);-webkit-tap-highlight-color:transparent;cursor:pointer}
 /* ── 폴더/메모 관리 UI ── */
 .std-folder-item{position:relative;user-select:none}
 .std-folder-item.std-dragging{opacity:0.4}
@@ -1536,8 +1572,14 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);back
 /* 모바일 터치 드래그 핸들 */
 @media(max-width:768px){
   .std-folder-actions,.std-memo-actions{opacity:1}
-  .std-memo-editor-body{padding:12px 14px}
-  .std-memo-toolbar{padding:8px 14px}
+  .std-folder-actions button,.std-memo-actions button{font-size:16px;padding:5px 8px;min-width:38px;min-height:38px}
+  .std-memo-editor-hdr{padding:16px 20px}
+  .std-memo-editor-hdr input{font-size:18px}
+  .std-memo-editor-body{padding:16px 20px}
+  .std-memo-editor-body textarea{font-size:16px;min-height:260px;line-height:1.75}
+  .std-memo-toolbar{padding:14px 20px;gap:10px}
+  .std-memo-toolbar button{padding:13px 22px;font-size:14px;min-height:48px;border-radius:10px}
+  .std-memo-media-item{width:92px;height:92px}
 }
 </style>
 </head>
@@ -3173,49 +3215,81 @@ function renderFolderIconGrid(container,key,viewKey,items,folderField,renderFn){
     const card=document.createElement('div');card.className='folder-icon-card';
     card.draggable=true;
     card.dataset.folderId=folder.id;
+    card.dataset.folderIdx=String(fi);
     card.addEventListener('dragstart',e=>{
       e.dataTransfer.setData('application/folder-id',folder.id);
       e.dataTransfer.setData('application/folder-idx',String(fi));
       card.classList.add('item-dragging');
+      setTimeout(()=>card.classList.add('item-dragging'),0);
     });
-    card.addEventListener('dragend',()=>card.classList.remove('item-dragging'));
+    card.addEventListener('dragend',()=>{
+      card.classList.remove('item-dragging');
+      grid.querySelectorAll('.folder-drop-before,.folder-drop-after,.drag-over').forEach(el=>el.classList.remove('folder-drop-before','folder-drop-after','drag-over'));
+    });
     card.innerHTML=`<div class="fic-icon">📁<button class="fic-del" title="삭제">✕</button></div><div class="fic-name">${folder.name}</div><div class="fic-count">${totalLabel}</div>`;
     card.querySelector('.fic-del').onclick=e=>{
       e.stopPropagation();
       deleteFolder(key,viewKey,folder.id,items,folderField,renderFn);
     };
     card.onclick=e=>{if(e.target.classList.contains('fic-del'))return;openFolder(viewKey,folder.id,renderFn);};
-    card.addEventListener('dragover',e=>{e.preventDefault();card.classList.add('drag-over');});
-    card.addEventListener('dragleave',()=>card.classList.remove('drag-over'));
+    // dragover: 드롭 위치에 따라 before/after/nest 표시
+    card.addEventListener('dragover',e=>{
+      e.preventDefault();
+      const dragFolderId=e.dataTransfer.types.includes('application/folder-id');
+      if(!dragFolderId){card.classList.add('drag-over');return;}
+      const isCol=grid.classList.contains('col-drag')||getComputedStyle(grid).flexDirection==='column';
+      const rect=card.getBoundingClientRect();
+      card.classList.remove('folder-drop-before','folder-drop-after','drag-over');
+      if(isCol){
+        const midY=rect.top+rect.height/2;
+        if(e.clientY<midY)card.classList.add('folder-drop-before');
+        else card.classList.add('folder-drop-after');
+      } else {
+        const midX=rect.left+rect.width/2;
+        const zone=rect.width*0.28;
+        if(e.clientX<midX-zone/2)card.classList.add('folder-drop-before');
+        else if(e.clientX>midX+zone/2)card.classList.add('folder-drop-after');
+        else card.classList.add('drag-over');
+      }
+    });
+    card.addEventListener('dragleave',e=>{
+      if(!card.contains(e.relatedTarget))card.classList.remove('drag-over','folder-drop-before','folder-drop-after');
+    });
     card.addEventListener('drop',e=>{
-      e.preventDefault();e.stopPropagation();card.classList.remove('drag-over');
-      // 폴더→폴더 중첩
+      e.preventDefault();e.stopPropagation();
+      const isBefore=card.classList.contains('folder-drop-before');
+      const isAfter=card.classList.contains('folder-drop-after');
+      card.classList.remove('drag-over','folder-drop-before','folder-drop-after');
       const dragFolderId=e.dataTransfer.getData('application/folder-id');
       if(dragFolderId&&dragFolderId!==folder.id){
-        if(!_isFolderDescendant(folders,folder.id,dragFolderId)){
+        if(isBefore||isAfter){
+          // 순서 변경
           const dragFolder=folders.find(f=>f.id===dragFolderId);
-          if(dragFolder){dragFolder.parent_id=folder.id;saveFolders(key,folders);renderFn();return;}
-        }
-      }
-      // 폴더 순서 변경 (같은 레벨)
-      const folderFrom=e.dataTransfer.getData('application/folder-idx');
-      if(folderFrom!==''){
-        const fromIdx=parseInt(folderFrom);
-        const globalFrom=folders.indexOf(visibleFolders[fromIdx]);
-        const globalTo=folders.indexOf(folder);
-        if(!isNaN(globalFrom)&&globalFrom>=0&&globalFrom!==globalTo){
-          const moved=folders.splice(globalFrom,1)[0];
-          const newTo=folders.indexOf(folder);
-          folders.splice(newTo,0,moved);
-          saveFolders(key,folders);renderFn();return;
+          if(dragFolder){
+            const fromIdx=folders.indexOf(dragFolder);
+            folders.splice(fromIdx,1);
+            let toIdx=folders.indexOf(folder);
+            if(isAfter)toIdx++;
+            folders.splice(toIdx,0,dragFolder);
+            saveFolders(key,folders);renderFn();return;
+          }
+        } else {
+          // 중첩 (가운데 드롭)
+          if(!_isFolderDescendant(folders,folder.id,dragFolderId)){
+            const dragFolder=folders.find(f=>f.id===dragFolderId);
+            if(dragFolder){dragFolder.parent_id=folder.id;saveFolders(key,folders);renderFn();return;}
+          }
         }
       }
       // 아이템→폴더
-      const srcIdx=parseInt(e.dataTransfer.getData('text/plain'));
-      if(isNaN(srcIdx)||!items[srcIdx])return;
-      items[srcIdx][folderField]=folder.id;
-      renderFn();flash(`'${folder.name}' 폴더로 이동`);
+      if(!isBefore&&!isAfter){
+        const srcIdx=parseInt(e.dataTransfer.getData('text/plain'));
+        if(isNaN(srcIdx)||!items[srcIdx])return;
+        items[srcIdx][folderField]=folder.id;
+        renderFn();flash(`'${folder.name}' 폴더로 이동`);
+      }
     });
+    _makeFolderCardTouchDrag(card,folder.id,key,viewKey,items,folderField,renderFn,grid);
     grid.appendChild(card);
   });
   // + 새 폴더
@@ -3223,6 +3297,11 @@ function renderFolderIconGrid(container,key,viewKey,items,folderField,renderFn){
   addCard.innerHTML=`<div class="fic-icon">+</div><div class="fic-name">새 폴더</div>`;
   addCard.onclick=()=>addFolder(key,renderFn,currentParent);
   grid.appendChild(addCard);
+  // column 방향 grid 감지 플래그
+  requestAnimationFrame(()=>{
+    const isCol=getComputedStyle(grid).flexDirection==='column';
+    if(isCol)grid.classList.add('col-drag');else grid.classList.remove('col-drag');
+  });
   container.appendChild(grid);
 }
 function renderFolderOpenBar(container,key,viewKey,items,folderField,renderFn){
@@ -3260,13 +3339,110 @@ function renderMobileFolderBar(containerId,key,viewKey,items,folderField,renderF
   if(af) renderFolderOpenBar(el,key,viewKey,items,folderField,renderFn);
   renderFolderIconGrid(el,key,viewKey,items,folderField,renderFn);
 }
+// ── 폴더 카드 터치 드래그 ──
+function _makeFolderCardTouchDrag(card,folderId,key,viewKey,items,folderField,renderFn,grid){
+  let startX=0,startY=0,started=false,ghost=null,timer=null;
+  card.addEventListener('touchstart',e=>{
+    const t=e.touches[0];
+    startX=t.clientX;startY=t.clientY;started=false;
+    clearTimeout(timer);
+    timer=setTimeout(()=>{
+      started=true;
+      const r=card.getBoundingClientRect();
+      ghost=card.cloneNode(true);
+      ghost.style.cssText=`position:fixed;top:${r.top}px;left:${r.left}px;width:${r.width}px;opacity:0.75;pointer-events:none;z-index:9998;transform:scale(1.06) rotate(2deg);box-shadow:0 12px 36px rgba(0,0,0,0.5);transition:none`;
+      document.body.appendChild(ghost);
+      card.classList.add('item-dragging');
+      if(navigator.vibrate)navigator.vibrate(40);
+    },340);
+  },{passive:true});
+  card.addEventListener('touchmove',e=>{
+    const t=e.touches[0];
+    if(!started){
+      if(Math.abs(t.clientX-startX)>8||Math.abs(t.clientY-startY)>8)clearTimeout(timer);
+      return;
+    }
+    e.preventDefault();
+    if(ghost){
+      const r=card.getBoundingClientRect();
+      ghost.style.top=(t.clientY-r.height/2)+'px';
+      ghost.style.left=(t.clientX-r.width/2)+'px';
+    }
+    // 기존 하이라이트 제거
+    document.querySelectorAll('.folder-drop-before,.folder-drop-after,.drag-over').forEach(el=>el.classList.remove('folder-drop-before','folder-drop-after','drag-over'));
+    if(ghost)ghost.style.display='none';
+    const under=document.elementFromPoint(t.clientX,t.clientY);
+    if(ghost)ghost.style.display='';
+    if(under){
+      const tf=under.closest('.folder-icon-card:not(.add-card)');
+      if(tf&&tf!==card){
+        const isCol=grid.classList.contains('col-drag')||getComputedStyle(grid).flexDirection==='column';
+        const rect=tf.getBoundingClientRect();
+        if(isCol){
+          if(t.clientY<rect.top+rect.height/2)tf.classList.add('folder-drop-before');
+          else tf.classList.add('folder-drop-after');
+        } else {
+          const midX=rect.left+rect.width/2;
+          const zone=rect.width*0.28;
+          if(t.clientX<midX-zone/2)tf.classList.add('folder-drop-before');
+          else if(t.clientX>midX+zone/2)tf.classList.add('folder-drop-after');
+          else tf.classList.add('drag-over');
+        }
+      }
+    }
+  },{passive:false});
+  card.addEventListener('touchend',e=>{
+    clearTimeout(timer);
+    if(!started){if(ghost)ghost.remove();card.classList.remove('item-dragging');return;}
+    const t=e.changedTouches[0];
+    if(ghost)ghost.style.display='none';
+    const under=document.elementFromPoint(t.clientX,t.clientY);
+    if(ghost){ghost.remove();ghost=null;}
+    card.classList.remove('item-dragging');
+    if(under){
+      const tf=under.closest('.folder-icon-card:not(.add-card)');
+      if(tf&&tf!==card){
+        const isBefore=tf.classList.contains('folder-drop-before');
+        const isAfter=tf.classList.contains('folder-drop-after');
+        tf.classList.remove('folder-drop-before','folder-drop-after','drag-over');
+        const targetFolderId=tf.dataset.folderId;
+        const folders=loadFolders(key);
+        const dragFolder=folders.find(f=>f.id===folderId);
+        const targetFolder=folders.find(f=>f.id===targetFolderId);
+        if(dragFolder&&targetFolder){
+          if(isBefore||isAfter){
+            // 순서 변경
+            const fromIdx=folders.indexOf(dragFolder);
+            folders.splice(fromIdx,1);
+            let toIdx=folders.indexOf(targetFolder);
+            if(isAfter)toIdx++;
+            folders.splice(toIdx,0,dragFolder);
+            saveFolders(key,folders);renderFn();
+          } else {
+            // 중첩
+            if(!_isFolderDescendant(folders,targetFolderId,folderId)){
+              dragFolder.parent_id=targetFolderId;
+              saveFolders(key,folders);renderFn();
+            }
+          }
+        }
+      }
+    }
+    document.querySelectorAll('.folder-drop-before,.folder-drop-after,.drag-over').forEach(el=>el.classList.remove('folder-drop-before','folder-drop-after','drag-over'));
+    started=false;
+  });
+}
 // ── 터치 드래그 전역 상태 ──
-const _td={el:null,idx:-1,ghost:null,startX:0,startY:0,started:false,timer:null};
+const _td={el:null,idx:-1,ghost:null,startX:0,startY:0,started:false,timer:null,
+  // 폴더 카드 터치 드래그용
+  folderEl:null,folderId:null,folderKey:null,folderViewKey:null,folderItems:null,folderField:null,folderRenderFn:null};
 function _tdCleanup(){
   if(_td.ghost)_td.ghost.remove();
   _td.el=null;_td.idx=-1;_td.ghost=null;_td.started=false;
+  _td.folderEl=null;_td.folderId=null;_td.folderKey=null;_td.folderViewKey=null;
+  _td.folderItems=null;_td.folderField=null;_td.folderRenderFn=null;
   clearTimeout(_td.timer);_td.timer=null;
-  document.querySelectorAll('.item-drag-over,.drag-over').forEach(e=>e.classList.remove('item-drag-over','drag-over'));
+  document.querySelectorAll('.item-drag-over,.drag-over,.folder-drop-before,.folder-drop-after,.item-dragging').forEach(e=>e.classList.remove('item-drag-over','drag-over','folder-drop-before','folder-drop-after','item-dragging'));
 }
 function _tdGhost(el,cx,cy){
   const r=el.getBoundingClientRect();
@@ -11066,11 +11242,12 @@ function rbClearDraw(){
 <!-- ── 내 작업실 오버레이 ── -->
 <div class="std-ov" id="std-ov">
   <div class="std-side" id="std-side">
-    <div class="std-side-hdr"><button class="std-back-btn" onclick="studioClose()">←</button><h3>내 작업실</h3><button class="std-close-btn" onclick="studioClose()">✕</button></div>
+    <div class="std-side-hdr"><button class="std-back-btn" onclick="stdHandleBack()">←</button><h3>내 작업실</h3><button class="std-close-btn" onclick="studioClose()">✕</button></div>
     <div class="std-side-body" id="std-side-body"></div>
   </div>
+  <div class="std-backdrop" id="std-backdrop" onclick="stdCloseSidebar()"></div>
   <div class="std-main" id="std-main">
-    <button class="std-mob-toggle" onclick="document.getElementById('std-side').classList.toggle('hidden')">☰</button>
+    <button class="std-mob-toggle" id="std-mob-toggle" onclick="stdToggleSidebar()">☰</button>
     <div id="std-main-dashboard">
       <div class="std-summary" id="std-summary"></div>
       <div class="std-dash-sections" id="std-dash-sections"></div>
@@ -11158,6 +11335,12 @@ function rbClearDraw(){
   window.studioOpen=async function(){
     if(!user){if(window.flash)flash('로그인 후 이용할 수 있습니다');return;}
     document.getElementById('std-ov').classList.add('on');
+    // 모바일: 사이드바 기본 숨김 → 대시보드 바로 표시
+    if(window.innerWidth<=768){
+      document.getElementById('std-side').classList.add('hidden');
+      const t=document.getElementById('std-mob-toggle');
+      if(t)t.textContent='☰';
+    }
     stdOpen=true;
     stdLoadMemos();
     await studioLoadAll();
@@ -11166,6 +11349,24 @@ function rbClearDraw(){
     document.getElementById('std-ov').classList.remove('on');
     stdOpen=false;
     stdCloseMemoEditorInner();
+  };
+  window.stdCloseSidebar=function(){
+    document.getElementById('std-side').classList.add('hidden');
+    const t=document.getElementById('std-mob-toggle');
+    if(t)t.textContent='☰';
+  };
+  window.stdToggleSidebar=function(){
+    const side=document.getElementById('std-side');
+    const t=document.getElementById('std-mob-toggle');
+    side.classList.toggle('hidden');
+    if(t)t.textContent=side.classList.contains('hidden')?'☰':'←';
+  };
+  window.stdHandleBack=function(){
+    if(window.innerWidth<=768){
+      stdCloseSidebar();
+    } else {
+      studioClose();
+    }
   };
 
   async function studioLoadAll(){
