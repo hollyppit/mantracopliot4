@@ -3611,7 +3611,8 @@ function makeDraggable(el,idx){
         const toIdx=parseInt(tc.dataset.charIdx);
         if(!isNaN(toIdx)&&toIdx!==_td.idx){
           const moved=pdChars.splice(_td.idx,1)[0];
-          pdChars.splice(toIdx,0,moved);
+          const adj=_td.idx<toIdx?toIdx-1:toIdx;
+          pdChars.splice(adj,0,moved);
           saveChars();renderCharCards();
         }
       }
@@ -5100,7 +5101,7 @@ function renderCharCards(){
     makeDraggable(card,i);
     // before/after 표시
     card.addEventListener('dragover', e => {
-      if(!e.dataTransfer.types.includes('text/plain')) return;
+      e.preventDefault();
       document.querySelectorAll('.char-card.ep-drop-before,.char-card.ep-drop-after').forEach(c=>c.classList.remove('ep-drop-before','ep-drop-after'));
       card.classList.remove('item-drag-over');
       const rect=card.getBoundingClientRect();
@@ -7642,7 +7643,7 @@ function renderEpCards(container, episodes){
     makeDraggable(card, realIdx);
     // before/after 표시 및 정확한 위치 계산
     card.addEventListener('dragover', e => {
-      if(!e.dataTransfer.types.includes('text/plain')) return;
+      e.preventDefault();
       document.querySelectorAll('.ep-card.ep-drop-before,.ep-card.ep-drop-after').forEach(c=>c.classList.remove('ep-drop-before','ep-drop-after'));
       card.classList.remove('item-drag-over');
       const rect=card.getBoundingClientRect();
@@ -8959,7 +8960,6 @@ function _initScDrag(){
     });
     el.addEventListener('dragend',()=>{el.classList.remove('item-dragging');_scClearDropMarks();});
     el.addEventListener('dragover',e=>{
-      if(!e.dataTransfer.types.includes('text/plain'))return;
       e.preventDefault();e.stopPropagation();
       _scClearDropMarks();
       const rect=el.getBoundingClientRect();
@@ -8992,7 +8992,6 @@ function _initScDrag(){
     });
     el.addEventListener('dragend',()=>{el.classList.remove('item-dragging');_scClearDropMarks();});
     el.addEventListener('dragover',e=>{
-      if(!e.dataTransfer.types.includes('text/plain'))return;
       e.preventDefault();e.stopPropagation();
       _scClearDropMarks();
       const rect=el.getBoundingClientRect();
