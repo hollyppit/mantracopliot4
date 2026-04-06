@@ -564,12 +564,20 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);back
 .sc-scene:hover .sc-scene-del{opacity:1}
 .sc-scene-del:hover{color:#fca5a5;background:rgba(252,165,165,0.1)}
 .sc-scene-body{padding:0 12px 10px;display:flex;flex-direction:column;gap:6px}
-.sc-scene-content{width:100%;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:inherit;font-size:13px;padding:10px 12px;outline:none;resize:none;line-height:1.7;min-height:60px;transition:border-color 0.2s;field-sizing:content}
+.sc-scene-content{width:100%;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.18);border-radius:8px;color:var(--text);font-family:inherit;font-size:13px;padding:10px 12px;outline:none;resize:none;line-height:1.7;min-height:60px;transition:border-color 0.2s;field-sizing:content}
 .sc-scene-content:focus{border-color:var(--purple-light)}
 .sc-scene-content::placeholder{color:var(--text-faint)}
-.sc-scene-note{width:100%;background:rgba(255,196,0,0.03);border:1px solid rgba(255,196,0,0.12);border-radius:8px;color:var(--text-dim);font-family:inherit;font-size:11px;padding:7px 10px;outline:none;resize:none;line-height:1.6;min-height:28px;transition:border-color 0.2s;field-sizing:content}
-.sc-scene-note:focus{border-color:rgba(255,196,0,0.35)}
+.sc-scene-note{width:100%;background:rgba(255,196,0,0.04);border:1px solid rgba(255,196,0,0.28);border-radius:8px;color:var(--text-dim);font-family:inherit;font-size:11px;padding:7px 10px;outline:none;resize:none;line-height:1.6;min-height:28px;transition:border-color 0.2s;field-sizing:content}
+.sc-scene-note:focus{border-color:rgba(255,196,0,0.55)}
 .sc-scene-note::placeholder{color:var(--text-faint)}
+/* 장면 이미지 업로드 */
+.sc-scene-images{display:flex;flex-wrap:wrap;gap:6px;margin-top:2px}
+.sc-scene-img-thumb{position:relative;width:72px;height:72px;border-radius:6px;overflow:hidden;border:1px solid rgba(255,255,255,0.15);flex-shrink:0}
+.sc-scene-img-thumb img{width:100%;height:100%;object-fit:cover;cursor:pointer}
+.sc-scene-img-del{position:absolute;top:2px;right:2px;width:18px;height:18px;background:rgba(0,0,0,0.7);border:none;border-radius:50%;color:#fca5a5;font-size:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.15s}
+.sc-scene-img-thumb:hover .sc-scene-img-del{opacity:1}
+.sc-scene-img-add{width:72px;height:72px;border:1px dashed rgba(255,255,255,0.22);border-radius:6px;background:rgba(255,255,255,0.03);color:var(--text-faint);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s;flex-shrink:0}
+.sc-scene-img-add:hover{border-color:var(--purple-light);color:var(--purple-light);background:rgba(0,200,224,0.06)}
 /* 추가 버튼 */
 .sc-add-btn{display:flex;align-items:center;justify-content:center;gap:6px;padding:10px;border:1px dashed var(--border2);border-radius:var(--rs);cursor:pointer;color:var(--text-faint);font-size:12px;font-weight:700;transition:all 0.2s;background:none;width:100%;font-family:inherit}
 .sc-add-btn:hover{border-color:var(--purple);color:var(--purple-light);background:rgba(0,200,224,0.04)}
@@ -8007,9 +8015,6 @@ function renderScMain(){
     <button class="sc-add-btn" onclick="scAddScene()" style="flex:1">+ 장면 추가</button>
     <button class="sc-add-group-btn" onclick="scAddGroup()" style="flex:1">+ 그룹 추가</button>
     <button class="sc-add-btn" id="sc-bulk-btn" onclick="scBulkAddScenes()" style="flex:1;background:rgba(244,114,182,0.12);border-color:rgba(244,114,182,0.3);color:#F472B6">🤖 장면 일괄 추가</button>
-  </div>
-  <div class="sc-actions-bar" style="margin-top:4px">
-    <button class="sc-add-btn" id="sc-work-link-btn" onclick="scWorkIntegration()" style="flex:1;background:rgba(0,200,224,0.10);border-color:rgba(0,200,224,0.3);color:var(--purple-light)">📖 작품 연동하기</button>
   </div>`;
 
   // 그룹 + ungrouped 렌더
@@ -8048,6 +8053,8 @@ function _renderGroup(g,gi){
 }
 
 function _renderScene(s,containerId,si){
+  const imgs=(s.images||[]);
+  const imgHtml=imgs.map((src,i)=>`<div class="sc-scene-img-thumb"><img src="${src}" onclick="scViewImage('${s.id}',${i})" title="클릭하여 크게 보기"><button class="sc-scene-img-del" onclick="scDeleteImage('${s.id}',${i})" title="삭제">✕</button></div>`).join('');
   return `<div class="sc-scene" data-scene-id="${s.id}" data-container="${containerId}" data-scene-idx="${si}" draggable="true">
     <div class="sc-scene-hdr">
       <span class="sc-scene-drag">⋮⋮</span>
@@ -8060,6 +8067,10 @@ function _renderScene(s,containerId,si){
         oninput="scUpdateScene('${s.id}','content',this.value)">${s.content||''}</textarea>
       <textarea class="sc-scene-note" placeholder="메모/지시문 (선택사항)"
         oninput="scUpdateScene('${s.id}','note',this.value)">${s.note||''}</textarea>
+      <div class="sc-scene-images">
+        ${imgHtml}
+        <button class="sc-scene-img-add" onclick="scUploadImage('${s.id}')" title="이미지 추가">＋</button>
+      </div>
     </div>
   </div>`;
 }
@@ -8112,6 +8123,40 @@ function scUpdateGroup(groupId,field,value){
   const g=(sc.groups||[]).find(g=>g.id===groupId);
   if(g) g[field]=value;
   _scAutoSave();
+}
+
+// ── 장면 이미지 업로드 ──
+function scUploadImage(sceneId){
+  const input=document.createElement('input');
+  input.type='file';input.accept='image/*';input.multiple=true;
+  input.onchange=async()=>{
+    const sc=_curScript();if(!sc)return;
+    const s=_findScene(sc,sceneId);if(!s)return;
+    if(!s.images)s.images=[];
+    for(const file of input.files){
+      const dataUrl=await new Promise(res=>{const r=new FileReader();r.onload=e=>res(e.target.result);r.readAsDataURL(file);});
+      s.images.push(dataUrl);
+    }
+    _scAutoSave();renderScMain();
+  };
+  input.click();
+}
+function scDeleteImage(sceneId,idx){
+  const sc=_curScript();if(!sc)return;
+  const s=_findScene(sc,sceneId);if(!s||!s.images)return;
+  s.images.splice(idx,1);
+  _scAutoSave();renderScMain();
+}
+function scViewImage(sceneId,idx){
+  const sc=_curScript();if(!sc)return;
+  const s=_findScene(sc,sceneId);if(!s||!s.images)return;
+  const src=s.images[idx];
+  const ov=document.createElement('div');
+  ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:9999;display:flex;align-items:center;justify-content:center;cursor:zoom-out';
+  ov.onclick=()=>ov.remove();
+  const img=document.createElement('img');
+  img.src=src;img.style.cssText='max-width:90vw;max-height:90vh;border-radius:12px;box-shadow:0 8px 40px rgba(0,0,0,0.7)';
+  ov.appendChild(img);document.body.appendChild(ov);
 }
 
 function scToggleGroup(groupId){
