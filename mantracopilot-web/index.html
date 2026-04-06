@@ -536,6 +536,7 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);back
 .sc-ep-item{display:flex;align-items:center;gap:8px;padding:10px 14px;cursor:pointer;font-size:12px;font-weight:600;color:var(--text-dim);transition:all 0.15s;border-left:2px solid transparent;width:100%}
 .sc-ep-item:hover{background:rgba(255,255,255,0.04);color:var(--text)}
 .sc-ep-item.on{background:rgba(0,200,224,0.08);color:var(--green);border-left-color:var(--green)}
+.sc-ep-item.item-drag-over,.sc-ep-item.touch-drag-over{background:rgba(0,200,224,0.14);border-left-color:var(--cyan);color:var(--cyan)}
 .sc-ep-num{font-size:10px;font-weight:800;color:var(--text-faint);min-width:24px;flex-shrink:0}
 .sc-ep-item.on .sc-ep-num{color:var(--green)}
 .sc-ep-title{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1}
@@ -5127,8 +5128,8 @@ function renderCharCards(){
       <div class="char-card-header">
         <span class="char-drag-handle" title="드래그하여 순서 변경">⠿</span>
         <input class="char-name-input" placeholder="이름" value="${escH(ch.name)}"
-          oninput="pdChars[${i}].name=this.value;debounceSaveChars()">
-        <select class="char-role-sel" onchange="pdChars[${i}].role=this.value;debounceSaveChars()">
+          oninput="pdChars[${i}].name=this.value">
+        <select class="char-role-sel" onchange="pdChars[${i}].role=this.value">
           ${ROLES.map(r=>`<option value="${r}" ${ch.role===r?'selected':''}>${r}</option>`).join('')}
         </select>
         <button class="char-del-btn" onclick="deleteChar(${i})">✕</button>
@@ -5140,29 +5141,29 @@ function renderCharCards(){
         }
         <div>
           <div class="char-img-label">${ch.image ? '이미지 변경: 클릭' : '캐릭터 이미지'}</div>
-          ${ch.image ? `<button class="char-img-del" onclick="event.stopPropagation();pdChars[${i}].image='';debounceSaveChars();renderCharCards()">삭제</button>` : ''}
+          ${ch.image ? `<button class="char-img-del" onclick="event.stopPropagation();pdChars[${i}].image='';renderCharCards()">삭제</button>` : ''}
         </div>
         <input type="file" id="char-img-input-${i}" accept="image/*" style="display:none" onchange="handleCharImgUpload(${i},this)">
       </div>
       <div class="char-field">
         <div class="char-fl">외모</div>
         <input class="char-fi" placeholder="외모 특징..." value="${escH(ch.appearance)}"
-          oninput="pdChars[${i}].appearance=this.value;debounceSaveChars()">
+          oninput="pdChars[${i}].appearance=this.value">
       </div>
       <div class="char-field">
         <div class="char-fl">성격</div>
         <input class="char-fi" placeholder="성격 / 기질..." value="${escH(ch.personality)}"
-          oninput="pdChars[${i}].personality=this.value;debounceSaveChars()">
+          oninput="pdChars[${i}].personality=this.value">
       </div>
       <div class="char-field">
         <div class="char-fl">역할 / 목표</div>
         <input class="char-fi" placeholder="이야기 속 역할과 목표..." value="${escH(ch.goal)}"
-          oninput="pdChars[${i}].goal=this.value;debounceSaveChars()">
+          oninput="pdChars[${i}].goal=this.value">
       </div>
       <div class="char-field">
         <div class="char-fl">관계</div>
         <textarea class="char-fi" rows="2" placeholder="주인공과의 관계..."
-          oninput="pdChars[${i}].relation=this.value;debounceSaveChars()">${escH(ch.relation)}</textarea>
+          oninput="pdChars[${i}].relation=this.value">${escH(ch.relation)}</textarea>
       </div>
       <div class="char-dev-btns">
         <button class="char-dev-btn dev" onclick="openCharDev(${i})">✨ 디벨롭하기</button>
@@ -5259,6 +5260,7 @@ function initCharaView(){
       if(standalone.length) pdChars=standalone;
     }
   }
+  _charsSavedBackup=JSON.parse(JSON.stringify(pdChars));
   renderCharSidebar();
   renderChProjBadge();
   renderCharCards();
@@ -5351,9 +5353,6 @@ function openChProjSelect(){
   $('ol-proj-ov').classList.add('on');
 }
 
-let _charSaveTimer=null;
-function debounceSaveChars(){clearTimeout(_charSaveTimer);_charSaveTimer=setTimeout(saveChars,800);}
-
 async function saveChars(){
   // [1] currentProject에 항상 저장 + memory 갱신 (characterStates 포함)
   if(window.currentProject && window.PS){
@@ -5378,6 +5377,8 @@ async function saveChars(){
   if(typeof embedProject==='function')embedProject(pdProj);
   // [3] 스냅샷 패드 저장
   saveCharSnapshot();
+  // [4] 저장 시점 백업 갱신 (미저장 변경 감지용)
+  _charsSavedBackup = JSON.parse(JSON.stringify(pdChars));
   renderCharSidebar();
 }
 
@@ -5402,9 +5403,8 @@ function loadCharSnapshot(snapId){
   const snaps=JSON.parse(localStorage.getItem(snapKey)||'[]');
   const snap=snaps.find(s=>s.id===snapId);
   if(!snap)return;
-  // 현재 작업 자동 저장 후 복원
-  if(pdChars&&pdChars.length)saveCharSnapshot();
   pdChars=JSON.parse(JSON.stringify(snap.chars));
+  _charsSavedBackup=JSON.parse(JSON.stringify(pdChars));
   if(window.currentProject)window.currentProject.characters=pdChars;
   if(pdProj)pdProj.characters=[...pdChars];
   renderCharCards();
@@ -5553,8 +5553,13 @@ const CD_SECTIONS=[
 
 let cdCharIdx=-1;
 let cdCurSec=0;
+let _charsSavedBackup=null; // 마지막 저장 시점의 pdChars 백업
 
 function openCharDev(i){
+  // 다른 카드로 전환 시 이전 캐릭터의 미저장 detail 변경사항 폐기
+  if(cdCharIdx>=0 && cdCharIdx!==i && _charsSavedBackup && _charsSavedBackup[cdCharIdx]){
+    pdChars[cdCharIdx].detail=JSON.parse(JSON.stringify(_charsSavedBackup[cdCharIdx].detail||{}));
+  }
   cdCharIdx=i;
   cdCurSec=0;
   const ch=pdChars[i]||{};
@@ -5683,7 +5688,7 @@ async function autoFillCdSection(secIdx){
         if(f.chips){const row=document.getElementById('chips-'+f.id);if(row)row.querySelectorAll('.cd-chip').forEach(b=>b.classList.remove('on'));}
       }
     });
-    debounceSaveCd();updateCdProgress();renderCdSidebar();
+    updateCdProgress();renderCdSidebar();
     flash(`✨ ${filled}개 항목을 AI가 채웠습니다`);
   }catch(e){
     const msg=String(e.message||e);
@@ -5708,7 +5713,7 @@ function setCdChip(field,val,btn){
     // 텍스트 입력란 비우기
     const inp=document.getElementById('inp-'+field);if(inp)inp.value='';
   }
-  debounceSaveCd();updateCdProgress();
+  updateCdProgress();
 }
 
 function setCdVal(field,val){
@@ -5721,7 +5726,7 @@ function setCdVal(field,val){
     const row=document.getElementById('chips-'+field);
     if(row)row.querySelectorAll('.cd-chip').forEach(b=>b.classList.remove('on'));
   }
-  debounceSaveCd();updateCdProgress();
+  updateCdProgress();
 }
 
 function updateCdProgress(){
@@ -5734,8 +5739,6 @@ function updateCdProgress(){
   $('cd-prog-txt').textContent=pct+'% 완성 ('+filled+'/'+total+')';
 }
 
-let _cdTimer=null;
-function debounceSaveCd(){clearTimeout(_cdTimer);_cdTimer=setTimeout(saveChars,600);}
 
 // ── 캐릭터 이미지 업로드 ──
 let xCharImage='';
@@ -5753,7 +5756,6 @@ function handleCharImgUpload(idx,input){
       const cv=document.createElement('canvas');cv.width=w;cv.height=h;
       cv.getContext('2d').drawImage(img,0,0,w,h);
       pdChars[idx].image=cv.toDataURL('image/jpeg',0.8);
-      debounceSaveChars();
       renderCharCards();
     };
     img.src=e.target.result;
@@ -7890,7 +7892,6 @@ function updateEp(idx,key,val){
       }
     }
   });
-  debounceUpdateMemory();
 }
 
 function updateEpTension(idx,input){
@@ -7902,7 +7903,6 @@ function updateEpTension(idx,input){
   if(label)label.innerHTML=`극적 긴장도 &nbsp;<span style="color:var(--purple-light);font-weight:800">${v}</span>`;
   drawTensionGraph();
   drawMiniTension(idx);
-  debounceUpdateMemory();
 }
 
 function setEpType(idx,type){
@@ -7931,7 +7931,6 @@ function setEpType(idx,type){
     {sel:'textarea[oninput*="lastPanel"]',ph:ph.lastPanel},
   ];
   map.forEach(({sel,ph:p})=>{if(p){const el=card.querySelector(sel);if(el)el.placeholder=p;}});
-  debounceUpdateMemory();
 }
 
 function getCardVisIdx(realIdx){
@@ -8259,8 +8258,6 @@ function loadOutlineSnapshot(snapId){
   const snaps=JSON.parse(localStorage.getItem(snapKey)||'[]');
   const snap=snaps.find(s=>s.id===snapId);
   if(!snap)return;
-  // 현재 작업 자동 저장 후 복원
-  if(olEpisodes&&olEpisodes.length)saveOutlineSnapshot();
   olEpisodes=JSON.parse(JSON.stringify(snap.episodes));
   localStorage.setItem('ol_episodes',JSON.stringify(olEpisodes));
   if(window.currentProject)window.currentProject.episodes=olEpisodes;
@@ -8395,19 +8392,6 @@ function updateMemory(project) {
   window.PS.saveProject(project);
 }
 
-// 필드 편집 시 debounce → updateMemory 자동 호출
-let _epMemTimer = null;
-function debounceUpdateMemory(){
-  clearTimeout(_epMemTimer);
-  _epMemTimer = setTimeout(()=>{
-    if(window.currentProject && window.PS){
-      window.currentProject.episodes = olEpisodes;
-      updateMemory(window.currentProject);
-      localStorage.setItem('ol_episodes', JSON.stringify(olEpisodes));
-    }
-  }, 1200);
-}
-
 // ── 대본 작성 ──
 // 데이터: scScripts = [ { id, title, linkedEp, groups:[], ungrouped:[] } ]
 let scScripts = [];
@@ -8507,7 +8491,7 @@ function renderScSidebar(){
       const on=sc.id===scSelectedId?' on':'';
       const cnt=_countScenesInScript(sc);
       const item=document.createElement('div');item.className='sc-ep-item'+on;
-      item.draggable=true;
+      item.draggable=true;item.dataset.scriptId=sc.id;
 
       // 드래그
       item.addEventListener('dragstart',e=>{
@@ -8519,7 +8503,30 @@ function renderScSidebar(){
       item.addEventListener('dragleave',()=>item.classList.remove('item-drag-over'));
       item.addEventListener('drop',e=>{
         e.preventDefault();e.stopPropagation();item.classList.remove('item-drag-over');
-        const fromIdx=parseInt(e.dataTransfer.getData('text/plain'));
+        const raw=e.dataTransfer.getData('text/plain');
+        // 장면 drop → 현재 대본에서 제거 후 이 대본의 ungrouped에 추가
+        try{
+          const payload=JSON.parse(raw);
+          if(payload.type==='scene'){
+            if(sc.id===scSelectedId)return; // 같은 대본이면 무시
+            const curSc=_curScript();if(!curSc)return;
+            let scene=null;
+            if(payload.from==='ungrouped'){
+              const i=(curSc.ungrouped||[]).findIndex(s=>s.id===payload.id);
+              if(i>=0)scene=curSc.ungrouped.splice(i,1)[0];
+            } else {
+              const g=(curSc.groups||[]).find(g=>g.id===payload.from);
+              if(g){const i=(g.scenes||[]).findIndex(s=>s.id===payload.id);if(i>=0)scene=g.scenes.splice(i,1)[0];}
+            }
+            if(!scene)return;
+            if(!sc.ungrouped)sc.ungrouped=[];
+            sc.ungrouped.push(scene);
+            _scAutoSave();renderScMain();renderScSidebar();
+            return;
+          }
+        }catch(err){}
+        // 대본 재순서
+        const fromIdx=parseInt(raw);
         if(isNaN(fromIdx)||fromIdx===globalIdx)return;
         const moved=scScripts.splice(fromIdx,1)[0];
         const newTo=scScripts.indexOf(sc);
@@ -8949,11 +8956,25 @@ function _scClearDropMarks(){
 }
 
 function _initScDrag(){
+  // ── 드래그 허용 플래그 (핸들 mousedown 시에만 드래그 허용) ──
+  // e.target이 항상 draggable 요소 자신이라 closest 체크가 불가능하므로 플래그 사용
+  let _groupDragReady=false,_sceneDragReady=false;
+
+  document.querySelectorAll('.sc-group-drag').forEach(h=>{
+    h.addEventListener('mousedown',()=>{_groupDragReady=true;});
+    h.addEventListener('touchstart',()=>{_groupDragReady=true;},{passive:true});
+  });
+  document.querySelectorAll('.sc-scene-drag').forEach(h=>{
+    h.addEventListener('mousedown',()=>{_sceneDragReady=true;});
+    h.addEventListener('touchstart',()=>{_sceneDragReady=true;},{passive:true});
+  });
+  document.addEventListener('mouseup',()=>{_groupDragReady=false;_sceneDragReady=false;},{passive:true});
+
   // ── 그룹 드래그 ──
   document.querySelectorAll('.sc-group[draggable]').forEach(el=>{
     el.addEventListener('dragstart',e=>{
-      // 그룹 헤더/핸들에서만 드래그 허용
-      if(!e.target.closest('.sc-group-hdr')){e.preventDefault();return;}
+      if(!_groupDragReady){e.preventDefault();return;}
+      _groupDragReady=false;
       e.dataTransfer.setData('text/plain',JSON.stringify({type:'group',id:el.dataset.groupId}));
       e.dataTransfer.effectAllowed='move';
       setTimeout(()=>el.classList.add('item-dragging'),0);
@@ -8983,9 +9004,8 @@ function _initScDrag(){
   // ── 장면 드래그 ──
   document.querySelectorAll('.sc-scene[draggable]').forEach(el=>{
     el.addEventListener('dragstart',e=>{
-      // 드래그 핸들(.sc-scene-drag) 또는 헤더 영역에서만 허용 — textarea/input 제외
-      if(e.target.tagName==='TEXTAREA'||e.target.tagName==='INPUT'||e.target.tagName==='BUTTON'){e.preventDefault();return;}
-      if(!e.target.closest('.sc-scene-hdr')){e.preventDefault();return;}
+      if(!_sceneDragReady){e.preventDefault();return;}
+      _sceneDragReady=false;
       e.dataTransfer.setData('text/plain',JSON.stringify({type:'scene',id:el.dataset.sceneId,from:el.dataset.container}));
       e.dataTransfer.effectAllowed='move';
       setTimeout(()=>el.classList.add('item-dragging'),0);
@@ -9008,8 +9028,6 @@ function _initScDrag(){
         const payload=JSON.parse(e.dataTransfer.getData('text/plain'));
         if(payload.type==='scene'){
           _scReorderSceneAdv(payload.id,payload.from,el.dataset.container,el.dataset.sceneId,isBefore);
-        } else if(payload.type==='group'){
-          // 그룹→장면 위 드롭: 장면의 컨테이너로 그룹 이동 무시 (아무 동작 없음)
         }
       }catch(err){}
     });
@@ -9176,6 +9194,7 @@ function _initScTouchDrag(){
       if(ghost)ghost.style.display='none';
       const under=document.elementFromPoint(t.clientX,t.clientY);
       if(ghost)ghost.style.display='';
+      document.querySelectorAll('.sc-ep-item.touch-drag-over').forEach(el=>el.classList.remove('touch-drag-over'));
       if(under){
         const tf=under.closest('.sc-scene:not(.item-dragging)');
         if(tf){
@@ -9183,6 +9202,8 @@ function _initScTouchDrag(){
           if(t.clientY<rect.top+rect.height/2)tf.classList.add('sc-drop-before');
           else tf.classList.add('sc-drop-after');
         }
+        const si=under.closest('.sc-ep-item');
+        if(si&&si.dataset.scriptId&&si.dataset.scriptId!==scSelectedId)si.classList.add('touch-drag-over');
       }
     },{passive:false});
     handle.addEventListener('touchend',e=>{
@@ -9194,6 +9215,7 @@ function _initScTouchDrag(){
       if(ghost){ghost.remove();ghost=null;}
       card.classList.remove('item-dragging');
       _scClearDropMarks();
+      document.querySelectorAll('.sc-ep-item.touch-drag-over').forEach(el=>el.classList.remove('touch-drag-over'));
       if(under){
         const tf=under.closest('.sc-scene:not(.item-dragging)');
         if(tf&&tf!==card){
@@ -9206,6 +9228,26 @@ function _initScTouchDrag(){
         const gb=under.closest('.sc-group-body');
         if(gb&&gb!==card.closest('.sc-group-body')){
           _scMoveScene(card.dataset.sceneId,card.dataset.container,gb.dataset.groupId);
+          started=false;return;
+        }
+        // 사이드바 다른 대본으로 이동
+        const sidebarItem=under.closest('.sc-ep-item');
+        if(sidebarItem){
+          const targetScriptId=sidebarItem.dataset.scriptId;
+          if(targetScriptId&&targetScriptId!==scSelectedId){
+            const curSc=_curScript();const tgtSc=scScripts.find(s=>s.id===targetScriptId);
+            if(curSc&&tgtSc){
+              let scene=null;
+              if(card.dataset.container==='ungrouped'){
+                const i=(curSc.ungrouped||[]).findIndex(s=>s.id===card.dataset.sceneId);
+                if(i>=0)scene=curSc.ungrouped.splice(i,1)[0];
+              } else {
+                const g=(curSc.groups||[]).find(g=>g.id===card.dataset.container);
+                if(g){const i=(g.scenes||[]).findIndex(s=>s.id===card.dataset.sceneId);if(i>=0)scene=g.scenes.splice(i,1)[0];}
+              }
+              if(scene){if(!tgtSc.ungrouped)tgtSc.ungrouped=[];tgtSc.ungrouped.push(scene);_scAutoSave();renderScMain();renderScSidebar();}
+            }
+          }
           started=false;return;
         }
       }
