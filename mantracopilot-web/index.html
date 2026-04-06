@@ -560,11 +560,12 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);back
 .sc-group.collapsed .sc-group-body{display:none}
 .sc-group.collapsed .sc-group-collapse{transform:rotate(-90deg)}
 /* 장면 카드 */
-.sc-scene{background:var(--surface);border:1px solid rgba(255,255,255,0.22);border-radius:var(--rs);overflow:hidden;transition:border-color 0.2s;box-shadow:0 1px 4px rgba(0,0,0,0.3)}
-.sc-scene:hover{border-color:rgba(255,255,255,0.38);box-shadow:0 2px 8px rgba(0,0,0,0.4)}
+.sc-scene{background:var(--surface);border:1px solid rgba(255,255,255,0.38);border-radius:var(--rs);overflow:hidden;transition:border-color 0.2s,box-shadow 0.2s;box-shadow:0 1px 6px rgba(0,0,0,0.35)}
+.sc-scene:hover{border-color:rgba(0,200,224,0.55);box-shadow:0 2px 12px rgba(0,0,0,0.45)}
 .sc-scene.item-dragging{opacity:0.4}
 .sc-scene.item-drag-over{border-color:var(--purple-light);box-shadow:0 0 0 2px rgba(0,200,224,0.15)}
 .sc-scene-hdr{display:flex;align-items:center;gap:8px;padding:10px 12px;user-select:none;border-bottom:1px solid rgba(255,255,255,0.08)}
+.sc-scene-num{font-size:10px;font-weight:800;color:var(--text-faint);background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:5px;padding:1px 6px;flex-shrink:0;min-width:22px;text-align:center;letter-spacing:0.01em}
 .sc-scene-drag{color:var(--text-faint);font-size:13px;cursor:grab;flex-shrink:0;letter-spacing:-2px}
 .sc-scene-drag:active{cursor:grabbing}
 .sc-scene-title-input{background:none;border:none;color:#fff;font-size:13px;font-weight:700;font-family:inherit;outline:none;flex:1;min-width:0;padding:2px 4px;border-radius:4px;transition:background 0.2s}
@@ -8007,6 +8008,7 @@ function debounceUpdateMemory(){
 let scScripts = [];
 let scSelectedId = null;  // 선택된 대본 id
 let _scSaveTimer = null;
+let _sceneNumMap = {}; // sceneId → 전역 번호
 
 function initScript(){
   // 프로젝트 배지
@@ -8354,6 +8356,12 @@ function renderScMain(){
     <button class="sc-add-btn" id="sc-bulk-btn" onclick="scBulkAddScenes()" style="flex:1;background:rgba(244,114,182,0.12);border-color:rgba(244,114,182,0.3);color:#F472B6">🤖 장면 일괄 추가</button>
   </div>`;
 
+  // 전역 장면 번호맵 빌드 (그룹 순 → ungrouped 순)
+  _sceneNumMap={};
+  let _scNum=1;
+  (sc.groups||[]).forEach(g=>{(g.scenes||[]).forEach(s=>{_sceneNumMap[s.id]=_scNum++;});});
+  (sc.ungrouped||[]).forEach(s=>{_sceneNumMap[s.id]=_scNum++;});
+
   // 그룹 + ungrouped 렌더
   html+=`<div class="sc-body" id="sc-body">`;
   (sc.groups||[]).forEach((g,gi)=>{
@@ -8392,9 +8400,11 @@ function _renderGroup(g,gi){
 function _renderScene(s,containerId,si){
   const imgs=(s.images||[]);
   const imgHtml=imgs.map((src,i)=>`<div class="sc-scene-img-thumb"><img src="${src}" onclick="scViewImage('${s.id}',${i})" title="클릭하여 크게 보기"><button class="sc-scene-img-del" onclick="scDeleteImage('${s.id}',${i})" title="삭제">✕</button></div>`).join('');
+  const num=_sceneNumMap[s.id]||'';
   return `<div class="sc-scene" data-scene-id="${s.id}" data-container="${containerId}" data-scene-idx="${si}" draggable="true">
     <div class="sc-scene-hdr">
       <span class="sc-scene-drag">⋮⋮</span>
+      <span class="sc-scene-num">${num}</span>
       <input class="sc-scene-title-input" value="${(s.title||'').replace(/"/g,'&quot;')}" placeholder="장면 제목"
         onchange="scUpdateScene('${s.id}','title',this.value)">
       <button class="sc-scene-del" onclick="scDeleteScene('${s.id}')">✕</button>
@@ -8581,6 +8591,19 @@ function _initScDrag(){
       }catch(err){}
     });
   });
+  // sc-body 전체 드롭존 (ungrouped 영역 끝에 추가)
+  const scBody=document.getElementById('sc-body');
+  if(scBody){
+    scBody.addEventListener('dragover',e=>{e.preventDefault();});
+    scBody.addEventListener('drop',e=>{
+      if(e.target.closest('.sc-scene')||e.target.closest('.sc-group')||e.target.closest('.sc-group-body'))return;
+      e.preventDefault();
+      try{
+        const payload=JSON.parse(e.dataTransfer.getData('text/plain'));
+        if(payload.type==='scene') _scMoveScene(payload.id,payload.from,'ungrouped');
+      }catch(err){}
+    });
+  }
 }
 
 function _scReorderGroup(fromId,toId){
