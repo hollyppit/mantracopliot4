@@ -2783,7 +2783,7 @@ window.currentProject = proj;
     const pid = localStorage.getItem('ch_proj') || localStorage.getItem('ol_proj');
     if (pid) {
       try {
-        const mp = JSON.parse(localStorage.getItem('mp') || '[]');
+        const mp = _mpList();
         const found = mp.find(p => p.id === pid);
         if (found && Array.isArray(found.characters) && found.characters.length) {
           proj.characters = found.characters.map(ch => ({
@@ -2838,12 +2838,19 @@ function getProjectText() {
 }
 
 async function getEmbedding(text) {
-  const res = await fetch("/api/embed", {
-    method: "POST",
-    body: JSON.stringify({ text }),
-  });
-  const data = await res.json();
-  return data.embedding;
+  try {
+    const res = await fetch("/api/embed", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ text }),
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    return data.embedding || null;
+  } catch (e) {
+    console.error('getEmbedding error:', e);
+    return null;
+  }
 }
 
 async function getRAG(input) {
@@ -3050,6 +3057,9 @@ const CHAR_BUILDUP=[
 ];
 // ── 유틸 ──
 const $=id=>document.getElementById(id);
+// localStorage JSON.parse 안전 헬퍼
+function _lsGet(key,fallback=[]){try{const v=localStorage.getItem(key);return v?JSON.parse(v):fallback;}catch(e){return fallback;}}
+function _mpList(){return _lsGet('mp',[]);}
 
 // ── 아이콘 시스템 (stroke-based SVG) ──
 const ICONS={
@@ -3140,7 +3150,7 @@ const md=t=>{
 let activeFolders={mp:null,ol:null,ch:null,wb:null,sc:null};
 let _sidebarFolderCollapsed={mp:false,ol:false,sc:false,ch:false};
 var _tlCollapsed=false;
-function loadFolders(key){return JSON.parse(localStorage.getItem(key)||'[]');}
+function loadFolders(key){try{return JSON.parse(localStorage.getItem(key)||'[]');}catch(e){return [];}}
 function saveFolders(key,folders){localStorage.setItem(key,JSON.stringify(folders));}
 function addFolder(key,renderFn,parentId){
   openFolderNameModal('',(name)=>{
@@ -3229,11 +3239,20 @@ function renderFolderIconGrid(container,key,viewKey,items,folderField,renderFn){
     container.appendChild(grid);
     return;
   }
+  // 스냅샷 카운트 헬퍼 (캐릭터 폴더에서만 동작)
+  function _snapCountInFolder(folderId){
+    if(viewKey!=='ch')return 0;
+    const projId=(window.pdProj&&window.pdProj.id)||(window.currentProject&&window.currentProject.id)||'_none';
+    const snaps=_lsGet('ch_snapshots_'+projId,[]);
+    return snaps.filter(s=>s.folder_id===folderId).length;
+  }
   const grid=document.createElement('div');grid.className='folder-grid';
   visibleFolders.forEach((folder,fi)=>{
     const itemCount=items.filter(it=>it[folderField]===folder.id).length;
     const childCount=folders.filter(f=>f.parent_id===folder.id).length;
-    const totalLabel=childCount?`${itemCount}개 · ${childCount}폴더`:`${itemCount}개`;
+    const snapCount=_snapCountInFolder(folder.id);
+    const contentCount=itemCount+snapCount;
+    const totalLabel=childCount?`${contentCount}개 · ${childCount}폴더`:`${contentCount}개`;
     const card=document.createElement('div');card.className='folder-icon-card';
     card.draggable=true;
     card.dataset.folderId=folder.id;
@@ -3304,8 +3323,24 @@ function renderFolderIconGrid(container,key,viewKey,items,folderField,renderFn){
           }
         }
       }
-      // 아이템→폴더
+      // 아이템 또는 스냅샷→폴더
       if(!isBefore&&!isAfter){
+        // 스냅샷 드롭 처리 (캐릭터 폴더에서만)
+        const snapId=e.dataTransfer.getData('application/snap-id');
+        if(snapId&&viewKey==='ch'){
+          const projId=(window.pdProj&&window.pdProj.id)||(window.currentProject&&window.currentProject.id)||'_none';
+          const snapKey='ch_snapshots_'+projId;
+          const snaps=_lsGet(snapKey,[]);
+          const snap=snaps.find(s=>s.id===snapId);
+          if(snap){
+            snap.folder_id=folder.id;
+            localStorage.setItem(snapKey,JSON.stringify(snaps));
+            if(typeof renderCharSidebar==='function')renderCharSidebar();
+            flash(`'${folder.name}' 폴더로 이동`);
+          }
+          return;
+        }
+        // 일반 아이템 드롭
         const srcIdx=parseInt(e.dataTransfer.getData('text/plain'));
         if(isNaN(srcIdx)||!items[srcIdx])return;
         items[srcIdx][folderField]=folder.id;
@@ -3487,10 +3522,14 @@ function _makeSnapPadTouchDrag(pad,idx,snapKey,renderFn){
     // 드롭 위치 표시
     const sec=pad.closest('.snap-section');
     if(sec)sec.querySelectorAll('.snap-drop-before,.snap-drop-after').forEach(el=>el.classList.remove('snap-drop-before','snap-drop-after'));
+    document.querySelectorAll('.folder-icon-card.drag-over').forEach(el=>el.classList.remove('drag-over'));
     if(ghost)ghost.style.display='none';
     const under=document.elementFromPoint(t.clientX,t.clientY);
     if(ghost)ghost.style.display='';
     if(under){
+      // 폴더 카드 위에 있는지 확인
+      const fc=under.closest('.folder-icon-card:not(.add-card)');
+      if(fc){fc.classList.add('drag-over');return;}
       const tf=under.closest('.snap-pad:not(.snap-dragging)');
       if(tf&&tf!==pad){
         const rect=tf.getBoundingClientRect();
@@ -3507,14 +3546,31 @@ function _makeSnapPadTouchDrag(pad,idx,snapKey,renderFn){
     const under=document.elementFromPoint(t.clientX,t.clientY);
     if(ghost){ghost.remove();ghost=null;}
     pad.classList.remove('snap-dragging');
+    document.querySelectorAll('.folder-icon-card.drag-over').forEach(el=>el.classList.remove('drag-over'));
     const sec=pad.closest('.snap-section');
     if(under){
+      // 폴더 카드에 드롭됐으면 폴더 이동
+      const fc=under.closest('.folder-icon-card:not(.add-card)');
+      if(fc&&fc.dataset.folderId){
+        const folderId=fc.dataset.folderId;
+        const projId=(window.pdProj&&window.pdProj.id)||(window.currentProject&&window.currentProject.id)||'_none';
+        const cur=_lsGet(snapKey,[]);
+        const snap=cur[idx];
+        if(snap){
+          snap.folder_id=folderId;
+          localStorage.setItem(snapKey,JSON.stringify(cur));
+          renderFn();
+          flash(`폴더로 이동`);
+        }
+        started=false;return;
+      }
+      // 스냅 카드 간 순서 변경
       const tf=under.closest('.snap-pad:not(.snap-dragging)');
       if(tf&&tf!==pad){
         const isBefore=tf.classList.contains('snap-drop-before');
         tf.classList.remove('snap-drop-before','snap-drop-after');
         const toSnapId=tf.dataset.snapId;
-        const cur=JSON.parse(localStorage.getItem(snapKey)||'[]');
+        const cur=_lsGet(snapKey,[]);
         const [moved]=cur.splice(idx,1);
         let insertAt=cur.findIndex(s=>s.id===toSnapId);
         if(insertAt<0)insertAt=cur.length;
@@ -3889,7 +3945,7 @@ let synPdfText='';
 
 function openSynModal(pid){
   synEditProjId=pid;
-  const projs=JSON.parse(localStorage.getItem('mp')||'[]');
+  const projs=_mpList();
   const p=projs.find(pr=>pr.id===pid);if(!p)return;
   const nm=$('syn-modal-proj-name');if(nm)nm.textContent='📚 '+p.title;
   const ta=$('syn-text-input');if(ta)ta.value=p.synopsis||'';
@@ -3923,7 +3979,7 @@ async function saveSynModal(){
     text=synPdfText;
   }
   if(!text){flash('내용을 입력해주세요');return;}
-  const arr=JSON.parse(localStorage.getItem('mp')||'[]');
+  const arr=_mpList();
   const idx=arr.findIndex(p=>p.id===synEditProjId);
   if(idx<0){flash('작품을 찾을 수 없습니다');return;}
   arr[idx].synopsis=text;
@@ -4023,8 +4079,8 @@ function updateHomeContext() {
   if (!titleEl) return;
 
   const proj = window.PS && window.PS.getCurrentProject();
-  const hasPastProjects = JSON.parse(localStorage.getItem('mp') || '[]').length > 0;
-  const hasActiveProject = proj && (proj.title || proj.episodes.length);
+  const hasPastProjects = _mpList().length > 0;
+  const hasActiveProject = proj && (proj.title || proj.episodes?.length);
 
   // 섹션 order 제어 헬퍼
   const setOrder = (id, val) => { const el = document.getElementById(id); if (el) el.style.order = val; };
@@ -4076,8 +4132,8 @@ function renderProjectBoard() {
   const proj = window.PS.getCurrentProject();
 
   // 프로젝트 없거나 기본 빈 프로젝트(제목 없음)일 때
-  if (!proj || (!proj.title && !proj.episodes.length)) {
-    const hasPastProjects = JSON.parse(localStorage.getItem('mp') || '[]').length > 0;
+  if (!proj || (!proj.title && !proj.episodes?.length)) {
+    const hasPastProjects = _mpList().length > 0;
 
     if (hasPastProjects) {
       // 재방문 — 기존 작품은 있으나 현재 선택된 작품 없음
@@ -4178,7 +4234,7 @@ function openProjectMemoryModal(){
   switchOlTab('plan');
   const ta=$('ol-text-input');if(ta)ta.value='';
   const ps=$('ol-pdf-status');if(ps){ps.textContent='';ps.className='ol-pdf-status';}
-  const projs=JSON.parse(localStorage.getItem('mp')||'[]');
+  const projs=_mpList();
   const list=$('ol-proj-list');
   list.innerHTML='';
   if(!projs.length){
@@ -4396,7 +4452,7 @@ function renderProgressPanel() {
   if (!el) return;
 
   // mp 기획안 목록 수집
-  const mpArr = JSON.parse(localStorage.getItem('mp') || '[]');
+  const mpArr = _mpList();
 
   // currentProject가 mp에 없으면 앞에 추가
   const curProj = window.PS && window.PS.getCurrentProject ? window.PS.getCurrentProject() : null;
@@ -4506,7 +4562,7 @@ async function loadMyPlan(){
   const cb=$('mode-btn-creator');
   if(cb)cb.classList.add('on');
   // 프로젝트 로드 (더미 없이)
-  const local=JSON.parse(localStorage.getItem('mp')||'[]');
+  const local=_mpList();
   if(!user){
     projects=local;
   }else{
@@ -4697,7 +4753,7 @@ async function _runImportProject(text,statusEl){
     id:proj.id,title:proj.title,genre:proj.genre,synopsis:proj.synopsis,
     characters:proj.characters,episodes:[],answer_history:[],routine_type:'long'
   };
-  const mpArr=JSON.parse(localStorage.getItem('mp')||'[]');
+  const mpArr=_mpList();
   mpArr.unshift(mpEntry);
   localStorage.setItem('mp',JSON.stringify(mpArr.slice(0,50)));
 
@@ -4774,7 +4830,7 @@ async function startWorkReview(pid){
 
 // ── 프로젝트 ──
 async function loadProjects(){
-  const local=JSON.parse(localStorage.getItem('mp')||'[]');
+  const local=_mpList();
   if(!user){
     projects=local.length?local:[{id:'d1',title:'귀신들린 그래플러',genre:'액션/스릴러',synopsis:'격투기 선수 주인공이 귀신에 씐 채로 링 위에서 싸우는 이야기.',answer_history:[],routine_type:'long'}];
     renderProjects();return;
@@ -4802,7 +4858,7 @@ let pdChars=[];
 
 async function openProjDetail(pid, isNew){
   // localStorage에서 먼저 찾기
-  const arr=JSON.parse(localStorage.getItem('mp')||'[]');
+  const arr=_mpList();
   let proj=arr.find(p=>p.id===pid)||null;
   // Supabase에서 최신 데이터로 덮어쓰기
   if(user){
@@ -4895,7 +4951,7 @@ async function saveSynopsisEdit(){
   const text=$('syn-textarea').value.trim();
   pdProj.synopsis=text;
   // localStorage 업데이트
-  const arr=JSON.parse(localStorage.getItem('mp')||'[]');
+  const arr=_mpList();
   const idx=arr.findIndex(p=>p.id===pdProj.id);
   if(idx>=0){arr[idx].synopsis=text;localStorage.setItem('mp',JSON.stringify(arr));}
   // Supabase 업데이트
@@ -4949,7 +5005,7 @@ async function savePlanItem(idx){
   const ta=$('psi-ta-'+idx);
   if(!ta||!pdProj)return;
   pdProj.answer_history[idx].value=ta.value.trim();
-  const arr=JSON.parse(localStorage.getItem('mp')||'[]');
+  const arr=_mpList();
   const i=arr.findIndex(p=>p.id===pdProj.id);
   if(i>=0){arr[i].answer_history=pdProj.answer_history;localStorage.setItem('mp',JSON.stringify(arr));}
   if(user){
@@ -4962,7 +5018,7 @@ async function savePlanItem(idx){
 async function deleteProject(){
   if(!pdProj)return;
   if(!confirm(`'${pdProj.title}' 기획안을 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.`))return;
-  const arr=JSON.parse(localStorage.getItem('mp')||'[]');
+  const arr=_mpList();
   localStorage.setItem('mp',JSON.stringify(arr.filter(p=>p.id!==pdProj.id)));
   if(user){
     try{await sb.from('projects').delete().eq('id',pdProj.id).eq('user_id',user.id);}catch(e){}
@@ -4990,7 +5046,7 @@ async function deleteProject(){
 
 function quickDeleteProj(pid,title){
   if(!confirm(`'${title}' 기획안을 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.`))return;
-  const arr=JSON.parse(localStorage.getItem('mp')||'[]');
+  const arr=_mpList();
   localStorage.setItem('mp',JSON.stringify(arr.filter(p=>p.id!==pid)));
   if(user){
     sb.from('projects').delete().eq('id',pid).eq('user_id',user.id).then();
@@ -5017,7 +5073,7 @@ function openEditProjModal(pid){
   const newT=prompt('변경할 제목을 입력하세요:', p.title);
   if(newT && newT.trim()){
     p.title=newT.trim();
-    const arr=JSON.parse(localStorage.getItem('mp')||'[]');
+    const arr=_mpList();
     const i=arr.findIndex(item=>item.id===pid);
     if(i>=0){arr[i].title=newT.trim();localStorage.setItem('mp',JSON.stringify(arr));}
     if(user){
@@ -5041,7 +5097,7 @@ async function resetProjPlan() {
   pdProj.answer_history = [];
   pdProj.synopsis = '';
   $('syn-textarea').value = '';
-  const arr = JSON.parse(localStorage.getItem('mp')||'[]');
+  const arr = _mpList();
   const idx = arr.findIndex(p=>p.id===pdProj.id);
   if(idx>=0){ arr[idx].answer_history=[]; arr[idx].synopsis=''; localStorage.setItem('mp',JSON.stringify(arr)); }
   if(user){ try{ await sb.from('projects').update({answer_history:[],synopsis:''}).eq('id',pdProj.id).eq('user_id',user.id); }catch(e){} }
@@ -5066,7 +5122,7 @@ async function resetChars() {
   if(isStandalone){ renderCharCards(); } else { renderCharCards(); }
   if(pdProj){
     pdProj.characters = [];
-    const arr = JSON.parse(localStorage.getItem('mp')||'[]');
+    const arr = _mpList();
     const idx = arr.findIndex(p=>p.id===pdProj.id);
     if(idx>=0){ arr[idx].characters=[]; localStorage.setItem('mp',JSON.stringify(arr)); }
     if(user){ try{ await sb.from('projects').update({characters:[]}).eq('id',pdProj.id).eq('user_id',user.id); }catch(e){} }
@@ -5224,7 +5280,7 @@ function initCharaView(){
     if(!pdProj){
       const savedProj=localStorage.getItem('ch_proj')||localStorage.getItem('ol_proj');
       if(savedProj){
-        const p=(JSON.parse(localStorage.getItem('mp')||'[]')).find(pj=>pj.id===savedProj);
+        const p=(_mpList()).find(pj=>pj.id===savedProj);
         if(p){pdProj=p;selProj=p;}
       }
     }
@@ -5232,7 +5288,7 @@ function initCharaView(){
     // [2] Fallback: mp 배열에서 로드
     const savedProj=localStorage.getItem('ch_proj')||localStorage.getItem('ol_proj');
     if(savedProj){
-      const projs=JSON.parse(localStorage.getItem('mp')||'[]');
+      const projs=_mpList();
       const p=projs.find(pj=>pj.id===savedProj);
       if(p){
         pdProj=p;
@@ -5289,7 +5345,7 @@ function renderChProjBadge(){
 function renderCharSidebar(){
   const sidebar=$('chara-sidebar');
   if(!sidebar)return;
-  const projs=JSON.parse(localStorage.getItem('mp')||'[]');
+  const projs=_mpList();
   const currentId=window.currentProject&&window.currentProject.id;
   sidebar.innerHTML='<div class="chara-sidebar-title">내 작품</div>';
   if(!projs.length){
@@ -5315,10 +5371,12 @@ function renderCharSidebar(){
   chFolderDiv.appendChild(_makeFolderToggle('ch',_sidebarFolderCollapsed.ch));
   if(!_sidebarFolderCollapsed.ch){
     const _chAf=activeFolders.ch;
+    // 폴더 열기/닫기·순서변경 시 메인 카드 + 사이드바 모두 갱신
+    const _chFolderRenderFn=()=>{renderCharCards();renderCharSidebar();};
     if(_chAf){
-      renderFolderOpenBar(chFolderDiv,_CHAR_FOLDER_KEY,'ch',pdChars,'folder',renderCharCards);
+      renderFolderOpenBar(chFolderDiv,_CHAR_FOLDER_KEY,'ch',pdChars,'folder',_chFolderRenderFn);
     }
-    renderFolderIconGrid(chFolderDiv,_CHAR_FOLDER_KEY,'ch',pdChars,'folder',renderCharCards);
+    renderFolderIconGrid(chFolderDiv,_CHAR_FOLDER_KEY,'ch',pdChars,'folder',_chFolderRenderFn);
   }
   sidebar.appendChild(chFolderDiv);
   // 스냅샷 패드 섹션
@@ -5329,7 +5387,7 @@ function openChProjSelect(){
   olSelectSource='ch'; switchOlTab('plan');
   const ta=$('ol-text-input');if(ta)ta.value='';
   const ps=$('ol-pdf-status');if(ps){ps.textContent='';ps.className='ol-pdf-status';}
-  const projs=JSON.parse(localStorage.getItem('mp')||'[]');
+  const projs=_mpList();
   const list=$('ol-proj-list'); list.innerHTML='';
   if(!projs.length){list.innerHTML='<div style="color:var(--text-faint);font-size:13px;padding:12px">저장된 작품이 없어요.<br>아래 탭에서 직접 입력해 보세요.</div>';}
   projs.forEach(p=>{
@@ -5368,7 +5426,7 @@ async function saveChars(){
   // [2] pdProj 연동 시 mp 배열 및 Supabase 동기화
   if(!pdProj)return;
   pdProj.characters=[...pdChars];
-  const arr=JSON.parse(localStorage.getItem('mp')||'[]');
+  const arr=_mpList();
   const idx=arr.findIndex(p=>p.id===pdProj.id);
   if(idx>=0){arr[idx].characters=pdChars;localStorage.setItem('mp',JSON.stringify(arr));}
   if(user){
@@ -5390,7 +5448,7 @@ function saveCharSnapshot(){
   const now=new Date();
   const label=`${pdChars.length}명 · ${(now.getMonth()+1)}/${now.getDate()} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
   const preview=pdChars.slice(0,3).map(c=>`${c.name||'(이름 없음)'} · ${c.role||''}`).join('\n')+(pdChars.length>3?`\n외 ${pdChars.length-3}명`:'');
-  const snap={id:'csnap_'+Date.now(),label,preview,chars:JSON.parse(JSON.stringify(pdChars)),savedAt:now.toISOString()};
+  const snap={id:'csnap_'+Date.now(),label,preview,chars:JSON.parse(JSON.stringify(pdChars)),savedAt:now.toISOString(),folder_id:null};
   snaps.unshift(snap);
   if(snaps.length>10)snaps.length=10;
   localStorage.setItem(snapKey,JSON.stringify(snaps));
@@ -5423,22 +5481,53 @@ function deleteCharSnapshot(snapId){
 function renderCharSnapshots(container){
   const projId=(pdProj&&pdProj.id)||(window.currentProject&&window.currentProject.id)||'_none';
   const snapKey='ch_snapshots_'+projId;
-  const snaps=JSON.parse(localStorage.getItem(snapKey)||'[]');
-  if(!snaps.length)return;
+  const allSnaps=_lsGet(snapKey,[]);
+  if(!allSnaps.length)return;
+
+  // 현재 활성 폴더 기준으로 필터링
+  const activeFolderId=activeFolders.ch||null;
+  const snaps=allSnaps.filter(s=>(s.folder_id||null)===activeFolderId);
+  // 폴더 안에 있는 스냅 수 (비활성 상태에서 hint 표시용)
+  const folderedCount=allSnaps.filter(s=>s.folder_id).length;
+
   const sec=document.createElement('div');sec.className='snap-section';
   const titleRow=document.createElement('div');titleRow.className='snap-section-title';
-  titleRow.innerHTML='<span>📋 저장된 캐릭터</span>';
+  const hintLabel=(!activeFolderId&&folderedCount>0)?`<span style="color:var(--text-faint);font-size:9px;margin-left:4px">(폴더 ${folderedCount}개 포함)</span>`:'';
+  titleRow.innerHTML=`<span>📋 저장된 캐릭터${hintLabel}</span>`;
   sec.appendChild(titleRow);
+
+  if(!snaps.length){
+    const empty=document.createElement('div');
+    empty.style.cssText='font-size:10px;color:var(--text-faint);padding:4px 2px 6px;line-height:1.5';
+    empty.textContent=activeFolderId?'이 폴더에 저장된 캐릭터가 없습니다.':'저장된 캐릭터가 없습니다.';
+    sec.appendChild(empty);
+    container.appendChild(sec);
+    return;
+  }
+
   snaps.forEach((snap,i)=>{
+    // allSnaps 기준 실제 인덱스 (재정렬 시 필요)
+    const realIdx=allSnaps.findIndex(s=>s.id===snap.id);
     const pad=document.createElement('div');pad.className='snap-pad';
     pad.draggable=true;
     pad.dataset.snapId=snap.id;
-    pad.innerHTML=`<div class="snap-pad-label">${snap.label}</div><div class="snap-pad-preview">${snap.preview}</div><div class="snap-pad-footer"><button class="snap-pad-load">불러오기</button><button class="snap-pad-del" title="삭제">✕</button></div>`;
+    // 폴더 안에 있는 경우 꺼내기 버튼 표시
+    const folderOutBtn=snap.folder_id?`<button class="snap-pad-out" title="폴더에서 꺼내기" style="background:none;border:none;color:var(--text-faint);font-size:10px;cursor:pointer;padding:2px 4px;border-radius:4px;line-height:1;opacity:0.7">↑폴더 해제</button>`:'';
+    pad.innerHTML=`<div class="snap-pad-label">${snap.label}</div><div class="snap-pad-preview">${snap.preview}</div><div class="snap-pad-footer">${folderOutBtn}<button class="snap-pad-load">불러오기</button><button class="snap-pad-del" title="삭제">✕</button></div>`;
     pad.querySelector('.snap-pad-load').onclick=e=>{e.stopPropagation();loadCharSnapshot(snap.id);};
     pad.querySelector('.snap-pad-del').onclick=e=>{e.stopPropagation();deleteCharSnapshot(snap.id);};
-    // 드래그 순서 변경
+    if(snap.folder_id){
+      pad.querySelector('.snap-pad-out').onclick=e=>{
+        e.stopPropagation();
+        const cur=_lsGet(snapKey,[]);
+        const s=cur.find(x=>x.id===snap.id);
+        if(s){s.folder_id=null;localStorage.setItem(snapKey,JSON.stringify(cur));renderCharSidebar();}
+      };
+    }
+    // 드래그: 순서 변경 + 폴더 드롭 모두 지원
     pad.addEventListener('dragstart',e=>{
-      e.dataTransfer.setData('text/plain',String(i));
+      e.dataTransfer.setData('text/plain',String(realIdx));     // 순서 변경용
+      e.dataTransfer.setData('application/snap-id',snap.id);   // 폴더 드롭용
       e.dataTransfer.effectAllowed='move';
       setTimeout(()=>pad.classList.add('snap-dragging'),0);
     });
@@ -5447,6 +5536,8 @@ function renderCharSnapshots(container){
       sec.querySelectorAll('.snap-drop-before,.snap-drop-after').forEach(el=>el.classList.remove('snap-drop-before','snap-drop-after'));
     });
     pad.addEventListener('dragover',e=>{
+      // 폴더 아이콘 위라면 이 핸들러는 무시 (폴더 카드가 처리)
+      if(e.target.closest('.folder-icon-card'))return;
       e.preventDefault();e.dataTransfer.dropEffect='move';
       sec.querySelectorAll('.snap-drop-before,.snap-drop-after').forEach(el=>el.classList.remove('snap-drop-before','snap-drop-after'));
       const rect=pad.getBoundingClientRect();
@@ -5458,11 +5549,19 @@ function renderCharSnapshots(container){
     });
     pad.addEventListener('drop',e=>{
       e.preventDefault();
-      const fromIdx=parseInt(e.dataTransfer.getData('text/plain'));
+      // 폴더 위에서 drop된 건 무시 (폴더 카드가 처리)
+      if(e.target.closest('.folder-icon-card'))return;
+      const fromSnapId=e.dataTransfer.getData('application/snap-id');
       const isBefore=pad.classList.contains('snap-drop-before');
       pad.classList.remove('snap-drop-before','snap-drop-after');
-      if(isNaN(fromIdx)||fromIdx===i)return;
-      const cur=JSON.parse(localStorage.getItem(snapKey)||'[]');
+      if(!fromSnapId||fromSnapId===snap.id)return;
+      // 순서 변경: 같은 폴더 안에서만
+      const cur=_lsGet(snapKey,[]);
+      const fromIdx=cur.findIndex(s=>s.id===fromSnapId);
+      const toIdx=cur.findIndex(s=>s.id===snap.id);
+      if(fromIdx<0||toIdx<0)return;
+      // 폴더가 다르면 이동 안 함 (폴더 드롭으로 처리해야 함)
+      if((cur[fromIdx].folder_id||null)!==(cur[toIdx].folder_id||null))return;
       const [moved]=cur.splice(fromIdx,1);
       let insertAt=cur.findIndex(s=>s.id===snap.id);
       if(insertAt<0)insertAt=cur.length;
@@ -5471,7 +5570,7 @@ function renderCharSnapshots(container){
       localStorage.setItem(snapKey,JSON.stringify(cur));
       renderCharSidebar();
     });
-    _makeSnapPadTouchDrag(pad,i,snapKey,()=>renderCharSidebar());
+    _makeSnapPadTouchDrag(pad,realIdx,snapKey,()=>renderCharSidebar());
     sec.appendChild(pad);
   });
   container.appendChild(sec);
@@ -5998,12 +6097,16 @@ function openRLEdit(id){
   document.querySelectorAll('#cust-bg-colors .cust-color').forEach(el=>{el.classList.toggle('on',el.dataset.bg===(c.bgColor||''));});
   // 배경 이미지
   const bgPrev=$('cust-bg-img-preview'),bgPh=$('cust-bg-img-ph');
-  if(c.bgImage){bgPrev.innerHTML=`<img src="${c.bgImage}">`;window._custBgImage=c.bgImage;}
-  else{bgPrev.innerHTML=`<span id="cust-bg-img-ph">📷 배경 이미지 업로드</span>`;window._custBgImage=null;}
+  if(bgPrev){
+    if(c.bgImage){bgPrev.innerHTML=`<img src="${c.bgImage}">`;window._custBgImage=c.bgImage;}
+    else{bgPrev.innerHTML=`<span id="cust-bg-img-ph">📷 배경 이미지 업로드</span>`;window._custBgImage=null;}
+  }
   // 커버 이미지
   const cvPrev=$('cust-cover-preview'),cvPh=$('cust-cover-ph');
-  if(c.coverImage){cvPrev.innerHTML=`<img src="${c.coverImage}">`;window._custCoverImage=c.coverImage;}
-  else{cvPrev.innerHTML=`<span id="cust-cover-ph">🖼️ 커버 이미지 업로드</span>`;window._custCoverImage=null;}
+  if(cvPrev){
+    if(c.coverImage){cvPrev.innerHTML=`<img src="${c.coverImage}">`;window._custCoverImage=c.coverImage;}
+    else{cvPrev.innerHTML=`<span id="cust-cover-ph">🖼️ 커버 이미지 업로드</span>`;window._custCoverImage=null;}
+  }
   // 칩 선택 복원
   setCustChipVal('bubble',c.bubbleTheme||'');
   setCustChipVal('font',c.fontStyle||'');
@@ -6461,7 +6564,7 @@ async function generateSynopsisFromBuildup(filled){
 async function savePlanProject(synopsis=''){
   const pid='p_'+Date.now();
   const proj={id:pid,title:newProjName,genre:planItems.find(p=>p.id.includes('2'))?.value?.slice(0,20)||'',synopsis:synopsis||'',synopsis_detail:'',characters:[],episodes:[],answer_history:planItems.map(p=>({id:p.id,k:p.k,q:p.q,v:p.v,value:p.value})),routine_type:pendingRoutineType};
-  const arr=JSON.parse(localStorage.getItem('mp')||'[]');
+  const arr=_mpList();
   arr.unshift(proj);localStorage.setItem('mp',JSON.stringify(arr.slice(0,50)));
   if(user){try{await sb.from('projects').insert({...proj,user_id:user.id,completed_at:new Date().toISOString()});}catch(e){}}
   if(typeof embedProject==='function')embedProject(proj);
@@ -6816,7 +6919,7 @@ function renderXLinkButtons(){
     row.appendChild(b);
   }
   // 내 작품 목록 버튼들
-  const projs=JSON.parse(localStorage.getItem('mp')||'[]');
+  const projs=_mpList();
   projs.slice(0,3).forEach(p=>{
     if(linked&&linked.id===p.id)return;
     const b=document.createElement('button');
@@ -7194,7 +7297,7 @@ let olFilter='all';
 let collapsedProjects=new Set(); // 접힌 작품 ID 집합
 
 function getStoredProjectsFull(){
-  const mp=JSON.parse(localStorage.getItem('mp')||'[]');
+  const mp=_mpList();
   return mp.map(p=>{
     try{const s=localStorage.getItem(`project_${p.id}`);if(s)return{...p,...JSON.parse(s)};}catch(e){}
     return p;
@@ -7378,7 +7481,7 @@ function renderOlProj(){
 
 // ── 프로젝트 배지: 현재 작품명 표시 + 전환 버튼 ──
 function getCurrentProjTitle(){
-  const mp=JSON.parse(localStorage.getItem('mp')||'[]');
+  const mp=_mpList();
   if(window.currentProject && window.currentProject.id){
     const exists=mp.find(pj=>pj.id===window.currentProject.id);
     if(!exists){window.currentProject=null;olProjId=null;}
@@ -7405,7 +7508,7 @@ function renderProjBadge(){
 }
 
 function openProjSwitchModal(){
-  const projs=JSON.parse(localStorage.getItem('mp')||'[]');
+  const projs=_mpList();
   const list=$('proj-switch-list');
   list.innerHTML='';
   if(!projs.length){
@@ -7428,7 +7531,7 @@ function closeProjSwitchModal(){
 }
 
 function switchToProject(pid){
-  const projs=JSON.parse(localStorage.getItem('mp')||'[]');
+  const projs=_mpList();
   const p=projs.find(pj=>pj.id===pid);
   if(!p){flash('작품을 찾을 수 없습니다');return;}
 
@@ -7485,7 +7588,7 @@ function openOlProjSelect(){
   olSelectSource='ol'; switchOlTab('plan');
   const ta=$('ol-text-input');if(ta)ta.value='';
   const ps=$('ol-pdf-status');if(ps){ps.textContent='';ps.className='ol-pdf-status';}
-  const projs=JSON.parse(localStorage.getItem('mp')||'[]');
+  const projs=_mpList();
   const list=$('ol-proj-list');
   list.innerHTML='';
   if(!projs.length){list.innerHTML='<div style="color:var(--text-faint);font-size:13px;padding:12px">저장된 작품이 없어요.<br>아래 탭에서 직접 입력해 보세요.</div>';}
@@ -10062,7 +10165,7 @@ if(!document.getElementById('thkStyle')){
   window.wbCurrentBoardId=null;
   let wbAutoSaveTimer=null;
 
-  function wbLoadBoards(){wbBoards=JSON.parse(localStorage.getItem('wb_boards_v1')||'[]');}
+  function wbLoadBoards(){try{wbBoards=JSON.parse(localStorage.getItem('wb_boards_v1')||'[]');}catch(e){wbBoards=[];}}
   function wbSaveBoards(){localStorage.setItem('wb_boards_v1',JSON.stringify(wbBoards));}
 
   function wbLoadBoardData(boardId){
