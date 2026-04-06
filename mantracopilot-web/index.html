@@ -551,24 +551,25 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);back
 .sc-group.collapsed .sc-group-body{display:none}
 .sc-group.collapsed .sc-group-collapse{transform:rotate(-90deg)}
 /* 장면 카드 */
-.sc-scene{background:var(--surface);border:1px solid var(--border);border-radius:var(--rs);overflow:hidden;transition:border-color 0.2s}
-.sc-scene:hover{border-color:var(--border2)}
+.sc-scene{background:var(--surface);border:1px solid rgba(255,255,255,0.22);border-radius:var(--rs);overflow:hidden;transition:border-color 0.2s;box-shadow:0 1px 4px rgba(0,0,0,0.3)}
+.sc-scene:hover{border-color:rgba(255,255,255,0.38);box-shadow:0 2px 8px rgba(0,0,0,0.4)}
 .sc-scene.item-dragging{opacity:0.4}
 .sc-scene.item-drag-over{border-color:var(--purple-light);box-shadow:0 0 0 2px rgba(0,200,224,0.15)}
-.sc-scene-hdr{display:flex;align-items:center;gap:8px;padding:10px 12px;user-select:none}
+.sc-scene-hdr{display:flex;align-items:center;gap:8px;padding:10px 12px;user-select:none;border-bottom:1px solid rgba(255,255,255,0.08)}
 .sc-scene-drag{color:var(--text-faint);font-size:13px;cursor:grab;flex-shrink:0;letter-spacing:-2px}
 .sc-scene-drag:active{cursor:grabbing}
-.sc-scene-title-input{background:none;border:none;color:var(--text);font-size:13px;font-weight:700;font-family:inherit;outline:none;flex:1;min-width:0;padding:2px 4px;border-radius:4px;transition:background 0.2s}
+.sc-scene-title-input{background:none;border:none;color:#fff;font-size:13px;font-weight:700;font-family:inherit;outline:none;flex:1;min-width:0;padding:2px 4px;border-radius:4px;transition:background 0.2s}
 .sc-scene-title-input:focus{background:rgba(255,255,255,0.06)}
 .sc-scene-del{background:none;border:none;color:var(--text-faint);cursor:pointer;font-size:12px;padding:4px 6px;border-radius:4px;transition:all 0.15s;opacity:0;flex-shrink:0}
 .sc-scene:hover .sc-scene-del{opacity:1}
 .sc-scene-del:hover{color:#fca5a5;background:rgba(252,165,165,0.1)}
-.sc-scene-body{padding:0 12px 10px;display:flex;flex-direction:column;gap:6px}
-.sc-scene-content{width:100%;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.18);border-radius:8px;color:var(--text);font-family:inherit;font-size:13px;padding:10px 12px;outline:none;resize:none;line-height:1.7;min-height:60px;transition:border-color 0.2s;field-sizing:content}
+.sc-scene-body{padding:8px 12px 10px;display:flex;flex-direction:column;gap:6px}
+.sc-scene-content-row{display:flex;gap:6px;align-items:flex-start}
+.sc-scene-content{flex:1;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.28);border-radius:8px;color:#e8e8f0;font-family:inherit;font-size:13px;padding:10px 12px;outline:none;resize:none;line-height:1.7;min-height:60px;transition:border-color 0.2s;field-sizing:content}
 .sc-scene-content:focus{border-color:var(--purple-light)}
 .sc-scene-content::placeholder{color:var(--text-faint)}
-.sc-scene-note{width:100%;background:rgba(255,196,0,0.04);border:1px solid rgba(255,196,0,0.28);border-radius:8px;color:var(--text-dim);font-family:inherit;font-size:11px;padding:7px 10px;outline:none;resize:none;line-height:1.6;min-height:28px;transition:border-color 0.2s;field-sizing:content}
-.sc-scene-note:focus{border-color:rgba(255,196,0,0.55)}
+.sc-scene-note{width:100%;background:rgba(59,130,246,0.05);border:1px solid rgba(59,130,246,0.28);border-radius:8px;color:var(--text-dim);font-family:inherit;font-size:11px;padding:7px 10px;outline:none;resize:none;line-height:1.6;min-height:28px;transition:border-color 0.2s;field-sizing:content}
+.sc-scene-note:focus{border-color:rgba(59,130,246,0.6)}
 .sc-scene-note::placeholder{color:var(--text-faint)}
 /* 장면 이미지 업로드 */
 .sc-scene-images{display:flex;flex-wrap:wrap;gap:6px;margin-top:2px}
@@ -576,7 +577,7 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);back
 .sc-scene-img-thumb img{width:100%;height:100%;object-fit:cover;cursor:pointer}
 .sc-scene-img-del{position:absolute;top:2px;right:2px;width:18px;height:18px;background:rgba(0,0,0,0.7);border:none;border-radius:50%;color:#fca5a5;font-size:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.15s}
 .sc-scene-img-thumb:hover .sc-scene-img-del{opacity:1}
-.sc-scene-img-add{width:72px;height:72px;border:1px dashed rgba(255,255,255,0.22);border-radius:6px;background:rgba(255,255,255,0.03);color:var(--text-faint);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s;flex-shrink:0}
+.sc-scene-img-add{width:56px;height:56px;border:1px dashed rgba(255,255,255,0.22);border-radius:6px;background:rgba(255,255,255,0.03);color:var(--text-faint);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s;flex-shrink:0;margin-top:2px}
 .sc-scene-img-add:hover{border-color:var(--purple-light);color:var(--purple-light);background:rgba(0,200,224,0.06)}
 /* 추가 버튼 */
 .sc-add-btn{display:flex;align-items:center;justify-content:center;gap:6px;padding:10px;border:1px dashed var(--border2);border-radius:var(--rs);cursor:pointer;color:var(--text-faint);font-size:12px;font-weight:700;transition:all 0.2s;background:none;width:100%;font-family:inherit}
@@ -8137,14 +8138,14 @@ function _renderScene(s,containerId,si){
       <button class="sc-scene-del" onclick="scDeleteScene('${s.id}')">✕</button>
     </div>
     <div class="sc-scene-body">
-      <textarea class="sc-scene-content" placeholder="장면 내용을 작성하세요..."
-        oninput="scUpdateScene('${s.id}','content',this.value)">${s.content||''}</textarea>
-      <textarea class="sc-scene-note" placeholder="메모/지시문 (선택사항)"
-        oninput="scUpdateScene('${s.id}','note',this.value)">${s.note||''}</textarea>
-      <div class="sc-scene-images">
-        ${imgHtml}
+      <div class="sc-scene-content-row">
+        <textarea class="sc-scene-content" placeholder="장면 내용을 작성하세요..."
+          oninput="scUpdateScene('${s.id}','content',this.value)">${s.content||''}</textarea>
         <button class="sc-scene-img-add" onclick="scUploadImage('${s.id}')" title="이미지 추가">＋</button>
       </div>
+      ${imgs.length?`<div class="sc-scene-images">${imgHtml}</div>`:''}
+      <textarea class="sc-scene-note" placeholder="메모/지시문 (선택사항)"
+        oninput="scUpdateScene('${s.id}','note',this.value)">${s.note||''}</textarea>
     </div>
   </div>`;
 }
