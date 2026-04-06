@@ -3256,7 +3256,8 @@ function renderFolderIconGrid(container,key,viewKey,items,folderField,renderFn){
     // dragover: 드롭 위치에 따라 before/after/nest 표시
     card.addEventListener('dragover',e=>{
       e.preventDefault();
-      const dragFolderId=e.dataTransfer.types.includes('application/folder-id');
+      const types=e.dataTransfer.types;
+      const dragFolderId=(types.contains?types.contains('application/folder-id'):types.includes('application/folder-id'));
       if(!dragFolderId){card.classList.add('drag-over');return;}
       const isCol=grid.classList.contains('col-drag')||getComputedStyle(grid).flexDirection==='column';
       const rect=card.getBoundingClientRect();
