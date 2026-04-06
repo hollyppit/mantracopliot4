@@ -881,17 +881,23 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);back
   .proj-detail-header>div:first-of-type{font-size:17px!important}
   /* 캐릭터 만들기 — vt-top 구조 */
   #view-chara .proj-detail-header{padding:0;gap:0;flex-wrap:unset}
-  .chara-sidebar{display:none}
-  /* mob-folder-bar → 모바일 수직 왼쪽 사이드바 */
-  .mob-folder-bar{display:flex;flex-direction:column;width:68px;min-width:68px;flex-shrink:0;border-right:1px solid var(--border);border-bottom:none;overflow-y:auto;overflow-x:hidden;padding:6px 0;background:rgba(255,255,255,0.015);-webkit-overflow-scrolling:touch}
-  .mob-folder-bar .folder-grid{flex-direction:column;flex-wrap:nowrap;gap:4px;margin:0;padding:4px}
-  .mob-folder-bar .folder-icon-card{width:100%;flex-shrink:0}
-  .mob-folder-bar .folder-icon-card .fic-icon{width:42px;height:42px;font-size:20px}
-  .mob-folder-bar .folder-icon-card .fic-name{max-width:58px}
-  .mob-folder-bar .folder-open-bar{flex-direction:column;align-items:center;padding:6px 4px;gap:3px;margin:4px;border-radius:8px;min-width:0}
-  .mob-folder-bar .fob-back{font-size:10px;padding:3px 4px;width:100%;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .mob-folder-bar .fob-name{font-size:9px;flex:none;max-width:56px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:center}
-  .mob-folder-bar .fob-action{font-size:11px;padding:2px 4px}
+  /* 캐릭터 만들기 사이드바 — 모바일(768px) 폴더 통합 표시 */
+  .chara-sidebar{display:flex!important;width:72px;min-width:72px;flex-direction:column;overflow-y:auto;overflow-x:hidden}
+  .chara-sidebar-title{display:none}
+  .chara-proj-item{justify-content:center;padding:8px 4px}
+  .chara-proj-item span.pname,.chara-proj-count{display:none}
+  #ch-mob-folders{display:none!important}
+  .chara-sidebar .folder-grid{flex-direction:column;flex-wrap:nowrap;gap:4px;margin:0;padding:4px}
+  .chara-sidebar .folder-icon-card{width:100%}
+  .chara-sidebar .folder-icon-card .fic-icon{width:44px;height:44px;font-size:20px}
+  .chara-sidebar .folder-icon-card .fic-name{max-width:64px;font-size:9px}
+  .chara-sidebar .sidebar-folder-toggle{padding:6px 4px;justify-content:center;font-size:13px;letter-spacing:0}
+  .chara-sidebar .sidebar-folder-toggle .sft-text{display:none}
+  .chara-sidebar .sidebar-folder-toggle .sft-arrow{margin-left:2px;font-size:9px}
+  .chara-sidebar .folder-open-bar{flex-direction:column;align-items:center;padding:6px 4px;gap:3px;margin:4px;border-radius:8px;min-width:0}
+  .chara-sidebar .fob-back{font-size:10px;padding:3px 4px;width:100%;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .chara-sidebar .fob-name{font-size:9px;flex:none;max-width:60px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:center}
+  .chara-sidebar .fob-action{font-size:11px;padding:2px 4px}
   .chara-main{padding:16px 18px}
   .proj-detail-tabs{overflow-x:auto;-webkit-overflow-scrolling:touch;padding:0 16px}
   .proj-tab{white-space:nowrap;flex-shrink:0;padding:12px 14px}
@@ -1065,8 +1071,8 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);back
 @media(max-width:600px){.chara-sidebar{width:52px}.chara-proj-item span.pname{display:none}.chara-proj-count{display:none}}
 /* character cards */
 .char-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-bottom:16px}
-.char-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:20px;display:flex;flex-direction:column;gap:10px;transition:border-color 0.2s}
-.char-card:hover{border-color:var(--border2)}
+.char-card{background:var(--surface);border:1px solid var(--border2);border-radius:var(--r);padding:20px;display:flex;flex-direction:column;gap:10px;transition:border-color 0.2s}
+.char-card:hover{border-color:rgba(0,200,224,0.45)}
 .char-card-header{display:flex;align-items:center;gap:8px}
 .char-name-input{font-size:16px;font-weight:800;background:none;border:none;outline:none;color:var(--text);font-family:inherit;flex:1;min-width:0;border-bottom:1px solid transparent;transition:border-color 0.2s;padding:2px 0}
 .char-name-input:focus{border-bottom-color:var(--purple)}
@@ -1075,8 +1081,8 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);back
 .char-del-btn:hover{background:rgba(239,68,68,0.2)}
 .char-field{display:flex;flex-direction:column;gap:4px}
 .char-fl{font-size:10px;font-weight:800;letter-spacing:0.07em;color:var(--text-faint);text-transform:uppercase}
-.char-fi{font-size:13px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:8px;padding:7px 11px;color:var(--text);font-family:inherit;resize:none;transition:border-color 0.2s;line-height:1.6;width:100%}
-.char-fi:focus{outline:none;border-color:rgba(0,200,224,0.3)}
+.char-fi{font-size:13px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.16);border-radius:8px;padding:7px 11px;color:var(--text);font-family:inherit;resize:none;transition:border-color 0.2s;line-height:1.6;width:100%}
+.char-fi:focus{outline:none;border-color:rgba(0,200,224,0.45)}
 .char-ai-btn{padding:10px 20px;background:rgba(0,200,224,0.1);border:1px solid rgba(0,200,224,0.3);border-radius:12px;color:var(--purple-light);font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;transition:all 0.25s;margin-bottom:18px;display:inline-flex;align-items:center;gap:6px}
 .char-ai-btn:hover:not(:disabled){background:rgba(0,200,224,0.2);border-color:rgba(0,200,224,0.5)}
 .char-ai-btn:disabled{opacity:0.5;cursor:default}
@@ -1157,19 +1163,13 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);back
   .sc-ep-num{min-width:auto}
   .sc-ep-item span[style*="margin-left"]{display:none}
   #sc-mob-folders{display:none!important}
-  /* 캐릭터 만들기 사이드바 — 모바일 표시 (폴더 통합) */
-  .chara-sidebar{display:flex!important;width:76px;min-width:76px;flex-direction:column}
-  .chara-sidebar-title{display:none}
-  .chara-proj-item{justify-content:center;padding:8px 4px}
-  .chara-proj-item span.pname,.chara-proj-count{display:none}
-  #ch-mob-folders{display:none!important}
-  .chara-sidebar .folder-grid{flex-direction:column;flex-wrap:nowrap;gap:4px;margin:0;padding:4px}
-  .chara-sidebar .folder-icon-card{width:100%}
-  .chara-sidebar .folder-icon-card .fic-icon{width:40px;height:40px;font-size:18px}
+  /* 캐릭터 만들기 사이드바 — 480px 추가 축소 */
+  .chara-sidebar{width:60px;min-width:60px}
+  .chara-sidebar .folder-icon-card .fic-icon{width:38px;height:38px;font-size:17px}
   /* 모바일 사이드바 폴더 토글 — 아이콘+화살표만 */
-  .ol-sidebar .sidebar-folder-toggle,.sc-sidebar .sidebar-folder-toggle,.chara-sidebar .sidebar-folder-toggle{padding:6px 4px;justify-content:center;font-size:13px;letter-spacing:0}
-  .ol-sidebar .sidebar-folder-toggle .sft-text,.sc-sidebar .sidebar-folder-toggle .sft-text,.chara-sidebar .sidebar-folder-toggle .sft-text{display:none}
-  .ol-sidebar .sidebar-folder-toggle .sft-arrow,.sc-sidebar .sidebar-folder-toggle .sft-arrow,.chara-sidebar .sidebar-folder-toggle .sft-arrow{margin-left:2px;font-size:9px}
+  .ol-sidebar .sidebar-folder-toggle,.sc-sidebar .sidebar-folder-toggle{padding:6px 4px;justify-content:center;font-size:13px;letter-spacing:0}
+  .ol-sidebar .sidebar-folder-toggle .sft-text,.sc-sidebar .sidebar-folder-toggle .sft-text{display:none}
+  .ol-sidebar .sidebar-folder-toggle .sft-arrow,.sc-sidebar .sidebar-folder-toggle .sft-arrow{margin-left:2px;font-size:9px}
   /* 입력 필드 iOS 자동 줌 방지 */
   .ep-input{font-size:16px}
   /* 회차 개요 간격 축소 */
@@ -3195,6 +3195,21 @@ function renderMobileFolderBar(containerId,key,viewKey,items,folderField,renderF
   if(af) renderFolderOpenBar(el,key,viewKey,items,folderField,renderFn);
   renderFolderIconGrid(el,key,viewKey,items,folderField,renderFn);
 }
+// ── 터치 드래그 전역 상태 ──
+const _td={el:null,idx:-1,ghost:null,startX:0,startY:0,started:false,timer:null};
+function _tdCleanup(){
+  if(_td.ghost)_td.ghost.remove();
+  _td.el=null;_td.idx=-1;_td.ghost=null;_td.started=false;
+  clearTimeout(_td.timer);_td.timer=null;
+  document.querySelectorAll('.item-drag-over,.drag-over').forEach(e=>e.classList.remove('item-drag-over','drag-over'));
+}
+function _tdGhost(el,cx,cy){
+  const r=el.getBoundingClientRect();
+  const g=el.cloneNode(true);
+  g.style.cssText=`position:fixed;top:${r.top}px;left:${r.left}px;width:${r.width}px;opacity:0.72;pointer-events:none;z-index:9998;transform:scale(1.03) rotate(1.5deg);border-color:rgba(0,200,224,0.6);box-shadow:0 12px 36px rgba(0,0,0,0.4);transition:none`;
+  document.body.appendChild(g);return g;
+}
+
 function makeDraggable(el,idx){
   el.draggable=true;
   el.addEventListener('dragstart',e=>{
@@ -3207,6 +3222,66 @@ function makeDraggable(el,idx){
   el.addEventListener('drop',e=>{
     e.preventDefault();e.stopPropagation();
     el.classList.remove('item-drag-over');
+  });
+  // ── 터치 드래그 ──
+  el.addEventListener('touchstart',e=>{
+    const t=e.touches[0];
+    _td.startX=t.clientX;_td.startY=t.clientY;_td.el=el;_td.idx=idx;_td.started=false;
+    _td.timer=setTimeout(()=>{
+      _td.started=true;
+      _td.ghost=_tdGhost(el,t.clientX,t.clientY);
+      el.classList.add('item-dragging');
+      if(navigator.vibrate)navigator.vibrate(30);
+    },320);
+  },{passive:true});
+  el.addEventListener('touchmove',e=>{
+    const t=e.touches[0];
+    if(!_td.started){
+      if(Math.abs(t.clientX-_td.startX)>10||Math.abs(t.clientY-_td.startY)>10)clearTimeout(_td.timer);
+      return;
+    }
+    e.preventDefault();
+    if(_td.ghost){
+      const r=el.getBoundingClientRect();
+      _td.ghost.style.top=(t.clientY-r.height/2)+'px';
+      _td.ghost.style.left=(t.clientX-r.width/2)+'px';
+    }
+    document.querySelectorAll('.item-drag-over,.drag-over').forEach(e2=>e2.classList.remove('item-drag-over','drag-over'));
+    if(_td.ghost)_td.ghost.style.display='none';
+    const under=document.elementFromPoint(t.clientX,t.clientY);
+    if(_td.ghost)_td.ghost.style.display='';
+    if(under){
+      const tc=under.closest('.char-card');if(tc&&tc!==el)tc.classList.add('item-drag-over');
+      const tf=under.closest('.folder-icon-card:not(.add-card)');if(tf)tf.classList.add('drag-over');
+    }
+  },{passive:false});
+  el.addEventListener('touchend',e=>{
+    clearTimeout(_td.timer);
+    if(!_td.started){_tdCleanup();return;}
+    const t=e.changedTouches[0];
+    if(_td.ghost)_td.ghost.style.display='none';
+    const under=document.elementFromPoint(t.clientX,t.clientY);
+    if(_td.ghost)_td.ghost.style.display='';
+    el.classList.remove('item-dragging');
+    if(under){
+      // 카드→카드 순서 변경
+      const tc=under.closest('.char-card');
+      if(tc&&tc!==el){
+        const toIdx=parseInt(tc.dataset.charIdx);
+        if(!isNaN(toIdx)&&toIdx!==_td.idx){
+          const moved=pdChars.splice(_td.idx,1)[0];
+          pdChars.splice(toIdx,0,moved);
+          saveChars();renderCharCards();
+        }
+      }
+      // 카드→폴더 이동
+      const tf=under.closest('.folder-icon-card:not(.add-card)');
+      if(tf&&tf.dataset.folderId){
+        pdChars[_td.idx]&&(pdChars[_td.idx].folder=tf.dataset.folderId);
+        renderCharCards();saveChars();flash('폴더로 이동');
+      }
+    }
+    _tdCleanup();
   });
 }
 
@@ -4635,7 +4710,7 @@ function renderCharCards(){
   target.innerHTML='';
   const ROLES=['주인공','히로인','조력자','악당','빌런','조연'];
   function _renderCharCard(container,ch,i){
-    const card=document.createElement('div');card.className='char-card';
+    const card=document.createElement('div');card.className='char-card';card.dataset.charIdx=i;
     makeDraggable(card,i);
     card.addEventListener('drop',e=>{
       e.preventDefault();e.stopPropagation();
@@ -4815,23 +4890,22 @@ function renderCharSidebar(){
   sidebar.innerHTML='<div class="chara-sidebar-title">내 작품</div>';
   if(!projs.length){
     sidebar.innerHTML+='<div style="font-size:11px;color:var(--text-faint);padding:10px 14px;line-height:1.6">작품이 없습니다.<br>내 기획안에서 작품을 만들어보세요.</div>';
-    return;
+  } else {
+    projs.forEach(p=>{
+      let charCount=Array.isArray(p.characters)?p.characters.length:0;
+      if(p.id===currentId && window.currentProject){
+        charCount=(window.currentProject.characters||[]).length;
+      }
+      const isActive=p.id===currentId;
+      const btn=document.createElement('button');
+      btn.className='chara-proj-item'+(isActive?' on':'');
+      btn.title=p.title;
+      btn.innerHTML=`<span style="font-size:14px;flex-shrink:0">📁</span><span class="pname" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escH(p.title)}</span><span class="chara-proj-count">${charCount}</span>`;
+      btn.onclick=()=>switchToProject(p.id);
+      sidebar.appendChild(btn);
+    });
   }
-  projs.forEach(p=>{
-    // mp의 character 수 + currentProject 반영
-    let charCount=Array.isArray(p.characters)?p.characters.length:0;
-    if(p.id===currentId && window.currentProject){
-      charCount=(window.currentProject.characters||[]).length;
-    }
-    const isActive=p.id===currentId;
-    const btn=document.createElement('button');
-    btn.className='chara-proj-item'+(isActive?' on':'');
-    btn.title=p.title;
-    btn.innerHTML=`<span style="font-size:14px;flex-shrink:0">📁</span><span class="pname" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escH(p.title)}</span><span class="chara-proj-count">${charCount}</span>`;
-    btn.onclick=()=>switchToProject(p.id);
-    sidebar.appendChild(btn);
-  });
-  // 폴더 그리드 (사이드바 하단) — 접기/펼치기 지원
+  // 폴더 그리드 — 항상 표시 (사이드바 하단, 접기/펼치기 지원)
   const chFolderDiv=document.createElement('div');
   chFolderDiv.style.cssText='padding:4px 0;margin-top:2px';
   chFolderDiv.appendChild(_makeFolderToggle('ch',_sidebarFolderCollapsed.ch));
