@@ -350,9 +350,23 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);back
 .xs{width:40px;height:40px;border-radius:50%;background:var(--purple);border:none;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.2s}
 .xs:hover{filter:brightness(1.1)}
 .xs svg{width:18px;height:18px;fill:currentColor;margin-left:2px}
+/* ── 뷰 공통 접이식 툴바 ── */
+.vt-top{display:flex;flex-direction:column;flex-shrink:0;border-bottom:1px solid var(--border)}
+.vt-main{display:flex;align-items:center;gap:10px;padding:13px 20px 11px}
+.vt-title{font-size:20px;font-weight:900;white-space:nowrap;letter-spacing:-0.01em}
+.vt-spacer{flex:1;min-width:0}
+.vt-opts-toggle{display:flex;align-items:center;gap:4px;padding:5px 10px;border-radius:var(--rs);border:1px solid var(--border);background:var(--surface);color:var(--text-faint);font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;transition:all 0.2s;white-space:nowrap;flex-shrink:0}
+.vt-opts-toggle:hover{border-color:var(--border2);color:var(--text)}
+.vt-opts-toggle.open{background:rgba(0,200,224,0.08);border-color:rgba(0,200,224,0.25);color:var(--purple-light)}
+.vt-opts-toggle .vt-arrow{font-size:9px;transition:transform 0.2s;opacity:0.7;display:inline-block}
+.vt-opts-toggle.open .vt-arrow{transform:rotate(180deg)}
+.vt-opts{display:none;align-items:center;gap:8px;padding:6px 20px 10px;flex-wrap:wrap;border-top:1px solid rgba(0,200,224,0.07)}
+.vt-opts.open{display:flex}
+.vt-sep{width:1px;height:16px;background:var(--border);flex-shrink:0;margin:0 2px}
+.vt-opts-label{font-size:11px;color:var(--text-faint);font-weight:700;white-space:nowrap;flex-shrink:0}
 /* 회차 개요 */
 .ol-wrap{display:flex;flex-direction:column;height:100vh;overflow:hidden}
-.ol-top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:20px 24px 14px;flex-shrink:0;border-bottom:1px solid var(--border)}
+.ol-top{display:flex;flex-direction:column;flex-shrink:0;border-bottom:1px solid var(--border)}
 .ol-layout{display:flex;flex:1;overflow:hidden;min-height:0}
 .ol-sidebar{width:200px;flex-shrink:0;border-right:1px solid var(--border);overflow-y:auto;padding:10px 0;background:rgba(255,255,255,0.015)}
 .ol-sidebar-title{font-size:10px;font-weight:800;letter-spacing:0.1em;color:var(--text-faint);padding:4px 14px 8px;text-transform:uppercase}
@@ -492,7 +506,7 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);back
 .mp p{font-size:14px;line-height:1.7;max-width:320px}
 /* 대본 작성 */
 .sc-wrap{display:flex;flex-direction:column;height:100vh;overflow:hidden}
-.sc-top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:20px 24px 14px;flex-shrink:0;border-bottom:1px solid var(--border)}
+.sc-top{display:flex;flex-direction:column;flex-shrink:0;border-bottom:1px solid var(--border)}
 .sc-title-row{display:flex;align-items:center;gap:12px}
 .sc-layout{display:flex;flex:1;overflow:hidden;min-height:0}
 .sc-sidebar{width:200px;flex-shrink:0;border-right:1px solid var(--border);overflow-y:auto;padding:10px 0;background:rgba(255,255,255,0.015)}
@@ -838,24 +852,27 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);back
   .ol-tab{padding:11px 8px;font-size:13px}
   /* 플래시 알림 — 모바일 상단 헤더(56px) 아래로 */
   .fl{top:66px}
+  /* 뷰 공통 접이식 툴바 — 모바일 */
+  .vt-main{padding:10px 14px 9px;gap:8px}
+  .vt-title{font-size:17px!important}
+  .vt-opts{padding:6px 12px 9px;gap:6px}
+  .vt-opts-label{font-size:10px}
+  .vt-opts .ol-btn{padding:6px 10px;font-size:11px}
   /* 회차 개요 상단 패딩 */
   .tension-wrap{padding:10px 14px;margin:0 16px 8px!important;border-radius:14px}
   .tension-label{margin-bottom:6px;font-size:10px}
   .tension-canvas-wrap{height:120px}
   .tension-canvas-wrap.tl-fullview{height:160px}
   .tl-chip{font-size:8px;padding:2px 6px;max-width:56px}
-  .ol-top{padding:14px 18px 10px;flex-direction:column;align-items:stretch;gap:8px}
-  .ol-title-row{gap:8px}
-  .ol-title-row>div:first-of-type{font-size:17px!important;white-space:nowrap}
-  .ol-actions{gap:6px;flex-wrap:wrap;justify-content:flex-end}
-  .ol-actions .ol-btn{padding:6px 10px;font-size:11px}
   /* 캐릭터 개발 오버레이 — 사이드바 축소, 콘텐츠 패딩 */
   .cd-sidebar{width:180px;min-width:180px}
   .cd-content{padding:24px 18px}
   .cd-sec-hd{font-size:17px;margin-bottom:20px}
-  /* 프로젝트 상세 헤더/탭/본문 */
+  /* 프로젝트 상세 헤더/탭/본문 — view-proj 전용 */
   .proj-detail-header{padding:12px 16px;flex-wrap:wrap;gap:8px}
   .proj-detail-header>div:first-of-type{font-size:17px!important}
+  /* 캐릭터 만들기 — vt-top 구조 */
+  #view-chara .proj-detail-header{padding:0;gap:0;flex-wrap:unset}
   .chara-sidebar{display:none}
   /* mob-folder-bar → 모바일 수직 왼쪽 사이드바 */
   .mob-folder-bar{display:flex;flex-direction:column;width:68px;min-width:68px;flex-shrink:0;border-right:1px solid var(--border);border-bottom:none;overflow-y:auto;overflow-x:hidden;padding:6px 0;background:rgba(255,255,255,0.015);-webkit-overflow-scrolling:touch}
@@ -997,6 +1014,8 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);back
 /* ── PROJECT DETAIL ── */
 .proj-detail-wrap{display:flex;flex-direction:column;height:100vh;overflow:hidden}
 .proj-detail-header{display:flex;align-items:center;gap:14px;padding:14px 24px;border-bottom:1px solid var(--border);flex-shrink:0;background:rgba(7,7,15,0.85);backdrop-filter:var(--blur)}
+/* 캐릭터 만들기 뷰 전용 — 접이식 툴바 */
+#view-chara .proj-detail-header{flex-direction:column;padding:0;gap:0}
 .proj-detail-tabs{display:flex;gap:0;padding:0 24px;border-bottom:1px solid var(--border);flex-shrink:0;background:rgba(7,7,15,0.6)}
 .proj-tab{padding:14px 20px;font-size:13px;font-weight:700;color:var(--text-dim);cursor:pointer;border-bottom:2px solid transparent;transition:all 0.2s;background:none;border-top:none;border-left:none;border-right:none;font-family:inherit}
 .proj-tab.on{color:var(--purple-light);border-bottom-color:var(--purple)}.proj-tab:hover{color:var(--text)}
@@ -1153,7 +1172,7 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);back
   .ep-detail{gap:8px;padding:0 12px 12px}
   .ol-body{padding:8px 12px 80px}
   .sc-main{padding:16px 14px 32px}
-  .sc-top{padding:14px 16px 10px}
+  .sc-top .vt-main{padding:10px 14px 9px}
   .sc-group-hdr{padding:9px 10px}
   .sc-scene-hdr{padding:8px 10px}
   .sc-scene-body{padding:0 10px 8px}
@@ -1758,12 +1777,17 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);back
   <section class="view" id="view-chara">
     <div class="proj-detail-wrap">
       <div class="proj-detail-header">
-        <button class="mob-back" onclick="navTo('hub')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
-        <div style="font-size:20px;font-weight:900;margin-right:8px">캐릭터 만들기</div>
-        <div id="ch-memory-status" style="display:flex;align-items:center;gap:6px"></div>
-        <div style="flex:1"></div>
-        <button class="ol-btn" onclick="resetChars()" style="color:#fde68a;border-color:rgba(251,191,36,0.3)">🔄 초기화</button>
-        <button class="ol-btn primary" onclick="saveChars()">저장</button>
+        <div class="vt-main">
+          <button class="mob-back" onclick="navTo('hub')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
+          <div class="vt-title">캐릭터 만들기</div>
+          <div id="ch-memory-status" style="display:flex;align-items:center;gap:6px"></div>
+          <div class="vt-spacer"></div>
+          <button class="vt-opts-toggle open" id="ch-opts-toggle" onclick="toggleVtOpts('ch')">옵션<span class="vt-arrow">▾</span></button>
+          <button class="ol-btn primary" onclick="saveChars()">저장</button>
+        </div>
+        <div class="vt-opts open" id="ch-opts">
+          <button class="ol-btn" style="color:#fde68a;border-color:rgba(251,191,36,0.3)" onclick="resetChars()">🔄 초기화</button>
+        </div>
       </div>
       <div class="chara-layout">
         <!-- 왼쪽 사이드바: 작품별 폴더 -->
@@ -1781,17 +1805,22 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);back
   </section>
   <section class="view" id="view-outline">
     <div class="ol-wrap">
-      <!-- 상단 타이틀+액션 (풀 width) -->
+      <!-- 상단 접이식 툴바 -->
       <div class="ol-top">
-        <div class="ol-title-row">
+        <div class="vt-main">
           <button class="mob-back" onclick="navTo('hub')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
-          <div style="font-size:20px;font-weight:900">회차 개요</div>
+          <div class="vt-title">회차 개요</div>
           <div id="ol-memory-status" style="display:flex;align-items:center;gap:6px"></div>
-        </div>
-        <div class="ol-actions">
-          <button class="ol-btn" onclick="openEpCountModal()">+ 회차 일괄 추가</button>
-          <button class="ol-btn" onclick="resetOutlineData()" style="color:#fde68a;border-color:rgba(251,191,36,0.3)">🔄 초기화</button>
+          <div class="vt-spacer"></div>
+          <button class="vt-opts-toggle open" id="ol-opts-toggle" onclick="toggleVtOpts('ol')">옵션<span class="vt-arrow">▾</span></button>
           <button class="ol-btn primary" onclick="saveOutlineData()">저장</button>
+        </div>
+        <div class="vt-opts open" id="ol-opts">
+          <button class="ol-btn" onclick="openEpCountModal()">+ 회차 일괄 추가</button>
+          <button class="ol-btn" style="color:#fde68a;border-color:rgba(251,191,36,0.3)" onclick="resetOutlineData()">🔄 초기화</button>
+          <div class="vt-sep"></div>
+          <span class="vt-opts-label">막:</span>
+          <div class="ol-acts" id="act-bar"></div>
         </div>
       </div>
       <!-- 타임라인 그래프 (풀 width) -->
@@ -1823,11 +1852,6 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);back
         <div class="mob-folder-bar" id="ol-mob-folders"></div>
         <!-- 오른쪽: 막 필터 + 회차 목록 -->
         <div class="ol-main">
-          <!-- 막 필터 -->
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap;padding:12px 24px 0">
-            <span style="font-size:11px;color:var(--text-faint)">막 보기:</span>
-            <div class="ol-acts" id="act-bar"></div>
-          </div>
           <!-- 회차 목록 -->
           <div class="ol-body">
             <div class="ep-list" id="ep-list"></div>
@@ -1840,13 +1864,12 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);back
   <section class="view" id="view-script">
     <div class="sc-wrap">
       <div class="sc-top">
-        <div class="sc-title-row">
+        <div class="vt-main">
           <button class="mob-back" onclick="navTo('hub')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
-          <div style="font-size:20px;font-weight:900">대본 작성</div>
-          <div id="sc-proj-badge" style="margin-left:8px"></div>
+          <div class="vt-title">대본 작성</div>
+          <div id="sc-proj-badge" style="margin-left:4px"></div>
           <div id="sc-memory-status" style="display:flex;align-items:center;gap:6px"></div>
-        </div>
-        <div style="display:flex;gap:8px">
+          <div class="vt-spacer"></div>
           <button class="ol-btn primary" onclick="saveScriptData()">저장</button>
         </div>
       </div>
@@ -3216,6 +3239,24 @@ function navTo(v){
     if(selProj)$('tpn').textContent=selProj.title;
   }
 }
+// ── 뷰 접이식 툴바 토글 ──
+function toggleVtOpts(id){
+  const opts=document.getElementById(id+'-opts');
+  const toggle=document.getElementById(id+'-opts-toggle');
+  if(!opts)return;
+  const isOpen=opts.classList.toggle('open');
+  if(toggle)toggle.classList.toggle('open',isOpen);
+}
+// 모바일에서 접이식 툴바 기본 닫기
+function initVtOpts(){
+  if(window.innerWidth>768)return;
+  ['ol','ch'].forEach(id=>{
+    const opts=document.getElementById(id+'-opts');
+    const toggle=document.getElementById(id+'-opts-toggle');
+    if(opts){opts.classList.remove('open');}
+    if(toggle){toggle.classList.remove('open');}
+  });
+}
 // ── 작품 연동 모달 탭/기능 ──
 let olSelectSource='ol'; // 'ol'|'ch'|'xc'
 let olLinkedText=null;   // {title,text} 회차 개요용 수동 컨텍스트
@@ -3477,6 +3518,7 @@ function toggleGmOpts(){
   btn.classList.toggle('open');
 }
 document.addEventListener('DOMContentLoaded',()=>{
+  initVtOpts();
   const ta=$('im-ta');if(ta)ta.addEventListener('keydown',e=>{if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)){e.preventDefault();saveItemModal();}});
   initIcons();
   // ep-input textarea 자동 높이 조절 (입력 편의)
