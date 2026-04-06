@@ -679,6 +679,14 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);back
 /* 폴더 + 드래그 시스템 */
 .folder-add-btn{padding:5px 12px;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;border:1px dashed var(--border2);background:none;color:var(--text-dim);font-family:inherit;transition:all 0.2s}
 .folder-add-btn:hover{border-color:var(--purple-light);color:var(--purple-light)}
+/* 사이드바 왼쪽 접기/펼치기 */
+.sidebar-wrap{flex-shrink:0;overflow:hidden}
+.ol-sidebar,.sc-sidebar,.chara-sidebar{transition:width 0.22s ease,min-width 0.22s ease,padding 0.22s ease}
+.sidebar-wrap.collapsed>.ol-sidebar,
+.sidebar-wrap.collapsed>.sc-sidebar,
+.sidebar-wrap.collapsed>.chara-sidebar{width:0!important;min-width:0!important;padding:0;border-right:none;overflow:hidden}
+.sb-toggle{flex-shrink:0;width:14px;background:none;border:none;border-right:1px solid var(--border);color:var(--text-faint);font-size:9px;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;transition:background 0.2s,color 0.2s,border-color 0.2s;align-self:stretch}
+.sb-toggle:hover{background:rgba(0,200,224,0.07);color:var(--purple-light);border-right-color:rgba(0,200,224,0.3)}
 /* 사이드바 폴더 접기/펼치기 토글 */
 .sidebar-folder-toggle{display:flex;align-items:center;gap:4px;width:100%;padding:5px 14px;background:none;border:none;border-top:1px solid var(--border);color:var(--text-faint);font-size:10px;font-weight:800;letter-spacing:0.06em;cursor:pointer;font-family:inherit;text-align:left;margin-top:4px;transition:color 0.15s;white-space:nowrap;overflow:hidden}
 .sidebar-folder-toggle:hover{color:var(--text-dim)}
@@ -1800,7 +1808,10 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);back
       </div>
       <div class="chara-layout">
         <!-- 왼쪽 사이드바: 작품별 폴더 -->
-        <div class="chara-sidebar" id="chara-sidebar"></div>
+        <div class="sidebar-wrap" id="ch-sb-wrap">
+          <div class="chara-sidebar" id="chara-sidebar"></div>
+        </div>
+        <button class="sb-toggle" id="ch-sb-toggle" onclick="toggleSidebar('ch')" title="사이드바 접기">◂</button>
         <!-- 모바일 폴더 사이드바 (모바일 전용) -->
         <div class="mob-folder-bar" id="ch-mob-folders"></div>
         <!-- 오른쪽 메인: 선택한 작품의 캐릭터 -->
@@ -1856,7 +1867,10 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);back
       <!-- 2컬럼 레이아웃 -->
       <div class="ol-layout">
         <!-- 왼쪽: 작품 사이드바 -->
-        <div class="ol-sidebar" id="ol-sidebar"></div>
+        <div class="sidebar-wrap" id="ol-sb-wrap">
+          <div class="ol-sidebar" id="ol-sidebar"></div>
+        </div>
+        <button class="sb-toggle" id="ol-sb-toggle" onclick="toggleSidebar('ol')" title="사이드바 접기">◂</button>
         <!-- 모바일 폴더 사이드바 (모바일 전용) -->
         <div class="mob-folder-bar" id="ol-mob-folders"></div>
         <!-- 오른쪽: 막 필터 + 회차 목록 -->
@@ -1883,7 +1897,10 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);back
         </div>
       </div>
       <div class="sc-layout">
-        <div class="sc-sidebar" id="sc-sidebar"></div>
+        <div class="sidebar-wrap" id="sc-sb-wrap">
+          <div class="sc-sidebar" id="sc-sidebar"></div>
+        </div>
+        <button class="sb-toggle" id="sc-sb-toggle" onclick="toggleSidebar('sc')" title="사이드바 접기">◂</button>
         <!-- 모바일 폴더 사이드바 (모바일 전용) -->
         <div class="mob-folder-bar" id="sc-mob-folders"></div>
         <div style="flex:1;display:flex;flex-direction:column;min-width:0;overflow:hidden">
@@ -3331,6 +3348,29 @@ function toggleVtOpts(id){
   const isOpen=opts.classList.toggle('open');
   if(toggle)toggle.classList.toggle('open',isOpen);
 }
+// 왼쪽 사이드바 접기/펼치기
+function toggleSidebar(prefix){
+  const wrap=document.getElementById(prefix+'-sb-wrap');
+  const btn=document.getElementById(prefix+'-sb-toggle');
+  if(!wrap||!btn)return;
+  const collapsed=wrap.classList.toggle('collapsed');
+  btn.textContent=collapsed?'▸':'◂';
+  btn.title=collapsed?'사이드바 펼치기':'사이드바 접기';
+  try{localStorage.setItem('sb_'+prefix+'_collapsed',collapsed?'1':'');}catch(e){}
+}
+function initSidebarStates(){
+  ['ol','sc','ch'].forEach(prefix=>{
+    let collapsed=false;
+    try{collapsed=localStorage.getItem('sb_'+prefix+'_collapsed')==='1';}catch(e){}
+    if(!collapsed)return;
+    const wrap=document.getElementById(prefix+'-sb-wrap');
+    const btn=document.getElementById(prefix+'-sb-toggle');
+    if(!wrap||!btn)return;
+    wrap.classList.add('collapsed');
+    btn.textContent='▸';
+    btn.title='사이드바 펼치기';
+  });
+}
 // 모바일에서 접이식 툴바 기본 닫기
 function initVtOpts(){
   if(window.innerWidth>768)return;
@@ -3603,6 +3643,7 @@ function toggleGmOpts(){
 }
 document.addEventListener('DOMContentLoaded',()=>{
   initVtOpts();
+  initSidebarStates();
   const ta=$('im-ta');if(ta)ta.addEventListener('keydown',e=>{if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)){e.preventDefault();saveItemModal();}});
   initIcons();
   // ep-input textarea 자동 높이 조절 (입력 편의)
