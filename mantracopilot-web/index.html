@@ -372,12 +372,19 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);back
 .ol-sidebar-title{font-size:10px;font-weight:800;letter-spacing:0.1em;color:var(--text-faint);padding:4px 14px 8px;text-transform:uppercase}
 .snap-section{padding:10px 10px 4px;border-top:1px solid rgba(255,255,255,0.05);margin-top:6px}
 .snap-section-title{font-size:9px;font-weight:800;letter-spacing:0.1em;color:var(--text-faint);text-transform:uppercase;margin-bottom:6px;display:flex;align-items:center;justify-content:space-between}
-.snap-pad{background:rgba(14,5,28,0.7);border:1px solid rgba(0,200,224,0.15);border-radius:10px;padding:9px 10px;cursor:pointer;transition:all 0.18s;position:relative;margin-bottom:6px}
+.snap-pad{background:rgba(14,5,28,0.7);border:1px solid rgba(0,200,224,0.15);border-radius:10px;padding:9px 10px;cursor:grab;transition:all 0.18s;position:relative;margin-bottom:6px;user-select:none}
+.snap-pad:active{cursor:grabbing}
 .snap-pad:hover{border-color:rgba(0,200,224,0.38);background:rgba(0,200,224,0.06)}
+.snap-pad.snap-dragging{opacity:0.38;transform:scale(0.97)}
+.snap-pad.snap-drop-before{box-shadow:0 -3px 0 0 var(--cyan);background:rgba(0,200,224,0.05)}
+.snap-pad.snap-drop-after{box-shadow:0 3px 0 0 var(--cyan);background:rgba(0,200,224,0.05)}
 .snap-pad-label{font-size:11px;font-weight:700;color:var(--green);margin-bottom:3px}
 .snap-pad-preview{font-size:10px;color:var(--text-dim);line-height:1.5;white-space:pre-line;max-height:48px;overflow:hidden}
-.snap-pad-del{position:absolute;top:5px;right:6px;background:none;border:none;color:var(--text-faint);font-size:12px;cursor:pointer;padding:2px 4px;border-radius:4px;line-height:1;display:none}
-.snap-pad:hover .snap-pad-del{display:block}
+.snap-pad-footer{display:flex;align-items:center;justify-content:space-between;margin-top:6px}
+.snap-pad-load{background:rgba(0,200,224,0.1);border:1px solid rgba(0,200,224,0.28);border-radius:6px;color:var(--cyan);font-size:10px;font-weight:700;cursor:pointer;padding:3px 10px;font-family:inherit;transition:all 0.15s}
+.snap-pad-load:hover{background:rgba(0,200,224,0.22);border-color:rgba(0,200,224,0.5)}
+.snap-pad-del{background:none;border:none;color:var(--text-faint);font-size:12px;cursor:pointer;padding:2px 4px;border-radius:4px;line-height:1;opacity:0;transition:opacity 0.15s}
+.snap-pad:hover .snap-pad-del{opacity:1}
 .snap-pad-del:hover{color:#f87171}
 .ol-sidebar-item{display:flex;align-items:center;gap:7px;padding:9px 12px 9px 14px;cursor:pointer;font-size:12px;font-weight:600;color:var(--text-dim);transition:all 0.15s;border-left:2px solid transparent;background:none;width:100%;text-align:left;font-family:inherit;border-right:none;border-top:none;border-bottom:none}
 .ol-sidebar-item:hover{background:rgba(255,255,255,0.04);color:var(--text)}
@@ -453,6 +460,11 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);back
 .ep-del{width:26px;height:26px;border-radius:50%;background:none;border:none;color:var(--text-faint);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:12px;opacity:0;transition:all 0.2s;flex-shrink:0}
 .ep-row:hover .ep-del{opacity:1}
 .ep-del:hover{background:rgba(252,165,165,0.12);color:#fca5a5}
+.ep-drag-handle{color:var(--text-faint);font-size:15px;cursor:grab;flex-shrink:0;opacity:0;transition:opacity 0.15s;padding:0 2px;line-height:1;-webkit-user-select:none;user-select:none}
+.ep-drag-handle:active{cursor:grabbing;opacity:1}
+.ep-row:hover .ep-drag-handle{opacity:0.6}
+.ep-card.ep-drop-before{box-shadow:0 -3px 0 0 var(--cyan)}
+.ep-card.ep-drop-after{box-shadow:0 3px 0 0 var(--cyan)}
 /* 펼쳐진 편집 영역 */
 .ep-detail{padding:0 16px 16px;display:none;flex-direction:column;gap:12px;border-top:1px solid var(--border)}
 .ep-card.expanded .ep-detail{display:flex}
@@ -546,6 +558,8 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);back
 .sc-group{border:1px solid var(--border);border-radius:var(--r);overflow:hidden;background:rgba(255,255,255,0.015);transition:border-color 0.2s}
 .sc-group:hover{border-color:var(--border2)}
 .sc-group.item-drag-over{border-color:var(--purple-light);box-shadow:0 0 0 2px rgba(0,200,224,0.15)}
+.sc-group.sc-drop-before{box-shadow:0 -3px 0 0 var(--purple-light);border-color:var(--purple-light)}
+.sc-group.sc-drop-after{box-shadow:0 3px 0 0 var(--purple-light);border-color:var(--purple-light)}
 .sc-group-hdr{display:flex;align-items:center;gap:10px;padding:11px 14px;cursor:grab;user-select:none;border-bottom:1px solid var(--border);background:rgba(0,200,224,0.03)}
 .sc-group-hdr:active{cursor:grabbing}
 .sc-group-drag{color:var(--text-faint);font-size:14px;flex-shrink:0;cursor:grab;letter-spacing:-2px}
@@ -562,8 +576,10 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);back
 /* 장면 카드 */
 .sc-scene{background:var(--surface);border:1px solid rgba(255,255,255,0.38);border-radius:var(--rs);overflow:hidden;transition:border-color 0.2s,box-shadow 0.2s;box-shadow:0 1px 6px rgba(0,0,0,0.35)}
 .sc-scene:hover{border-color:rgba(0,200,224,0.55);box-shadow:0 2px 12px rgba(0,0,0,0.45)}
-.sc-scene.item-dragging{opacity:0.4}
+.sc-scene.item-dragging{opacity:0.38;transform:scale(0.98)}
 .sc-scene.item-drag-over{border-color:var(--purple-light);box-shadow:0 0 0 2px rgba(0,200,224,0.15)}
+.sc-scene.sc-drop-before{box-shadow:0 -3px 0 0 var(--cyan),0 1px 6px rgba(0,0,0,0.35);border-color:rgba(0,200,224,0.5)}
+.sc-scene.sc-drop-after{box-shadow:0 3px 0 0 var(--cyan),0 1px 6px rgba(0,0,0,0.35);border-color:rgba(0,200,224,0.5)}
 .sc-scene-hdr{display:flex;align-items:center;gap:8px;padding:10px 12px;user-select:none;border-bottom:1px solid rgba(255,255,255,0.08)}
 .sc-scene-num{font-size:10px;font-weight:800;color:var(--text-faint);background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:5px;padding:1px 6px;flex-shrink:0;min-width:22px;text-align:center;letter-spacing:0.01em}
 .sc-scene-drag{color:var(--text-faint);font-size:13px;cursor:grab;flex-shrink:0;letter-spacing:-2px}
@@ -1115,6 +1131,11 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);back
 .char-role-sel{font-size:10px;font-weight:800;letter-spacing:0.05em;color:var(--gold);background:rgba(255,196,0,0.08);border:1px solid rgba(255,196,0,0.2);padding:3px 10px;border-radius:100px;font-family:inherit;cursor:pointer;appearance:none;-webkit-appearance:none}
 .char-del-btn{width:26px;height:26px;border-radius:50%;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.15);color:#fca5a5;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s;flex-shrink:0}
 .char-del-btn:hover{background:rgba(239,68,68,0.2)}
+.char-drag-handle{color:var(--text-faint);font-size:15px;cursor:grab;flex-shrink:0;opacity:0.4;transition:opacity 0.15s;padding:0 2px;line-height:1;-webkit-user-select:none;user-select:none;margin-right:2px}
+.char-drag-handle:active{cursor:grabbing}
+.char-card:hover .char-drag-handle{opacity:0.9}
+.char-card.ep-drop-before{box-shadow:0 -3px 0 0 var(--cyan)}
+.char-card.ep-drop-after{box-shadow:0 3px 0 0 var(--cyan)}
 .char-field{display:flex;flex-direction:column;gap:4px}
 .char-fl{font-size:10px;font-weight:800;letter-spacing:0.07em;color:var(--text-faint);text-transform:uppercase}
 .char-fi{font-size:13px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.16);border-radius:8px;padding:7px 11px;color:var(--text);font-family:inherit;resize:none;transition:border-color 0.2s;line-height:1.6;width:100%}
@@ -3432,6 +3453,80 @@ function _makeFolderCardTouchDrag(card,folderId,key,viewKey,items,folderField,re
     started=false;
   });
 }
+// ── 스냅샷 패드 터치 드래그 ──
+function _makeSnapPadTouchDrag(pad,idx,snapKey,renderFn){
+  let startX=0,startY=0,started=false,ghost=null,timer=null;
+  pad.addEventListener('touchstart',e=>{
+    const t=e.touches[0];
+    startX=t.clientX;startY=t.clientY;started=false;
+    clearTimeout(timer);
+    timer=setTimeout(()=>{
+      started=true;
+      const r=pad.getBoundingClientRect();
+      ghost=pad.cloneNode(true);
+      ghost.style.cssText=`position:fixed;top:${r.top}px;left:${r.left}px;width:${r.width}px;opacity:0.75;pointer-events:none;z-index:9998;transform:scale(1.04) rotate(1.5deg);box-shadow:0 12px 36px rgba(0,0,0,0.5);transition:none;border-radius:10px`;
+      document.body.appendChild(ghost);
+      pad.classList.add('snap-dragging');
+      if(navigator.vibrate)navigator.vibrate(40);
+    },320);
+  },{passive:true});
+  pad.addEventListener('touchmove',e=>{
+    const t=e.touches[0];
+    if(!started){
+      if(Math.abs(t.clientX-startX)>8||Math.abs(t.clientY-startY)>8)clearTimeout(timer);
+      return;
+    }
+    e.preventDefault();
+    if(ghost){
+      const r=pad.getBoundingClientRect();
+      ghost.style.top=(t.clientY-r.height/2)+'px';
+      ghost.style.left=(t.clientX-r.width/2)+'px';
+    }
+    // 드롭 위치 표시
+    const sec=pad.closest('.snap-section');
+    if(sec)sec.querySelectorAll('.snap-drop-before,.snap-drop-after').forEach(el=>el.classList.remove('snap-drop-before','snap-drop-after'));
+    if(ghost)ghost.style.display='none';
+    const under=document.elementFromPoint(t.clientX,t.clientY);
+    if(ghost)ghost.style.display='';
+    if(under){
+      const tf=under.closest('.snap-pad:not(.snap-dragging)');
+      if(tf&&tf!==pad){
+        const rect=tf.getBoundingClientRect();
+        if(t.clientY<rect.top+rect.height/2)tf.classList.add('snap-drop-before');
+        else tf.classList.add('snap-drop-after');
+      }
+    }
+  },{passive:false});
+  pad.addEventListener('touchend',e=>{
+    clearTimeout(timer);
+    if(!started){if(ghost)ghost.remove();pad.classList.remove('snap-dragging');return;}
+    const t=e.changedTouches[0];
+    if(ghost)ghost.style.display='none';
+    const under=document.elementFromPoint(t.clientX,t.clientY);
+    if(ghost){ghost.remove();ghost=null;}
+    pad.classList.remove('snap-dragging');
+    const sec=pad.closest('.snap-section');
+    if(under){
+      const tf=under.closest('.snap-pad:not(.snap-dragging)');
+      if(tf&&tf!==pad){
+        const isBefore=tf.classList.contains('snap-drop-before');
+        tf.classList.remove('snap-drop-before','snap-drop-after');
+        const toSnapId=tf.dataset.snapId;
+        const cur=JSON.parse(localStorage.getItem(snapKey)||'[]');
+        const [moved]=cur.splice(idx,1);
+        let insertAt=cur.findIndex(s=>s.id===toSnapId);
+        if(insertAt<0)insertAt=cur.length;
+        else if(!isBefore)insertAt++;
+        cur.splice(insertAt,0,moved);
+        localStorage.setItem(snapKey,JSON.stringify(cur));
+        renderFn();
+        started=false;return;
+      }
+    }
+    if(sec)sec.querySelectorAll('.snap-drop-before,.snap-drop-after').forEach(el=>el.classList.remove('snap-drop-before','snap-drop-after'));
+    started=false;
+  });
+}
 // ── 터치 드래그 전역 상태 ──
 const _td={el:null,idx:-1,ghost:null,startX:0,startY:0,started:false,timer:null,
   // 폴더 카드 터치 드래그용
@@ -3454,12 +3549,16 @@ function _tdGhost(el,cx,cy){
 function makeDraggable(el,idx){
   el.draggable=true;
   el.addEventListener('dragstart',e=>{
+    // INPUT/TEXTAREA/SELECT/BUTTON에서 시작한 드래그는 취소 (텍스트 선택과 충돌 방지)
+    if(['INPUT','TEXTAREA','SELECT','BUTTON'].includes(e.target.tagName)){e.preventDefault();return;}
     e.dataTransfer.setData('text/plain',String(idx));
+    e.dataTransfer.effectAllowed='move';
     el.classList.add('item-dragging');
   });
   el.addEventListener('dragend',()=>el.classList.remove('item-dragging'));
   el.addEventListener('dragover',e=>{e.preventDefault();el.classList.add('item-drag-over');});
-  el.addEventListener('dragleave',()=>el.classList.remove('item-drag-over'));
+  // relatedTarget 체크: 자식 요소로 이동 시 dragleave 무시
+  el.addEventListener('dragleave',e=>{if(!el.contains(e.relatedTarget))el.classList.remove('item-drag-over');});
   el.addEventListener('drop',e=>{
     e.preventDefault();e.stopPropagation();
     el.classList.remove('item-drag-over');
@@ -3493,6 +3592,7 @@ function makeDraggable(el,idx){
     if(_td.ghost)_td.ghost.style.display='';
     if(under){
       const tc=under.closest('.char-card');if(tc&&tc!==el)tc.classList.add('item-drag-over');
+      const te=under.closest('.ep-card');if(te&&te!==el)te.classList.add('item-drag-over');
       const tf=under.closest('.folder-icon-card:not(.add-card)');if(tf)tf.classList.add('drag-over');
     }
   },{passive:false});
@@ -3505,7 +3605,7 @@ function makeDraggable(el,idx){
     if(_td.ghost)_td.ghost.style.display='';
     el.classList.remove('item-dragging');
     if(under){
-      // 카드→카드 순서 변경
+      // char-card 순서 변경
       const tc=under.closest('.char-card');
       if(tc&&tc!==el){
         const toIdx=parseInt(tc.dataset.charIdx);
@@ -3513,6 +3613,20 @@ function makeDraggable(el,idx){
           const moved=pdChars.splice(_td.idx,1)[0];
           pdChars.splice(toIdx,0,moved);
           saveChars();renderCharCards();
+        }
+      }
+      // ep-card 순서 변경 (회차 개요)
+      const te=under.closest('.ep-card');
+      if(te&&te!==el){
+        const toIdx=parseInt(te.dataset.epIdx);
+        if(!isNaN(toIdx)&&toIdx!==_td.idx){
+          const moved=olEpisodes.splice(_td.idx,1)[0];
+          const adj=_td.idx<toIdx?toIdx-1:toIdx;
+          olEpisodes.splice(adj,0,moved);
+          olEpisodes.forEach((ep,i)=>{ep.num=i+1;ep.act=getAct(i+1);});
+          if(typeof saveOutlineData==='function')saveOutlineData();
+          if(typeof renderEpList==='function')renderEpList();
+          if(typeof drawTensionGraph==='function')drawTensionGraph();
         }
       }
       // 카드→폴더 이동
@@ -4984,18 +5098,32 @@ function renderCharCards(){
   function _renderCharCard(container,ch,i){
     const card=document.createElement('div');card.className='char-card';card.dataset.charIdx=i;
     makeDraggable(card,i);
+    // before/after 표시
+    card.addEventListener('dragover', e => {
+      if(!e.dataTransfer.types.includes('text/plain')) return;
+      document.querySelectorAll('.char-card.ep-drop-before,.char-card.ep-drop-after').forEach(c=>c.classList.remove('ep-drop-before','ep-drop-after'));
+      card.classList.remove('item-drag-over');
+      const rect=card.getBoundingClientRect();
+      card.classList.add(e.clientY < rect.top + rect.height/2 ? 'ep-drop-before' : 'ep-drop-after');
+    });
+    card.addEventListener('dragleave', e => {
+      if(!card.contains(e.relatedTarget)) card.classList.remove('ep-drop-before','ep-drop-after');
+    });
     card.addEventListener('drop',e=>{
       e.preventDefault();e.stopPropagation();
-      card.classList.remove('item-drag-over');
+      const isBefore=card.classList.contains('ep-drop-before');
+      card.classList.remove('ep-drop-before','ep-drop-after','item-drag-over');
       const from=parseInt(e.dataTransfer.getData('text/plain'));
       if(isNaN(from)||from===i)return;
       const moved=pdChars.splice(from,1)[0];
-      pdChars.splice(i,0,moved);
+      const adj=from<i?i-1:i;
+      pdChars.splice(isBefore?adj:adj+1,0,moved);
       saveChars();
       renderCharCards();
     });
     card.innerHTML=`
       <div class="char-card-header">
+        <span class="char-drag-handle" title="드래그하여 순서 변경">⠿</span>
         <input class="char-name-input" placeholder="이름" value="${escH(ch.name)}"
           oninput="pdChars[${i}].name=this.value;debounceSaveChars()">
         <select class="char-role-sel" onchange="pdChars[${i}].role=this.value;debounceSaveChars()">
@@ -5299,11 +5427,49 @@ function renderCharSnapshots(container){
   const titleRow=document.createElement('div');titleRow.className='snap-section-title';
   titleRow.innerHTML='<span>📋 저장된 캐릭터</span>';
   sec.appendChild(titleRow);
-  snaps.forEach(snap=>{
+  snaps.forEach((snap,i)=>{
     const pad=document.createElement('div');pad.className='snap-pad';
-    pad.innerHTML=`<div class="snap-pad-label">${snap.label}</div><div class="snap-pad-preview">${snap.preview}</div><button class="snap-pad-del" title="삭제">✕</button>`;
-    pad.onclick=e=>{if(e.target.classList.contains('snap-pad-del'))return;loadCharSnapshot(snap.id);};
+    pad.draggable=true;
+    pad.dataset.snapId=snap.id;
+    pad.innerHTML=`<div class="snap-pad-label">${snap.label}</div><div class="snap-pad-preview">${snap.preview}</div><div class="snap-pad-footer"><button class="snap-pad-load">불러오기</button><button class="snap-pad-del" title="삭제">✕</button></div>`;
+    pad.querySelector('.snap-pad-load').onclick=e=>{e.stopPropagation();loadCharSnapshot(snap.id);};
     pad.querySelector('.snap-pad-del').onclick=e=>{e.stopPropagation();deleteCharSnapshot(snap.id);};
+    // 드래그 순서 변경
+    pad.addEventListener('dragstart',e=>{
+      e.dataTransfer.setData('text/plain',String(i));
+      e.dataTransfer.effectAllowed='move';
+      setTimeout(()=>pad.classList.add('snap-dragging'),0);
+    });
+    pad.addEventListener('dragend',()=>{
+      pad.classList.remove('snap-dragging');
+      sec.querySelectorAll('.snap-drop-before,.snap-drop-after').forEach(el=>el.classList.remove('snap-drop-before','snap-drop-after'));
+    });
+    pad.addEventListener('dragover',e=>{
+      e.preventDefault();e.dataTransfer.dropEffect='move';
+      sec.querySelectorAll('.snap-drop-before,.snap-drop-after').forEach(el=>el.classList.remove('snap-drop-before','snap-drop-after'));
+      const rect=pad.getBoundingClientRect();
+      if(e.clientY<rect.top+rect.height/2)pad.classList.add('snap-drop-before');
+      else pad.classList.add('snap-drop-after');
+    });
+    pad.addEventListener('dragleave',e=>{
+      if(!pad.contains(e.relatedTarget))pad.classList.remove('snap-drop-before','snap-drop-after');
+    });
+    pad.addEventListener('drop',e=>{
+      e.preventDefault();
+      const fromIdx=parseInt(e.dataTransfer.getData('text/plain'));
+      const isBefore=pad.classList.contains('snap-drop-before');
+      pad.classList.remove('snap-drop-before','snap-drop-after');
+      if(isNaN(fromIdx)||fromIdx===i)return;
+      const cur=JSON.parse(localStorage.getItem(snapKey)||'[]');
+      const [moved]=cur.splice(fromIdx,1);
+      let insertAt=cur.findIndex(s=>s.id===snap.id);
+      if(insertAt<0)insertAt=cur.length;
+      else if(!isBefore)insertAt++;
+      cur.splice(insertAt,0,moved);
+      localStorage.setItem(snapKey,JSON.stringify(cur));
+      renderCharSidebar();
+    });
+    _makeSnapPadTouchDrag(pad,i,snapKey,()=>renderCharSidebar());
     sec.appendChild(pad);
   });
   container.appendChild(sec);
@@ -7474,19 +7640,33 @@ function renderEpCards(container, episodes){
     const typeInfo=EP_TYPES.find(t=>t.id===ep.type)||EP_TYPES[0];
     const card=document.createElement('div');card.className='ep-card';card.dataset.epIdx=realIdx;
     makeDraggable(card, realIdx);
+    // before/after 표시 및 정확한 위치 계산
+    card.addEventListener('dragover', e => {
+      if(!e.dataTransfer.types.includes('text/plain')) return;
+      document.querySelectorAll('.ep-card.ep-drop-before,.ep-card.ep-drop-after').forEach(c=>c.classList.remove('ep-drop-before','ep-drop-after'));
+      card.classList.remove('item-drag-over');
+      const rect=card.getBoundingClientRect();
+      card.classList.add(e.clientY < rect.top + rect.height/2 ? 'ep-drop-before' : 'ep-drop-after');
+    });
+    card.addEventListener('dragleave', e => {
+      if(!card.contains(e.relatedTarget)) card.classList.remove('ep-drop-before','ep-drop-after');
+    });
     card.addEventListener('drop', e => {
       e.preventDefault(); e.stopPropagation();
-      card.classList.remove('item-drag-over');
+      const isBefore = card.classList.contains('ep-drop-before');
+      card.classList.remove('ep-drop-before','ep-drop-after','item-drag-over');
       const from = parseInt(e.dataTransfer.getData('text/plain'));
       if(isNaN(from) || from === realIdx) return;
       const moved = olEpisodes.splice(from, 1)[0];
-      olEpisodes.splice(realIdx, 0, moved);
-      // Renumber
+      const adj = from < realIdx ? realIdx - 1 : realIdx;
+      olEpisodes.splice(isBefore ? adj : adj + 1, 0, moved);
       olEpisodes.forEach((ep, i) => { ep.num = i + 1; ep.act = getAct(i + 1); });
+      saveOutlineData();
       renderEpList(); drawTensionGraph();
     });
     card.innerHTML=`
       <div class="ep-row">
+        <span class="ep-drag-handle" title="드래그하여 순서 변경">⠿</span>
         <div class="ep-num">${ep.num}</div>
         <div class="ep-act-dot" style="background:${ACT_COLORS[ep.act-1]||'#888'}"></div>
         <div class="ep-main">
@@ -8104,11 +8284,49 @@ function renderOutlineSnapshots(container){
   const titleRow=document.createElement('div');titleRow.className='snap-section-title';
   titleRow.innerHTML='<span>📋 저장된 개요</span>';
   sec.appendChild(titleRow);
-  snaps.forEach(snap=>{
+  snaps.forEach((snap,i)=>{
     const pad=document.createElement('div');pad.className='snap-pad';
-    pad.innerHTML=`<div class="snap-pad-label">${snap.label}</div><div class="snap-pad-preview">${snap.preview}</div><button class="snap-pad-del" title="삭제">✕</button>`;
-    pad.onclick=e=>{if(e.target.classList.contains('snap-pad-del'))return;loadOutlineSnapshot(snap.id);};
+    pad.draggable=true;
+    pad.dataset.snapId=snap.id;
+    pad.innerHTML=`<div class="snap-pad-label">${snap.label}</div><div class="snap-pad-preview">${snap.preview}</div><div class="snap-pad-footer"><button class="snap-pad-load">불러오기</button><button class="snap-pad-del" title="삭제">✕</button></div>`;
+    pad.querySelector('.snap-pad-load').onclick=e=>{e.stopPropagation();loadOutlineSnapshot(snap.id);};
     pad.querySelector('.snap-pad-del').onclick=e=>{e.stopPropagation();deleteOutlineSnapshot(snap.id);};
+    // 드래그 순서 변경
+    pad.addEventListener('dragstart',e=>{
+      e.dataTransfer.setData('text/plain',String(i));
+      e.dataTransfer.effectAllowed='move';
+      setTimeout(()=>pad.classList.add('snap-dragging'),0);
+    });
+    pad.addEventListener('dragend',()=>{
+      pad.classList.remove('snap-dragging');
+      sec.querySelectorAll('.snap-drop-before,.snap-drop-after').forEach(el=>el.classList.remove('snap-drop-before','snap-drop-after'));
+    });
+    pad.addEventListener('dragover',e=>{
+      e.preventDefault();e.dataTransfer.dropEffect='move';
+      sec.querySelectorAll('.snap-drop-before,.snap-drop-after').forEach(el=>el.classList.remove('snap-drop-before','snap-drop-after'));
+      const rect=pad.getBoundingClientRect();
+      if(e.clientY<rect.top+rect.height/2)pad.classList.add('snap-drop-before');
+      else pad.classList.add('snap-drop-after');
+    });
+    pad.addEventListener('dragleave',e=>{
+      if(!pad.contains(e.relatedTarget))pad.classList.remove('snap-drop-before','snap-drop-after');
+    });
+    pad.addEventListener('drop',e=>{
+      e.preventDefault();
+      const fromIdx=parseInt(e.dataTransfer.getData('text/plain'));
+      const isBefore=pad.classList.contains('snap-drop-before');
+      pad.classList.remove('snap-drop-before','snap-drop-after');
+      if(isNaN(fromIdx)||fromIdx===i)return;
+      const cur=JSON.parse(localStorage.getItem(snapKey)||'[]');
+      const [moved]=cur.splice(fromIdx,1);
+      let insertAt=cur.findIndex(s=>s.id===snap.id);
+      if(insertAt<0)insertAt=cur.length;
+      else if(!isBefore)insertAt++;
+      cur.splice(insertAt,0,moved);
+      localStorage.setItem(snapKey,JSON.stringify(cur));
+      renderEpList();drawTensionGraph();
+    });
+    _makeSnapPadTouchDrag(pad,i,snapKey,()=>{renderEpList();drawTensionGraph();});
     sec.appendChild(pad);
   });
   container.appendChild(sec);
@@ -8588,21 +8806,21 @@ function _renderScene(s,containerId,si){
   const num=_sceneNumMap[s.id]||'';
   return `<div class="sc-scene" data-scene-id="${s.id}" data-container="${containerId}" data-scene-idx="${si}" draggable="true">
     <div class="sc-scene-hdr">
-      <span class="sc-scene-drag">⋮⋮</span>
+      <span class="sc-scene-drag" title="드래그하여 순서 변경">⋮⋮</span>
       <span class="sc-scene-num">${num}</span>
       <input class="sc-scene-title-input" value="${(s.title||'').replace(/"/g,'&quot;')}" placeholder="장면 제목"
-        onchange="scUpdateScene('${s.id}','title',this.value)">
+        draggable="false" onchange="scUpdateScene('${s.id}','title',this.value)">
       <button class="sc-scene-del" onclick="scDeleteScene('${s.id}')">✕</button>
     </div>
     <div class="sc-scene-body">
       <div class="sc-scene-content-row">
         <textarea class="sc-scene-content" placeholder="장면 내용을 작성하세요..."
-          oninput="scUpdateScene('${s.id}','content',this.value)">${s.content||''}</textarea>
+          draggable="false" oninput="scUpdateScene('${s.id}','content',this.value)">${s.content||''}</textarea>
         <button class="sc-scene-img-add" onclick="scUploadImage('${s.id}')" title="이미지 추가">＋</button>
       </div>
       ${imgs.length?`<div class="sc-scene-images">${imgHtml}</div>`:''}
       <textarea class="sc-scene-note" placeholder="메모/지시문 (선택사항)"
-        oninput="scUpdateScene('${s.id}','note',this.value)">${s.note||''}</textarea>
+        draggable="false" oninput="scUpdateScene('${s.id}','note',this.value)">${s.note||''}</textarea>
     </div>
   </div>`;
 }
@@ -8724,51 +8942,84 @@ function _findScene(sc,sceneId){
 }
 
 // ── 드래그 앤 드롭 ──
+function _scClearDropMarks(){
+  document.querySelectorAll('.sc-drop-before,.sc-drop-after,.item-drag-over').forEach(el=>el.classList.remove('sc-drop-before','sc-drop-after','item-drag-over'));
+}
+
 function _initScDrag(){
+  // ── 그룹 드래그 ──
   document.querySelectorAll('.sc-group[draggable]').forEach(el=>{
     el.addEventListener('dragstart',e=>{
+      // 그룹 헤더/핸들에서만 드래그 허용
+      if(!e.target.closest('.sc-group-hdr')){e.preventDefault();return;}
       e.dataTransfer.setData('text/plain',JSON.stringify({type:'group',id:el.dataset.groupId}));
       e.dataTransfer.effectAllowed='move';
-      el.classList.add('item-dragging');
+      setTimeout(()=>el.classList.add('item-dragging'),0);
       e.stopPropagation();
     });
-    el.addEventListener('dragend',()=>el.classList.remove('item-dragging'));
-    el.addEventListener('dragover',e=>{e.preventDefault();el.classList.add('item-drag-over');});
-    el.addEventListener('dragleave',()=>el.classList.remove('item-drag-over'));
+    el.addEventListener('dragend',()=>{el.classList.remove('item-dragging');_scClearDropMarks();});
+    el.addEventListener('dragover',e=>{
+      if(!e.dataTransfer.types.includes('text/plain'))return;
+      e.preventDefault();e.stopPropagation();
+      _scClearDropMarks();
+      const rect=el.getBoundingClientRect();
+      if(e.clientY<rect.top+rect.height/2)el.classList.add('sc-drop-before');
+      else el.classList.add('sc-drop-after');
+    });
+    el.addEventListener('dragleave',e=>{if(!el.contains(e.relatedTarget))el.classList.remove('sc-drop-before','sc-drop-after');});
     el.addEventListener('drop',e=>{
       e.preventDefault();e.stopPropagation();
-      el.classList.remove('item-drag-over');
+      const isBefore=el.classList.contains('sc-drop-before');
+      el.classList.remove('sc-drop-before','sc-drop-after');
       try{
         const payload=JSON.parse(e.dataTransfer.getData('text/plain'));
-        if(payload.type==='group') _scReorderGroup(payload.id,el.dataset.groupId);
+        if(payload.type==='group') _scReorderGroupAdv(payload.id,el.dataset.groupId,isBefore);
         else if(payload.type==='scene') _scMoveScene(payload.id,payload.from,el.dataset.groupId);
       }catch(err){}
     });
   });
+
+  // ── 장면 드래그 ──
   document.querySelectorAll('.sc-scene[draggable]').forEach(el=>{
     el.addEventListener('dragstart',e=>{
+      // 드래그 핸들(.sc-scene-drag) 또는 헤더 영역에서만 허용 — textarea/input 제외
+      if(e.target.tagName==='TEXTAREA'||e.target.tagName==='INPUT'||e.target.tagName==='BUTTON'){e.preventDefault();return;}
+      if(!e.target.closest('.sc-scene-hdr')){e.preventDefault();return;}
       e.dataTransfer.setData('text/plain',JSON.stringify({type:'scene',id:el.dataset.sceneId,from:el.dataset.container}));
       e.dataTransfer.effectAllowed='move';
-      el.classList.add('item-dragging');
+      setTimeout(()=>el.classList.add('item-dragging'),0);
       e.stopPropagation();
     });
-    el.addEventListener('dragend',()=>el.classList.remove('item-dragging'));
-    el.addEventListener('dragover',e=>{e.preventDefault();e.stopPropagation();el.classList.add('item-drag-over');});
-    el.addEventListener('dragleave',()=>el.classList.remove('item-drag-over'));
+    el.addEventListener('dragend',()=>{el.classList.remove('item-dragging');_scClearDropMarks();});
+    el.addEventListener('dragover',e=>{
+      if(!e.dataTransfer.types.includes('text/plain'))return;
+      e.preventDefault();e.stopPropagation();
+      _scClearDropMarks();
+      const rect=el.getBoundingClientRect();
+      if(e.clientY<rect.top+rect.height/2)el.classList.add('sc-drop-before');
+      else el.classList.add('sc-drop-after');
+    });
+    el.addEventListener('dragleave',e=>{if(!el.contains(e.relatedTarget))el.classList.remove('sc-drop-before','sc-drop-after');});
     el.addEventListener('drop',e=>{
       e.preventDefault();e.stopPropagation();
-      el.classList.remove('item-drag-over');
+      const isBefore=el.classList.contains('sc-drop-before');
+      el.classList.remove('sc-drop-before','sc-drop-after');
       try{
         const payload=JSON.parse(e.dataTransfer.getData('text/plain'));
         if(payload.type==='scene'){
-          _scReorderScene(payload.id,payload.from,el.dataset.container,parseInt(el.dataset.sceneIdx));
+          _scReorderSceneAdv(payload.id,payload.from,el.dataset.container,el.dataset.sceneId,isBefore);
+        } else if(payload.type==='group'){
+          // 그룹→장면 위 드롭: 장면의 컨테이너로 그룹 이동 무시 (아무 동작 없음)
         }
       }catch(err){}
     });
   });
+
+  // sc-group-body 드롭존 (그룹 내 빈 영역)
   document.querySelectorAll('.sc-group-body').forEach(el=>{
     el.addEventListener('dragover',e=>{e.preventDefault();});
     el.addEventListener('drop',e=>{
+      if(e.target.closest('.sc-scene'))return;
       e.preventDefault();
       try{
         const payload=JSON.parse(e.dataTransfer.getData('text/plain'));
@@ -8776,7 +9027,8 @@ function _initScDrag(){
       }catch(err){}
     });
   });
-  // sc-body 전체 드롭존 (ungrouped 영역 끝에 추가)
+
+  // sc-body 전체 드롭존 (ungrouped 끝에 추가)
   const scBody=document.getElementById('sc-body');
   if(scBody){
     scBody.addEventListener('dragover',e=>{e.preventDefault();});
@@ -8789,6 +9041,9 @@ function _initScDrag(){
       }catch(err){}
     });
   }
+
+  // 터치 드래그
+  _initScTouchDrag();
 }
 
 function _scReorderGroup(fromId,toId){
@@ -8842,6 +9097,121 @@ function _scReorderScene(sceneId,fromContainer,toContainer,toIdx){
     else{if(!sc.ungrouped)sc.ungrouped=[];sc.ungrouped.push(scene);}
   }
   _scAutoSave();renderScMain();renderScSidebar();
+}
+
+// ── 드래그 순서변경 헬퍼 (before/after 지원) ──
+function _scReorderGroupAdv(fromId,toId,isBefore){
+  if(fromId===toId)return;
+  const sc=_curScript();if(!sc)return;
+  const fi=(sc.groups||[]).findIndex(g=>g.id===fromId);
+  if(fi<0)return;
+  const moved=sc.groups.splice(fi,1)[0];
+  let ti=(sc.groups||[]).findIndex(g=>g.id===toId);
+  if(ti<0)ti=sc.groups.length;
+  else if(!isBefore)ti++;
+  sc.groups.splice(Math.max(0,ti),0,moved);
+  _scAutoSave();renderScMain();
+}
+
+function _scReorderSceneAdv(sceneId,fromContainer,toContainer,toSceneId,isBefore){
+  const sc=_curScript();if(!sc)return;
+  // 출발지에서 제거
+  let scene=null;
+  if(fromContainer==='ungrouped'){
+    const i=(sc.ungrouped||[]).findIndex(s=>s.id===sceneId);
+    if(i>=0)scene=sc.ungrouped.splice(i,1)[0];
+  } else {
+    const g=(sc.groups||[]).find(g=>g.id===fromContainer);
+    if(g){const i=(g.scenes||[]).findIndex(s=>s.id===sceneId);if(i>=0)scene=g.scenes.splice(i,1)[0];}
+  }
+  if(!scene)return;
+  // 도착지에 삽입
+  if(toContainer==='ungrouped'){
+    if(!sc.ungrouped)sc.ungrouped=[];
+    const ti=sc.ungrouped.findIndex(s=>s.id===toSceneId);
+    if(ti<0)sc.ungrouped.push(scene);
+    else sc.ungrouped.splice(isBefore?ti:ti+1,0,scene);
+  } else {
+    const tg=(sc.groups||[]).find(g=>g.id===toContainer);
+    if(tg){
+      if(!tg.scenes)tg.scenes=[];
+      const ti=tg.scenes.findIndex(s=>s.id===toSceneId);
+      if(ti<0)tg.scenes.push(scene);
+      else tg.scenes.splice(isBefore?ti:ti+1,0,scene);
+    } else {
+      if(!sc.ungrouped)sc.ungrouped=[];sc.ungrouped.push(scene);
+    }
+  }
+  _scAutoSave();renderScMain();renderScSidebar();
+}
+
+// ── 장면 터치 드래그 (모바일) ──
+function _initScTouchDrag(){
+  document.querySelectorAll('.sc-scene-drag').forEach(handle=>{
+    const card=handle.closest('.sc-scene');if(!card)return;
+    let startX=0,startY=0,started=false,ghost=null,timer=null;
+    handle.addEventListener('touchstart',e=>{
+      const t=e.touches[0];startX=t.clientX;startY=t.clientY;started=false;
+      clearTimeout(timer);
+      timer=setTimeout(()=>{
+        started=true;
+        const r=card.getBoundingClientRect();
+        ghost=card.cloneNode(true);
+        ghost.style.cssText=`position:fixed;top:${r.top}px;left:${r.left}px;width:${r.width}px;opacity:0.72;pointer-events:none;z-index:9998;transform:scale(1.02) rotate(1deg);box-shadow:0 12px 40px rgba(0,0,0,0.55);transition:none;border-radius:var(--rs,10px)`;
+        document.body.appendChild(ghost);
+        card.classList.add('item-dragging');
+        if(navigator.vibrate)navigator.vibrate(40);
+      },280);
+    },{passive:true});
+    handle.addEventListener('touchmove',e=>{
+      const t=e.touches[0];
+      if(!started){if(Math.abs(t.clientX-startX)>8||Math.abs(t.clientY-startY)>8)clearTimeout(timer);return;}
+      e.preventDefault();
+      if(ghost){
+        const r=card.getBoundingClientRect();
+        ghost.style.top=(t.clientY-r.height/2)+'px';
+        ghost.style.left=(t.clientX-r.width/2)+'px';
+      }
+      _scClearDropMarks();
+      if(ghost)ghost.style.display='none';
+      const under=document.elementFromPoint(t.clientX,t.clientY);
+      if(ghost)ghost.style.display='';
+      if(under){
+        const tf=under.closest('.sc-scene:not(.item-dragging)');
+        if(tf){
+          const rect=tf.getBoundingClientRect();
+          if(t.clientY<rect.top+rect.height/2)tf.classList.add('sc-drop-before');
+          else tf.classList.add('sc-drop-after');
+        }
+      }
+    },{passive:false});
+    handle.addEventListener('touchend',e=>{
+      clearTimeout(timer);
+      if(!started){if(ghost)ghost.remove();card.classList.remove('item-dragging');return;}
+      const t=e.changedTouches[0];
+      if(ghost)ghost.style.display='none';
+      const under=document.elementFromPoint(t.clientX,t.clientY);
+      if(ghost){ghost.remove();ghost=null;}
+      card.classList.remove('item-dragging');
+      _scClearDropMarks();
+      if(under){
+        const tf=under.closest('.sc-scene:not(.item-dragging)');
+        if(tf&&tf!==card){
+          const rect=tf.getBoundingClientRect();
+          const isBefore=t.clientY<rect.top+rect.height/2;
+          _scReorderSceneAdv(card.dataset.sceneId,card.dataset.container,tf.dataset.container,tf.dataset.sceneId,isBefore);
+          started=false;return;
+        }
+        // 그룹 바디 드롭
+        const gb=under.closest('.sc-group-body');
+        if(gb&&gb!==card.closest('.sc-group-body')){
+          _scMoveScene(card.dataset.sceneId,card.dataset.container,gb.dataset.groupId);
+          started=false;return;
+        }
+      }
+      started=false;
+    });
+  });
 }
 
 // ── 저장 ──
