@@ -1393,7 +1393,8 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);back
 .rb-rel-popup{position:absolute;background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:8px;display:flex;flex-wrap:wrap;gap:4px;z-index:100;box-shadow:0 8px 24px rgba(0,0,0,0.15);max-width:240px}
 .rb-rel-btn{padding:4px 10px;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;border:1px solid #e2e8f0;background:#fff;color:#475569;font-family:inherit;transition:all 0.15s}
 .rb-rel-btn:hover{background:#f0f9ff;border-color:#00C8E0;color:#0891b2}
-#rb-draw-canvas{position:absolute;top:0;left:0;z-index:0;pointer-events:none;transform-origin:0 0}
+#rb-draw-canvas{position:absolute;top:0;left:0;z-index:0;pointer-events:none;transform-origin:0 0;touch-action:none;-ms-touch-action:none;-webkit-user-select:none;user-select:none}
+#white-board.pen-active #rb-viewport,#white-board.pen-active #board-canvas{touch-action:none;-ms-touch-action:none}
 #rb-tmp-line{pointer-events:none;stroke:#00C8E0;stroke-width:2;stroke-dasharray:6 4;fill:none}
 /* ── 화이트보드 보드 목록 ── */
 .wb-board-list{position:absolute;inset:0;background:#0f0f23;z-index:10;display:none;flex-direction:column;overflow:hidden}
@@ -11562,42 +11563,64 @@ function rbInitDrawCanvas(){
   if(canvas._bindDone)return;
   canvas._bindDone=true;
 
-  canvas.addEventListener('pointerdown',function(e){
-    if(rbDrawMode!=='pen'&&rbDrawMode!=='eraser')return;
-    // Undo용 스냅샷 저장 (최대 30개)
-    try{rbUndoStack.push(canvas.toDataURL());if(rbUndoStack.length>30)rbUndoStack.shift();}catch(ex){}
-    rbDrawing=true;
+  function _rbPt(e){
     var rect=canvas.getBoundingClientRect();
-    var scaleX=canvas.width/rect.width;
-    var scaleY=canvas.height/rect.height;
-    rbLastPoint={x:(e.clientX-rect.left)*scaleX,y:(e.clientY-rect.top)*scaleY};
-    e.preventDefault();
-  });
-  canvas.addEventListener('pointermove',function(e){
-    if(!rbDrawing||!rbLastPoint)return;
-    var rect=canvas.getBoundingClientRect();
-    var scaleX=canvas.width/rect.width;
-    var scaleY=canvas.height/rect.height;
-    var x=(e.clientX-rect.left)*scaleX;
-    var y=(e.clientY-rect.top)*scaleY;
+    return {x:(e.clientX-rect.left)*(canvas.width/rect.width),y:(e.clientY-rect.top)*(canvas.height/rect.height)};
+  }
+  function _rbStroke(p){
     var ctx2=canvas.getContext('2d');
     if(rbDrawMode==='eraser'){
-      ctx2.clearRect(x-20,y-20,40,40);
+      ctx2.clearRect(p.x-rbPenSize*2,p.y-rbPenSize*2,rbPenSize*4,rbPenSize*4);
     }else{
       ctx2.beginPath();
       ctx2.moveTo(rbLastPoint.x,rbLastPoint.y);
-      ctx2.lineTo(x,y);
+      ctx2.lineTo(p.x,p.y);
       ctx2.strokeStyle=rbPenColor;
       ctx2.lineWidth=rbPenSize;
       ctx2.lineCap='round';
       ctx2.lineJoin='round';
       ctx2.stroke();
     }
-    rbLastPoint={x:x,y:y};
+    rbLastPoint=p;
+  }
+  canvas.addEventListener('pointerdown',function(e){
+    if(rbDrawMode!=='pen'&&rbDrawMode!=='eraser')return;
+    try{canvas.setPointerCapture(e.pointerId);}catch(ex){}
+    try{rbUndoStack.push(canvas.toDataURL());if(rbUndoStack.length>30)rbUndoStack.shift();}catch(ex){}
+    rbDrawing=true;
+    rbLastPoint=_rbPt(e);
+    // 점 하나만 찍어도 흔적이 남도록
+    var ctx2=canvas.getContext('2d');
+    if(rbDrawMode==='pen'){
+      ctx2.beginPath();
+      ctx2.fillStyle=rbPenColor;
+      ctx2.arc(rbLastPoint.x,rbLastPoint.y,rbPenSize/2,0,Math.PI*2);
+      ctx2.fill();
+    }
     e.preventDefault();
   });
-  canvas.addEventListener('pointerup',function(){rbDrawing=false;rbLastPoint=null;});
-  canvas.addEventListener('pointerleave',function(){rbDrawing=false;rbLastPoint=null;});
+  canvas.addEventListener('pointermove',function(e){
+    if(!rbDrawing||!rbLastPoint)return;
+    // 빠른 스트로크 중 누락된 중간점까지 모두 처리
+    var events=(typeof e.getCoalescedEvents==='function')?e.getCoalescedEvents():null;
+    if(events&&events.length){
+      for(var i=0;i<events.length;i++)_rbStroke(_rbPt(events[i]));
+    }else{
+      _rbStroke(_rbPt(e));
+    }
+    e.preventDefault();
+  },{passive:false});
+  function _rbEnd(e){
+    if(!rbDrawing)return;
+    rbDrawing=false;rbLastPoint=null;
+    try{if(e&&e.pointerId!=null)canvas.releasePointerCapture(e.pointerId);}catch(ex){}
+  }
+  canvas.addEventListener('pointerup',_rbEnd);
+  canvas.addEventListener('pointercancel',_rbEnd);
+  canvas.addEventListener('lostpointercapture',_rbEnd);
+  // 터치 스크롤/제스처가 그리기를 끊지 않도록 차단
+  canvas.addEventListener('touchstart',function(e){if(rbDrawMode==='pen'||rbDrawMode==='eraser')e.preventDefault();},{passive:false});
+  canvas.addEventListener('touchmove',function(e){if(rbDrawMode==='pen'||rbDrawMode==='eraser')e.preventDefault();},{passive:false});
 }
 
 function rbSaveDrawing(){
@@ -11643,10 +11666,10 @@ function rbClearDraw(){
     <button class="wb-back-btn" onclick="wbBackToList()">← 목록</button>
     <span class="rb-toolbar-title">🕸 화이트보드</span>
     <div class="rbt-group">
-      <button class="rbt mode on" id="rb-mode-select" onclick="rbSetMode('select')" title="이동">이동</button>
-      <button class="rbt mode" id="rb-mode-connect" onclick="rbSetMode('connect')" title="카드 연결">연결</button>
-      <button class="rbt mode" id="rb-mode-pen" onclick="rbSetMode('pen')" title="펜 그리기">펜</button>
-      <button class="rbt mode" id="rb-mode-eraser" onclick="rbSetMode('eraser')" title="지우개">지우개</button>
+      <button class="rbt mode on" id="rb-mode-select" onclick="rbSetMode('select')" title="카드 이동/선택">✋ 이동</button>
+      <button class="rbt mode" id="rb-mode-connect" onclick="rbSetMode('connect')" title="카드 연결">🔗 연결</button>
+      <button class="rbt mode" id="rb-mode-pen" onclick="rbSetMode('pen')" title="펜 그리기">✏️ 펜</button>
+      <button class="rbt mode" id="rb-mode-eraser" onclick="rbSetMode('eraser')" title="지우개">🧽 지우개</button>
     </div>
     <div class="rbt-pen-opts" id="rb-pen-opts" style="display:none">
       <span class="rb-pen-color on" data-color="#1e293b" style="background:#1e293b" onclick="rbSetPenColor(this)"></span>
@@ -11661,13 +11684,13 @@ function rbClearDraw(){
       <span style="font-size:10px;color:rgba(255,255,255,0.5);white-space:nowrap" id="rb-size-label">4px</span>
       <input type="range" min="1" max="20" value="4" id="rb-pen-size-slider" style="width:80px;accent-color:#00C8E0;cursor:pointer" oninput="rbPenSize=parseInt(this.value);document.getElementById('rb-size-label').textContent=this.value+'px'">
       <span style="color:rgba(255,255,255,0.3);font-size:10px">│</span>
-      <button class="rbt" onclick="rbUndo()" title="뒤로가기" style="padding:0 8px;min-width:32px">되돌리기</button>
-      <button class="rbt danger" onclick="rbClearDraw()" title="그리기 초기화" style="padding:0 8px;min-width:32px;font-size:12px">지우기</button>
+      <button class="rbt" onclick="rbUndo()" title="뒤로가기" style="padding:0 8px;min-width:32px">↶ 되돌리기</button>
+      <button class="rbt danger" onclick="rbClearDraw()" title="그리기 초기화" style="padding:0 8px;min-width:32px;font-size:12px">🗑 지우기</button>
     </div>
-    <button class="rbt mode" id="rb-mode-group" onclick="rbSetMode('group')" title="여러 카드 선택 후 함께 이동">그룹</button>
-    <button class="rbt" onclick="rbAddChar()">+ 캐릭터</button>
+    <button class="rbt mode" id="rb-mode-group" onclick="rbSetMode('group')" title="여러 카드 선택 후 함께 이동">👥 그룹</button>
+    <button class="rbt" onclick="rbAddChar()">👤 + 캐릭터</button>
     <div class="rbt-memo-group">
-      <button class="rbt" onclick="rbShowMemoColors()">+ 메모</button>
+      <button class="rbt" onclick="rbShowMemoColors()">📝 + 메모</button>
       <div class="rb-memo-colors" id="rb-memo-colors" style="display:none">
         <span class="rb-memo-color" style="background:#FFF9C4" onclick="rbAddMemo('#FFF9C4')"></span>
         <span class="rb-memo-color" style="background:#F8BBD0" onclick="rbAddMemo('#F8BBD0')"></span>
@@ -11676,8 +11699,8 @@ function rbClearDraw(){
         <span class="rb-memo-color" style="background:#E1BEE7" onclick="rbAddMemo('#E1BEE7')"></span>
       </div>
     </div>
-    <button class="rbt" onclick="rbSave()">저장</button>
-    <button class="rbt danger" onclick="rbReset()">초기화</button>
+    <button class="rbt" onclick="rbSave()">💾 저장</button>
+    <button class="rbt danger" onclick="rbReset()">🔄 초기화</button>
   </div>
   <div class="rb-viewport" id="rb-viewport">
     <button class="rb-close-fab" onclick="closeWhiteBoard()" title="닫기">✕</button>
