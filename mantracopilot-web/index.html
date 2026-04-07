@@ -1297,7 +1297,41 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);back
   /* 보드 목록 카드 그리드 */
   .wb-board-grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
   .wb-board-card .wbc-actions{opacity:1}
+  /* 모바일: 상단 툴바에서 모드 그룹/그룹 버튼은 하단 도크가 대체 */
+  .rb-toolbar .rbt-group{display:none!important}
+  .rb-toolbar #rb-mode-group{display:none!important}
+  .rb-toolbar{display:flex;flex-wrap:wrap;grid-template-columns:none;padding:6px 8px;gap:6px;align-items:center}
+  .rb-toolbar .wb-back-btn{order:1}
+  .rb-toolbar .rbt-pen-opts{order:99;width:100%;justify-content:center}
+  .rb-toolbar > .rbt:not(.close-btn):not(.wb-back-btn){padding:0 10px;font-size:12px}
+  /* 캐릭터/메모 추가 버튼은 우하단 FAB가 대체 */
+  .rb-toolbar > .rbt[onclick*="rbAddChar"],.rb-toolbar .rbt-memo-group{display:none!important}
+  /* 핸들/리사이즈 더 크게 */
+  .rb-resize-handle{width:32px;height:32px;bottom:-10px;right:-10px;background:rgba(0,200,224,0.18);border-radius:50%;border:2px solid rgba(0,200,224,0.6);opacity:0.85}
+  .rb-resize-handle::after{width:14px;height:14px;border-right-width:3px;border-bottom-width:3px;border-color:rgba(0,200,224,0.95)}
+  .rb-handle{width:22px!important;height:22px!important}
+  .connect-mode .rb-handle{width:28px!important;height:28px!important}
+  .rb-bottom-dock{display:flex!important}
+  .rb-zoom-fab,.rb-add-fab{display:flex!important}
+  .rb-close-fab{bottom:96px!important;right:14px!important;width:44px;height:44px}
 }
+/* ── 모바일 화이트보드 신규 컨트롤 (데스크탑에서는 숨김) ── */
+.rb-bottom-dock{display:none;position:absolute;left:8px;right:8px;bottom:10px;z-index:55;background:rgba(20,10,40,0.94);border:1px solid rgba(0,200,224,0.3);border-radius:18px;padding:6px;justify-content:space-around;box-shadow:0 8px 28px rgba(0,0,0,0.35);backdrop-filter:blur(10px);gap:4px}
+.rb-dock-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;background:transparent;border:1px solid transparent;border-radius:12px;padding:8px 4px;color:rgba(255,255,255,0.7);font-family:inherit;cursor:pointer;min-height:54px;transition:all 0.15s}
+.rb-dock-btn:active{transform:scale(0.94)}
+.rb-dock-btn.on{background:rgba(0,200,224,0.22);border-color:rgba(0,200,224,0.55);color:#7FFEFF}
+.rb-dock-ic{font-size:20px;line-height:1}
+.rb-dock-tx{font-size:11px;font-weight:800;letter-spacing:0.02em}
+.rb-zoom-fab{display:none;position:absolute;left:12px;bottom:96px;z-index:55;flex-direction:column;gap:6px}
+.rb-add-fab{display:none;position:absolute;right:14px;bottom:160px;z-index:55;flex-direction:column;align-items:flex-end;gap:8px}
+.rb-fab-btn{width:44px;height:44px;border-radius:50%;background:rgba(20,10,40,0.92);border:1.5px solid rgba(0,200,224,0.45);color:#7FFEFF;font-size:18px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(0,0,0,0.35);font-family:inherit;backdrop-filter:blur(8px)}
+.rb-fab-btn:active{transform:scale(0.92)}
+.rb-add-toggle{width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#00C8E0,#0891b2);border:none;color:#fff;font-size:28px;font-weight:300;cursor:pointer;box-shadow:0 6px 20px rgba(0,200,224,0.5);display:flex;align-items:center;justify-content:center;font-family:inherit;transition:transform 0.2s}
+.rb-add-toggle.open{transform:rotate(45deg)}
+.rb-add-menu{display:none;flex-direction:column;gap:6px;background:rgba(20,10,40,0.95);border:1px solid rgba(0,200,224,0.3);border-radius:14px;padding:8px;box-shadow:0 8px 28px rgba(0,0,0,0.4);backdrop-filter:blur(10px);min-width:160px}
+.rb-add-fab.open .rb-add-menu{display:flex}
+.rb-add-item{display:flex;align-items:center;gap:10px;background:transparent;border:none;color:#e8e8f0;font-size:13px;font-weight:700;font-family:inherit;padding:10px 12px;border-radius:10px;cursor:pointer;text-align:left}
+.rb-add-item:active{background:rgba(0,200,224,0.18)}
 .rb-toolbar-title{font-family:'Black Han Sans',sans-serif;font-size:15px;color:#7FFEFF;letter-spacing:0.04em;margin-right:8px}
 .rbt{height:34px;padding:0 14px;border-radius:8px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;border:1px solid rgba(0,200,224,0.3);background:rgba(0,200,224,0.1);color:#7FFEFF;transition:all 0.2s;white-space:nowrap}
 .rbt:hover,.rbt:active{background:rgba(0,200,224,0.22);border-color:rgba(0,200,224,0.55)}
@@ -10488,6 +10522,59 @@ if(!document.getElementById('thkStyle')){
     const mc=document.getElementById('rb-memo-colors');
     if(mc)mc.style.display='none';
   };
+  // 모바일 줌 컨트롤 (외부에서 호출)
+  window._rbZoom=function(action){
+    const vpEl=vp();if(!vpEl)return;
+    const rect=vpEl.getBoundingClientRect();
+    const mx=rect.width/2,my=rect.height/2;
+    let factor=1;
+    if(action==='in')factor=1.2;
+    else if(action==='out')factor=1/1.2;
+    else if(action==='reset'){rbScale=1;rbPan.x=0;rbPan.y=0;applyTransform();return;}
+    else if(action==='fit'){
+      // 모든 노드를 한 화면에 맞춤
+      if(!rbNodes.length){rbScale=1;rbPan.x=0;rbPan.y=0;applyTransform();return;}
+      let minX=Infinity,minY=Infinity,maxX=-Infinity,maxY=-Infinity;
+      rbNodes.forEach(function(n){
+        const w=n.w||160,h=n.h||160;
+        if(n.x<minX)minX=n.x;if(n.y<minY)minY=n.y;
+        if(n.x+w>maxX)maxX=n.x+w;if(n.y+h>maxY)maxY=n.y+h;
+      });
+      const pad=80;
+      const bw=maxX-minX+pad*2,bh=maxY-minY+pad*2;
+      const sx=rect.width/bw,sy=rect.height/bh;
+      rbScale=Math.min(3,Math.max(0.2,Math.min(sx,sy)));
+      rbPan.x=rect.width/2-(minX+(maxX-minX)/2)*rbScale;
+      rbPan.y=rect.height/2-(minY+(maxY-minY)/2)*rbScale;
+      applyTransform();return;
+    }
+    const newScale=Math.min(3,Math.max(0.2,rbScale*factor));
+    rbPan.x=mx-(mx-rbPan.x)*(newScale/rbScale);
+    rbPan.y=my-(my-rbPan.y)*(newScale/rbScale);
+    rbScale=newScale;
+    applyTransform();
+  };
+  function applyTransform(){
+    const tr='translate('+rbPan.x+'px,'+rbPan.y+'px) scale('+rbScale+')';
+    const bc=document.getElementById('board-canvas');if(bc)bc.style.transform=tr;
+    const dc=document.getElementById('rb-draw-canvas');if(dc)dc.style.transform=tr;
+    if(typeof renderEdges==='function')try{renderEdges();}catch(e){}
+    rbShowZoomBadge();
+  }
+  function rbShowZoomBadge(){
+    let b=document.getElementById('rb-zoom-badge');
+    if(!b){
+      b=document.createElement('div');b.id='rb-zoom-badge';
+      b.style.cssText='position:absolute;top:14px;left:50%;transform:translateX(-50%);background:rgba(20,10,40,0.92);color:#7FFEFF;font-size:12px;font-weight:800;padding:6px 14px;border-radius:20px;border:1px solid rgba(0,200,224,0.35);box-shadow:0 4px 16px rgba(0,0,0,0.3);z-index:60;pointer-events:none;backdrop-filter:blur(8px);transition:opacity 0.3s;font-family:inherit';
+      vp().appendChild(b);
+    }
+    b.textContent=Math.round(rbScale*100)+'%';
+    b.style.opacity='1';
+    clearTimeout(window._rbZoomBadgeT);
+    window._rbZoomBadgeT=setTimeout(function(){if(b)b.style.opacity='0';},1200);
+  }
+  window._rbApplyTransform=applyTransform;
+
   window._rbCreateEdge=function(fromId,toId,fromSide,toSide){
     const exists=rbEdges.find(ed=>(ed.from===fromId&&ed.to===toId)||(ed.from===toId&&ed.to===fromId));
     if(exists)return;
@@ -10655,6 +10742,9 @@ if(!document.getElementById('thkStyle')){
       h.addEventListener('touchstart',handleTap,{passive:false});
       wrap.appendChild(h);
     });
+
+    // 모바일: 길게 눌러 빠른 액션
+    if(typeof rbBindLongPress==='function')rbBindLongPress(wrap,nd.id);
 
     // 노드 드래그
     wrap.addEventListener('mousedown',e=>{
@@ -10835,6 +10925,9 @@ if(!document.getElementById('thkStyle')){
       h.addEventListener('touchstart',handleTap2,{passive:false});
       wrap.appendChild(h);
     });
+
+    // 모바일: 길게 눌러 빠른 액션
+    if(typeof rbBindLongPress==='function')rbBindLongPress(wrap,nd.id);
 
     wrap.addEventListener('mousedown',e=>{
       if(e.target.classList.contains('rb-handle')||e.target.classList.contains('rb-del-btn')||e.target.classList.contains('rb-edit-btn')||e.target.classList.contains('rb-resize-handle'))return;
@@ -11427,6 +11520,8 @@ function rbSetMode(mode){
   document.querySelectorAll('.rbt.mode').forEach(function(b){b.classList.remove('on')});
   var btn=document.getElementById('rb-mode-'+mode);
   if(btn)btn.classList.add('on');
+  // 하단 도크 동기화
+  document.querySelectorAll('.rb-dock-btn').forEach(function(b){b.classList.toggle('on',b.dataset.mode===mode);});
   var penOpts=document.getElementById('rb-pen-opts');
   if(penOpts)penOpts.style.display=(mode==='pen'||mode==='eraser')?'flex':'none';
   var canvas=document.getElementById('rb-draw-canvas');
@@ -11546,6 +11641,83 @@ function rbShowMemoColors(){
     document.addEventListener('touchstart',closeMemo,{passive:true});
     document.addEventListener('mousedown',closeMemo);
   },100);
+}
+
+// 모바일 빠른 추가 FAB
+function rbToggleAddMenu(){
+  var fab=document.querySelector('.rb-add-fab');
+  var btn=document.querySelector('.rb-add-toggle');
+  if(!fab)return;
+  fab.classList.toggle('open');
+  if(btn)btn.classList.toggle('open');
+}
+function rbCloseAddMenu(){
+  var fab=document.querySelector('.rb-add-fab');
+  var btn=document.querySelector('.rb-add-toggle');
+  if(fab)fab.classList.remove('open');
+  if(btn)btn.classList.remove('open');
+}
+// 카드 길게 누르기 → 빠른 액션 시트
+var _rbLongPressT=null,_rbLongPressFired=false;
+function rbBindLongPress(el,nodeId){
+  el.addEventListener('touchstart',function(e){
+    if(rbDrawMode&&rbDrawMode!=='select')return;
+    if(e.target.closest('.rb-handle,.rb-del-btn,.rb-edit-btn,.rb-resize-handle'))return;
+    _rbLongPressFired=false;
+    clearTimeout(_rbLongPressT);
+    _rbLongPressT=setTimeout(function(){
+      _rbLongPressFired=true;
+      if(navigator.vibrate)try{navigator.vibrate(20);}catch(ex){}
+      rbShowQuickActions(nodeId,el);
+    },550);
+  },{passive:true});
+  ['touchmove','touchend','touchcancel'].forEach(function(ev){
+    el.addEventListener(ev,function(){clearTimeout(_rbLongPressT);},{passive:true});
+  });
+}
+function rbShowQuickActions(nodeId,el){
+  var existing=document.getElementById('rb-quick-sheet');if(existing)existing.remove();
+  var sheet=document.createElement('div');
+  sheet.id='rb-quick-sheet';
+  sheet.style.cssText='position:fixed;left:8px;right:8px;bottom:14px;z-index:10010;background:rgba(20,10,40,0.97);border:1px solid rgba(0,200,224,0.35);border-radius:18px;padding:14px;box-shadow:0 12px 40px rgba(0,0,0,0.5);backdrop-filter:blur(12px);font-family:inherit';
+  sheet.innerHTML='<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px">'
+    +'<button class="rb-qa-btn" data-act="edit"><span style="font-size:22px">✎</span><span>편집</span></button>'
+    +'<button class="rb-qa-btn" data-act="dup"><span style="font-size:22px">⧉</span><span>복제</span></button>'
+    +'<button class="rb-qa-btn" data-act="front"><span style="font-size:22px">⤴</span><span>맨앞</span></button>'
+    +'<button class="rb-qa-btn" data-act="del" style="color:#fca5a5"><span style="font-size:22px">🗑</span><span>삭제</span></button>'
+    +'</div>'
+    +'<button class="rb-qa-close" style="margin-top:10px;width:100%;padding:10px;border-radius:10px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.7);font-family:inherit;font-weight:700;cursor:pointer">닫기</button>';
+  document.body.appendChild(sheet);
+  // 버튼 스타일 일괄
+  sheet.querySelectorAll('.rb-qa-btn').forEach(function(b){
+    b.style.cssText='display:flex;flex-direction:column;align-items:center;gap:4px;padding:14px 6px;border-radius:12px;background:rgba(0,200,224,0.1);border:1px solid rgba(0,200,224,0.3);color:#7FFEFF;font-family:inherit;font-size:11px;font-weight:800;cursor:pointer';
+  });
+  function close(){if(sheet)sheet.remove();}
+  sheet.querySelector('.rb-qa-close').onclick=close;
+  sheet.querySelectorAll('.rb-qa-btn').forEach(function(b){
+    b.onclick=function(){
+      var act=b.dataset.act;
+      if(act==='del'){
+        if(confirm('이 카드를 삭제할까요?')){
+          var d=el.querySelector('.rb-del-btn');if(d)d.click();
+        }
+      }else if(act==='edit'){
+        var ed=el.querySelector('.rb-edit-btn');if(ed)ed.click();
+        else el.dispatchEvent(new MouseEvent('dblclick',{bubbles:true}));
+      }else if(act==='dup'){
+        // 위치만 살짝 옮겨 복제
+        var clone=el.cloneNode(true);
+        var x=parseInt(el.style.left)||0,y=parseInt(el.style.top)||0;
+        clone.style.left=(x+30)+'px';clone.style.top=(y+30)+'px';
+        clone.dataset.id='dup_'+Date.now();
+        el.parentNode.appendChild(clone);
+        flash('카드 복제 (재배치 후 다시 저장하세요)');
+      }else if(act==='front'){
+        el.style.zIndex='200';
+      }
+      close();
+    };
+  });
 }
 
 function rbInitDrawCanvas(){
@@ -11767,6 +11939,31 @@ function rbClearDraw(){
     </div>
     <canvas id="rb-draw-canvas" style="position:absolute;top:0;left:0;z-index:0;pointer-events:none"></canvas>
     <div id="rb-pen-area-label">✏️ 펜은 이 청록색 점선 영역 안에서만 그려집니다</div>
+    <!-- 모바일: 줌 컨트롤 FAB (왼쪽) -->
+    <div class="rb-zoom-fab">
+      <button class="rb-fab-btn" onclick="window._rbZoom&&_rbZoom('in')" title="확대">＋</button>
+      <button class="rb-fab-btn" onclick="window._rbZoom&&_rbZoom('fit')" title="전체 보기">⛶</button>
+      <button class="rb-fab-btn" onclick="window._rbZoom&&_rbZoom('out')" title="축소">−</button>
+    </div>
+    <!-- 모바일: 빠른 추가 FAB (오른쪽) -->
+    <div class="rb-add-fab">
+      <div class="rb-add-menu" id="rb-add-menu">
+        <button class="rb-add-item" onclick="rbAddChar();rbCloseAddMenu()"><span>👤</span><span>캐릭터</span></button>
+        <button class="rb-add-item" onclick="rbAddMemo('#FFF9C4');rbCloseAddMenu()"><span style="background:#FFF9C4;width:20px;height:20px;border-radius:4px;display:inline-block"></span><span>노란 메모</span></button>
+        <button class="rb-add-item" onclick="rbAddMemo('#F8BBD0');rbCloseAddMenu()"><span style="background:#F8BBD0;width:20px;height:20px;border-radius:4px;display:inline-block"></span><span>분홍 메모</span></button>
+        <button class="rb-add-item" onclick="rbAddMemo('#B3E5FC');rbCloseAddMenu()"><span style="background:#B3E5FC;width:20px;height:20px;border-radius:4px;display:inline-block"></span><span>하늘 메모</span></button>
+        <button class="rb-add-item" onclick="rbAddMemo('#C8E6C9');rbCloseAddMenu()"><span style="background:#C8E6C9;width:20px;height:20px;border-radius:4px;display:inline-block"></span><span>연두 메모</span></button>
+      </div>
+      <button class="rb-add-toggle" onclick="rbToggleAddMenu()" title="추가">＋</button>
+    </div>
+    <!-- 모바일: 하단 모드 도크 -->
+    <div class="rb-bottom-dock" id="rb-bottom-dock">
+      <button class="rb-dock-btn on" data-mode="select" onclick="rbSetMode('select')"><span class="rb-dock-ic">✋</span><span class="rb-dock-tx">이동</span></button>
+      <button class="rb-dock-btn" data-mode="connect" onclick="rbSetMode('connect')"><span class="rb-dock-ic">🔗</span><span class="rb-dock-tx">연결</span></button>
+      <button class="rb-dock-btn" data-mode="pen" onclick="rbSetMode('pen')"><span class="rb-dock-ic">✏️</span><span class="rb-dock-tx">펜</span></button>
+      <button class="rb-dock-btn" data-mode="eraser" onclick="rbSetMode('eraser')"><span class="rb-dock-ic">🧽</span><span class="rb-dock-tx">지우개</span></button>
+      <button class="rb-dock-btn" data-mode="group" onclick="rbSetMode('group')"><span class="rb-dock-ic">👥</span><span class="rb-dock-tx">그룹</span></button>
+    </div>
   </div>
 </div>
 <!-- ── 개인 RAG 스크립트 ── -->
