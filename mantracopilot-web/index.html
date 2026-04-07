@@ -124,7 +124,14 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);back
 .td{font-size:13px;color:var(--text-dim);line-height:1.5}
 /* 챗 */
 .cw{display:flex;flex-direction:column;height:100vh}
-.chud{display:flex;align-items:center;gap:16px;padding:16px 28px;border-bottom:1px solid rgba(0,200,224,0.07);flex-shrink:0;background:rgba(12,4,24,0.88);backdrop-filter:var(--blur)}
+.chud{display:flex;align-items:center;gap:16px;padding:16px 28px;border-bottom:1px solid rgba(0,200,224,0.07);flex-shrink:0;background:rgba(12,4,24,0.88);backdrop-filter:var(--blur);position:relative}
+.chud-opts{display:flex;align-items:center;gap:16px;flex:1;min-width:0;overflow:hidden;transition:max-height 0.25s ease,opacity 0.2s ease,margin 0.25s ease;max-height:120px;opacity:1}
+.chud.collapsed .chud-opts{max-height:0;opacity:0;margin:0;gap:0}
+.chud.collapsed{padding-top:6px;padding-bottom:6px;border-bottom-color:rgba(0,200,224,0.18)}
+.chud-toggle{flex-shrink:0;display:flex;align-items:center;justify-content:center;width:36px;height:32px;border-radius:8px;background:rgba(0,200,224,0.1);border:1px solid rgba(0,200,224,0.32);color:var(--purple-light);cursor:pointer;font-size:14px;font-weight:800;transition:all 0.2s;margin-left:auto}
+.chud-toggle:hover{background:rgba(0,200,224,0.22);border-color:rgba(0,200,224,0.6);color:#fff}
+.chud-toggle .cct-arrow{display:inline-block;transition:transform 0.25s}
+.chud.collapsed .chud-toggle .cct-arrow{transform:rotate(180deg)}
 .cbk{width:34px;height:34px;border-radius:50%;background:var(--surface);border:1px solid var(--border);color:var(--text-dim);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;transition:all 0.2s;flex-shrink:0}
 .cbk:hover{background:var(--surface2);color:var(--text)}
 .chi{flex:1}
@@ -355,10 +362,10 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);back
 .vt-main{display:flex;align-items:center;gap:10px;padding:13px 20px 11px}
 .vt-title{font-size:20px;font-weight:900;white-space:nowrap;letter-spacing:-0.01em}
 .vt-spacer{flex:1;min-width:0}
-.vt-opts-toggle{display:flex;align-items:center;gap:4px;padding:5px 10px;border-radius:var(--rs);border:1px solid var(--border);background:var(--surface);color:var(--text-faint);font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;transition:all 0.2s;white-space:nowrap;flex-shrink:0}
-.vt-opts-toggle:hover{border-color:var(--border2);color:var(--text)}
-.vt-opts-toggle.open{background:rgba(0,200,224,0.08);border-color:rgba(0,200,224,0.25);color:var(--purple-light)}
-.vt-opts-toggle .vt-arrow{font-size:9px;transition:transform 0.2s;opacity:0.7;display:inline-block}
+.vt-opts-toggle{display:flex;align-items:center;gap:6px;padding:8px 16px;border-radius:8px;border:1px solid rgba(0,200,224,0.3);background:rgba(0,200,224,0.08);color:var(--purple-light);font-size:13px;font-weight:800;cursor:pointer;font-family:inherit;transition:all 0.2s;white-space:nowrap;flex-shrink:0}
+.vt-opts-toggle:hover{border-color:rgba(0,200,224,0.6);background:rgba(0,200,224,0.18);color:#fff}
+.vt-opts-toggle.open{background:rgba(0,200,224,0.18);border-color:rgba(0,200,224,0.5);color:#fff}
+.vt-opts-toggle .vt-arrow{font-size:13px;transition:transform 0.2s;opacity:1;display:inline-block}
 .vt-opts-toggle.open .vt-arrow{transform:rotate(180deg)}
 .vt-opts{display:none;align-items:center;gap:8px;padding:6px 20px 10px;flex-wrap:wrap;border-top:1px solid rgba(0,200,224,0.07)}
 .vt-opts.open{display:flex}
@@ -407,6 +414,10 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);back
 /* 타임라인 그래프 */
 .tension-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px 20px;margin-bottom:0;flex-shrink:0;position:relative}
 .tension-label{font-size:11px;font-weight:700;color:var(--text-faint);letter-spacing:0.06em;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.tl-collapse-btn{display:inline-flex;align-items:center;gap:8px;padding:6px 12px;border-radius:8px;background:rgba(0,200,224,0.1);border:1px solid rgba(0,200,224,0.3);color:var(--purple-light);font-size:12px;font-weight:800;letter-spacing:0.04em;transition:all 0.18s}
+.tension-label:hover .tl-collapse-btn{background:rgba(0,200,224,0.2);border-color:rgba(0,200,224,0.55);color:#fff}
+.tl-collapse-btn .tl-arrow{font-size:13px;display:inline-block;transition:transform 0.2s;opacity:1}
+.tl-collapse-btn .tl-collapse-hint{font-size:10px;font-weight:600;opacity:0.7;margin-left:4px;letter-spacing:0}
 .tension-label-actions{display:flex;align-items:center;gap:6px;flex-shrink:0}
 .tl-expand-btn{padding:3px 10px;border-radius:6px;font-size:10px;font-weight:700;border:1px solid var(--border);background:rgba(0,200,224,0.06);color:var(--purple-light);cursor:pointer;font-family:inherit;transition:all 0.15s;white-space:nowrap}
 .tl-expand-btn:hover{background:rgba(0,200,224,0.15);border-color:rgba(0,200,224,0.4)}
@@ -545,9 +556,10 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);back
 .sc-main::-webkit-scrollbar-thumb{background:rgba(0,200,224,0.1);border-radius:2px}
 .sc-overview{background:var(--surface);border:1px solid var(--border);border-radius:var(--rs);overflow:hidden;transition:border-color 0.2s}
 .sc-overview:hover{border-color:var(--border2)}
-.sc-ov-hdr{display:flex;align-items:center;gap:10px;padding:12px 16px;cursor:pointer;user-select:none}
-.sc-ov-hdr .sc-ov-label{font-size:12px;font-weight:800;color:var(--purple-light);flex:1}
-.sc-ov-hdr .sc-ov-toggle{font-size:11px;color:var(--text-faint);transition:transform 0.2s}
+.sc-ov-hdr{display:flex;align-items:center;gap:10px;padding:14px 18px;cursor:pointer;user-select:none}
+.sc-ov-hdr:hover{background:rgba(0,200,224,0.05)}
+.sc-ov-hdr .sc-ov-label{font-size:13px;font-weight:800;color:var(--purple-light);flex:1}
+.sc-ov-hdr .sc-ov-toggle{font-size:18px;color:var(--purple-light);transition:transform 0.2s;padding:2px 8px;border-radius:6px;background:rgba(0,200,224,0.1);border:1px solid rgba(0,200,224,0.3)}
 .sc-overview.open .sc-ov-toggle{transform:rotate(180deg)}
 .sc-ov-body{display:none;padding:0 16px 14px;flex-direction:column;gap:8px;border-top:1px solid var(--border)}
 .sc-overview.open .sc-ov-body{display:flex}
@@ -724,12 +736,12 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);back
 .sidebar-wrap.collapsed>.ol-sidebar,
 .sidebar-wrap.collapsed>.sc-sidebar,
 .sidebar-wrap.collapsed>.chara-sidebar{width:0!important;min-width:0!important;padding:0;border-right:none;overflow:hidden}
-.sb-toggle{flex-shrink:0;width:14px;background:none;border:none;border-right:1px solid var(--border);color:var(--text-faint);font-size:9px;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;transition:background 0.2s,color 0.2s,border-color 0.2s;align-self:stretch}
-.sb-toggle:hover{background:rgba(0,200,224,0.07);color:var(--purple-light);border-right-color:rgba(0,200,224,0.3)}
+.sb-toggle{flex-shrink:0;width:26px;background:rgba(0,200,224,0.08);border:none;border-right:1px solid rgba(0,200,224,0.28);color:var(--purple-light);font-size:15px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;transition:background 0.2s,color 0.2s,border-color 0.2s;align-self:stretch}
+.sb-toggle:hover{background:rgba(0,200,224,0.2);color:#fff;border-right-color:rgba(0,200,224,0.6)}
 /* 사이드바 폴더 접기/펼치기 토글 */
-.sidebar-folder-toggle{display:flex;align-items:center;gap:4px;width:100%;padding:5px 14px;background:none;border:none;border-top:1px solid var(--border);color:var(--text-faint);font-size:10px;font-weight:800;letter-spacing:0.06em;cursor:pointer;font-family:inherit;text-align:left;margin-top:4px;transition:color 0.15s;white-space:nowrap;overflow:hidden}
-.sidebar-folder-toggle:hover{color:var(--text-dim)}
-.sidebar-folder-toggle .sft-arrow{font-size:8px;flex-shrink:0;margin-left:auto}
+.sidebar-folder-toggle{display:flex;align-items:center;gap:6px;width:100%;padding:9px 14px;background:rgba(0,200,224,0.05);border:none;border-top:1px solid rgba(0,200,224,0.2);color:var(--purple-light);font-size:12px;font-weight:800;letter-spacing:0.04em;cursor:pointer;font-family:inherit;text-align:left;margin-top:4px;transition:all 0.15s;white-space:nowrap;overflow:hidden}
+.sidebar-folder-toggle:hover{color:#fff;background:rgba(0,200,224,0.15)}
+.sidebar-folder-toggle .sft-arrow{font-size:12px;flex-shrink:0;order:-1;margin-right:4px}
 .sidebar-folder-toggle .sft-text{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis}
 .folder-grid{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;padding:4px 0}
 .folder-icon-card{width:72px;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:all 0.2s;padding:8px 4px;border-radius:12px}
@@ -973,9 +985,9 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);back
   .xiw{padding:8px 16px 12px;gap:6px}
   .xiw-opts{display:none!important;flex-direction:column;gap:5px}
   .xiw-opts.open{display:flex!important}
-  .xiw-opts-toggle{display:flex!important;align-items:center;justify-content:center;gap:5px;padding:4px 0;cursor:pointer;font-size:11px;font-weight:700;color:var(--text-faint);border:none;background:none;font-family:inherit;width:100%;transition:color 0.2s}
-  .xiw-opts-toggle:active{color:var(--text)}
-  .xiw-opts-toggle .arrow{font-size:9px;transition:transform 0.2s}
+  .xiw-opts-toggle{display:flex!important;align-items:center;justify-content:center;gap:8px;padding:10px 0;cursor:pointer;font-size:14px;font-weight:800;color:var(--purple-light);border:1px solid rgba(0,200,224,0.3);border-radius:8px;background:rgba(0,200,224,0.08);font-family:inherit;width:100%;transition:all 0.2s;margin:4px 0}
+  .xiw-opts-toggle:active{background:rgba(0,200,224,0.2);color:#fff}
+  .xiw-opts-toggle .arrow{font-size:13px;transition:transform 0.2s}
   .xiw-opts-toggle.open .arrow{transform:rotate(180deg)}
   /* 아바타 패널 모바일 축소 */
   #xc-avatar-panel{padding:12px 16px 0!important;gap:12px!important}
@@ -985,9 +997,9 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);back
   /* 창작 에이전트 — 옵션바 접기 */
   .gm-opts{display:none!important;padding:6px 4px 4px}
   .gm-opts.open{display:flex!important}
-  .gm-opts-toggle{display:flex!important;align-items:center;justify-content:center;gap:5px;padding:3px 0 6px;cursor:pointer;font-size:11px;font-weight:700;color:var(--text-faint);border:none;background:none;font-family:inherit;width:100%;transition:color 0.2s}
-  .gm-opts-toggle:active{color:var(--text)}
-  .gm-opts-toggle .arrow{font-size:9px;transition:transform 0.2s}
+  .gm-opts-toggle{display:flex!important;align-items:center;justify-content:center;gap:8px;padding:10px 0;cursor:pointer;font-size:14px;font-weight:800;color:var(--purple-light);border:1px solid rgba(0,200,224,0.3);border-radius:8px;background:rgba(0,200,224,0.08);font-family:inherit;width:100%;transition:all 0.2s;margin:4px 0}
+  .gm-opts-toggle:active{background:rgba(0,200,224,0.2);color:#fff}
+  .gm-opts-toggle .arrow{font-size:13px;transition:transform 0.2s}
   .gm-opts-toggle.open .arrow{transform:rotate(180deg)}
   /* 뷰 하단 패딩 제거 — 모바일은 mob-nav가 공간 확보 */
   .view{padding-bottom:0}
@@ -1940,7 +1952,7 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);back
       <!-- 타임라인 그래프 (풀 width) -->
       <div class="tension-wrap" id="tension-wrap" style="margin:0 24px 12px;flex-shrink:0">
         <div class="tension-label" onclick="toggleTimelineCollapse()" style="cursor:pointer;user-select:none">
-          <span>🕐 타임라인 <span id="tl-collapse-arrow" style="font-size:9px;opacity:0.6;margin-left:2px">▼</span></span>
+          <span class="tl-collapse-btn"><span id="tl-collapse-arrow" class="tl-arrow">▼</span>🕐 타임라인 <span class="tl-collapse-hint">클릭해서 접기/펼치기</span></span>
           <div class="tension-label-actions" onclick="event.stopPropagation()">
             <span id="tl-hint-text" style="font-size:10px;color:var(--text-faint)">이야기 흐름과 긴장도</span>
             <button class="tl-expand-btn" id="tl-expand-btn" onclick="toggleTimelineFullview()">전체 보기</button>
@@ -2076,11 +2088,14 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);back
   <!-- 스토리 빌드업 챗 -->
   <section class="view" id="view-chat">
     <div class="cw">
-      <div class="chud">
+      <div class="chud" id="buildup-chud">
         <button class="cbk" onclick="goHome()">←</button>
-        <div class="chi"><div class="cht" id="cht">스토리 빌드업</div><div class="chs" id="chs">진행 중</div></div>
-        <button class="plan-btn" id="back-to-plan-btn" onclick="backToPlan()" style="display:none;margin-right:8px;font-size:12px;padding:6px 14px">📋 목록으로</button>
-        <div class="sbar"><span class="slbl">Step <strong id="sn">1</strong>/<span id="st">22</span></span><div class="sdots" id="sdots"></div></div>
+        <div class="chud-opts" id="buildup-chud-opts">
+          <div class="chi"><div class="cht" id="cht">스토리 빌드업</div><div class="chs" id="chs">진행 중</div></div>
+          <button class="plan-btn" id="back-to-plan-btn" onclick="backToPlan()" style="display:none;font-size:12px;padding:6px 14px">📋 목록으로</button>
+          <div class="sbar"><span class="slbl">Step <strong id="sn">1</strong>/<span id="st">22</span></span><div class="sdots" id="sdots"></div></div>
+        </div>
+        <button class="chud-toggle" id="buildup-chud-toggle" onclick="toggleBuildupChud()" title="옵션바 접기/펼치기"><span class="cct-arrow">▲</span></button>
       </div>
       <div class="cbody" id="cbody">
         <div class="chara"><img class="ce" id="ce" src="images/조수a.gif"><div class="cnp" id="cnp">조수 T형</div></div>
@@ -8046,6 +8061,12 @@ function getCardVisIdx(realIdx){
     count++;
   }
   return realIdx;
+}
+
+// 빌드업 챗 헤더 옵션바 접기/펼치기
+function toggleBuildupChud(){
+  const chud=document.getElementById('buildup-chud');
+  if(chud)chud.classList.toggle('collapsed');
 }
 
 // 타임라인 접기/펼치기
