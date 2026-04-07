@@ -1394,6 +1394,10 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);back
 .rb-rel-btn{padding:4px 10px;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;border:1px solid #e2e8f0;background:#fff;color:#475569;font-family:inherit;transition:all 0.15s}
 .rb-rel-btn:hover{background:#f0f9ff;border-color:#00C8E0;color:#0891b2}
 #rb-draw-canvas{position:absolute;top:0;left:0;z-index:0;pointer-events:none;transform-origin:0 0;touch-action:none;-ms-touch-action:none;-webkit-user-select:none;user-select:none}
+#white-board.pen-active #rb-draw-canvas{outline:3px dashed rgba(0,200,224,0.55);outline-offset:-2px;background:repeating-linear-gradient(45deg,rgba(0,200,224,0.025) 0 12px,transparent 12px 24px)}
+#white-board.pen-active #rb-draw-canvas::before{content:''}
+#rb-pen-area-label{position:absolute;left:8px;top:8px;z-index:11;background:rgba(0,200,224,0.92);color:#0a1a2e;font-size:11px;font-weight:800;padding:5px 10px;border-radius:8px;pointer-events:none;display:none;box-shadow:0 4px 14px rgba(0,200,224,0.35);font-family:inherit;letter-spacing:0.3px}
+#white-board.pen-active #rb-pen-area-label{display:block}
 #white-board.pen-active #rb-viewport,#white-board.pen-active #board-canvas{touch-action:none;-ms-touch-action:none}
 #rb-tmp-line{pointer-events:none;stroke:#00C8E0;stroke-width:2;stroke-dasharray:6 4;fill:none}
 /* ── 화이트보드 보드 목록 ── */
@@ -11762,6 +11766,7 @@ function rbClearDraw(){
       </svg>
     </div>
     <canvas id="rb-draw-canvas" style="position:absolute;top:0;left:0;z-index:0;pointer-events:none"></canvas>
+    <div id="rb-pen-area-label">✏️ 펜은 이 청록색 점선 영역 안에서만 그려집니다</div>
   </div>
 </div>
 <!-- ── 개인 RAG 스크립트 ── -->
