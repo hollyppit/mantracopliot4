@@ -1385,6 +1385,7 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);back
 .rb-style-toolbar button:hover{background:rgba(0,200,224,0.15);border-color:rgba(0,200,224,0.4);color:#7FFEFF}
 .rb-style-toolbar button.on{background:rgba(0,200,224,0.25);border-color:rgba(0,200,224,0.5);color:#7FFEFF}
 .rb-style-toolbar .rst-sep{width:1px;height:16px;background:rgba(255,255,255,0.1);flex-shrink:0}
+.rb-style-toolbar input[type=number]::-webkit-inner-spin-button,.rb-style-toolbar input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
 /* 리사이즈 핸들 */
 .rb-resize-handle{position:absolute;bottom:-4px;right:-4px;width:14px;height:14px;cursor:nwse-resize;z-index:20;opacity:0;transition:opacity 0.15s}
 .rb-resize-handle::after{content:'';position:absolute;bottom:2px;right:2px;width:8px;height:8px;border-right:2px solid rgba(0,0,0,0.3);border-bottom:2px solid rgba(0,0,0,0.3)}
@@ -10611,15 +10612,54 @@ if(!document.getElementById('thkStyle')){
     bar.addEventListener('touchstart',e=>e.stopPropagation(),{passive:false});
     if(!nd[styleField])nd[styleField]={};
     const st=nd[styleField];
-    // 크기
-    [{label:'작게',v:11},{label:'보통',v:13},{label:'크게',v:16},{label:'특대',v:20}].forEach(s=>{
-      const btn=document.createElement('button');btn.textContent=s.label;
-      if((st.fontSize||13)===s.v)btn.classList.add('on');
-      btn.onclick=e=>{e.stopPropagation();st.fontSize=s.v;
-        bar.querySelectorAll('button').forEach(b=>{if(b.dataset.type==='size')b.classList.remove('on')});
-        btn.classList.add('on');if(targetEl)targetEl.style.fontSize=s.v+'px';};
-      btn.dataset.type='size';bar.appendChild(btn);
-    });
+    // 크기 — 숫자 입력 + 스테퍼 (직접 px 입력 가능)
+    function clampSize(v){return Math.max(6,Math.min(96,Math.round(v||13)));}
+    function applySize(v){
+      st.fontSize=clampSize(v);
+      sizeInp.value=st.fontSize;
+      if(targetEl)targetEl.style.fontSize=st.fontSize+'px';
+    }
+    const minusBtn=document.createElement('button');minusBtn.textContent='−';minusBtn.title='1px 작게';
+    minusBtn.onclick=e=>{e.stopPropagation();applySize((st.fontSize||13)-1);};
+    bar.appendChild(minusBtn);
+    const sizeInp=document.createElement('input');
+    sizeInp.type='number';sizeInp.min='6';sizeInp.max='96';sizeInp.step='1';
+    sizeInp.value=st.fontSize||13;
+    sizeInp.title='폰트 크기 (px) — 숫자를 직접 입력하세요';
+    sizeInp.style.cssText='width:46px;height:24px;border-radius:5px;border:1px solid rgba(0,200,224,0.4);background:rgba(0,200,224,0.12);color:#7FFEFF;font-family:inherit;font-size:12px;font-weight:800;text-align:center;outline:none;padding:0 4px;-moz-appearance:textfield';
+    sizeInp.addEventListener('mousedown',e=>e.stopPropagation());
+    sizeInp.addEventListener('touchstart',e=>e.stopPropagation(),{passive:false});
+    sizeInp.addEventListener('click',e=>{e.stopPropagation();sizeInp.select();});
+    sizeInp.addEventListener('input',e=>{e.stopPropagation();const v=parseInt(sizeInp.value);if(!isNaN(v)&&targetEl)targetEl.style.fontSize=clampSize(v)+'px';});
+    sizeInp.addEventListener('change',e=>{e.stopPropagation();applySize(parseInt(sizeInp.value));});
+    sizeInp.addEventListener('blur',e=>{applySize(parseInt(sizeInp.value));});
+    sizeInp.addEventListener('keydown',e=>{e.stopPropagation();if(e.key==='Enter'){e.preventDefault();applySize(parseInt(sizeInp.value));sizeInp.blur();}});
+    bar.appendChild(sizeInp);
+    const plusBtn=document.createElement('button');plusBtn.textContent='+';plusBtn.title='1px 크게';
+    plusBtn.onclick=e=>{e.stopPropagation();applySize((st.fontSize||13)+1);};
+    bar.appendChild(plusBtn);
+    // 프리셋 드롭다운 (빠른 선택)
+    const presetBtn=document.createElement('button');presetBtn.textContent='▾';presetBtn.title='프리셋 크기';
+    presetBtn.onclick=e=>{
+      e.stopPropagation();
+      const old=document.getElementById('rb-size-preset');if(old){old.remove();return;}
+      const pop=document.createElement('div');pop.id='rb-size-preset';
+      pop.style.cssText='position:absolute;top:30px;left:0;background:#1a1a2e;border:1px solid rgba(0,200,224,0.35);border-radius:8px;padding:4px;display:grid;grid-template-columns:repeat(4,1fr);gap:3px;z-index:50;box-shadow:0 6px 20px rgba(0,0,0,0.4);min-width:160px';
+      [10,12,14,16,18,20,24,28,32,40,48,64].forEach(function(v){
+        const b=document.createElement('button');b.textContent=v;
+        b.style.cssText='padding:5px 0;border-radius:5px;border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.05);color:#e8e8f0;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit';
+        if((st.fontSize||13)===v)b.style.background='rgba(0,200,224,0.3)';
+        b.onclick=function(ev){ev.stopPropagation();applySize(v);pop.remove();};
+        pop.appendChild(b);
+      });
+      bar.appendChild(pop);
+      setTimeout(function(){
+        function close(ev){if(!pop.contains(ev.target)){pop.remove();document.removeEventListener('mousedown',close);document.removeEventListener('touchstart',close);}}
+        document.addEventListener('mousedown',close);
+        document.addEventListener('touchstart',close,{passive:true});
+      },50);
+    };
+    bar.appendChild(presetBtn);
     // 구분선
     const sep1=document.createElement('span');sep1.className='rst-sep';bar.appendChild(sep1);
     // 굵기
