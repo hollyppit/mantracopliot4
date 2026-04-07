@@ -42,6 +42,9 @@ export async function onRequestPost(context) {
     }
     const embData = await embRes.json();
     const queryEmbedding = embData.data?.[0]?.embedding;
+    if (!Array.isArray(queryEmbedding) || queryEmbedding.length === 0) {
+      return new Response(JSON.stringify({ error: '임베딩 결과가 비어 있습니다.' }), { status: 500, headers: corsHeaders });
+    }
 
     // 3. Supabase RPC: match_user_data
     const sbKey = context.env.SUPABASE_SERVICE_KEY;
@@ -84,10 +87,13 @@ export async function onRequestPost(context) {
 
 ${contextStr}`;
 
-    // 대화 히스토리 구성
+    // 대화 히스토리 구성 (최근 20턴으로 제한 — 토큰 폭주 방지)
     const userMessages = [];
     if (chatHistory && Array.isArray(chatHistory)) {
-      chatHistory.filter(m => m.role !== 'system').forEach(m => userMessages.push(m));
+      chatHistory
+        .filter(m => m && m.role !== 'system' && typeof m.content === 'string')
+        .slice(-20)
+        .forEach(m => userMessages.push(m));
     }
     if (!userMessages.length || userMessages[userMessages.length - 1]?.content !== userMsg) {
       userMessages.push({ role: 'user', content: userMsg });

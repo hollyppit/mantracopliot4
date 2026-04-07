@@ -75,20 +75,24 @@ export async function onRequestPost(context) {
       updated_at: new Date().toISOString(),
     };
 
+    let writeRes;
     if (existing && existing.length > 0) {
-      // UPDATE
-      await fetch(`${sbUrl}/rest/v1/user_embeddings?id=eq.${existing[0].id}`, {
+      writeRes = await fetch(`${sbUrl}/rest/v1/user_embeddings?id=eq.${existing[0].id}`, {
         method: 'PATCH',
         headers: { 'apikey': sbKey, 'Authorization': `Bearer ${sbKey}`, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
         body: JSON.stringify(row),
       });
     } else {
-      // INSERT
-      await fetch(`${sbUrl}/rest/v1/user_embeddings`, {
+      writeRes = await fetch(`${sbUrl}/rest/v1/user_embeddings`, {
         method: 'POST',
         headers: { 'apikey': sbKey, 'Authorization': `Bearer ${sbKey}`, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
         body: JSON.stringify(row),
       });
+    }
+
+    if (!writeRes.ok) {
+      const detail = await writeRes.text();
+      return new Response(JSON.stringify({ error: '임베딩 저장 실패', detail }), { status: 500, headers: corsHeaders });
     }
 
     return new Response(JSON.stringify({ ok: true }), { status: 200, headers: corsHeaders });

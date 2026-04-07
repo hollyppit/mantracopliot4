@@ -6,12 +6,21 @@ export async function onRequestPost(context) {
     'Content-Type': 'application/json',
   };
 
-  const body = await context.request.json();
-  const messages = body.messages || [];
-  const streamMode = body.stream === true;
+  let body;
+  try {
+    body = await context.request.json();
+  } catch {
+    return new Response(JSON.stringify({ error: '잘못된 요청 본문(JSON 파싱 실패)' }), { status: 400, headers: corsHeaders });
+  }
+  const messages = Array.isArray(body?.messages) ? body.messages : [];
+  const streamMode = body?.stream === true;
 
-  const systemMsg = messages.find(m => m.role === 'system');
-  const userMessages = messages.filter(m => m.role !== 'system');
+  const systemMsg = messages.find(m => m && m.role === 'system');
+  const userMessages = messages.filter(m => m && m.role !== 'system');
+
+  if (userMessages.length === 0) {
+    return new Response(JSON.stringify({ error: 'messages 배열에 user 메시지가 필요합니다.' }), { status: 400, headers: corsHeaders });
+  }
 
   // 🔵 1. Claude 시도
   const ANTHROPIC_API_KEY = context.env.ANTHROPIC_API_KEY;

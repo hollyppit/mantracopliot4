@@ -109,20 +109,44 @@ export function createEmptyProject(title = "새 프로젝트") {
 }
 
 export function saveProject(project) {
-  localStorage.setItem(`project_${project.id}`, JSON.stringify(project));
+  if (!project || !project.id) return false;
+  try {
+    localStorage.setItem(`project_${project.id}`, JSON.stringify(project));
+    return true;
+  } catch (e) {
+    // QuotaExceededError 등 — 사용자에게 경고하고 false 반환
+    console.error('saveProject 실패:', e);
+    if (typeof window !== 'undefined' && e && (e.name === 'QuotaExceededError' || (e.code && e.code === 22))) {
+      try { window.alert('저장 공간이 부족합니다. 오래된 작품/스냅샷을 정리해 주세요.'); } catch {}
+    }
+    return false;
+  }
 }
 
 export function loadProject(projectId) {
   const data = localStorage.getItem(`project_${projectId}`);
-  return data ? JSON.parse(data) : null;
+  if (!data) return null;
+  try {
+    return JSON.parse(data);
+  } catch (e) {
+    console.error('loadProject 파싱 실패 — 손상 데이터 제거:', e);
+    try { localStorage.removeItem(`project_${projectId}`); } catch {}
+    return null;
+  }
 }
 
 export function getCurrentProject() {
   const id = localStorage.getItem("current_project_id");
   if (!id) return null;
   // mp 목록에 존재하는지 검증 — 삭제된 작품이면 초기화
-  const mp = JSON.parse(localStorage.getItem('mp') || '[]');
-  if (!mp.find(p => p.id === id)) {
+  let mp = [];
+  try {
+    mp = JSON.parse(localStorage.getItem('mp') || '[]');
+    if (!Array.isArray(mp)) mp = [];
+  } catch {
+    mp = [];
+  }
+  if (!mp.find(p => p && p.id === id)) {
     localStorage.removeItem("current_project_id");
     localStorage.removeItem(`project_${id}`);
     return null;
@@ -136,7 +160,13 @@ export function setCurrentProject(project) {
 }
 
 export function addEpisode(project) {
-  const ep = project.episodes.length + 1;
+  if (!project.episodes) project.episodes = [];
+  // 기존 ep 번호 중 최대값 + 1 (삭제 후 재추가 시 충돌 방지)
+  const maxEp = project.episodes.reduce((m, e) => {
+    const n = Number(e && (e.ep || e.num)) || 0;
+    return n > m ? n : m;
+  }, 0);
+  const ep = maxEp + 1;
 
   project.episodes.push({
     ep,

@@ -36,15 +36,22 @@ export async function onRequestPost(context) {
   }
 
   // 텍스트 직접 입력 또는 파일 업로드
-  const directText = formData.get('text');
-  const file = formData.get('file');
-  const sourceFilename = formData.get('filename') || (file ? file.name : '직접입력');
+  const directTextRaw = formData.get('text');
+  const directText = typeof directTextRaw === 'string' ? directTextRaw : '';
+  const fileRaw = formData.get('file');
+  const file = (fileRaw && typeof fileRaw === 'object' && typeof fileRaw.text === 'function') ? fileRaw : null;
+  const filenameRaw = formData.get('filename');
+  const sourceFilename = (typeof filenameRaw === 'string' && filenameRaw) || (file && file.name) || '직접입력';
 
   let text = '';
-  if (directText && directText.trim()) {
+  if (directText.trim()) {
     text = directText.trim();
   } else if (file) {
-    text = await file.text();
+    try {
+      text = await file.text();
+    } catch {
+      return new Response(JSON.stringify({ error: '파일을 텍스트로 읽을 수 없습니다.' }), { status: 400, headers: corsHeaders });
+    }
   }
 
   if (!text.trim()) {
@@ -71,7 +78,7 @@ export async function onRequestPost(context) {
           'anthropic-version': '2023-06-01',
         },
         body: JSON.stringify({
-          model: 'claude-sonnet-4-20250514',
+          model: 'claude-sonnet-4-6',
           max_tokens: 1024,
           system: systemPrompt,
           messages: [{ role: 'user', content: text }],
