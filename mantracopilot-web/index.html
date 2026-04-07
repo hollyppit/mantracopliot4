@@ -1285,8 +1285,8 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);back
   .rb-char-card .rb-edit-btn,.rb-memo-card .rb-edit-btn{opacity:1}
   .rb-char-card .rb-resize-handle,.rb-memo-card .rb-resize-handle{opacity:0.6}
   /* 모바일 터치 영역 확대 */
-  .rb-del-btn{width:32px;height:32px;font-size:16px;top:-12px;right:-12px}
-  .rb-edit-btn{width:28px;height:28px;font-size:13px;top:-10px;right:24px}
+  .rb-del-btn{width:40px;height:40px;font-size:18px;top:-14px;right:-14px}
+  .rb-edit-btn{width:36px;height:36px;font-size:15px;top:-12px;right:28px}
   .rb-resize-handle{width:24px;height:24px;bottom:-6px;right:-6px}
   .rb-resize-handle::after{width:12px;height:12px}
   /* 연결 핸들 터치 영역 확대 */
@@ -1902,12 +1902,12 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);back
     <div class="vb" style="display:flex;flex-direction:column;gap:28px">
       <!-- 두 CTA 버튼 -->
       <div class="home-mode-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;max-width:1100px">
-        <div class="myplan-cta myplan-cta-new" onclick="openMode()">
+        <div class="myplan-cta myplan-cta-new" role="button" tabindex="0" aria-label="새 작품 기획하기 — AI와 함께 장르·시놉시스·캐릭터를 설계합니다" onclick="openMode()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openMode();}">
           <div class="cta-icon" style="margin-bottom:16px" data-icon="gonmin" data-icon-size="44" data-icon-sw="1.2"></div>
           <div class="cta-title" style="font-size:19px;font-weight:900;margin-bottom:8px;letter-spacing:-0.02em">새 작품 기획하기</div>
-          <div id="cta-new-sub" style="font-size:12px;color:var(--text-faint);line-height:1.6">새로운 이야기를 AI와 함께 설계합니다</div>
+          <div id="cta-new-sub" style="font-size:12px;color:var(--text-faint);line-height:1.6">장르·시놉시스·캐릭터를 단계별로 함께 만듭니다</div>
         </div>
-        <div class="myplan-cta myplan-cta-review" onclick="openReviewPicker()">
+        <div class="myplan-cta myplan-cta-review" role="button" tabindex="0" aria-label="기존 작품 검토하기 — 시놉시스·캐릭터·개요를 통합 점검합니다" onclick="openReviewPicker()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openReviewPicker();}">
           <div class="cta-icon" style="margin-bottom:16px" data-icon="review" data-icon-size="44" data-icon-sw="1.2"></div>
           <div class="cta-title" style="font-size:19px;font-weight:900;margin-bottom:8px;letter-spacing:-0.02em">기존 작품 검토하기</div>
           <div id="cta-review-sub" style="font-size:12px;color:var(--text-faint);line-height:1.6">시놉시스·캐릭터·개요를 통합 점검합니다</div>
@@ -3174,7 +3174,7 @@ function initIcons(){
     el.innerHTML=svgIcon(name,size,sw);
   });
 }
-const flash=(msg,d=2000)=>{const e=$('fl');e.textContent=msg.length>45?msg.slice(0,45)+'...':msg;e.classList.add('on');setTimeout(()=>e.classList.remove('on'),d)};
+const flash=(msg,d=2000)=>{const e=$('fl');e.textContent=msg.length>120?msg.slice(0,120)+'...':msg;e.classList.add('on');setTimeout(()=>e.classList.remove('on'),d)};
 const md=t=>{
   if(!t)return'';
   // 코드블록
@@ -11093,9 +11093,13 @@ if(!document.getElementById('thkStyle')){
   }
 
   function deleteNode(id){
+    var nd=rbNodes.find(n=>n.id===id);
+    var label=nd?(nd.name||nd.text||'카드'):'카드';
+    if(!confirm("'"+(String(label).slice(0,20))+"' 카드를 삭제할까요?\n(연결된 선도 함께 삭제됩니다)"))return;
     rbNodes=rbNodes.filter(n=>n.id!==id);
     rbEdges=rbEdges.filter(e=>e.from!==id&&e.to!==id);
     rbRender();
+    if(window.flash)flash('카드가 삭제됐습니다');
   }
 
   // ── 엣지 렌더 ──
@@ -11966,7 +11970,7 @@ function rbClearDraw(){
     <button class="rbt danger" onclick="rbReset()">🔄 초기화</button>
   </div>
   <div class="rb-viewport" id="rb-viewport">
-    <button class="rb-close-fab" onclick="closeWhiteBoard()" title="닫기">✕</button>
+    <button class="rb-close-fab" onclick="closeWhiteBoard()" title="화이트보드 닫기" aria-label="화이트보드 닫기">✕</button>
     <div id="board-canvas">
       <svg id="wb-lines" xmlns="http://www.w3.org/2000/svg" width="4000" height="4000" style="position:absolute;top:0;left:0;overflow:visible;pointer-events:none;z-index:0">
         <defs>
