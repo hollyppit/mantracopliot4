@@ -3074,7 +3074,28 @@ const CHAR_BUILDUP=[
 const $=id=>document.getElementById(id);
 // localStorage JSON.parse 안전 헬퍼
 function _lsGet(key,fallback=[]){try{const v=localStorage.getItem(key);return v?JSON.parse(v):fallback;}catch(e){return fallback;}}
+// localStorage 안전 setter — Quota 초과 시 false 반환 + 사용자 경고(첫 1회)
+let _lsQuotaWarned=false;
+function _lsSet(key,value){
+  try{localStorage.setItem(key,typeof value==='string'?value:JSON.stringify(value));return true;}
+  catch(e){
+    console.error('_lsSet 실패:',key,e);
+    if(!_lsQuotaWarned&&e&&(e.name==='QuotaExceededError'||e.code===22)){
+      _lsQuotaWarned=true;
+      try{alert('저장 공간이 부족합니다. 오래된 스냅샷/작품을 정리해 주세요.');}catch{}
+    }
+    return false;
+  }
+}
 function _mpList(){return _lsGet('mp',[]);}
+
+// ── 글로벌 에러 표면화 ──
+window.addEventListener('error',e=>{
+  console.error('[전역 에러]',e.message,e.filename+':'+e.lineno);
+});
+window.addEventListener('unhandledrejection',e=>{
+  console.error('[처리되지 않은 Promise 거부]',e.reason);
+});
 
 // ── 아이콘 시스템 (stroke-based SVG) ──
 const ICONS={
@@ -5459,21 +5480,21 @@ function saveCharSnapshot(){
   if(!pdChars.length)return;
   const projId=(pdProj&&pdProj.id)||(window.currentProject&&window.currentProject.id)||'_none';
   const snapKey='ch_snapshots_'+projId;
-  const snaps=JSON.parse(localStorage.getItem(snapKey)||'[]');
+  const snaps=_lsGet(snapKey,[]);
   const now=new Date();
   const label=`${pdChars.length}명 · ${(now.getMonth()+1)}/${now.getDate()} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
   const preview=pdChars.slice(0,3).map(c=>`${c.name||'(이름 없음)'} · ${c.role||''}`).join('\n')+(pdChars.length>3?`\n외 ${pdChars.length-3}명`:'');
   const snap={id:'csnap_'+Date.now(),label,preview,chars:JSON.parse(JSON.stringify(pdChars)),savedAt:now.toISOString(),folder_id:null};
   snaps.unshift(snap);
   if(snaps.length>10)snaps.length=10;
-  localStorage.setItem(snapKey,JSON.stringify(snaps));
+  _lsSet(snapKey,snaps);
   // renderCharSidebar는 saveChars()에서 이미 호출됨
 }
 
 function loadCharSnapshot(snapId){
   const projId=(pdProj&&pdProj.id)||(window.currentProject&&window.currentProject.id)||'_none';
   const snapKey='ch_snapshots_'+projId;
-  const snaps=JSON.parse(localStorage.getItem(snapKey)||'[]');
+  const snaps=_lsGet(snapKey,[]);
   const snap=snaps.find(s=>s.id===snapId);
   if(!snap)return;
   pdChars=JSON.parse(JSON.stringify(snap.chars));
@@ -5487,9 +5508,9 @@ function loadCharSnapshot(snapId){
 function deleteCharSnapshot(snapId){
   const projId=(pdProj&&pdProj.id)||(window.currentProject&&window.currentProject.id)||'_none';
   const snapKey='ch_snapshots_'+projId;
-  let snaps=JSON.parse(localStorage.getItem(snapKey)||'[]');
+  let snaps=_lsGet(snapKey,[]);
   snaps=snaps.filter(s=>s.id!==snapId);
-  localStorage.setItem(snapKey,JSON.stringify(snaps));
+  _lsSet(snapKey,snaps);
   renderCharSidebar();
 }
 
@@ -8363,7 +8384,7 @@ function saveOutlineSnapshot(){
   if(!olEpisodes.length)return;
   const projId=olProjId||(window.currentProject&&window.currentProject.id)||'_none';
   const snapKey='ol_snapshots_'+projId;
-  const snaps=JSON.parse(localStorage.getItem(snapKey)||'[]');
+  const snaps=_lsGet(snapKey,[]);
   const now=new Date();
   const label=`${olEpisodes.length}화 · ${(now.getMonth()+1)}/${now.getDate()} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
   // 미리보기 텍스트: 처음 3화 제목
@@ -8372,18 +8393,18 @@ function saveOutlineSnapshot(){
   snaps.unshift(snap);
   // 최대 10개 유지
   if(snaps.length>10)snaps.length=10;
-  localStorage.setItem(snapKey,JSON.stringify(snaps));
+  _lsSet(snapKey,snaps);
   renderEpList();
 }
 
 function loadOutlineSnapshot(snapId){
   const projId=olProjId||(window.currentProject&&window.currentProject.id)||'_none';
   const snapKey='ol_snapshots_'+projId;
-  const snaps=JSON.parse(localStorage.getItem(snapKey)||'[]');
+  const snaps=_lsGet(snapKey,[]);
   const snap=snaps.find(s=>s.id===snapId);
   if(!snap)return;
   olEpisodes=JSON.parse(JSON.stringify(snap.episodes));
-  localStorage.setItem('ol_episodes',JSON.stringify(olEpisodes));
+  _lsSet('ol_episodes',olEpisodes);
   if(window.currentProject)window.currentProject.episodes=olEpisodes;
   renderEpList();drawTensionGraph();
   flash('📋 개요 복원됨');
@@ -8392,16 +8413,16 @@ function loadOutlineSnapshot(snapId){
 function deleteOutlineSnapshot(snapId){
   const projId=olProjId||(window.currentProject&&window.currentProject.id)||'_none';
   const snapKey='ol_snapshots_'+projId;
-  let snaps=JSON.parse(localStorage.getItem(snapKey)||'[]');
+  let snaps=_lsGet(snapKey,[]);
   snaps=snaps.filter(s=>s.id!==snapId);
-  localStorage.setItem(snapKey,JSON.stringify(snaps));
+  _lsSet(snapKey,snaps);
   renderEpList();
 }
 
 function renderOutlineSnapshots(container){
   const projId=olProjId||(window.currentProject&&window.currentProject.id)||'_none';
   const snapKey='ol_snapshots_'+projId;
-  const snaps=JSON.parse(localStorage.getItem(snapKey)||'[]');
+  const snaps=_lsGet(snapKey,[]);
   if(!snaps.length)return;
   const sec=document.createElement('div');sec.className='snap-section';
   const titleRow=document.createElement('div');titleRow.className='snap-section-title';
@@ -8440,13 +8461,13 @@ function renderOutlineSnapshots(container){
       const isBefore=pad.classList.contains('snap-drop-before');
       pad.classList.remove('snap-drop-before','snap-drop-after');
       if(isNaN(fromIdx)||fromIdx===i)return;
-      const cur=JSON.parse(localStorage.getItem(snapKey)||'[]');
+      const cur=_lsGet(snapKey,[]);
       const [moved]=cur.splice(fromIdx,1);
       let insertAt=cur.findIndex(s=>s.id===snap.id);
       if(insertAt<0)insertAt=cur.length;
       else if(!isBefore)insertAt++;
       cur.splice(insertAt,0,moved);
-      localStorage.setItem(snapKey,JSON.stringify(cur));
+      _lsSet(snapKey,cur);
       renderEpList();drawTensionGraph();
     });
     _makeSnapPadTouchDrag(pad,i,snapKey,()=>{renderEpList();drawTensionGraph();});
@@ -10054,7 +10075,7 @@ async function appendGmExtras(featureResult, ytKeyword) {
       fc.innerHTML = `<div style="font-size:2rem;flex-shrink:0">${f.icon}</div><div style="flex:1;min-width:0"><div style="font-size:15px;font-weight:800;color:#fff;margin-bottom:4px">${f.label}</div><div style="font-size:12px;color:var(--text-dim);line-height:1.4">${f.desc}</div></div><div style="font-size:13px;color:var(--purple-light);font-weight:800;flex-shrink:0;background:rgba(0,200,224,0.2);padding:6px 12px;border-radius:8px;border:1px solid rgba(0,200,224,0.3)">열기 →</div>`;
       fc.onmouseover = () => { fc.style.background='rgba(0,200,224,0.2)'; fc.style.transform='translateY(-2px)'; fc.style.boxShadow='0 4px 20px rgba(0,200,224,0.22)'; };
       fc.onmouseout = () => { fc.style.background='rgba(0,200,224,0.13)'; fc.style.transform='translateY(0)'; fc.style.boxShadow='0 2px 12px rgba(0,200,224,0.12)'; };
-      fc.onclick = () => eval(f.action);
+      fc.onclick = () => { try { (new Function(f.action))(); } catch(err) { console.error('feature action 실패:', f.action, err); } };
       wrap.appendChild(fc);
     } else if (featureResult.all) {
       // 전체 기능 컴팩트 목록
@@ -10066,7 +10087,7 @@ async function appendGmExtras(featureResult, ytKeyword) {
         fc.innerHTML = `<div style="font-size:1.3rem;flex-shrink:0;width:28px;text-align:center">${f.icon}</div><div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:700;color:var(--text)">${f.label}</div><div style="font-size:11px;color:var(--text-faint);margin-top:1px">${f.desc}</div></div><div style="font-size:11px;color:var(--text-faint);flex-shrink:0">→</div>`;
         fc.onmouseover = () => { fc.style.borderColor='var(--purple-light)'; fc.style.background='rgba(0,200,224,0.07)'; };
         fc.onmouseout = () => { fc.style.borderColor='var(--border)'; fc.style.background='var(--surface)'; };
-        fc.onclick = () => eval(f.action);
+        fc.onclick = () => { try { (new Function(f.action))(); } catch(err) { console.error('feature action 실패:', f.action, err); } };
         grid.appendChild(fc);
       });
       wrap.appendChild(grid);
