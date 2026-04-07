@@ -15,7 +15,8 @@ export async function onRequestPost(context) {
   const messages = Array.isArray(body?.messages) ? body.messages : [];
   const streamMode = body?.stream === true;
 
-  const systemMsg = messages.find(m => m && m.role === 'system');
+  const systemMsgFromArr = messages.find(m => m && m.role === 'system');
+  const systemMsg = systemMsgFromArr || (typeof body?.system === 'string' && body.system ? { role: 'system', content: body.system } : null);
   const userMessages = messages.filter(m => m && m.role !== 'system');
 
   if (userMessages.length === 0) {
