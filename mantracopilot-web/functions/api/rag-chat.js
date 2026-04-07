@@ -63,7 +63,10 @@ export async function onRequestPost(context) {
 
     let ragResults = [];
     if (rpcRes.ok) {
-      ragResults = await rpcRes.json();
+      try {
+        const parsed = await rpcRes.json();
+        if (Array.isArray(parsed)) ragResults = parsed;
+      } catch (e) { ragResults = []; }
     }
 
     // 4. 컨텍스트 문자열 조합

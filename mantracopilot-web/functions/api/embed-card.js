@@ -45,7 +45,7 @@ export async function onRequestPost(context) {
     }
     const embData = await embRes.json();
     const embedding = embData.data?.[0]?.embedding;
-    if (!embedding) {
+    if (!Array.isArray(embedding) || embedding.length === 0) {
       return new Response(JSON.stringify({ error: '임베딩 데이터 없음' }), { status: 500, headers: corsHeaders });
     }
 
@@ -62,7 +62,11 @@ export async function onRequestPost(context) {
       `${sbUrl}/rest/v1/user_embeddings?user_id=eq.${userId}&source_type=eq.${table}&source_project_id=eq.${card_id}&source_index=eq.${idx}&select=id`,
       { headers: { 'apikey': sbKey, 'Authorization': `Bearer ${sbKey}` } }
     );
-    const existing = await findRes.json();
+    let existing = [];
+    try {
+      const parsed = await findRes.json();
+      if (Array.isArray(parsed)) existing = parsed;
+    } catch (e) { existing = []; }
 
     const row = {
       user_id: userId,

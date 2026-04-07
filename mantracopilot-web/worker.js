@@ -77,7 +77,12 @@ async function sbReq(env, method, table, opts = {}) {
     body: opts.body ? JSON.stringify(opts.body) : undefined,
   });
   const text = await res.text();
-  return { ok: res.ok, status: res.status, data: text ? JSON.parse(text) : null };
+  let data = null;
+  if (text) {
+    try { data = JSON.parse(text); }
+    catch (e) { return { ok: false, status: res.status, data: null, parseError: true, raw: text.slice(0, 300) }; }
+  }
+  return { ok: res.ok, status: res.status, data };
 }
 
 async function handleSave(request, env, userId, cors) {

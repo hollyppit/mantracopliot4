@@ -10248,7 +10248,7 @@ if(!document.getElementById('thkStyle')){
   let wbAutoSaveTimer=null;
 
   function wbLoadBoards(){try{wbBoards=JSON.parse(localStorage.getItem('wb_boards_v1')||'[]');}catch(e){wbBoards=[];}}
-  function wbSaveBoards(){localStorage.setItem('wb_boards_v1',JSON.stringify(wbBoards));}
+  function wbSaveBoards(){try{localStorage.setItem('wb_boards_v1',JSON.stringify(wbBoards));}catch(e){if(e&&e.name==='QuotaExceededError'){console.warn('[wb] 저장 실패: 로컬 용량 초과');try{if(!window.__wbQuotaAlerted){window.__wbQuotaAlerted=true;alert('화이트보드 저장 용량이 초과됐습니다. 사용하지 않는 보드나 그림을 정리해 주세요.');}}catch(_){}}}}
 
   function wbLoadBoardData(boardId){
     try{
@@ -10265,7 +10265,7 @@ if(!document.getElementById('thkStyle')){
   }
   function wbSaveBoardData(boardId){
     if(!boardId)return;
-    localStorage.setItem('wb_data_'+boardId,JSON.stringify({nodes:rbNodes,edges:rbEdges,pan:rbPan,scale:rbScale}));
+    try{localStorage.setItem('wb_data_'+boardId,JSON.stringify({nodes:rbNodes,edges:rbEdges,pan:rbPan,scale:rbScale}));}catch(e){if(e&&e.name==='QuotaExceededError'){console.warn('[wb] 보드 데이터 저장 실패: 로컬 용량 초과');try{if(!window.__wbQuotaAlerted){window.__wbQuotaAlerted=true;alert('화이트보드 저장 용량이 초과됐습니다. 사용하지 않는 보드나 그림을 정리해 주세요.');}}catch(_){}return;}}
     var drawCanvas=document.getElementById('rb-draw-canvas');
     if(drawCanvas){try{localStorage.setItem('wb_draw_'+boardId,drawCanvas.toDataURL());}catch(e){}}
     var b=wbBoards.find(function(x){return x.id===boardId});
