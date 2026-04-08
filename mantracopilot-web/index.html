@@ -10481,6 +10481,23 @@ if(!document.getElementById('thkStyle')){
     document.getElementById('white-board').classList.remove('on');
     document.body.style.overflow='';
   };
+  // 화이트보드 단축키: Ctrl/Cmd+Z = 되돌리기, Delete = 그리기 지우기
+  document.addEventListener('keydown',function(e){
+    var wb=document.getElementById('white-board');
+    if(!wb||!wb.classList.contains('on'))return;
+    var t=e.target,tag=t&&t.tagName;
+    if(tag==='INPUT'||tag==='TEXTAREA'||tag==='SELECT'||(t&&t.isContentEditable))return;
+    if((e.ctrlKey||e.metaKey)&&e.shiftKey&&!e.altKey&&(e.key==='z'||e.key==='Z')){
+      e.preventDefault();
+      if(typeof rbRedo==='function')rbRedo();
+    }else if((e.ctrlKey||e.metaKey)&&!e.shiftKey&&!e.altKey&&(e.key==='z'||e.key==='Z')){
+      e.preventDefault();
+      if(typeof rbUndo==='function')rbUndo();
+    }else if(e.key==='Delete'){
+      e.preventDefault();
+      if(typeof rbClearDraw==='function')rbClearDraw();
+    }
+  });
 
   // ── 저장/로드 ──
   window.rbSave=function(){
@@ -11805,7 +11822,7 @@ function rbInitDrawCanvas(){
   canvas.addEventListener('pointerdown',function(e){
     if(rbDrawMode!=='pen'&&rbDrawMode!=='eraser')return;
     try{canvas.setPointerCapture(e.pointerId);}catch(ex){}
-    try{rbUndoStack.push(canvas.toDataURL());if(rbUndoStack.length>30)rbUndoStack.shift();}catch(ex){}
+    try{rbUndoStack.push(canvas.toDataURL());if(rbUndoStack.length>30)rbUndoStack.shift();window.rbRedoStack=[];}catch(ex){}
     rbDrawing=true;
     rbLastPoint=_rbPt(e);
     // 점 하나만 찍어도 흔적이 남도록
@@ -11897,15 +11914,28 @@ function rbSaveDrawing(){
     try{localStorage.setItem(drawKey,canvas.toDataURL());}catch(e){}
   }
 }
+window.rbRedoStack=window.rbRedoStack||[];
 function rbUndo(){
   if(!rbUndoStack.length){flash('되돌릴 내용이 없습니다');return;}
   var canvas=document.getElementById('rb-draw-canvas');if(!canvas)return;
   var ctx=canvas.getContext('2d');
+  try{window.rbRedoStack.push(canvas.toDataURL());if(window.rbRedoStack.length>30)window.rbRedoStack.shift();}catch(ex){}
   var dataUrl=rbUndoStack.pop();
   var img=new Image();
   img.onload=function(){ctx.clearRect(0,0,canvas.width,canvas.height);ctx.drawImage(img,0,0);};
   img.src=dataUrl;
 }
+function rbRedo(){
+  if(!window.rbRedoStack||!window.rbRedoStack.length){flash('다시 실행할 내용이 없습니다');return;}
+  var canvas=document.getElementById('rb-draw-canvas');if(!canvas)return;
+  var ctx=canvas.getContext('2d');
+  try{rbUndoStack.push(canvas.toDataURL());if(rbUndoStack.length>30)rbUndoStack.shift();}catch(ex){}
+  var dataUrl=window.rbRedoStack.pop();
+  var img=new Image();
+  img.onload=function(){ctx.clearRect(0,0,canvas.width,canvas.height);ctx.drawImage(img,0,0);};
+  img.src=dataUrl;
+}
+window.rbRedo=rbRedo;
 function rbClearDraw(){
   if(!confirm('그리기를 모두 지울까요?'))return;
   var canvas=document.getElementById('rb-draw-canvas');if(!canvas)return;
