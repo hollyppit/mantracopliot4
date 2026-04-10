@@ -10081,10 +10081,9 @@ async function gmSend(){
     appendGmMsg('ai', reply);
     gmMsgs.push({role:'assistant', content:reply});
 
-    // 기능 추천 + 유튜브 영상 비동기로 추가
-    const feature = getFeatureSuggestion(userText, reply);
+    // 유튜브 영상 비동기로 추가
     const ytKeyword = extractYTKeyword(userText, reply);
-    appendGmExtras(feature, ytKeyword);
+    appendGmExtras(null, ytKeyword);
 
   }catch(e){
     removeGmLoading(lid);
@@ -10157,18 +10156,16 @@ function renderVideoPanel(contextType, videos) {
   const label = labels[contextType] || '▶ 관련 영상';
   return `<div style="font-size:10px;font-weight:700;letter-spacing:0.08em;color:var(--text-faint);text-transform:uppercase;margin-bottom:4px">${label}</div>` +
     videos.map(v => `
-      <div onclick="window.open('https://www.youtube.com/watch?v=${v.id}','_blank')"
-        style="background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;display:flex;cursor:pointer;transition:all 0.2s"
-        onmouseover="this.style.borderColor='var(--border2)';this.style.background='var(--surface2)'"
-        onmouseout="this.style.borderColor='var(--border)';this.style.background='var(--surface)'">
-        <div style="width:100px;min-width:100px;overflow:hidden;background:rgba(255,255,255,0.04)">
-          <img src="${v.thumb}" alt="" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block">
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden">
+        <div style="position:relative;width:100%;padding-top:56.25%">
+          <iframe src="https://www.youtube.com/embed/${v.id}" title="${escHtml(v.title)}"
+            frameborder="0" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen
+            style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;border-radius:12px 12px 0 0"></iframe>
         </div>
-        <div style="padding:10px 13px;flex:1;display:flex;flex-direction:column;justify-content:center;gap:3px">
+        <div style="padding:10px 13px;display:flex;flex-direction:column;gap:3px">
           <div style="font-size:12px;font-weight:600;color:var(--text);line-height:1.4">${escHtml(v.title)}</div>
           <div style="font-size:10px;color:var(--text-faint)">${escHtml(v.channel)}</div>
         </div>
-        <div style="padding:0 12px;display:flex;align-items:center;flex-shrink:0;color:var(--text-faint);font-size:11px">↗</div>
       </div>`).join('');
 }
 
