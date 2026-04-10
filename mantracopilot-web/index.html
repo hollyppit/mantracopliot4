@@ -305,8 +305,18 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);back
 .xm.assistant .xmi{background:rgba(255,255,255,0.05);border:1px solid rgba(0,200,224,0.1);border-bottom-left-radius:4px;color:var(--text)}
 .xm.user .xmi{background:rgba(0,200,224,0.2);border:1px solid rgba(0,200,224,0.3);border-bottom-right-radius:4px;color:var(--text)}
 .xc{font-size:14px;line-height:1.75;color:var(--text);word-break:keep-all}
+/* 입력창 토글 핸들 */
+.input-toggle-handle{display:flex;align-items:center;justify-content:center;padding:6px 0 2px;cursor:pointer;flex-shrink:0;background:rgba(7,7,15,0.6);border-top:1px solid var(--border)}
+.input-toggle-handle .handle-bar{width:40px;height:4px;border-radius:2px;background:rgba(255,255,255,0.15);transition:all 0.2s}
+.input-toggle-handle:hover .handle-bar{background:rgba(0,200,224,0.5);width:56px}
+.input-toggle-handle .handle-label{font-size:11px;color:var(--text-faint);margin-left:8px;transition:all 0.2s}
+.input-toggle-handle:hover .handle-label{color:var(--purple-light)}
 /* 입력창 */
-.xiw{padding:12px 20px 16px;border-top:1px solid var(--border);flex-shrink:0;display:flex;flex-direction:column;gap:8px;background:rgba(7,7,15,0.6);backdrop-filter:blur(20px)}
+.xiw{padding:12px 20px 16px;border-top:none;flex-shrink:0;display:flex;flex-direction:column;gap:8px;background:rgba(7,7,15,0.6);backdrop-filter:blur(20px)}
+.xiw.input-collapsed{display:none!important}
+/* 창작 에이전트 입력창 접기 */
+.gm-input-area{border-top:none;flex-shrink:0;background:rgba(7,7,15,0.6);backdrop-filter:blur(20px)}
+.gm-input-area.input-collapsed{display:none!important}
 /* 데스크톱: 옵션 토글 숨기고 옵션은 항상 표시 */
 .xiw-opts-toggle,.gm-opts-toggle{display:none}
 .xiw-opts{display:flex!important;flex-direction:column;gap:5px}
@@ -1851,8 +1861,13 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);back
           </div>
         </div>
       </div>
+      <!-- 입력창 토글 핸들 -->
+      <div class="input-toggle-handle" id="gm-input-toggle" onclick="toggleGmInput()">
+        <div class="handle-bar"></div>
+        <span class="handle-label" id="gm-input-toggle-label">입력창 접기</span>
+      </div>
       <!-- 입력창 -->
-      <div style="padding:0 20px 18px;border-top:1px solid var(--border);flex-shrink:0;background:rgba(7,7,15,0.6);backdrop-filter:blur(20px)">
+      <div class="gm-input-area" id="gm-input-area" style="padding:0 20px 18px;flex-shrink:0;background:rgba(7,7,15,0.6);backdrop-filter:blur(20px)">
         <!-- RAG 토글 바 (입력창 위) — 모바일에서 접기 가능 -->
         <button class="gm-opts-toggle" id="gm-opts-toggle" onclick="toggleGmOpts()">
           <span>옵션</span><span class="arrow">▼</span>
@@ -2173,7 +2188,11 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);back
         </div>
       </div>
       <div class="xb" id="xb"></div>
-      <div class="xiw">
+      <div class="input-toggle-handle" id="xc-input-toggle" onclick="toggleXcInput()">
+        <div class="handle-bar"></div>
+        <span class="handle-label" id="xc-input-toggle-label">입력창 접기</span>
+      </div>
+      <div class="xiw" id="xc-xiw">
         <button class="xiw-opts-toggle" id="xiw-opts-toggle" onclick="toggleXiwOpts()">
           <span>옵션</span><span class="arrow">▼</span>
         </button>
@@ -4119,6 +4138,21 @@ function toggleGmOpts(){
   if(!opts||!btn)return;
   opts.classList.toggle('open');
   btn.classList.toggle('open');
+}
+// 입력창 접기/펼치기
+function toggleXcInput(){
+  const xiw=$('xc-xiw'),label=$('xc-input-toggle-label');
+  if(!xiw)return;
+  xiw.classList.toggle('input-collapsed');
+  const collapsed=xiw.classList.contains('input-collapsed');
+  if(label) label.textContent=collapsed?'입력창 펼치기':'입력창 접기';
+}
+function toggleGmInput(){
+  const area=$('gm-input-area'),label=$('gm-input-toggle-label');
+  if(!area)return;
+  area.classList.toggle('input-collapsed');
+  const collapsed=area.classList.contains('input-collapsed');
+  if(label) label.textContent=collapsed?'입력창 펼치기':'입력창 접기';
 }
 document.addEventListener('DOMContentLoaded',()=>{
   initVtOpts();
