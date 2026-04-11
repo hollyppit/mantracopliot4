@@ -111,6 +111,46 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--bg);colo
 .source-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px;margin-bottom:4px}
 .source-input{width:100%;padding:10px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:13px;font-family:inherit;outline:none;transition:border-color 0.2s}
 .source-input:focus{border-color:rgba(16,185,129,0.5)}
+
+/* ── MOBILE ── */
+@media(max-width:768px){
+  body{-webkit-tap-highlight-color:transparent}
+  .login-box{width:calc(100% - 32px);max-width:360px;padding:32px 24px}
+  .login-input{font-size:16px;padding:14px 16px}
+  .login-btn{padding:14px;font-size:15px}
+  .admin-wrap{padding:20px 16px 60px}
+  .admin-header{margin-bottom:24px}
+  .admin-title{font-size:19px}
+  .tab-bar{gap:0}
+  .tab{padding:13px 16px;font-size:13px}
+  .upload-section{padding:18px 16px;border-radius:14px}
+  .section-title{font-size:14px;margin-bottom:14px}
+  .mode-toggle{flex-wrap:wrap;gap:6px}
+  .mode-btn{padding:10px 16px;font-size:12px}
+  .upload-textarea{min-height:140px;padding:12px 14px;font-size:16px}
+  .file-drop{padding:24px 16px}
+  .file-drop-icon{font-size:28px}
+  .source-row{grid-template-columns:1fr;gap:8px}
+  .source-input{font-size:16px;padding:12px 14px}
+  .submit-btn{width:100%;padding:14px;font-size:14px}
+  .submit-row{margin-top:14px}
+  .ref-card{padding:16px}
+  .ref-head{flex-wrap:wrap;gap:8px}
+  .ref-title{font-size:13px}
+  .ref-actions{gap:8px}
+  .ref-act{padding:8px 14px;font-size:12px}
+  .edit-box{padding:20px 16px;border-radius:14px;margin:12px}
+  .edit-box h3{font-size:15px}
+  .edit-field input,.edit-field textarea{font-size:16px;padding:12px 14px}
+  .edit-btns{flex-direction:column}
+  .edit-btns button{padding:12px;text-align:center}
+}
+@media(max-width:480px){
+  .admin-wrap{padding:16px 12px 60px}
+  .admin-header{flex-direction:column;align-items:flex-start;gap:12px}
+  .upload-section{padding:14px 12px}
+  .login-box{padding:28px 20px}
+}
 </style>
 </head>
 <body>

@@ -421,14 +421,31 @@ body {
 
 /* ── MOBILE ── */
 @media (max-width: 768px) {
-  .header { padding: 16px 20px; }
-  .main { padding: 32px 20px 60px; }
+  body { -webkit-tap-highlight-color: transparent; }
+  .header { padding: 14px 16px; }
+  .header-logo { font-size: 15px; }
+  .header-logo img { width: 24px; height: 24px; }
+  .btn-new { padding: 9px 16px; font-size: 12px; gap: 6px; }
+  .main { padding: 28px 16px 60px; }
+  .page-title { font-size: 24px; }
+  .page-sub { font-size: 13px; margin-bottom: 28px; }
   .stats-row { gap: 10px; }
-  .stat-card { padding: 16px; }
+  .stat-card { padding: 16px; border-radius: 16px; }
   .stat-num { font-size: 24px; }
   .project-grid { grid-template-columns: 1fr; }
   .modal { padding: 24px; border-radius: 24px; }
   .modal-actions { flex-direction: column; }
+}
+@media (max-width: 480px) {
+  .header { padding: 12px 12px; }
+  .header-logo { font-size: 14px; gap: 6px; }
+  .btn-new { padding: 8px 14px; font-size: 11px; }
+  .main { padding: 24px 12px 60px; }
+  .page-title { font-size: 21px; }
+  .stats-row { flex-direction: column; gap: 8px; }
+  .stat-card { padding: 14px 16px; }
+  .modal { padding: 20px 16px; margin: 12px; border-radius: 20px; }
+  .verify-input { font-size: 16px; padding: 14px 16px; }
 }
 </style>
 </head>

@@ -184,6 +184,30 @@ body {
 }
 .terms a { color: var(--text-faint); text-decoration: underline; text-underline-offset: 2px; }
 .terms a:hover { color: var(--text-dim); }
+
+/* ── MOBILE ── */
+@media (max-width: 480px) {
+  body { -webkit-tap-highlight-color: transparent; }
+  .card { padding: 28px 20px; border-radius: 24px; margin: 12px; }
+  .logo { margin-bottom: 24px; gap: 8px; }
+  .logo-img { width: 28px; height: 28px; }
+  .logo-text { font-size: 19px; }
+  .tabs { margin-bottom: 20px; }
+  .tab-btn { padding: 14px 8px 14px; font-size: 14px; }
+  .form { gap: 12px; }
+  .form-label { font-size: 12px; }
+  .form-input { padding: 14px 16px; font-size: 16px; border-radius: 14px; }
+  .form-input::placeholder { font-size: 14px; }
+  .btn-primary { padding: 16px; font-size: 15px; }
+  .btn-social { padding: 14px; font-size: 14px; }
+  .divider { margin: 4px 0; }
+  .footer-link { margin-top: 16px; }
+  .terms { margin-top: 14px; }
+}
+@media (max-width: 360px) {
+  .card { padding: 24px 16px; margin: 8px; }
+  .logo-text { font-size: 17px; }
+}
 </style>
 </head>
 <body>
